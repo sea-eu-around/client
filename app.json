@@ -3,6 +3,7 @@
     "name": "AdoptAStudent",
     "slug": "AdoptAStudent",
     "version": "1.0.0",
+    "entryPoint": "./src/App.tsx",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
