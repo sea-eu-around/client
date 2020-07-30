@@ -12,7 +12,7 @@ export type AppState = {
 }
 
 // Shortcut type for redux-thunk actions (async actions)
-export type AppThunk<ReturnType = void> = ThunkAction<void, AppState, unknown, Action<string>>;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action<string>>;
 
 export type LogInRequestAction = {
     type: string;
