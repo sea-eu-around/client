@@ -1,15 +1,15 @@
-import { ThunkAction } from "redux-thunk";
-import { Action } from "redux";
+import {ThunkAction} from "redux-thunk";
+import {Action} from "redux";
 
 export type AuthState = {
     authenticated: boolean;
     token: string;
     connecting: false;
-}
+};
 
 export type AppState = {
     auth: AuthState;
-}
+};
 
 // Shortcut type for redux-thunk actions (async actions)
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action<string>>;
