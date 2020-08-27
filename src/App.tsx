@@ -8,6 +8,9 @@ import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import store from "./state/store";
 import {Provider} from "react-redux";
+import configureLocalization from "./localization";
+
+configureLocalization();
 
 function App() {
     const isLoadingComplete = useCachedResources();
