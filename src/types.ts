@@ -1,5 +1,11 @@
+export type Theme = "light" | "dark";
+
+export type FormProps<T> = {
+    onSuccessfulSubmit?: (values: T) => void;
+};
+
 export type RootNavigatorScreens = {
-    RootScreen: undefined;
+    MainScreen: undefined;
     LoginScreen: undefined;
     NotFoundScreen: undefined;
 };
@@ -13,7 +19,7 @@ export type SignupTabNavigatorScreens = {
     SignupForm: undefined;
 };
 
-export type BottomTabParamList = {
+export type MainNavigatorTabs = {
     TabOne: undefined;
     TabTwo: undefined;
 };
@@ -25,9 +31,3 @@ export type TabOneParamList = {
 export type TabTwoParamList = {
     TabTwoScreen: undefined;
 };
-
-export type FormProps<T> = {
-    onSuccessfulSubmit?: (values: T) => void;
-};
-
-export type Theme = "light" | "dark";
