@@ -1,5 +1,6 @@
 import {ThunkAction} from "redux-thunk";
 import {Action} from "redux";
+import {Theme} from "../types";
 
 export type AuthState = {
     authenticated: boolean;
@@ -7,12 +8,19 @@ export type AuthState = {
     connecting: false;
 };
 
+export type ThemingState = {
+    theme: Theme;
+};
+
 export type AppState = {
     auth: AuthState;
+    theming: ThemingState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action<string>>;
+
+/*### AUTH ###*/
 
 export type LogInRequestAction = {
     type: string;
@@ -35,3 +43,12 @@ export type LogOutAction = {
 };
 
 export type AuthAction = LogInRequestAction | LogInSuccessAction | LogInFailureAction | LogOutAction;
+
+/*### THEMING ###*/
+
+export type SetThemeAction = {
+    type: string;
+    theme: Theme;
+};
+
+export type ThemingAction = SetThemeAction;
