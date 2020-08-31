@@ -82,7 +82,7 @@ function LoginTabComponent({theme, navigation}: TabLoginScreenProps): JSX.Elemen
         >
             <View style={loginTabsStyles.formWrapper}>
                 <LoginForm
-                    onSuccessfulSubmit={() => navigation.navigate("RootScreen")}
+                    onSuccessfulSubmit={() => navigation.navigate("MainScreen")}
                     navigation={navigation}
                 ></LoginForm>
             </View>
