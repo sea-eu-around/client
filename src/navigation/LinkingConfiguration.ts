@@ -4,8 +4,22 @@ export default {
     prefixes: [Linking.makeUrl("/")],
     config: {
         screens: {
-            Login: "login",
-            Root: {
+            LoginScreen: {
+                screens: {
+                    login: {
+                        screens: {
+                            LoginForm: "login",
+                            ForgotPassword: "forgot-password",
+                        },
+                    },
+                    signup: {
+                        screens: {
+                            SignupForm: "signup",
+                        },
+                    },
+                },
+            },
+            RootScreen: {
                 screens: {
                     TabOne: {
                         screens: {
@@ -19,7 +33,7 @@ export default {
                     },
                 },
             },
-            NotFound: "*",
+            NotFoundScreen: "*",
         },
     },
 };
