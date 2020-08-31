@@ -16,8 +16,7 @@ import {
     VALIDATOR_LASTNAME,
     VALIDATOR_TOS,
 } from "../validators";
-import {formStyle} from "../styles/forms";
-import {getCommonTextInputProps, getCommonCheckBoxProps} from "../screens/TabLoginScreen";
+import {formStyle, getLoginTextInputsStyleProps, getLoginCheckBoxStyleProps} from "../styles/forms";
 
 type SignupFormState = {
     email: string;
@@ -117,9 +116,18 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                 onSubmit={submitForm}
             >
                 {(formikProps: FormikProps<SignupFormState>) => {
-                    const {handleSubmit, values, errors, touched} = formikProps;
-                    const commonTextInputProps = getCommonTextInputProps(theme, formikProps);
-                    const commonCheckBoxProps = getCommonCheckBoxProps(theme, formikProps);
+                    const {
+                        handleSubmit,
+                        values,
+                        errors,
+                        touched,
+                        handleChange,
+                        handleBlur,
+                        setFieldValue,
+                        setFieldTouched,
+                    } = formikProps;
+                    const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme)};
+                    const checkBoxProps = {setFieldValue, setFieldTouched, ...getLoginCheckBoxStyleProps(theme)};
 
                     return (
                         <React.Fragment>
@@ -135,7 +143,7 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                     if (!errors.email && values.firstname == "" && values.lastname == "")
                                         setNamesFromEmail(values.email, formikProps);
                                 }}
-                                {...commonTextInputProps}
+                                {...textInputProps}
                             />
 
                             <FormTextInput
@@ -146,7 +154,7 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                 touched={touched.password}
                                 secureTextEntry={true}
                                 autoCompleteType="password"
-                                {...commonTextInputProps}
+                                {...textInputProps}
                             />
 
                             <FormTextInput
@@ -157,7 +165,7 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                 touched={touched.passwordRepeat}
                                 secureTextEntry={true}
                                 autoCompleteType="password"
-                                {...commonTextInputProps}
+                                {...textInputProps}
                             />
 
                             <View style={formStyle.inputRow}>
@@ -168,9 +176,9 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                     value={values.firstname}
                                     touched={touched.firstname}
                                     autoCompleteType="name"
-                                    {...commonTextInputProps}
+                                    {...textInputProps}
                                     wrapperStyle={[
-                                        commonTextInputProps.wrapperStyle,
+                                        textInputProps.wrapperStyle,
                                         styles.inlineInputs,
                                         styles.inlineInputLeft,
                                     ]}
@@ -183,9 +191,9 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                     value={values.lastname}
                                     touched={touched.lastname}
                                     autoCompleteType="name"
-                                    {...commonTextInputProps}
+                                    {...textInputProps}
                                     wrapperStyle={[
-                                        commonTextInputProps.wrapperStyle,
+                                        textInputProps.wrapperStyle,
                                         styles.inlineInputs,
                                         styles.inlineInputRight,
                                     ]}
@@ -198,7 +206,7 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                 error={errors.tos}
                                 value={values.tos}
                                 touched={touched.tos}
-                                {...commonCheckBoxProps}
+                                {...checkBoxProps}
                             />
 
                             <FormCheckBox
@@ -207,7 +215,7 @@ function SignupForm({theme}: SignupFormProps): JSX.Element {
                                 error={errors.emailNotifications}
                                 value={values.emailNotifications}
                                 touched={touched.emailNotifications}
-                                {...commonCheckBoxProps}
+                                {...checkBoxProps}
                             />
 
                             <View style={formStyle.actionRow}>

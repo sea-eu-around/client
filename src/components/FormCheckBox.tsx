@@ -2,7 +2,7 @@ import React from "react";
 import i18n from "i18n-js";
 import {TextStyle, StyleSheet, StyleProp, Text, CheckBoxProps, CheckBox, View} from "react-native";
 
-type FormCheckBoxProps = {
+export type FormCheckBoxProps = {
     field: string;
     value: boolean;
     label: string;

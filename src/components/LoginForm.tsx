@@ -11,8 +11,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {setTheme} from "../state/theming/actions";
 import {VALIDATOR_EMAIL, VALIDATOR_PASSWORD} from "../validators";
-import {formStyle} from "../styles/forms";
-import {getCommonTextInputProps} from "../screens/TabLoginScreen";
+import {formStyle, getLoginTextInputsStyleProps} from "../styles/forms";
 
 type LoginFormState = {
     email: string;
@@ -68,8 +67,8 @@ function LoginFormComponent({theme, themeName, onSuccessfulSubmit, dispatch, nav
             onSubmit={submitForm(onSuccessfulSubmit)} // eslint-disable-line @typescript-eslint/no-empty-function
         >
             {(formikProps: FormikProps<LoginFormState>) => {
-                const {handleSubmit, values, errors, touched} = formikProps;
-                const commonTextInputProps = getCommonTextInputProps(theme, formikProps, 15);
+                const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikProps;
+                const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
 
                 return (
                     <React.Fragment>
@@ -81,7 +80,7 @@ function LoginFormComponent({theme, themeName, onSuccessfulSubmit, dispatch, nav
                             touched={touched.email}
                             keyboardType="email-address"
                             autoCompleteType="email"
-                            {...commonTextInputProps}
+                            {...textInputProps}
                         />
 
                         <FormTextInput
@@ -92,7 +91,7 @@ function LoginFormComponent({theme, themeName, onSuccessfulSubmit, dispatch, nav
                             touched={touched.password}
                             secureTextEntry={true}
                             autoCompleteType="password"
-                            {...commonTextInputProps}
+                            {...textInputProps}
                         />
 
                         <View style={formStyle.actionRow}>

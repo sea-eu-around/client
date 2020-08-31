@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import {TextInput} from "react-native-gesture-handler";
 
-type FormTextInputProps = {
+export type FormTextInputProps = {
     field: string;
     value: string;
     error: string | undefined;

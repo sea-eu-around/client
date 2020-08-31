@@ -1,4 +1,7 @@
-import {StyleSheet} from "react-native";
+import {StyleSheet, Platform, TextStyle, StyleProp} from "react-native";
+import {ThemeValues} from "../types";
+import {FormTextInputProps} from "../components/FormTextInput";
+import {FormCheckBoxProps} from "../components/FormCheckBox";
 
 export const formStyle = StyleSheet.create({
     errorText: {
@@ -37,6 +40,64 @@ export const formStyle = StyleSheet.create({
         textTransform: "uppercase",
     },
 });
+
+export function getLoginTextInputsStyleProps(
+    theme: ThemeValues,
+    overrideVerticalMargin = 5,
+): Partial<FormTextInputProps> {
+    const focusedStyle = Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null;
+
+    const commonStyle = StyleSheet.create({
+        textInputWrapper: {
+            width: "100%",
+        },
+        textInput: {
+            width: "100%",
+            height: 60,
+            paddingHorizontal: 20,
+            borderRadius: 5,
+            borderWidth: 0,
+            marginVertical: overrideVerticalMargin,
+            backgroundColor: theme.accentSlight,
+        },
+        textInputError: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.error,
+        },
+        textInputValid: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.okay,
+        },
+    });
+
+    return {
+        placeholderTextColor: "#222",
+        wrapperStyle: commonStyle.textInputWrapper,
+        style: commonStyle.textInput,
+        errorStyle: commonStyle.textInputError,
+        validStyle: commonStyle.textInputValid,
+        focusedStyle: focusedStyle,
+        errorTextStyle: [formStyle.errorText, {color: theme.error}],
+    };
+}
+
+export function getLoginCheckBoxStyleProps(theme: ThemeValues): Partial<FormCheckBoxProps> {
+    const commonStyle = StyleSheet.create({
+        checkboxWrapper: {
+            width: "100%",
+            marginVertical: 5,
+        },
+        checkboxLabel: {
+            fontSize: 14,
+        },
+    });
+
+    return {
+        wrapperStyle: commonStyle.checkboxWrapper,
+        labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
+        errorTextStyle: [formStyle.errorText, {color: theme.error}],
+    };
+}
 
 export const loginTabsStyles = StyleSheet.create({
     container: {

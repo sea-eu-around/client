@@ -10,8 +10,7 @@ import {LoginTabNavigatorScreens} from "../types";
 import {AppState} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {VALIDATOR_EMAIL} from "../validators";
-import {formStyle} from "../styles/forms";
-import {getCommonTextInputProps} from "../screens/TabLoginScreen";
+import {formStyle, getLoginTextInputsStyleProps} from "../styles/forms";
 
 type ForgotPasswordFormState = {
     email: string;
@@ -81,8 +80,8 @@ function ForgotPasswordForm({theme, navigation}: ForgotPasswordFormProps): JSX.E
                 onSubmit={submitForm}
             >
                 {(formikCfg: FormikProps<ForgotPasswordFormState>) => {
-                    const {handleSubmit, values, errors, touched} = formikCfg;
-                    const commonTextInputProps = getCommonTextInputProps(theme, formikCfg);
+                    const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikCfg;
+                    const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme)};
 
                     return (
                         <React.Fragment>
@@ -94,7 +93,7 @@ function ForgotPasswordForm({theme, navigation}: ForgotPasswordFormProps): JSX.E
                                 touched={touched.email}
                                 keyboardType="email-address"
                                 autoCompleteType="email"
-                                {...commonTextInputProps}
+                                {...textInputProps}
                             />
 
                             <View style={formStyle.actionRow}>
