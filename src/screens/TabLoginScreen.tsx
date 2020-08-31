@@ -104,4 +104,4 @@ function ForgotPasswordTabComponent({theme, navigation}: TabForgotPasswordProps)
 }
 
 export const SubTabLogin = reduxConnector(LoginTabComponent);
-export const SubTabForgotPassword = reduxConnector(ForgotPasswordTabComponent);
+export const SubTabForgotPassword = connect(mapStateToProps)(ForgotPasswordTabComponent);
