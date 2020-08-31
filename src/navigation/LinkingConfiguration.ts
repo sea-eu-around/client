@@ -19,7 +19,7 @@ export default {
                     },
                 },
             },
-            RootScreen: {
+            MainScreen: {
                 screens: {
                     TabOne: {
                         screens: {
