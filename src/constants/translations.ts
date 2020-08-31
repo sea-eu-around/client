@@ -36,6 +36,9 @@ export default {
             },
             tosAccept: "You cannot continue without agreeing to our Terms of Service and Privacy Policy.",
         },
+        pageNotFound: "404: Page not found.",
+        pageDoesntExist: "This page doesn't exist.",
+        goHome: "Go to home screen",
     },
     fr: {
         welcome: "Bienvenue",
