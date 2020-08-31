@@ -9,8 +9,11 @@ import Navigation from "./navigation";
 import store from "./state/store";
 import {Provider} from "react-redux";
 import configureLocalization from "./localization";
+import {YellowBox} from "react-native";
 
 configureLocalization();
+
+// YellowBox.ignoreWarnings(["Require cycle"]); // TODO temporary
 
 function App() {
     const isLoadingComplete = useCachedResources();
