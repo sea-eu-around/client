@@ -6,7 +6,7 @@ import {ScrollView} from "react-native-gesture-handler";
 import {AppState} from "../state/types";
 import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
-import SignupForm from "../components/SignupForm";
+import SignupForm from "../components/forms/SignupForm";
 import {loginTabsStyles} from "../styles/forms";
 
 const mapStateToProps = (state: AppState) => ({

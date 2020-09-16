@@ -1,13 +1,14 @@
 import * as React from "react";
-import {View, KeyboardAvoidingView} from "react-native";
+import {View, KeyboardAvoidingView, Text} from "react-native";
 import Colors from "../constants/themes";
 import {StackScreenProps} from "@react-navigation/stack";
 import {LoginTabNavigatorScreens} from "../types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
-import {LoginForm} from "../components/LoginForm";
-import ForgotPasswordForm from "../components/ForgotPasswordForm";
+import {LoginForm} from "../components/forms/LoginForm";
+import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import {loginTabsStyles} from "../styles/forms";
+import {TouchableOpacity} from "react-native-gesture-handler";
 
 const mapStateToProps = (state: AppState) => ({
     theme: Colors[state.theming.theme],
@@ -28,6 +29,9 @@ function LoginTabComponent({theme, navigation}: TabLoginScreenProps): JSX.Elemen
                     onSuccessfulSubmit={() => navigation.navigate("MainScreen")}
                     navigation={navigation}
                 ></LoginForm>
+                <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
+                    <Text style={{fontSize: 26}}>Skip</Text>
+                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
