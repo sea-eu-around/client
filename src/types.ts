@@ -25,6 +25,7 @@ export type SignupTabNavigatorScreens = {
 export type MainNavigatorTabs = {
     TabOne: undefined;
     TabTwo: undefined;
+    TabProfile: undefined;
 };
 
 export type TabOneParamList = {
@@ -33,4 +34,8 @@ export type TabOneParamList = {
 
 export type TabTwoParamList = {
     TabTwoScreen: undefined;
+};
+
+export type TabProfileParamList = {
+    TabProfileScreen: undefined;
 };
