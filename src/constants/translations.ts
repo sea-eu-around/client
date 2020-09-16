@@ -73,6 +73,11 @@ export default {
             technical: "Technical",
             ambassador: "SEA-EU Ambassador",
         },
+        gender: "Gender",
+        genders: {
+            M: "Male",
+            F: "Female",
+        },
     },
     fr: {
         welcome: "Bienvenue",
