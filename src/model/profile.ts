@@ -8,7 +8,7 @@ export interface FullProfile {
     levelOfStudy: number;
     nationality: CountryCode;
     role: Role;
-    staffRole: StaffRole;
+    staffRole?: StaffRole;
     birthDate: number;
     gender: Gender;
     hobbies: Hobby[];

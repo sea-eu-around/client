@@ -7,7 +7,7 @@ import {ButtonGroup} from "react-native-elements";
 import {Picker} from "react-native";
 
 export type StaffRoleToggleProps = {
-    staffRole: StaffRole;
+    staffRole: StaffRole | null;
     onSelect?: (staffRole: StaffRole) => void;
 };
 
