@@ -1,6 +1,7 @@
 import {ThunkAction} from "redux-thunk";
 import {Action} from "redux";
 import {Theme} from "../types";
+import {FullProfile} from "../model/profile";
 
 export type AuthState = {
     authenticated: boolean;
@@ -12,9 +13,14 @@ export type ThemingState = {
     theme: Theme;
 };
 
+export type ProfileState = {
+    userProfile: FullProfile;
+};
+
 export type AppState = {
     auth: AuthState;
     theming: ThemingState;
+    profile: ProfileState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)
@@ -52,3 +58,12 @@ export type SetThemeAction = {
 };
 
 export type ThemingAction = SetThemeAction;
+
+/*### PROFILE ###*/
+
+export type SetProfileFieldsAction = {
+    type: string;
+    fields: Partial<FullProfile>;
+};
+
+export type ProfileAction = SetProfileFieldsAction;
