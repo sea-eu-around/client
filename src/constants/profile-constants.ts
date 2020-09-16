@@ -44,3 +44,5 @@ export const HOBBIES = [
     "Blogging",
 ];
 export type Hobby = typeof HOBBIES[number];
+
+export const MIN_AGE = 18;
