@@ -31,6 +31,11 @@ export default {
                             TabTwoScreen: "two",
                         },
                     },
+                    TabProfile: {
+                        screens: {
+                            TabProfileScreen: "profile",
+                        },
+                    },
                 },
             },
             NotFoundScreen: "*",

@@ -4,10 +4,12 @@ import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import {TabOneParamList, TabTwoParamList, MainNavigatorTabs, RootNavigatorScreens} from "../types";
+import {TabOneParamList, TabTwoParamList, TabProfileParamList, MainNavigatorTabs, RootNavigatorScreens} from "../types";
 import {AppState} from "../state/types";
 import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
+import TabProfileScreen from "../screens/TabProfileScreen";
+import i18n from "i18n-js";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -29,7 +31,7 @@ function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
                 component={TabOneNavigator}
                 options={{
                     // eslint-disable-next-line react/display-name, react/prop-types
-                    tabBarIcon: ({color}) => <TabBarIcon name="person" color={color} />,
+                    tabBarIcon: ({color}) => <TabBarIcon name="contacts" color={color} />,
                 }}
             />
             <TabNavigator.Screen
@@ -38,6 +40,15 @@ function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
                 options={{
                     // eslint-disable-next-line react/display-name, react/prop-types
                     tabBarIcon: ({color}) => <TabBarIcon name="notifications" color={color} />,
+                }}
+            />
+            <TabNavigator.Screen
+                name="TabProfile"
+                component={TabProfileNavigator}
+                options={{
+                    title: i18n.t("profile"),
+                    // eslint-disable-next-line react/display-name, react/prop-types
+                    tabBarIcon: ({color}) => <TabBarIcon name="person" color={color} />,
                 }}
             />
         </TabNavigator.Navigator>
@@ -67,6 +78,20 @@ function TabTwoNavigator(): JSX.Element {
         <TabTwoStack.Navigator>
             <TabTwoStack.Screen name="TabTwoScreen" component={TabTwoScreen} options={{headerTitle: "Tab Two Title"}} />
         </TabTwoStack.Navigator>
+    );
+}
+
+const TabProfileStack = createStackNavigator<TabProfileParamList>();
+
+function TabProfileNavigator(): JSX.Element {
+    return (
+        <TabProfileStack.Navigator>
+            <TabProfileStack.Screen
+                name="TabProfileScreen"
+                component={TabProfileScreen}
+                options={{/*headerTitle: "Profile"*/ headerShown: false}}
+            />
+        </TabProfileStack.Navigator>
     );
 }
 
