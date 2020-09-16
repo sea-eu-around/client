@@ -14,6 +14,7 @@ import {YellowBox} from "react-native";
 configureLocalization();
 
 // YellowBox.ignoreWarnings(["Require cycle"]); // TODO temporary
+YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]); // TODO: Remove when fixed
 
 function App() {
     const isLoadingComplete = useCachedResources();
