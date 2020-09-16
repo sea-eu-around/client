@@ -9,7 +9,7 @@ export interface FullProfile {
     nationality: CountryCode;
     role: Role;
     staffRole?: StaffRole;
-    birthDate: number;
+    birthDate: Date;
     gender: Gender;
     hobbies: Hobby[];
     // languages

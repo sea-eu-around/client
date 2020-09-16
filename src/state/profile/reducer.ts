@@ -10,6 +10,9 @@ export const initialState: ProfileState = {
         levelOfStudy: 2,
         nationality: "FR",
         role: "staff",
+        gender: "M",
+        birthDate: new Date(1999, 6, 2),
+        hobbies: ["Acrobatics", "Acting", "Animation"],
     },
 };
 
