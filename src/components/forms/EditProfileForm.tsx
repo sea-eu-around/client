@@ -14,11 +14,13 @@ import {Avatar} from "react-native-elements";
 import {EducationFieldSelect} from "../EducationFieldSelect";
 import {ScrollView} from "react-native-gesture-handler";
 import {LevelOfStudyControl} from "../LevelOfStudyControl";
-import {NationalitySelect} from "../NationalitySelect";
+import NationalitySelect from "../NationalitySelect";
 import {CountryCode} from "../../model/country-codes";
 import {RoleToggle} from "../RoleToggle";
-import {Role, StaffRole} from "../../constants/profile-constants";
+import {Gender, Role, StaffRole} from "../../constants/profile-constants";
 import {StaffRoleToggle} from "../StaffRoleToggle";
+import {GenderToggle} from "../GenderToggle";
+import BirthDatePicker from "../BirthDatePicker";
 
 // Use Yup to create the validation schema
 const EditProfileFormSchema = Yup.object().shape({
@@ -172,7 +174,10 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                                             {...textInputProps}
                                         />
                                         <FormFieldSpacer />
-                                        <EducationFieldSelect></EducationFieldSelect>
+                                        <BirthDatePicker
+                                            date={profile.birthDate}
+                                            onSelect={(birthDate: Date) => onFieldChanged({birthDate})}
+                                        />
                                         <FormFieldSpacer />
                                         <NationalitySelect
                                             nationality={profile.nationality}
@@ -181,26 +186,35 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                                             }
                                         />
                                         <FormFieldSpacer />
+                                        <GenderToggle
+                                            gender={profile.gender}
+                                            onSelect={(gender: Gender) => onFieldChanged({gender})}
+                                        />
+                                        <FormFieldSpacer />
                                         <RoleToggle
                                             role={profile.role}
                                             onSelect={(role: Role) => onFieldChanged({role})}
                                         />
-                                        <FormFieldSpacer />
                                         {profile.role == "staff" && (
                                             <StaffRoleToggle
-                                                staffRole={profile.staffRole}
+                                                staffRole={profile.staffRole || null}
                                                 onSelect={(staffRole: StaffRole) => onFieldChanged({staffRole})}
                                             />
                                         )}
                                         {profile.role == "student" && (
-                                            <LevelOfStudyControl
-                                                levelIndex={profile.levelOfStudy}
-                                                onUpdateIndex={(levelIndex: number) =>
-                                                    onFieldChanged({levelOfStudy: levelIndex})
-                                                }
-                                            />
+                                            <React.Fragment>
+                                                <FormFieldSpacer />
+                                                <LevelOfStudyControl
+                                                    levelIndex={profile.levelOfStudy}
+                                                    onUpdateIndex={(levelIndex: number) =>
+                                                        onFieldChanged({levelOfStudy: levelIndex})
+                                                    }
+                                                />
+                                            </React.Fragment>
                                         )}
-
+                                        <FormFieldSpacer />
+                                        <EducationFieldSelect></EducationFieldSelect>
+                                        <FormFieldSpacer />
                                     </React.Fragment>
                                 );
                             }}
