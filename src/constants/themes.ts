@@ -6,7 +6,7 @@ export default {
         text: "#000",
         textLight: "#666",
         textInverted: "#fff",
-        background: "#fff",
+        background: "#f9f9f9",
         accent: "#003da5", // Pantone 293c
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c
