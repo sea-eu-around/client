@@ -1,10 +1,10 @@
 import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
-import {LoginTabNavigatorScreens} from "../types";
+import {LoginTabNavigatorScreens} from "../navigation/types";
 import LoginTabBar from "../components/LoginTabBar";
 import {SubTabLogin, SubTabForgotPassword} from "../screens/TabLoginScreen";
-import TabSignupScreen from "../screens/TabSignupScreen";
+import TabSignupFormScreen from "../screens/TabSignupFormScreen";
 
 type LoginTabs = {
     login: undefined;
@@ -31,7 +31,7 @@ function LoginTabNavigator(): JSX.Element {
 function SignupTabNavigator(): JSX.Element {
     return (
         <SignupTabStack.Navigator>
-            <SignupTabStack.Screen name="SignupForm" component={TabSignupScreen} options={{headerShown: false}} />
+            <SignupTabStack.Screen name="SignupForm" component={TabSignupFormScreen} options={{headerShown: false}} />
         </SignupTabStack.Navigator>
     );
 }
