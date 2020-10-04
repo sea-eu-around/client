@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {LoginTabNavigatorScreens} from "../../types";
+import {LoginTabNavigatorScreens} from "../../navigation/types";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {VALIDATOR_EMAIL} from "../../validators";
