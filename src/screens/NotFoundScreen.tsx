@@ -2,7 +2,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
-import {RootNavigatorScreens} from "../types";
+import {RootNavigatorScreens} from "../navigation/types";
 
 const styles = StyleSheet.create({
     container: {

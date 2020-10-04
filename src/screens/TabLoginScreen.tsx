@@ -2,7 +2,7 @@ import * as React from "react";
 import {View, KeyboardAvoidingView, Text} from "react-native";
 import Colors from "../constants/themes";
 import {StackScreenProps} from "@react-navigation/stack";
-import {LoginTabNavigatorScreens} from "../types";
+import {LoginTabNavigatorScreens} from "../navigation/types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {LoginForm} from "../components/forms/LoginForm";
@@ -12,42 +12,55 @@ import {TouchableOpacity} from "react-native-gesture-handler";
 
 const mapStateToProps = (state: AppState) => ({
     theme: Colors[state.theming.theme],
+    authenticated: state.auth.authenticated,
 });
 const reduxConnector = connect(mapStateToProps);
 
 type TabLoginScreenProps = ConnectedProps<typeof reduxConnector> &
     StackScreenProps<LoginTabNavigatorScreens, "LoginScreen">;
 
-function LoginTabComponent({theme, navigation}: TabLoginScreenProps): JSX.Element {
-    return (
-        <KeyboardAvoidingView
-            behavior="height"
-            style={[loginTabsStyles.container, {backgroundColor: theme.background}]}
-        >
-            <View style={loginTabsStyles.formWrapper}>
-                <LoginForm
-                    onSuccessfulSubmit={() => navigation.navigate("MainScreen")}
-                    navigation={navigation}
-                ></LoginForm>
-                <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
-                    <Text style={{fontSize: 26}}>Skip</Text>
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
-    );
+class LoginTabComponent extends React.Component<TabLoginScreenProps> {
+    componentDidUpdate() {
+        if (this.props.authenticated) {
+            this.props.navigation.navigate("MainScreen");
+        }
+    }
+
+    render(): JSX.Element {
+        const {theme, navigation} = this.props;
+        return (
+            <KeyboardAvoidingView
+                behavior="height"
+                style={[loginTabsStyles.container, {backgroundColor: theme.background}]}
+            >
+                <View style={loginTabsStyles.formWrapper}>
+                    <LoginForm navigation={navigation}></LoginForm>
+                    <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
+                        <Text style={{fontSize: 24}}>debug: connect</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("ValidateEmailScreen")}>
+                        <Text style={{fontSize: 24}}>debug: validate email</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        );
+    }
 }
 
 type TabForgotPasswordProps = ConnectedProps<typeof reduxConnector> &
     StackScreenProps<LoginTabNavigatorScreens, "ForgotPassword">;
 
-function ForgotPasswordTabComponent({theme, navigation}: TabForgotPasswordProps): JSX.Element {
-    return (
-        <View style={[loginTabsStyles.container, {backgroundColor: theme.background}]}>
-            <View style={loginTabsStyles.formWrapper}>
-                <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
+class ForgotPasswordTabComponent extends React.Component<TabForgotPasswordProps> {
+    render(): JSX.Element {
+        const {theme, navigation} = this.props;
+        return (
+            <View style={[loginTabsStyles.container, {backgroundColor: theme.background}]}>
+                <View style={loginTabsStyles.formWrapper}>
+                    <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
+                </View>
             </View>
-        </View>
-    );
+        );
+    }
 }
 
 export const SubTabLogin = reduxConnector(LoginTabComponent);

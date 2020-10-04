@@ -4,7 +4,7 @@ import {StyleSheet, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import Colors from "../constants/themes";
-import {MainNavigatorTabs} from "../types";
+import {MainNavigatorTabs} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
 import {FullProfile} from "../model/profile";
 import {setProfileFields} from "../state/profile/actions";
