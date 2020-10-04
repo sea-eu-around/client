@@ -1,10 +1,7 @@
 import * as React from "react";
-
-import {Platform, Text, View} from "react-native";
-import i18n from "i18n-js";
+import {Platform} from "react-native";
 import {MIN_AGE} from "../constants/profile-constants";
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import themes from "../constants/themes";
 import {AppState} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
@@ -22,26 +19,16 @@ const reduxConnector = connect(mapStateToProps);
 // Component props
 export type BirthDatePickerProps = ConnectedProps<typeof reduxConnector> & {
     date: Date;
+    open: boolean;
     onSelect?: (date: Date) => void;
-};
-
-const styles = {
-    dateButton: {
-        marginTop: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 8,
-        borderRadius: 4,
-    },
-    dateText: {
-        fontSize: 16,
-    },
+    onHide?: () => void;
 };
 
 class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePickerState> {
     constructor(props: BirthDatePickerProps) {
         super(props);
         this.state = {
-            open: false,
+            open: props.open,
         };
     }
 
@@ -51,6 +38,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
 
     hideModal(): void {
         this.setState({...this.state, open: false});
+        if (this.props.onHide !== undefined) this.props.onHide();
     }
 
     onChange = (date: Date | undefined) => {
@@ -59,25 +47,14 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
     };
 
     render(): JSX.Element {
-        const {date, theme} = this.props;
+        const {date} = this.props;
         const {open} = this.state;
 
         const maxDate = new Date(Date.now());
         maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
 
-        const localizedMonth = i18n.t(`months.${date.getMonth()}`);
-        const paddedDay = ((date.getDate() + "").length == 1 ? "0" : "") + date.getDate();
-        const formattedDate = `${paddedDay} ${localizedMonth} ${date.getFullYear()}`;
-
         return (
-            <View style={{width: "100%"}}>
-                <Text>{i18n.t("dateOfBirth")}</Text>
-                <TouchableOpacity
-                    style={[styles.dateButton, {backgroundColor: theme.accentSlight}]}
-                    onPress={() => this.showModal()}
-                >
-                    <Text style={styles.dateText}>{formattedDate}</Text>
-                </TouchableOpacity>
+            <React.Fragment>
                 {open && (
                     <DateTimePicker
                         style={{width: "100%", height: 50}}
@@ -88,7 +65,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
                         mode="date"
                     />
                 )}
-            </View>
+            </React.Fragment>
         );
     }
 }

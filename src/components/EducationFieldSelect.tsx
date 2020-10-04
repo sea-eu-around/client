@@ -36,8 +36,7 @@ export class EducationFieldSelect extends React.Component {
 
         const {selectedItems} = this.state;
         return (
-            <View style={{flex: 1, width: "100%"}}>
-                <Text>Education fields</Text>
+            <React.Fragment>
                 <MultiSelect
                     hideTags
                     items={items}
@@ -55,9 +54,8 @@ export class EducationFieldSelect extends React.Component {
                     fixedHeight={true}
                     {...styleProps}
                 />
-                <View>{/*this.multiSelect ? this.multiSelect!.getSelectedItemsExt(selectedItems) : */[]}</View>
-
-            </View>
+                <View>{/*this.multiSelect ? this.multiSelect!.getSelectedItemsExt(selectedItems) : */ []}</View>
+            </React.Fragment>
         );
     }
 }

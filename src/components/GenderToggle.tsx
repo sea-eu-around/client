@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import {Text, View} from "react-native";
 import i18n from "i18n-js";
 import {Gender, GENDERS} from "../constants/profile-constants";
 import {ButtonGroup} from "react-native-elements";
@@ -19,14 +18,11 @@ export function GenderToggle(props: GenderToggleProps): JSX.Element {
     };
 
     return (
-        <View style={{width: "100%"}}>
-            <Text>{i18n.t("gender")}</Text>
-            <ButtonGroup
-                onPress={onUpdate}
-                selectedIndex={GENDERS.indexOf(gender)}
-                buttons={buttonLabels}
-                containerStyle={{height: 40, marginLeft: 0, marginRight: 0}}
-            />
-        </View>
+        <ButtonGroup
+            onPress={onUpdate}
+            selectedIndex={GENDERS.indexOf(gender)}
+            buttons={buttonLabels}
+            containerStyle={{height: 35, marginLeft: 0, marginRight: 0}}
+        />
     );
 }
