@@ -1,7 +1,8 @@
-import {combineReducers, createStore} from "redux";
+import {applyMiddleware, combineReducers, createStore} from "redux";
 import {authReducer} from "./auth/reducer";
 import {themingReducer} from "./theming/reducer";
 import {profileReducer} from "./profile/reducer";
+import thunk from "redux-thunk";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -9,4 +10,4 @@ const rootReducer = combineReducers({
     profile: profileReducer,
 });
 
-export default createStore(rootReducer);
+export default createStore(rootReducer, applyMiddleware(thunk));
