@@ -12,5 +12,6 @@ export interface FullProfile {
     birthDate: Date;
     gender: Gender;
     hobbies: Hobby[];
+    avatarUri: string;
     // languages
 }
