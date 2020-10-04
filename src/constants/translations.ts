@@ -39,7 +39,13 @@ export default {
         pageNotFound: "404: Page not found.",
         pageDoesntExist: "This page doesn't exist.",
         goHome: "Go to home screen",
-        profile: "Profile",
+        tabs: {
+            discover: "Discover",
+            matching: "Matching",
+            messaging: "Messaging",
+            profile: "Profile",
+            notifications: "Notifications",
+        },
         myProfile: "My Profile",
         editProfile: "Edit profile",
         educationFields: {
@@ -92,6 +98,16 @@ export default {
             9: "October",
             10: "November",
             11: "December",
+        },
+        educationFields: "Education fields",
+        apply: "Apply",
+        universities: {
+            "univ-cadiz": "University of Cádiz",
+            "univ-brest": "University of Western Brittany",
+            "univ-gdansk": "University of Gdańsk",
+            "univ-malta": "University of Malta",
+            "univ-kiel": "University of Kiel",
+            "univ-split": "University of Split",
         },
     },
     fr: {
