@@ -1,9 +1,10 @@
 import * as Yup from "yup";
+import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 
 export const MIN_PASSWORD_LENGTH = 8;
 
 // TODO move this validation to back-end
-const VALID_EMAIL_DOMAINS = ["imt-atlantique.net", "imt-atlantique.fr"];
+const VALID_EMAIL_DOMAINS = PARTNER_UNIVERSITIES.map((uni: University) => uni.domain);
 
 export const VALIDATOR_EMAIL = Yup.string()
     .required("validation.required")
