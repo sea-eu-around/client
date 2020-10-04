@@ -1,5 +1,3 @@
-import {NumberLiteralType} from "typescript";
-
 /**
  * University education fields as specified by the International Standard Classification of Education (ISCED), 2013.
  * @see {@link https://ec.europa.eu/eurostat/statistics-explained/index.php/International_Standard_Classification_of_Education_(ISCED)}
