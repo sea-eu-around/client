@@ -4,7 +4,15 @@ import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import {TabOneParamList, TabTwoParamList, TabProfileParamList, MainNavigatorTabs, RootNavigatorScreens} from "../types";
+import {
+    MainNavigatorTabs,
+    RootNavigatorScreens,
+    TabMessagingParamList,
+    TabMatchingParamList,
+    TabNotificationsParamList,
+    TabDiscoverParamList,
+    TabProfileParamList,
+} from "../navigation/types";
 import {AppState} from "../state/types";
 import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
@@ -25,19 +33,30 @@ export type MainNavigatorProps = ConnectedProps<typeof reduxConnector> &
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
     return (
-        <TabNavigator.Navigator initialRouteName="TabOne" tabBarOptions={{activeTintColor: theme.tint}}>
+        <TabNavigator.Navigator initialRouteName="TabDiscover" tabBarOptions={{activeTintColor: theme.tint}}>
             <TabNavigator.Screen
-                name="TabOne"
-                component={TabOneNavigator}
+                name="TabDiscover"
+                component={TabDiscoverNavigator}
                 options={{
+                    title: i18n.t("tabs.discover"),
                     // eslint-disable-next-line react/display-name, react/prop-types
                     tabBarIcon: ({color}) => <TabBarIcon name="contacts" color={color} />,
                 }}
             />
             <TabNavigator.Screen
-                name="TabTwo"
-                component={TabTwoNavigator}
+                name="TabMatching"
+                component={TabMatchingNavigator}
                 options={{
+                    title: i18n.t("tabs.matching"),
+                    // eslint-disable-next-line react/display-name, react/prop-types
+                    tabBarIcon: ({color}) => <TabBarIcon name="notifications" color={color} />,
+                }}
+            />
+            <TabNavigator.Screen
+                name="TabMessaging"
+                component={TabMessagingNavigator}
+                options={{
+                    title: i18n.t("tabs.messaging"),
                     // eslint-disable-next-line react/display-name, react/prop-types
                     tabBarIcon: ({color}) => <TabBarIcon name="notifications" color={color} />,
                 }}
@@ -46,9 +65,18 @@ function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
                 name="TabProfile"
                 component={TabProfileNavigator}
                 options={{
-                    title: i18n.t("profile"),
+                    title: i18n.t("tabs.profile"),
                     // eslint-disable-next-line react/display-name, react/prop-types
                     tabBarIcon: ({color}) => <TabBarIcon name="person" color={color} />,
+                }}
+            />
+            <TabNavigator.Screen
+                name="TabNotifications"
+                component={TabNotificationsNavigator}
+                options={{
+                    title: i18n.t("tabs.notifications"),
+                    // eslint-disable-next-line react/display-name, react/prop-types
+                    tabBarIcon: ({color}) => <TabBarIcon name="notifications" color={color} />,
                 }}
             />
         </TabNavigator.Navigator>
@@ -61,23 +89,59 @@ function TabBarIcon(props: {name: string; color: string}): JSX.Element {
 
 // Each tab has its own navigation stack.
 // Read more about this pattern here: https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
+const TabDiscoverStack = createStackNavigator<TabDiscoverParamList>();
 
-function TabOneNavigator(): JSX.Element {
+function TabDiscoverNavigator(): JSX.Element {
     return (
-        <TabOneStack.Navigator>
-            <TabOneStack.Screen name="TabOneScreen" component={TabOneScreen} options={{headerTitle: "Tab One Title"}} />
-        </TabOneStack.Navigator>
+        <TabDiscoverStack.Navigator>
+            <TabDiscoverStack.Screen
+                name="TabDiscoverScreen"
+                component={TabOneScreen}
+                options={{headerTitle: "Discover"}}
+            />
+        </TabDiscoverStack.Navigator>
     );
 }
 
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
+const TabMatchingStack = createStackNavigator<TabMatchingParamList>();
 
-function TabTwoNavigator(): JSX.Element {
+function TabMatchingNavigator(): JSX.Element {
     return (
-        <TabTwoStack.Navigator>
-            <TabTwoStack.Screen name="TabTwoScreen" component={TabTwoScreen} options={{headerTitle: "Tab Two Title"}} />
-        </TabTwoStack.Navigator>
+        <TabMatchingStack.Navigator>
+            <TabMatchingStack.Screen
+                name="TabMatchingScreen"
+                component={TabTwoScreen}
+                options={{headerTitle: "Tab Title"}}
+            />
+        </TabMatchingStack.Navigator>
+    );
+}
+
+const TabMessagingStack = createStackNavigator<TabMessagingParamList>();
+
+function TabMessagingNavigator(): JSX.Element {
+    return (
+        <TabMessagingStack.Navigator>
+            <TabMessagingStack.Screen
+                name="TabMessagingScreen"
+                component={TabTwoScreen}
+                options={{headerTitle: "Tab Title"}}
+            />
+        </TabMessagingStack.Navigator>
+    );
+}
+
+const TabNotificationsStack = createStackNavigator<TabNotificationsParamList>();
+
+function TabNotificationsNavigator(): JSX.Element {
+    return (
+        <TabNotificationsStack.Navigator>
+            <TabNotificationsStack.Screen
+                name="TabNotificationsScreen"
+                component={TabTwoScreen}
+                options={{headerTitle: "Tab Title"}}
+            />
+        </TabNotificationsStack.Navigator>
     );
 }
 

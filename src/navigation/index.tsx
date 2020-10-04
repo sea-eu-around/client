@@ -3,23 +3,33 @@ import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import {ColorSchemeName} from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
-import {RootNavigatorScreens} from "../types";
-import LinkingConfiguration from "./LinkingConfiguration";
+import ValidateEmailScreen from "../screens/ValidateEmailScreen";
+import ValidationEmailSentScreen from "../screens/ValidationEmailSentScreen";
+import {RootNavigatorScreens} from "../navigation/types";
+import LinkingConfiguration from "./linking-config";
 import LoginNavigator from "./LoginNavigator";
 import MainNavigator from "./MainNavigator";
+import OnboardingNavigator from "./OnboardingNavigator";
+import {rootNavigationRef} from "./utils";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
-// If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}): JSX.Element {
     return (
-        <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <NavigationContainer
+            ref={rootNavigationRef}
+            linking={LinkingConfiguration}
+            theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} options={{title: "Login"}} />
+                <Stack.Screen name="ValidationEmailSentScreen" component={ValidationEmailSentScreen} />
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
+                <Stack.Screen name="ValidateEmailScreen" component={ValidateEmailScreen} />
+                <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen name="NotFoundScreen" component={NotFoundScreen} options={{title: "Oops!"}} />
             </Stack.Navigator>
         </NavigationContainer>
