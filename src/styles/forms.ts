@@ -1,10 +1,10 @@
-import {StyleSheet, Platform, TextStyle, StyleProp} from "react-native";
+import {StyleSheet, Platform, TextStyle} from "react-native";
 import {ThemeValues} from "../types";
 import {FormTextInputProps} from "../components/FormTextInput";
 import {FormCheckBoxProps} from "../components/FormCheckBox";
 
 export const formStyle = StyleSheet.create({
-    errorText: {
+    inputErrorText: {
         fontSize: 12,
     },
     inputRow: {
@@ -16,9 +16,10 @@ export const formStyle = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         width: "100%",
-        marginTop: 30,
+        marginTop: 25,
     },
     buttonMajor: {
+        justifyContent: "center",
         height: 60,
         borderRadius: 5,
 
@@ -35,7 +36,6 @@ export const formStyle = StyleSheet.create({
         color: "white",
         textAlign: "center",
         fontSize: 16,
-        lineHeight: 60,
         letterSpacing: 1,
         textTransform: "uppercase",
     },
@@ -43,13 +43,14 @@ export const formStyle = StyleSheet.create({
 
 export function getLoginTextInputsStyleProps(
     theme: ThemeValues,
-    overrideVerticalMargin = 5,
+    wrapperVerticalMargin = 0,
 ): Partial<FormTextInputProps> {
     const focusedStyle = Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null;
 
     const commonStyle = StyleSheet.create({
         textInputWrapper: {
             width: "100%",
+            marginVertical: wrapperVerticalMargin,
         },
         textInput: {
             width: "100%",
@@ -57,7 +58,6 @@ export function getLoginTextInputsStyleProps(
             paddingHorizontal: 20,
             borderRadius: 5,
             borderWidth: 0,
-            marginVertical: overrideVerticalMargin,
             backgroundColor: theme.accentSlight,
         },
         textInputError: {
@@ -77,7 +77,7 @@ export function getLoginTextInputsStyleProps(
         errorStyle: commonStyle.textInputError,
         validStyle: commonStyle.textInputValid,
         focusedStyle: focusedStyle,
-        errorTextStyle: [formStyle.errorText, {color: theme.error}],
+        errorTextStyle: [formStyle.inputErrorText, {color: theme.error}],
     };
 }
 
@@ -95,7 +95,7 @@ export function getLoginCheckBoxStyleProps(theme: ThemeValues): Partial<FormChec
     return {
         wrapperStyle: commonStyle.checkboxWrapper,
         labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
-        errorTextStyle: [formStyle.errorText, {color: theme.error}],
+        errorTextStyle: [formStyle.inputErrorText, {color: theme.error}],
     };
 }
 
