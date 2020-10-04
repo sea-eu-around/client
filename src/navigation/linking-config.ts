@@ -19,6 +19,7 @@ export default {
                     },
                 },
             },
+            ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
                     TabOne: {
@@ -38,6 +39,7 @@ export default {
                     },
                 },
             },
+            ValidateEmailScreen: "validate",
             NotFoundScreen: "*",
         },
     },
