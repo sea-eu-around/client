@@ -1,14 +1,16 @@
 import * as React from "react";
-import {Text, View, StyleSheet, TouchableOpacity, Linking, Platform, ActivityIndicator} from "react-native";
-import {AppState} from "../state/types";
+import {Text, View, StyleSheet, Linking, Platform, ActivityIndicator} from "react-native";
+import {AppState, MyThunkDispatch} from "../state/types";
 import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
-import {formStyle} from "../styles/forms";
+import {requestValidateAccount} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
     validated: state.auth.validated,
+    registerEmail: state.auth.registerEmail,
+    verificationToken: state.auth.verificationToken,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -44,6 +46,14 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                 console.log(url);
             });
         }
+
+        // TODO remove this: temporary email validation request
+        const {dispatch, verificationToken, registerEmail} = this.props;
+        if (verificationToken) (dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken, registerEmail));
+    }
+
+    componentDidUpdate() {
+        if (this.props.validated) rootNavigate("TabLogin");
     }
 
     render(): JSX.Element {
@@ -54,19 +64,21 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                 <View style={styles.wrapper}>
                     <Text style={styles.title}>Validating</Text>
                     {!validated && <ActivityIndicator size="large" color={theme.accentSecondary} />}
-
-                    <TouchableOpacity
-                        style={[formStyle.buttonMajor, styles.okButton, {backgroundColor: theme.accentSlight}]}
-                        onPress={() => {
-                            rootNavigate("OnboardingScreen");
-                        }}
-                    >
-                        <Text style={[formStyle.buttonMajorText, {color: theme.text}]}>debug skip</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
+
+/*
+<TouchableOpacity
+    style={[formStyle.buttonMajor, styles.okButton, {backgroundColor: theme.accentSlight}]}
+    onPress={() => {
+        rootNavigate("OnboardingScreen");
+    }}
+>
+    <Text style={[formStyle.buttonMajorText, {color: theme.text}]}>debug skip</Text>
+</TouchableOpacity>
+*/
 
 export default reduxConnector(ValidateEmailScreen);

@@ -9,7 +9,7 @@ import {loginTabsStyles} from "../styles/forms";
 import {rootNavigate} from "../navigation/utils";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
     registerSuccess: state.auth.registerSuccess,
 });
 const reduxConnector = connect(mapStateToProps);

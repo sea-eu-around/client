@@ -1,5 +1,7 @@
 import * as React from "react";
 import {StyleSheet, Text, View} from "react-native";
+import LogOutButton from "../components/LogOutButton";
+import {rootNavigate} from "../navigation/utils";
 
 const styles = StyleSheet.create({
     container: {
@@ -23,6 +25,7 @@ export default function TabOneScreen(): JSX.Element {
         <View style={styles.container}>
             <Text style={styles.title}>Adopt a Student - Tab One</Text>
             <View style={[styles.separator, {backgroundColor: "#eee"}]} />
+            <LogOutButton style={{marginVertical: 20}} onLogOut={() => rootNavigate("LoginScreen")} />
         </View>
     );
 }

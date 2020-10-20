@@ -1,14 +1,13 @@
 import * as React from "react";
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
-import {AppState, MyThunkDispatch} from "../state/types";
+import {AppState} from "../state/types";
 import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
-import {requestValidateAccount} from "../state/auth/actions";
+import {rootNavigate} from "../navigation/utils";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
     registerEmail: state.auth.registerEmail,
-    verificationToken: state.auth.verificationToken,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -39,11 +38,7 @@ const styles = StyleSheet.create({
     },
 });
 
-function ValidationEmailSentScreen({
-    dispatch,
-    registerEmail,
-    verificationToken,
-}: ValidationEmailSentScreenProps): JSX.Element {
+function ValidationEmailSentScreen({registerEmail}: ValidationEmailSentScreenProps): JSX.Element {
     return (
         <View style={styles.container}>
             <View style={styles.wrapper}>
@@ -53,17 +48,15 @@ function ValidationEmailSentScreen({
                 </Text>
                 <Text style={styles.email}>{registerEmail}</Text>
 
-                {verificationToken && (
-                    <TouchableOpacity
-                        onPress={() => {
-                            (dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken, registerEmail));
-                        }}
-                    >
-                        <Text style={{marginVertical: 30, textAlign: "center", fontSize: 16, color: "blue"}}>
-                            debug: click here
-                        </Text>
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    onPress={() => {
+                        rootNavigate("ValidateEmailScreen");
+                    }}
+                >
+                    <Text style={{marginVertical: 30, textAlign: "center", fontSize: 16, color: "blue"}}>
+                        debug: click here
+                    </Text>
+                </TouchableOpacity>
             </View>
         </View>
     );

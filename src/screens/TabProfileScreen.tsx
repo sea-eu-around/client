@@ -10,7 +10,7 @@ import {FullProfile} from "../model/profile";
 import {setProfileFields} from "../state/profile/actions";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: Colors[state.theming.theme],
+    theme: Colors[state.settings.theme],
     profile: state.profile.userProfile,
 });
 const reduxConnector = connect(mapStateToProps);

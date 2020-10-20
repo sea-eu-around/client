@@ -9,10 +9,12 @@ import {LoginForm} from "../components/forms/LoginForm";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import {loginTabsStyles} from "../styles/forms";
 import {TouchableOpacity} from "react-native-gesture-handler";
+import {rootNavigate} from "../navigation/utils";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: Colors[state.theming.theme],
+    theme: Colors[state.settings.theme],
     authenticated: state.auth.authenticated,
+    onboarded: state.auth.onboarded,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -21,8 +23,10 @@ type TabLoginScreenProps = ConnectedProps<typeof reduxConnector> &
 
 class LoginTabComponent extends React.Component<TabLoginScreenProps> {
     componentDidUpdate() {
-        if (this.props.authenticated) {
-            this.props.navigation.navigate("MainScreen");
+        const {authenticated, onboarded} = this.props;
+        if (authenticated) {
+            if (onboarded) rootNavigate("MainScreen");
+            else rootNavigate("OnboardingScreen");
         }
     }
 
@@ -36,10 +40,10 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
                 <View style={loginTabsStyles.formWrapper}>
                     <LoginForm navigation={navigation}></LoginForm>
                     <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
-                        <Text style={{fontSize: 24}}>debug: connect</Text>
+                        <Text style={{fontSize: 22}}>debug: connect</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("ValidateEmailScreen")}>
-                        <Text style={{fontSize: 24}}>debug: validate email</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("OnboardingScreen")}>
+                        <Text style={{fontSize: 22}}>debug: onboarding</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
