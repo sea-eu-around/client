@@ -1,14 +1,17 @@
-export type ResponseLoginUser = {
+export type UserDto = {
+    role: "USER" | "ADMIN" | "TEACHER" | "STUDENT";
     email: string;
-    id: string;
+    active: boolean;
     onboarded: boolean;
-    role: "USER";
+    verificationToken: string; // TODO temporary
 };
 
-export type ResponseRegisterUser = {
-    email: string;
-    id: string;
-    onboarded: boolean;
-    role: "USER";
-    verificationToken: string; // TEMPORARY
+export type TokenDto = {
+    expiresIn: number;
+    accessToken: string;
+};
+
+export type LoginDto = {
+    user: UserDto;
+    token: TokenDto;
 };
