@@ -40,12 +40,3 @@ export const PARTNER_UNIVERSITIES = [
         country: "HR",
     },
 ] as University[];
-
-export function getUniversityFromEmail(email: string): University | null {
-    let split = email.split("@");
-    if (split.length > 0) {
-        const domain = split[1].trim();
-        return PARTNER_UNIVERSITIES.find((uni: University) => uni.domain == domain) || null;
-    }
-    return null;
-}
