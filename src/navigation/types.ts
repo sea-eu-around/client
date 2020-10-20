@@ -15,6 +15,11 @@ export type MainNavigatorTabs = {
     TabProfile: undefined;
 };
 
+export type LoginNavigatorTabs = {
+    TabLogin: undefined;
+    TabSignup: undefined;
+};
+
 export type LoginTabNavigatorScreens = {
     LoginForm: undefined;
     ForgotPassword: undefined;
@@ -23,7 +28,10 @@ export type LoginTabNavigatorScreens = {
 export type OnboardingScreens = {
     OnboardingNameScreen: undefined;
     OnboardingPersonalInfoScreen: undefined;
+    OnboardingLanguageScreen: undefined;
     OnboardingRoleScreen: undefined;
+    OnboardingRoleSpecificScreen1: undefined;
+    OnboardingRoleSpecificScreen2: undefined;
     OnboardingDiscoverScreen: undefined;
     OnboardingMeetScreen: undefined;
     OnboardingCollaborateScreen: undefined;
@@ -53,3 +61,10 @@ export type TabNotificationsParamList = {
 export type TabProfileParamList = {
     TabProfileScreen: undefined;
 };
+
+export type NavigatorRoute =
+    | keyof RootNavigatorScreens
+    | keyof MainNavigatorTabs
+    | keyof LoginNavigatorTabs
+    | LoginTabNavigatorScreens
+    | OnboardingScreens;

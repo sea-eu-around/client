@@ -1,14 +1,5 @@
 import {CardStyleInterpolators, createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
-import {
-    OnboardingDiscoverScreen,
-    OnboardingMeetScreen,
-    OnboardingNameScreen,
-    OnboardingPersonalInfoScreen,
-    OnboardingRoleScreen,
-    OnboardingTosScreen,
-    ONBOARDING_SCREENS,
-} from "../screens/onboarding/screens";
 import {OnboardingScreens} from "../navigation/types";
 import Animated, {Easing} from "react-native-reanimated";
 import {SceneRendererProps} from "react-native-tab-view";
@@ -23,7 +14,13 @@ import {
     StackCardStyleInterpolator,
 } from "@react-navigation/stack/lib/typescript/src/types";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {createMaterialTopTabNavigator, MaterialTopTabBarOptions} from "@react-navigation/material-top-tabs";
+import {
+    createMaterialTopTabNavigator,
+    MaterialTopTabBarOptions,
+    MaterialTopTabNavigationProp,
+    MaterialTopTabScreenProps,
+} from "@react-navigation/material-top-tabs";
+import {ONBOARDING_SCREENS} from "../screens/onboarding/screens";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 
 /*
@@ -109,20 +106,36 @@ const OnboardingStack = createMaterialTopTabNavigator<OnboardingScreens>();
 
 export default function OnboardingNavigator(): JSX.Element {
     const screens = ONBOARDING_ORDER.map((name: keyof OnboardingScreens, i: number) => {
-        return <OnboardingStack.Screen key={i} name={name} component={ONBOARDING_SCREENS[name]} />;
+        const ComponentClass = ONBOARDING_SCREENS[name];
+        const Wrapper = (props: MaterialTopTabScreenProps<OnboardingScreens>): JSX.Element => {
+            return (
+                <ComponentClass
+                    next={() => {
+                        if (i < ONBOARDING_ORDER.length - 1) props.navigation.navigate(ONBOARDING_ORDER[i + 1]);
+                    }}
+                    previous={() => {
+                        if (i > 0) props.navigation.navigate(ONBOARDING_ORDER[i - 1]);
+                    }}
+                    index={i}
+                    {...props}
+                />
+            );
+        };
+
+        return <OnboardingStack.Screen key={i} name={name} component={Wrapper} />;
     });
 
     return (
         <OnboardingStack.Navigator
-            //headerMode="none"
-            //mode="modal"
             initialRouteName={ONBOARDING_ORDER[0]}
             tabBarOptions={{showLabel: false, showIcon: false}}
+            tabBar={() => <React.Fragment />}
             springConfig={{
                 stiffness: 500,
                 damping: 2000,
                 mass: 5,
             }}
+            swipeEnabled={false}
             //screenOptions={{...transitionConfig2, ...{gestureEnabled: true}}}
         >
             {screens}

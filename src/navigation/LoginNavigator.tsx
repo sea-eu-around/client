@@ -1,19 +1,14 @@
 import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
-import {LoginTabNavigatorScreens} from "../navigation/types";
+import {LoginNavigatorTabs, LoginTabNavigatorScreens} from "../navigation/types";
 import LoginTabBar from "../components/LoginTabBar";
 import {SubTabLogin, SubTabForgotPassword} from "../screens/TabLoginScreen";
 import TabSignupFormScreen from "../screens/TabSignupFormScreen";
 
-type LoginTabs = {
-    login: undefined;
-    signup: undefined;
-};
-
 const LoginTabStack = createStackNavigator<LoginTabNavigatorScreens>();
 const SignupTabStack = createStackNavigator();
-const Tab = createMaterialTopTabNavigator<LoginTabs>();
+const Tab = createMaterialTopTabNavigator<LoginNavigatorTabs>();
 
 function LoginTabNavigator(): JSX.Element {
     return (
@@ -38,9 +33,9 @@ function SignupTabNavigator(): JSX.Element {
 
 export default function LoginNavigator(): JSX.Element {
     return (
-        <Tab.Navigator initialRouteName="login" tabBar={(props) => <LoginTabBar {...props} />}>
-            <Tab.Screen name="login" component={LoginTabNavigator} />
-            <Tab.Screen name="signup" component={SignupTabNavigator} />
+        <Tab.Navigator initialRouteName="TabLogin" tabBar={(props) => <LoginTabBar {...props} />}>
+            <Tab.Screen name="TabLogin" component={LoginTabNavigator} />
+            <Tab.Screen name="TabSignup" component={SignupTabNavigator} />
         </Tab.Navigator>
     );
 }
