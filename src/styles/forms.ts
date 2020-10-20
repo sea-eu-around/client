@@ -6,6 +6,8 @@ import {FormCheckBoxProps} from "../components/FormCheckBox";
 export const formStyle = StyleSheet.create({
     inputErrorText: {
         fontSize: 12,
+        marginTop: 2,
+        marginBottom: -12, // prevents an offset from appearing when there is an error
     },
     inputRow: {
         flexDirection: "row",
@@ -77,7 +79,6 @@ export function getLoginTextInputsStyleProps(
         errorStyle: commonStyle.textInputError,
         validStyle: commonStyle.textInputValid,
         focusedStyle: focusedStyle,
-        errorTextStyle: [formStyle.inputErrorText, {color: theme.error}],
     };
 }
 
@@ -95,7 +96,6 @@ export function getLoginCheckBoxStyleProps(theme: ThemeValues): Partial<FormChec
     return {
         wrapperStyle: commonStyle.checkboxWrapper,
         labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
-        errorTextStyle: [formStyle.inputErrorText, {color: theme.error}],
     };
 }
 
@@ -116,3 +116,41 @@ export const loginTabsStyles = StyleSheet.create({
         //backgroundColor: "red",
     },
 });
+
+export function getOnboardingTextInputsStyleProps(theme: ThemeValues): Partial<FormTextInputProps> {
+    const focusedStyle =
+        Platform.OS === "web" ? ({outlineColor: "transparent", backgroundColor: "transparent"} as TextStyle) : null;
+
+    const commonStyle = StyleSheet.create({
+        textInputWrapper: {
+            width: "100%",
+            marginVertical: 10,
+        },
+        textInput: {
+            width: "100%",
+            height: 60,
+            borderRadius: 0,
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.accentTernary,
+            backgroundColor: "transparent",
+            fontSize: 20,
+        },
+        textInputError: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.error,
+        },
+        textInputValid: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.okay,
+        },
+    });
+
+    return {
+        wrapperStyle: commonStyle.textInputWrapper,
+        style: commonStyle.textInput,
+        errorStyle: commonStyle.textInputError,
+        validStyle: commonStyle.textInputValid,
+        focusedStyle: focusedStyle,
+    };
+}
