@@ -1,50 +1,45 @@
 import * as React from "react";
-import {Text, TouchableOpacity} from "react-native";
+import OnboardingSlide, {OnboardingSlideProps} from "./OnboardingSlide";
 import {rootNavigate} from "../../navigation/utils";
-import OnboardingScreen, {OnboardingScreenProps} from "./OnboardingScreen";
+import OnboardingNameScreen from "./OnboardingNameScreen";
+import OnboardingPersonalInfoScreen from "./OnboardingPersonalInfoScreen";
+import OnboardingLanguageScreen from "./OnboardingLanguageScreen";
+import OnboardingRoleScreen from "./OnboardingRoleScreen";
+import OnboardingCollaborateScreen from "./OnboardingCollaborateScreen";
+import OnboardingRoleSpecificScreen1 from "./OnboardingRoleSpecificScreen1";
+import OnboardingRoleSpecificScreen2 from "./OnboardingRoleSpecificScreen2";
 
-let i = 0;
-
-export function OnboardingNameScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="name" index={i++} {...props}></OnboardingScreen>;
+export function OnboardingDiscoverScreen(props: Partial<OnboardingSlideProps>): JSX.Element {
+    return <OnboardingSlide title="discover" subtitle="description" {...props}></OnboardingSlide>;
 }
 
-export function OnboardingPersonalInfoScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="personal info" index={i++} {...props}></OnboardingScreen>;
+export function OnboardingMeetScreen(props: Partial<OnboardingSlideProps>): JSX.Element {
+    return <OnboardingSlide title="meet" subtitle="description" {...props}></OnboardingSlide>;
 }
 
-export function OnboardingRoleScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="role" index={i++} {...props}></OnboardingScreen>;
-}
-
-export function OnboardingDiscoverScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="discover" index={i++} {...props}></OnboardingScreen>;
-}
-
-export function OnboardingMeetScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="meet" index={i++} {...props}></OnboardingScreen>;
-}
-
-export function OnboardingCollaborateScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
-    return <OnboardingScreen title="collaborate" index={i++} {...props}></OnboardingScreen>;
-}
-
-export function OnboardingTosScreen(props: Partial<OnboardingScreenProps>): JSX.Element {
+export function OnboardingTosScreen(props: Partial<OnboardingSlideProps>): JSX.Element {
     return (
-        <OnboardingScreen title="tos" index={i++} {...props}>
-            <TouchableOpacity onPress={() => rootNavigate("MainScreen")}>
-                <Text>Finish boarding</Text>
-            </TouchableOpacity>
-        </OnboardingScreen>
+        <OnboardingSlide
+            title="tos"
+            subtitle="terms of service etc"
+            handleSubmit={() => {
+                // TODO send request
+                rootNavigate("MainScreen");
+            }}
+            {...props}
+        ></OnboardingSlide>
     );
 }
 
 export const ONBOARDING_SCREENS = {
     OnboardingNameScreen,
     OnboardingPersonalInfoScreen,
+    OnboardingLanguageScreen,
     OnboardingRoleScreen,
+    OnboardingRoleSpecificScreen1,
+    OnboardingRoleSpecificScreen2,
+    OnboardingCollaborateScreen,
     OnboardingDiscoverScreen,
     OnboardingMeetScreen,
-    OnboardingCollaborateScreen,
     OnboardingTosScreen,
 };
