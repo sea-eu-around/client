@@ -20,13 +20,13 @@ export const EDUCATION_FIELDS = [
 export const LEVELS_OF_STUDY = ["L1", "L2", "L3", "M1", "M2", "PhD"];
 
 export const ROLES = ["student", "staff"];
-export type Role = typeof ROLES[number];
+export type Role = "student" | "staff";
 
 export const STAFF_ROLES = ["teaching", "researcher", "supporting", "administrative", "technical", "ambassador"];
-export type StaffRole = typeof STAFF_ROLES[number];
+export type StaffRole = "teaching" | "researcher" | "supporting" | "administrative" | "technical" | "ambassador";
 
 export const GENDERS = ["M", "F"];
-export type Gender = typeof GENDERS[number];
+export type Gender = "M" | "F";
 
 export const HOBBIES = [
     "3D printing",
