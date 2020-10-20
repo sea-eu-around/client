@@ -1,3 +1,5 @@
+import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
+
 /**
  * Attempts to extract names from a given email.
  * @param email A valid email address.
@@ -12,4 +14,18 @@ export function extractNamesFromEmail(email: string): {firstname: string; lastna
               lastname: capitalize(splitName[1]),
           }
         : null;
+}
+
+/**
+ * Extracts a partner university from a given email.
+ * @param email A valid email address.
+ * @returns a University object if one matches the given email, null otherwise.
+ */
+export function getUniversityFromEmail(email: string): University | null {
+    const split = email.split("@");
+    if (split.length > 0) {
+        const domain = split[1].trim();
+        return PARTNER_UNIVERSITIES.find((uni: University) => uni.domain == domain) || null;
+    }
+    return null;
 }
