@@ -1,10 +1,9 @@
 import * as React from "react";
 
-import {Text, View} from "react-native";
+import {View} from "react-native";
 import MultiSelect from "react-native-multiple-select";
 import {EDUCATION_FIELDS} from "../constants/profile-constants";
 import i18n from "i18n-js";
-
 
 export class EducationFieldSelect extends React.Component {
     state = {

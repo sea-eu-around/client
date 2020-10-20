@@ -9,7 +9,7 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {LoginTabNavigatorScreens} from "../../navigation/types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
-import {setTheme} from "../../state/theming/actions";
+import {setTheme} from "../../state/settings/actions";
 import {VALIDATOR_EMAIL, VALIDATOR_PASSWORD} from "../../validators";
 import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
@@ -29,10 +29,11 @@ const LoginFormSchema = Yup.object().shape({
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    themeName: state.theming.theme,
-    theme: Colors[state.theming.theme],
+    themeName: state.settings.theme,
+    theme: Colors[state.settings.theme],
     connecting: state.auth.connecting,
     remoteErrors: state.auth.loginErrors,
+    validatedEmail: state.auth.validatedEmail,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -41,6 +42,14 @@ type LoginFormProps = ConnectedProps<typeof reduxConnector> &
     FormProps<LoginFormState> & {navigation: StackNavigationProp<LoginTabNavigatorScreens, "LoginScreen">};
 
 class LoginFormComponent extends React.Component<LoginFormProps> {
+    setFieldValue: null | ((field: string, value: any, shouldValidate?: boolean | undefined) => void) = null;
+
+    componentDidUpdate(oldProps: LoginFormProps) {
+        const {validatedEmail} = this.props;
+        if (this.setFieldValue && validatedEmail && oldProps.validatedEmail != validatedEmail)
+            this.setFieldValue("email", validatedEmail);
+    }
+
     submit(values: LoginFormState) {
         console.log("Login form submitted", values);
         (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password));
@@ -74,8 +83,17 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
                 onSubmit={(values: LoginFormState) => this.submit(values)}
             >
                 {(formikProps: FormikProps<LoginFormState>) => {
-                    const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikProps;
+                    const {
+                        handleSubmit,
+                        values,
+                        errors,
+                        touched,
+                        handleChange,
+                        handleBlur,
+                        setFieldValue,
+                    } = formikProps;
                     const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
+                    this.setFieldValue = setFieldValue;
 
                     return (
                         <React.Fragment>

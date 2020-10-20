@@ -5,7 +5,6 @@ import i18n from "i18n-js";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {VALIDATOR_EMAIL} from "../../validators";
-import {formStyle} from "../../styles/forms";
 import {FullProfile} from "../../model/profile";
 import {Avatar} from "react-native-elements";
 import {EducationFieldSelect} from "../EducationFieldSelect";
@@ -23,12 +22,12 @@ import {ValidatedTextInput} from "../ValidatedTextInput";
 import {FormattedDate} from "../FormattedDate";
 import NationalityPicker from "../NationalityPicker";
 import {FormattedNationality} from "../FormattedNationality";
-import {getUniversityFromEmail} from "../../constants/universities";
+import {getUniversityFromEmail} from "../../model/utils";
 import {FormattedUniversity} from "../FormattedUniversity";
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -153,7 +152,6 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                 borderBottomColor: theme.okay,
             },
             focusedStyle: Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null,
-            errorTextStyle: [formStyle.inputErrorText, {color: theme.error}],
         };
 
         return (
@@ -227,7 +225,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                                 <NationalityPicker
                                     nationality={profile.nationality}
                                     onSelect={(countryCode: CountryCode) => onFieldChanged({nationality: countryCode})}
-                                    onClose={hide}
+                                    onHide={hide}
                                 />
                             )}
                         />
@@ -271,7 +269,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                         />
                         <FormFieldSpacer />
                         <FormRow
-                            label={i18n.t("educationFields")}
+                            label={i18n.t("fieldsOfEducation")}
                             initialValue={profile.gender}
                             display={<EducationFieldSelect></EducationFieldSelect>}
                             noModal={true}

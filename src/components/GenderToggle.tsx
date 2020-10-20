@@ -5,7 +5,7 @@ import {Gender, GENDERS} from "../constants/profile-constants";
 import {ButtonGroup} from "react-native-elements";
 
 export type GenderToggleProps = {
-    gender: Gender;
+    gender?: Gender | null;
     onSelect?: (gender: Gender) => void;
 };
 
@@ -20,7 +20,7 @@ export function GenderToggle(props: GenderToggleProps): JSX.Element {
     return (
         <ButtonGroup
             onPress={onUpdate}
-            selectedIndex={GENDERS.indexOf(gender)}
+            selectedIndex={gender !== undefined && gender !== null ? GENDERS.indexOf(gender) : -1}
             buttons={buttonLabels}
             containerStyle={{height: 35, marginLeft: 0, marginRight: 0}}
         />

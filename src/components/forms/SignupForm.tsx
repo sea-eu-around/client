@@ -23,9 +23,9 @@ export type SignupFormState = {
 };
 
 const initialState = (): SignupFormState => ({
-    email: `test${Math.round(Math.random() * 1e8)}@univ-brest.fr`,
-    password: "PASSword1",
-    passwordRepeat: "PASSword1",
+    email: `kevin${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`,
+    password: "PASSword$1",
+    passwordRepeat: "PASSword$1",
     /*firstname: "",
     lastname: "",
     tos: false,
@@ -41,7 +41,7 @@ const SignupFormSchema = Yup.object().shape({
     lastname: VALIDATOR_LASTNAME,
     tos: VALIDATOR_TOS,*/
 });
-
+/*
 function setNamesFromEmail(email: string, {setFieldValue, setFieldTouched}: FormikProps<SignupFormState>) {
     const splitName = email.split("@")[0].split(".");
     const capitalize = (str: string) => (str.length == 0 ? str : str[0].toUpperCase() + str.slice(1));
@@ -54,11 +54,11 @@ function setNamesFromEmail(email: string, {setFieldValue, setFieldTouched}: Form
             setFieldTouched("lastname", true, true);
         });
     }
-}
+}*/
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
     registerFailure: state.auth.registerFailure,
     registerErrors: state.auth.registerErrors,
 });

@@ -28,7 +28,7 @@ function submitForm({email}: ForgotPasswordFormState) {
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
 });
 const reduxConnector = connect(mapStateToProps);
 

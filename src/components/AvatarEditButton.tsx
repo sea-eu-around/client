@@ -9,7 +9,7 @@ import {Platform, StyleProp, TextStyle} from "react-native";
 
 // Map props from store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
 });
 const reduxConnector = connect(mapStateToProps);
 

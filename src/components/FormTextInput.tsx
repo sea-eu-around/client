@@ -27,7 +27,7 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
         const {field, touched, handleChange, handleBlur, error, onBlur, onChangeText, ...otherProps} = this.props;
         return (
             <ValidatedTextInput
-                error={touched ? error : null}
+                error={touched ? error : undefined}
                 untouched={!touched}
                 onChangeText={(value: string) => {
                     if (onChangeText) onChangeText(value);

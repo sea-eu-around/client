@@ -1,19 +1,22 @@
 import React from "react";
-import i18n from "i18n-js";
-import {TextStyle, StyleProp, Text, View, TextInputProps} from "react-native";
+import {TextStyle, StyleProp, View, TextInputProps} from "react-native";
 import {TextInput} from "react-native-gesture-handler";
+import InputLabel from "./InputLabel";
+import InputErrorText from "./InputErrorText";
 
 export type ValidatedTextInputProps = {
     value: string;
     showErrorText?: boolean;
-    error?: string | null;
+    error?: string;
     untouched?: boolean;
+    label?: string;
     style?: StyleProp<TextStyle>;
     wrapperStyle?: StyleProp<TextStyle>;
     errorStyle?: StyleProp<TextStyle>;
     validStyle?: StyleProp<TextStyle>;
     focusedStyle?: StyleProp<TextStyle>;
     errorTextStyle?: StyleProp<TextStyle>;
+    labelStyle?: StyleProp<TextStyle>;
 } & Partial<TextInputProps>;
 
 type ValidatedTextInputState = {
@@ -32,6 +35,7 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
         validStyle: [],
         focusedStyle: [],
         errorTextStyle: [],
+        labelStyle: [],
     };
 
     constructor(props: ValidatedTextInputProps) {
@@ -46,11 +50,13 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
             wrapperStyle,
             error,
             value,
+            label,
             untouched,
             errorStyle,
             validStyle,
             focusedStyle,
             errorTextStyle,
+            labelStyle,
             onBlur,
             onFocus,
             ...otherProps
@@ -58,6 +64,7 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
 
         return (
             <View style={[wrapperStyle, {width: "100%", flexDirection: "column", position: "relative"}]}>
+                {label && <InputLabel style={labelStyle}>{label}</InputLabel>}
                 <TextInput
                     style={[
                         style,
@@ -75,7 +82,7 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
                     value={value}
                     {...otherProps}
                 />
-                {showErrorText && !untouched && <Text style={[errorTextStyle, {}]}>{error ? i18n.t(error) : ""}</Text>}
+                {showErrorText && !untouched && error && <InputErrorText style={errorTextStyle} error={error} />}
             </View>
         );
     }

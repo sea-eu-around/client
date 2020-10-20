@@ -1,20 +1,15 @@
 import * as React from "react";
-import {Platform} from "react-native";
+import {Platform, StyleProp, ViewStyle} from "react-native";
 import {MIN_AGE} from "../constants/profile-constants";
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
 import themes from "../constants/themes";
 import {AppState} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
 
-export type BirthDatePickerState = {
-    open: boolean;
-};
-
 // Map props from store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+const reduxConnector = connect((state: AppState) => ({
+    theme: themes[state.settings.theme],
+}));
 
 // Component props
 export type BirthDatePickerProps = ConnectedProps<typeof reduxConnector> & {
@@ -22,6 +17,11 @@ export type BirthDatePickerProps = ConnectedProps<typeof reduxConnector> & {
     open: boolean;
     onSelect?: (date: Date) => void;
     onHide?: () => void;
+};
+
+// Component state
+export type BirthDatePickerState = {
+    open: boolean;
 };
 
 class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePickerState> {
@@ -32,13 +32,20 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
         };
     }
 
+    componentDidUpdate(oldProps: BirthDatePickerProps) {
+        if (!oldProps.open && this.props.open) this.showModal();
+        if (oldProps.open && !this.props.open) this.hideModal();
+    }
+
     showModal(): void {
-        this.setState({...this.state, open: true});
+        if (!this.state.open) this.setState({...this.state, open: true});
     }
 
     hideModal(): void {
-        this.setState({...this.state, open: false});
-        if (this.props.onHide !== undefined) this.props.onHide();
+        if (this.state.open) {
+            this.setState({...this.state, open: false});
+            if (this.props.onHide !== undefined) this.props.onHide();
+        }
     }
 
     onChange = (date: Date | undefined) => {
@@ -57,10 +64,9 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
             <React.Fragment>
                 {open && (
                     <DateTimePicker
-                        style={{width: "100%", height: 50}}
                         minimumDate={new Date(1900, 0, 0)}
                         maximumDate={maxDate}
-                        value={date}
+                        value={date || maxDate}
                         onChange={(e: Event, date: Date | undefined) => this.onChange(date)}
                         mode="date"
                     />

@@ -10,7 +10,7 @@ import {TouchableOpacity} from "react-native-gesture-handler";
 
 // Map props from store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
+    theme: themes[state.settings.theme],
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -74,7 +74,7 @@ function TabBarComponent({state, descriptors, navigation, position, theme}: Logi
             <View style={styles.tabBar}>
                 {state.routes.map((route, index) => {
                     const {options} = descriptors[route.key];
-                    const label = i18n.t(route.name);
+                    const label = i18n.t(route.name.toLowerCase());
                     const isFocused = state.index === index;
 
                     const onPress = () => {

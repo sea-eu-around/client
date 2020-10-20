@@ -7,21 +7,49 @@ import {AppState} from "../state/types";
 import themes from "../constants/themes";
 
 // Map props from store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.theming.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+const reduxConnector = connect((state: AppState) => ({
+    theme: themes[state.settings.theme],
+}));
 
 // Component props
-export type NationalityControlProps = ConnectedProps<typeof reduxConnector> & {
+export type NationalityPickerProps = ConnectedProps<typeof reduxConnector> & {
     nationality: CountryCode;
+    open?: boolean;
     onSelect?: (countryCode: CountryCode) => void;
-    onClose?: () => void;
+    onHide?: () => void;
 };
 
-class NationalityControl extends React.Component<NationalityControlProps> {
+// Component state
+export type NationalityPickerState = {
+    open: boolean;
+};
+
+class NationalityPicker extends React.Component<NationalityPickerProps, NationalityPickerState> {
+    constructor(props: NationalityPickerProps) {
+        super(props);
+        this.state = {
+            open: props.open === undefined ? true : props.open,
+        };
+    }
+
+    componentDidUpdate(oldProps: NationalityPickerProps) {
+        if (!oldProps.open && this.props.open) this.showModal();
+        if (oldProps.open && !this.props.open) this.hideModal();
+    }
+
+    showModal(): void {
+        if (!this.state.open) this.setState({...this.state, open: true});
+    }
+
+    hideModal(): void {
+        if (this.state.open) {
+            this.setState({...this.state, open: false});
+            if (this.props.onHide !== undefined) this.props.onHide();
+        }
+    }
+
     render(): JSX.Element {
-        const {onClose} = this.props;
+        const {open} = this.state;
 
         return (
             <CountryPicker
@@ -34,12 +62,12 @@ class NationalityControl extends React.Component<NationalityControlProps> {
                 onSelect={(country: Country) => {
                     if (this.props.onSelect) this.props.onSelect(country.cca2);
                 }}
-                onClose={onClose}
+                onClose={() => this.hideModal()}
                 translation={i18n.t("countryPickerLanguageCode") as TranslationLanguageCode}
-                visible={true}
+                visible={open}
             ></CountryPicker>
         );
     }
 }
 
-export default reduxConnector(NationalityControl);
+export default reduxConnector(NationalityPicker);
