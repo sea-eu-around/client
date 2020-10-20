@@ -2,25 +2,42 @@ import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
 import {FullProfile} from "../model/profile";
-import {ResponseLoginUser, ResponseRegisterUser} from "../api/response-types";
-import {AuthToken} from "../model/auth-token";
+import {TokenDto, UserDto} from "../api/response-types";
+import {Gender, Role, StaffRole} from "../constants/profile-constants";
+import {CountryCode} from "../model/country-codes";
+import {SupportedLocale} from "../localization";
+
+export type OnboardingState = {
+    firstname: string;
+    lastname: string;
+    birthDate: Date | null;
+    gender: Gender | null;
+    nationality: CountryCode | null;
+    role: Role | null;
+    levelOfStudy: number;
+    staffRole: StaffRole | null;
+    languages: string[];
+};
 
 export type AuthState = {
     authenticated: boolean;
     validated: boolean;
-    token: null | AuthToken;
+    token: null | TokenDto;
     connecting: boolean;
     registerEmail: string;
     registerFailure: boolean;
     registerErrors: string[];
     registerSuccess: boolean;
     loginErrors: string[];
+    validatedEmail: string | null;
     verificationToken: string | null; // TODO temporary
     onboarded: boolean;
+    onboarding: OnboardingState;
 };
 
-export type ThemingState = {
+export type SettingsState = {
     theme: Theme;
+    locale: SupportedLocale;
 };
 
 export type ProfileState = {
@@ -29,7 +46,7 @@ export type ProfileState = {
 
 export type AppState = {
     auth: AuthState;
-    theming: ThemingState;
+    settings: SettingsState;
     profile: ProfileState;
 };
 
@@ -49,7 +66,7 @@ export type RegisterBeginAction = {
 
 export type RegisterSuccessAction = {
     type: string;
-    user: ResponseRegisterUser;
+    user: UserDto;
 };
 
 export type RegisterFailureAction = {
@@ -65,8 +82,8 @@ export type LogInBeginAction = {
 
 export type LogInSuccessAction = {
     type: string;
-    token: AuthToken;
-    user: ResponseLoginUser;
+    token: TokenDto;
+    user: UserDto;
 };
 
 export type LogInFailureAction = {
@@ -80,11 +97,17 @@ export type LogOutAction = {
 
 export type ValidateAccountSuccessAction = {
     type: string;
+    email: string;
 };
 
 export type ValidateAccountFailureAction = {
     type: string;
     errors: string[];
+};
+
+export type SetOnboardingValuesAction = {
+    type: string;
+    values: Partial<OnboardingState>;
 };
 
 export type AuthAction =
@@ -96,16 +119,22 @@ export type AuthAction =
     | LogInFailureAction
     | LogOutAction
     | ValidateAccountSuccessAction
-    | ValidateAccountFailureAction;
+    | ValidateAccountFailureAction
+    | SetOnboardingValuesAction;
 
-/*### THEMING ###*/
+/*### SETTINGS ###*/
 
 export type SetThemeAction = {
     type: string;
     theme: Theme;
 };
 
-export type ThemingAction = SetThemeAction;
+export type SetLocaleAction = {
+    type: string;
+    locale: SupportedLocale;
+};
+
+export type SettingsAction = SetThemeAction | SetLocaleAction;
 
 /*### PROFILE ###*/
 

@@ -9,11 +9,11 @@ import {
     RegisterFailureAction,
     ValidateAccountSuccessAction,
     ValidateAccountFailureAction,
+    OnboardingState,
+    SetOnboardingValuesAction,
 } from "../types";
 import {BACKEND_URL} from "../../constants/config";
-import {AuthToken} from "../../model/auth-token";
-import {ResponseLoginUser, ResponseRegisterUser} from "../../api/response-types";
-import {encodeRequestArguments} from "../../api/utils";
+import {LoginDto, TokenDto, UserDto} from "../../api/response-types";
 
 export enum AUTH_ACTION_TYPES {
     REGISTER_BEGIN = "AUTH/REGISTER_BEGIN",
@@ -26,6 +26,7 @@ export enum AUTH_ACTION_TYPES {
     VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
 }
 
 // Register actions
@@ -52,10 +53,10 @@ export const requestRegister = (email: string, password: string): AppThunk => as
         const json = await response.json();
         console.log(json);
 
-        if (json.error) {
-            dispatch(registerFailure(json.message || [json.error]));
+        if (json.success) {
+            dispatch(registerSuccess(json.data as UserDto));
         } else {
-            dispatch(registerSuccess(json as ResponseRegisterUser));
+            dispatch(registerFailure(json.codes));
         }
     } catch (error) {
         console.error(error);
@@ -63,7 +64,7 @@ export const requestRegister = (email: string, password: string): AppThunk => as
     }
 };
 
-export const registerSuccess = (user: ResponseRegisterUser): RegisterSuccessAction => ({
+export const registerSuccess = (user: UserDto): RegisterSuccessAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_SUCCESS,
     user,
 });
@@ -81,7 +82,7 @@ export const loginBegin = (email: string, password: string): LogInBeginAction =>
     password,
 });
 
-export const loginSuccess = (token: AuthToken, user: ResponseLoginUser): LogInSuccessAction => ({
+export const loginSuccess = (token: TokenDto, user: UserDto): LogInSuccessAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_SUCCESS,
     token,
     user,
@@ -107,10 +108,11 @@ export const requestLogin = (email: string, password: string): AppThunk => async
         const json = await response.json();
         console.log(json);
 
-        if (json.error) {
-            dispatch(loginFailure(typeof json.message === "string" ? [json.message] : json.message || [json.error]));
+        if (json.success) {
+            const payload = json.data as LoginDto;
+            dispatch(loginSuccess(payload.token, payload.user));
         } else {
-            dispatch(loginSuccess(json.token, json.user as ResponseLoginUser));
+            dispatch(loginFailure(json.codes));
         }
     } catch (error) {
         console.error(error);
@@ -127,28 +129,25 @@ export const logout = (): LogOutAction => ({
 export const requestValidateAccount = (validationToken: string, email: string): AppThunk => async (dispatch) => {
     try {
         // TODO remove the email from here
-        const response = await fetch(
-            `${BACKEND_URL}/auth/verify${encodeRequestArguments({email, token: validationToken})}`,
-            {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-                /*body: JSON.stringify({
-                    validationToken,
-                    email,
-                }),*/
+        const response = await fetch(`${BACKEND_URL}/auth/verify`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
             },
-        );
+            body: JSON.stringify({
+                token: validationToken,
+                email,
+            }),
+        });
 
         const json = await response.json();
         console.log(json);
 
-        if (json.error) {
-            dispatch(validateAccountFailure(json.message || [json.error]));
+        if (json.success) {
+            dispatch(validateAccountSuccess(json.data.email));
         } else {
-            dispatch(validateAccountSuccess());
+            dispatch(validateAccountFailure(json.codes));
         }
     } catch (error) {
         console.error(error);
@@ -156,11 +155,19 @@ export const requestValidateAccount = (validationToken: string, email: string): 
     }
 };
 
-export const validateAccountSuccess = (): ValidateAccountSuccessAction => ({
+export const validateAccountSuccess = (email: string): ValidateAccountSuccessAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS,
+    email,
 });
 
 export const validateAccountFailure = (errors: string[]): ValidateAccountFailureAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE,
     errors,
+});
+
+// Onboarding actions
+
+export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboardingValuesAction => ({
+    type: AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES,
+    values,
 });

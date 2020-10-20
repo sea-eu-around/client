@@ -1,3 +1,4 @@
+import {extractNamesFromEmail} from "../../model/utils";
 import {
     AuthState,
     AuthAction,
@@ -6,6 +7,8 @@ import {
     LogInFailureAction,
     RegisterBeginAction,
     RegisterSuccessAction,
+    ValidateAccountSuccessAction,
+    SetOnboardingValuesAction,
 } from "../types";
 import {AUTH_ACTION_TYPES} from "./actions";
 
@@ -15,12 +18,24 @@ export const initialState: AuthState = {
     connecting: false,
     validated: false,
     verificationToken: null, // TODO temporary
-    onboarded: false,
     registerEmail: "",
     registerSuccess: false,
     registerFailure: false,
     registerErrors: [],
+    validatedEmail: null,
     loginErrors: [],
+    onboarded: false,
+    onboarding: {
+        firstname: "",
+        lastname: "",
+        birthDate: null,
+        gender: null,
+        nationality: null,
+        role: null,
+        levelOfStudy: -1,
+        staffRole: null,
+        languages: [],
+    },
 };
 
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
@@ -55,7 +70,8 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
-            return {...newState, validated: true};
+            const {email} = <ValidateAccountSuccessAction>action;
+            return {...newState, validated: true, validatedEmail: email};
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE: {
             return {...newState, validated: false};
@@ -70,8 +86,19 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {
                 token,
-                user: {onboarded},
+                user: {onboarded, email},
             } = <LogInSuccessAction>action;
+
+            // Pre-fill some of the on-boarding values
+            const onboarding = {...state.onboarding};
+            if (!onboarded) {
+                const names = extractNamesFromEmail(email);
+                if (names) {
+                    onboarding.firstname = names.firstname;
+                    onboarding.lastname = names.lastname;
+                }
+            }
+
             return {
                 ...newState,
                 connecting: false,
@@ -79,10 +106,15 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
                 loginErrors: [],
                 token,
                 onboarded,
+                onboarding,
             };
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {...newState, token: null, authenticated: false};
+        }
+        case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
+            const {values} = <SetOnboardingValuesAction>action;
+            return {...newState, onboarding: {...state.onboarding, ...values}};
         }
         default:
             return state;
