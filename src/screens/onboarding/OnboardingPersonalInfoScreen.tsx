@@ -18,7 +18,7 @@ import BirthDateControl from "../../components/BirthDateControl";
 import InputErrorText from "../../components/InputErrorText";
 import {Gender} from "../../constants/profile-constants";
 import {GenderToggle} from "../../components/GenderToggle";
-import NationalityControl from "../../components/unused/NationalityControl";
+import NationalityControl from "../../components/NationalityControl";
 import {CountryCode} from "../../model/country-codes";
 
 const reduxConnector = connect((state: AppState) => ({
