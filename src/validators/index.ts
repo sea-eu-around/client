@@ -21,7 +21,9 @@ export const VALIDATOR_PASSWORD = Yup.string()
     // At least one lower-case character
     .matches(/(?=.*[a-z])/, "validation.password.noLowerCase")
     // At least one upper-case character
-    .matches(/(?=.*[A-Z])/, "validation.password.noUpperCase");
+    .matches(/(?=.*[A-Z])/, "validation.password.noUpperCase")
+    // At least one symbol
+    .matches(/(?=.*[#@$!%*?&])/, "validation.password.noSymbol");
 
 export const VALIDATOR_PASSWORD_REPEAT = Yup.string()
     .required("validation.required")
@@ -33,3 +35,9 @@ export const VALIDATOR_LASTNAME = Yup.string().trim().required("validation.requi
 
 // Terms of service
 export const VALIDATOR_TOS = Yup.boolean().oneOf([true], "validation.tosAccept");
+
+export const VALIDATOR_ONBOARDING_BIRTHDATE = Yup.date().nullable().required("validation.required"); // make it nullable so we can use null to represent a non given value (will fail the 'required' test anyway)
+export const VALIDATOR_ONBOARDING_GENDER = Yup.string().nullable().required("validation.required");
+export const VALIDATOR_ONBOARDING_NATIONALITY = Yup.string().nullable().required("validation.required");
+export const VALIDATOR_ONBOARDING_LEVEL_OF_STUDY = Yup.number().notOneOf([-1], "validation.required");
+export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.atLeastOne");
