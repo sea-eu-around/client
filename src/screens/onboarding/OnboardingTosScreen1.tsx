@@ -9,7 +9,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {OnboardingProps} from ".";
 import {rootNavigate} from "../../navigation/utils";
 import {createProfile} from "../../state/profile/actions";
-import {CreateProfileDto, CreateProfileDtoCommon} from "../../api/response-types";
+import {CreateProfileDto, CreateProfileDtoCommon} from "../../api/dto";
 import {LEVELS_OF_STUDY} from "../../constants/profile-constants";
 
 const reduxConnector = connect((state: AppState) => ({

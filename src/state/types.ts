@@ -2,7 +2,7 @@ import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
 import {FullProfile} from "../model/profile";
-import {CreateProfileDto, TokenDto, UserDto} from "../api/response-types";
+import {CreateProfileDto, TokenDto, UserDto} from "../api/dto";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";

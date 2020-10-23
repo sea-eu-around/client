@@ -1,7 +1,7 @@
 import {AppThunk, SetProfileFieldsAction, CreateProfileSuccessAction, PROFILE_ACTION_TYPES} from "../types";
 import {FullProfile} from "../../model/profile";
 import {BACKEND_URL} from "../../constants/config";
-import {CreateProfileDto} from "../../api/response-types";
+import {CreateProfileDto} from "../../api/dto";
 import {Role} from "../../constants/profile-constants";
 import store from "../store";
 

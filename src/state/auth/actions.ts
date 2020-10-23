@@ -14,7 +14,7 @@ import {
     AUTH_ACTION_TYPES,
 } from "../types";
 import {BACKEND_URL} from "../../constants/config";
-import {LoginDto, TokenDto, UserDto} from "../../api/response-types";
+import {LoginDto, TokenDto, UserDto} from "../../api/dto";
 
 // Register actions
 
