@@ -34,8 +34,8 @@ export const STAFF_ROLES: StaffRole[] = [
     "ambassador",
 ];
 
-export type Gender = "M" | "F";
-export const GENDERS: Gender[] = ["M", "F"];
+export type Gender = "MALE" | "FEMALE";
+export const GENDERS: Gender[] = ["MALE", "FEMALE"];
 
 export const HOBBIES = [
     "3D printing",
