@@ -35,7 +35,7 @@ export type OnboardingScreens = {
     OnboardingDiscoverScreen: undefined;
     OnboardingMeetScreen: undefined;
     OnboardingCollaborateScreen: undefined;
-    OnboardingTosScreen: undefined;
+    OnboardingTosScreen1: undefined;
 };
 
 export type SignupTabNavigatorScreens = {
