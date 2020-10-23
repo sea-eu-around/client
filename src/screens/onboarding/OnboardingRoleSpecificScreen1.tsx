@@ -13,8 +13,8 @@ import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import {StaffRole, STAFF_ROLES} from "../../constants/profile-constants";
 import {LevelOfStudyControl} from "../../components/LevelOfStudyControl";
-import {EducationFieldSelect} from "../../components/EducationFieldSelect";
-import {View, TouchableOpacity, Text, StyleSheet} from "react-native";
+import EducationFieldPicker from "../../components/EducationFieldPicker";
+import {TouchableOpacity, Text, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 
 const reduxConnector = connect((state: AppState) => ({
@@ -68,7 +68,7 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
                             {touched.levelOfStudy && <InputErrorText error={errors.levelOfStudy}></InputErrorText>}
 
                             <InputLabel style={{marginTop: spacing}}>{i18n.t("fieldsOfEducation")}</InputLabel>
-                            <EducationFieldSelect></EducationFieldSelect>
+                            <EducationFieldPicker></EducationFieldPicker>
                         </OnboardingSlide>
                     );
                 }}
