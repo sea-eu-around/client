@@ -11,23 +11,10 @@ import {
     ValidateAccountFailureAction,
     OnboardingState,
     SetOnboardingValuesAction,
+    AUTH_ACTION_TYPES,
 } from "../types";
 import {BACKEND_URL} from "../../constants/config";
 import {LoginDto, TokenDto, UserDto} from "../../api/response-types";
-
-export enum AUTH_ACTION_TYPES {
-    REGISTER_BEGIN = "AUTH/REGISTER_BEGIN",
-    REGISTER_SUCCESS = "AUTH/REGISTER_SUCCESS",
-    REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
-    LOG_IN_BEGIN = "AUTH/LOG_IN_BEGIN",
-    LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
-    LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
-    LOG_OUT = "AUTH/LOG_OUT",
-    VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
-    VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
-    VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
-    SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
-}
 
 // Register actions
 

@@ -9,8 +9,8 @@ import {
     RegisterSuccessAction,
     ValidateAccountSuccessAction,
     SetOnboardingValuesAction,
+    AUTH_ACTION_TYPES,
 } from "../types";
-import {AUTH_ACTION_TYPES} from "./actions";
 
 export const initialState: AuthState = {
     authenticated: false,

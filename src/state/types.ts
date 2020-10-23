@@ -2,7 +2,7 @@ import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
 import {FullProfile} from "../model/profile";
-import {TokenDto, UserDto} from "../api/response-types";
+import {CreateProfileDto, TokenDto, UserDto} from "../api/response-types";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
@@ -58,6 +58,20 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 export type MyThunkDispatch = ThunkDispatch<AppState, void, AnyAction>;
 
 /*### AUTH ###*/
+
+export enum AUTH_ACTION_TYPES {
+    REGISTER_BEGIN = "AUTH/REGISTER_BEGIN",
+    REGISTER_SUCCESS = "AUTH/REGISTER_SUCCESS",
+    REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
+    LOG_IN_BEGIN = "AUTH/LOG_IN_BEGIN",
+    LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
+    LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
+    LOG_OUT = "AUTH/LOG_OUT",
+    VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
+    VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
+    VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
+}
 
 export type RegisterBeginAction = {
     type: string;
@@ -125,6 +139,11 @@ export type AuthAction =
 
 /*### SETTINGS ###*/
 
+export enum SETTINGS_ACTION_TYPES {
+    SET_THEME = "SETTINGS/SET_THEME",
+    SET_LOCALE = "SETTINGS/SET_LOCALE",
+}
+
 export type SetThemeAction = {
     type: string;
     theme: Theme;
@@ -139,9 +158,24 @@ export type SettingsAction = SetThemeAction | SetLocaleAction;
 
 /*### PROFILE ###*/
 
+export enum PROFILE_ACTION_TYPES {
+    PROFILE_SET_FIELDS = "PROFILE/SET_FIELDS",
+    PROFILE_CREATE = "PROFILE/CREATE",
+    PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
+}
+
 export type SetProfileFieldsAction = {
     type: string;
     fields: Partial<FullProfile>;
 };
 
-export type ProfileAction = SetProfileFieldsAction;
+export type CreateProfileAction = {
+    type: string;
+    profile: CreateProfileDto;
+};
+
+export type CreateProfileSuccessAction = {
+    type: string;
+};
+
+export type ProfileAction = SetProfileFieldsAction | CreateProfileAction | CreateProfileSuccessAction;

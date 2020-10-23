@@ -1,5 +1,4 @@
-import {ProfileState, ProfileAction, AuthAction, SetProfileFieldsAction} from "../types";
-import {PROFILE_ACTION_TYPES} from "./actions";
+import {ProfileState, ProfileAction, AuthAction, SetProfileFieldsAction, PROFILE_ACTION_TYPES} from "../types";
 
 export const initialState: ProfileState = {
     userProfile: {
@@ -9,7 +8,7 @@ export const initialState: ProfileState = {
         levelOfStudy: 2,
         nationality: "FR",
         role: "staff",
-        gender: "M",
+        gender: "MALE",
         birthDate: new Date(1999, 6, 2),
         hobbies: ["Acrobatics", "Acting", "Animation"],
         avatarUri: "",

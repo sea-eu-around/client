@@ -1,6 +1,5 @@
 import {getDefaultLocale} from "../../localization";
-import {SettingsState, SettingsAction, SetThemeAction, SetLocaleAction} from "../types";
-import {SETTINGS_ACTION_TYPES} from "./actions";
+import {SettingsState, SettingsAction, SetThemeAction, SetLocaleAction, SETTINGS_ACTION_TYPES} from "../types";
 
 export const initialState: SettingsState = {
     theme: "light",
