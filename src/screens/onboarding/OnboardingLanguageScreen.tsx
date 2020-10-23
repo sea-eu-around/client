@@ -11,7 +11,8 @@ import {setOnboardingValues} from "../../state/auth/actions";
 import {OnboardingProps} from ".";
 import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
-import LanguagePicker from "../../components/LanguagePicker";
+import SpokenLanguagesInput from "../../components/SpokenLanguagesInput";
+import {SpokenLanguage} from "../../model/spoken-language";
 
 const reduxConnector = connect((state: AppState) => ({
     theme: themes[state.settings.theme],
@@ -24,14 +25,25 @@ const VALIDATION_SCHEMA = Yup.object().shape({
 
 type OnboardingLanguageScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingProps;
 
-type OnboardingLanguageFormState = {
-    languages: string[];
+type OnboardingLanguageScreenState = {
+    hasErrors: boolean;
 };
 
-class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenProps> {
+type OnboardingLanguageFormState = {
+    languages: SpokenLanguage[];
+};
+
+class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenProps, OnboardingLanguageScreenState> {
+    constructor(props: OnboardingLanguageScreenProps) {
+        super(props);
+        this.state = {hasErrors: false};
+    }
+
     submit(values: OnboardingLanguageFormState) {
-        this.props.dispatch(setOnboardingValues({languages: values.languages}));
-        this.props.next();
+        if (!this.state.hasErrors) {
+            this.props.dispatch(setOnboardingValues({languages: values.languages}));
+            this.props.next();
+        }
     }
 
     render(): JSX.Element {
@@ -47,7 +59,7 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
             >
                 {(formikProps: FormikProps<OnboardingLanguageFormState>) => {
                     const {handleSubmit, values, errors, touched, setFieldValue} = formikProps;
-                    console.log(values.languages);
+
                     return (
                         <OnboardingSlide
                             title={i18n.t("onboarding.language.title")}
@@ -55,11 +67,13 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
                             {...this.props}
                         >
                             <InputLabel style={{marginBottom: 6}}>{i18n.t("spokenLanguages")}</InputLabel>
-                            <LanguagePicker
-                                single={true}
+                            <SpokenLanguagesInput
                                 languages={values.languages}
-                                onChange={(languageCodes: string[]) => setFieldValue("languages", languageCodes)}
-                            />
+                                onChange={(languages: SpokenLanguage[], hasErrors: boolean) => {
+                                    setFieldValue("languages", languages);
+                                    this.setState({...this.state, hasErrors});
+                                }}
+                            ></SpokenLanguagesInput>
                             {touched.languages && <InputErrorText error={errors.languages}></InputErrorText>}
                         </OnboardingSlide>
                     );

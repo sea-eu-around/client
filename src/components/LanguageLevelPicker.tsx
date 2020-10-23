@@ -4,8 +4,8 @@ import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import themes from "../constants/themes";
-import {LANGUAGES_CODES} from "../model/languages";
 import {View, ViewProps, ViewStyle} from "react-native";
+import {LANGUAGE_LEVELS} from "../constants/profile-constants";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -14,10 +14,9 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-export type LanguagePickerProps = ConnectedProps<typeof reduxConnector> & {
-    languages: string[];
-    single: boolean;
-    onChange?: (languages: string[]) => void;
+export type LanguageLevelPickerProps = ConnectedProps<typeof reduxConnector> & {
+    level: string;
+    onChange?: (level: string) => void;
 } & ViewProps;
 
 type PickerItem = {
@@ -28,28 +27,28 @@ type PickerItem = {
 let items: PickerItem[];
 
 function updateItems() {
-    items = LANGUAGES_CODES.map((code: string) => ({
-        label: i18n.t(`languageNames.${code}`),
+    items = LANGUAGE_LEVELS.map((code: string) => ({
+        label: i18n.t(`languageLevels.${code}`),
         value: code,
     }));
 }
 
-class LanguagePicker extends React.Component<LanguagePickerProps> {
-    constructor(props: LanguagePickerProps) {
+class LanguageLevelPicker extends React.Component<LanguageLevelPickerProps> {
+    constructor(props: LanguageLevelPickerProps) {
         super(props);
         updateItems();
     }
 
-    componentDidUpdate(oldProps: LanguagePickerProps) {
+    componentDidUpdate(oldProps: LanguageLevelPickerProps) {
         if (oldProps.stateLocale != this.props.stateLocale) updateItems();
     }
 
     render(): JSX.Element {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {onChange, single, languages, ...viewProps} = this.props;
+        const {onChange, level, ...viewProps} = this.props;
 
         const styleRelatedProps = {
-            containerStyle: {height: 50},
+            containerStyle: {maxWidth: 120, height: 50, borderRadius: 0},
             style: {
                 backgroundColor: "#fafafa",
                 // just setting borderRadius won't work.
@@ -69,16 +68,13 @@ class LanguagePicker extends React.Component<LanguagePickerProps> {
             <View {...viewProps}>
                 <DropDownPicker
                     items={items}
-                    multiple={!single}
-                    searchable={true}
-                    placeholder={i18n.t(`languagePicker.placeholder${single ? "Single" : "Multiple"}`)}
-                    //multipleText={i18n.t("languagePicker.multiple")}
-                    searchablePlaceholder={i18n.t("languagePicker.searchPlaceholder")}
-                    onChangeItem={(items: PickerItem | PickerItem[]) => {
-                        const languages = (Array.isArray(items) ? items : [items]).map((it: PickerItem) => it.value);
-                        if (onChange) onChange(languages);
+                    defaultValue={this.props.level}
+                    multiple={false}
+                    searchable={false}
+                    placeholder={i18n.t("languageLevelPicker.placeholder")}
+                    onChangeItem={(item: PickerItem) => {
+                        if (onChange) onChange(item.value);
                     }}
-                    defaultValue={single ? this.props.languages[0] : this.props.languages}
                     {...styleRelatedProps}
                 ></DropDownPicker>
             </View>
@@ -86,4 +82,4 @@ class LanguagePicker extends React.Component<LanguagePickerProps> {
     }
 }
 
-export default reduxConnector(LanguagePicker);
+export default reduxConnector(LanguageLevelPicker);

@@ -40,4 +40,4 @@ export const VALIDATOR_ONBOARDING_BIRTHDATE = Yup.date().nullable().required("va
 export const VALIDATOR_ONBOARDING_GENDER = Yup.string().nullable().required("validation.required");
 export const VALIDATOR_ONBOARDING_NATIONALITY = Yup.string().nullable().required("validation.required");
 export const VALIDATOR_ONBOARDING_LEVEL_OF_STUDY = Yup.number().notOneOf([-1], "validation.required");
-export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.atLeastOne");
+export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.addAtLeastOne");

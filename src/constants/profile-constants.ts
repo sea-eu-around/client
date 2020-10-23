@@ -19,14 +19,23 @@ export const EDUCATION_FIELDS = [
 
 export const LEVELS_OF_STUDY = ["L1", "L2", "L3", "M1", "M2", "PhD"];
 
-export const ROLES = ["student", "staff"];
+export const LANGUAGE_LEVELS = ["A2", "B1", "B2", "C1", "C2", "native"];
+
 export type Role = "student" | "staff";
+export const ROLES: Role[] = ["student", "staff"];
 
-export const STAFF_ROLES = ["teaching", "researcher", "supporting", "administrative", "technical", "ambassador"];
 export type StaffRole = "teaching" | "researcher" | "supporting" | "administrative" | "technical" | "ambassador";
+export const STAFF_ROLES: StaffRole[] = [
+    "teaching",
+    "researcher",
+    "supporting",
+    "administrative",
+    "technical",
+    "ambassador",
+];
 
-export const GENDERS = ["M", "F"];
 export type Gender = "M" | "F";
+export const GENDERS: Gender[] = ["M", "F"];
 
 export const HOBBIES = [
     "3D printing",

@@ -6,6 +6,7 @@ import {TokenDto, UserDto} from "../api/response-types";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
+import {SpokenLanguage} from "../model/spoken-language";
 
 export type OnboardingState = {
     firstname: string;
@@ -16,7 +17,7 @@ export type OnboardingState = {
     role: Role | null;
     levelOfStudy: number;
     staffRole: StaffRole | null;
-    languages: string[];
+    languages: SpokenLanguage[];
 };
 
 export type AuthState = {

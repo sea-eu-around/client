@@ -25,6 +25,7 @@ export default {
         validation: {
             required: "Required field.",
             atLeastOne: "Please select at least one.",
+            addAtLeastOne: "Please add at least one.",
             email: {
                 invalid: "Please provide a valid email address.",
                 invalidDomain: "Your email address must match one of our partner universities.",
@@ -36,6 +37,9 @@ export default {
                 noLowerCase: "Your password must contain at least one lower case character.",
                 noSymbol: "Your password must contain at least one symbol (#@$!%*?&).",
                 repeatWrong: "These passwords don't match.",
+            },
+            languages: {
+                multiple: "You cannot add two entries for the same language.",
             },
             tosAccept: "You cannot continue without agreeing to our Terms of Service and Privacy Policy.",
         },
@@ -51,6 +55,11 @@ export default {
         },
         myProfile: "My Profile",
         editProfile: "Edit profile",
+        educationFieldsPicker: {
+            placeholder: "Select fields",
+            searchPlaceholder: "Search",
+            multiple: "%d selected",
+        },
         educationFields: {
             "field-00": "Generic programmes and qualifications",
             "field-01": "Education",
@@ -143,10 +152,21 @@ export default {
         },
         spokenLanguages: "Spoken languages",
         languagePicker: {
-            placeholderSingle: "Select a language",
+            placeholderSingle: "Language",
             placeholderMultiple: "Select languages",
             searchPlaceholder: "Search for languages",
             multiple: "%d selected",
+        },
+        languageLevelPicker: {
+            placeholder: "Level",
+        },
+        languageLevels: {
+            A2: "A2",
+            B1: "B1",
+            B2: "B2",
+            C1: "C1",
+            C2: "C2",
+            native: "native",
         },
         languageNames: {
             aa: "Afar",
