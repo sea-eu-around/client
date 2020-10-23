@@ -7,7 +7,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {VALIDATOR_EMAIL} from "../../validators";
 import {FullProfile} from "../../model/profile";
 import {Avatar} from "react-native-elements";
-import {EducationFieldSelect} from "../EducationFieldSelect";
+import EducationFieldPicker from "../EducationFieldPicker";
 import {ScrollView} from "react-native";
 import {LevelOfStudyControl} from "../LevelOfStudyControl";
 import {CountryCode} from "../../model/country-codes";
@@ -271,7 +271,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                         <FormRow
                             label={i18n.t("fieldsOfEducation")}
                             initialValue={profile.gender}
-                            display={<EducationFieldSelect></EducationFieldSelect>}
+                            display={<EducationFieldPicker></EducationFieldPicker>}
                             noModal={true}
                             style={{height: 100}}
                         />
