@@ -93,8 +93,8 @@ export default {
         },
         gender: "Gender",
         genders: {
-            M: "Male",
-            F: "Female",
+            MALE: "Male",
+            FEMALE: "Female",
         },
         dateOfBirth: "Date of birth",
         months: {
@@ -147,7 +147,11 @@ export default {
             },
             collaborate: {
                 title: "Collaborate",
-                description: "Find people to work on projects, academic or not.",
+                subtitle: "Find people to work on projects, academic or not.",
+            },
+            tos1: {
+                title: "Terms of service",
+                subtitle: "blablabla",
             },
         },
         spokenLanguages: "Spoken languages",
