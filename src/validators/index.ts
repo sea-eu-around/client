@@ -6,14 +6,14 @@ export const MIN_PASSWORD_LENGTH = 8;
 // TODO move this validation to back-end
 const VALID_EMAIL_DOMAINS = PARTNER_UNIVERSITIES.map((uni: University) => uni.domain);
 
-export const VALIDATOR_EMAIL = Yup.string()
+export const VALIDATOR_EMAIL_SIGNUP = Yup.string()
     .required("validation.required")
     .email("validation.email.invalid")
     .test("email-domain", "validation.email.invalidDomain", (value: string | null | undefined) => {
         return value !== null && value !== undefined && VALID_EMAIL_DOMAINS.some((domain) => value.endsWith(domain));
     });
 
-export const VALIDATOR_PASSWORD = Yup.string()
+export const VALIDATOR_PASSWORD_SIGNUP = Yup.string()
     .required("validation.required")
     .min(MIN_PASSWORD_LENGTH, "validation.password.tooShort")
     // At least one digit
@@ -28,6 +28,9 @@ export const VALIDATOR_PASSWORD = Yup.string()
 export const VALIDATOR_PASSWORD_REPEAT = Yup.string()
     .required("validation.required")
     .oneOf([Yup.ref("password")], "validation.password.repeatWrong");
+
+export const VALIDATOR_EMAIL_LOGIN = Yup.string().required("validation.required").email("validation.email.invalid");
+export const VALIDATOR_PASSWORD_LOGIN = Yup.string().required("validation.required");
 
 export const VALIDATOR_FIRSTNAME = Yup.string().trim().required("validation.required");
 
