@@ -10,7 +10,7 @@ import {LoginTabNavigatorScreens} from "../../navigation/types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {setTheme} from "../../state/settings/actions";
-import {VALIDATOR_EMAIL, VALIDATOR_PASSWORD} from "../../validators";
+import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
 import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
@@ -23,8 +23,8 @@ type LoginFormState = {
 
 // Use Yup to create the validation schema
 const LoginFormSchema = Yup.object().shape({
-    email: VALIDATOR_EMAIL,
-    password: VALIDATOR_PASSWORD,
+    email: VALIDATOR_EMAIL_LOGIN,
+    password: VALIDATOR_PASSWORD_LOGIN,
 });
 
 // Map props from the store

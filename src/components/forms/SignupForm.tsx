@@ -7,8 +7,8 @@ import {FormTextInput} from "../FormTextInput";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import themes from "../../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
-import {VALIDATOR_EMAIL, VALIDATOR_PASSWORD, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps, getLoginCheckBoxStyleProps} from "../../styles/forms";
+import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
+import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {FormProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 
@@ -16,45 +16,20 @@ export type SignupFormState = {
     email: string;
     password: string;
     passwordRepeat: string;
-    /*firstname: string;
-    lastname: string;
-    tos: boolean;
-    emailNotifications: boolean;*/
 };
 
 const initialState = (): SignupFormState => ({
     email: `kevin${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`,
     password: "PASSword$1",
     passwordRepeat: "PASSword$1",
-    /*firstname: "",
-    lastname: "",
-    tos: false,
-    emailNotifications: true,*/
 });
 
 // Use Yup to create the validation schema
 const SignupFormSchema = Yup.object().shape({
-    email: VALIDATOR_EMAIL,
-    password: VALIDATOR_PASSWORD,
+    email: VALIDATOR_EMAIL_SIGNUP,
+    password: VALIDATOR_PASSWORD_SIGNUP,
     passwordRepeat: VALIDATOR_PASSWORD_REPEAT,
-    /*firstname: VALIDATOR_FIRSTNAME,
-    lastname: VALIDATOR_LASTNAME,
-    tos: VALIDATOR_TOS,*/
 });
-/*
-function setNamesFromEmail(email: string, {setFieldValue, setFieldTouched}: FormikProps<SignupFormState>) {
-    const splitName = email.split("@")[0].split(".");
-    const capitalize = (str: string) => (str.length == 0 ? str : str[0].toUpperCase() + str.slice(1));
-    if (splitName.length >= 2) {
-        setFieldValue("firstname", capitalize(splitName[0]));
-        setFieldValue("lastname", capitalize(splitName[1]));
-        // Workaround for a Formik bug (ensures validation is properly ran). See https://github.com/formium/formik/issues/2059
-        setTimeout(() => {
-            setFieldTouched("firstname", true, true);
-            setFieldTouched("lastname", true, true);
-        });
-    }
-}*/
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
@@ -89,7 +64,7 @@ class SignupForm extends React.Component<SignupFormProps> {
     }
 
     render(): JSX.Element {
-        const {theme, registerErrors} = this.props;
+        const {theme} = this.props;
 
         const styles = StyleSheet.create({
             titleWrapper: {
@@ -130,18 +105,8 @@ class SignupForm extends React.Component<SignupFormProps> {
                     onSubmit={(values: SignupFormState) => this.submit(values)}
                 >
                     {(formikProps: FormikProps<SignupFormState>) => {
-                        const {
-                            handleSubmit,
-                            values,
-                            errors,
-                            touched,
-                            handleChange,
-                            handleBlur,
-                            setFieldValue,
-                            setFieldTouched,
-                        } = formikProps;
+                        const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikProps;
                         const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
-                        const checkBoxProps = {setFieldValue, setFieldTouched, ...getLoginCheckBoxStyleProps(theme)};
 
                         return (
                             <React.Fragment>
@@ -153,10 +118,6 @@ class SignupForm extends React.Component<SignupFormProps> {
                                     touched={touched.email}
                                     keyboardType="email-address"
                                     autoCompleteType="email"
-                                    /*onBlur={() => {
-                                        if (!errors.email && values.firstname == "" && values.lastname == "")
-                                            setNamesFromEmail(values.email, formikProps);
-                                    }}*/
                                     {...textInputProps}
                                 />
 
@@ -202,56 +163,3 @@ class SignupForm extends React.Component<SignupFormProps> {
 }
 
 export default reduxConnector(SignupForm);
-
-/*
-<View style={formStyle.inputRow}>
-    <FormTextInput
-        field="firstname"
-        placeholder={i18n.t("firstname")}
-        error={errors.firstname}
-        value={values.firstname}
-        touched={touched.firstname}
-        autoCompleteType="name"
-        {...textInputProps}
-        wrapperStyle={[
-            textInputProps.wrapperStyle,
-            styles.inlineInputs,
-            styles.inlineInputLeft,
-        ]}
-    />
-
-    <FormTextInput
-        field="lastname"
-        placeholder={i18n.t("lastname")}
-        error={errors.lastname}
-        value={values.lastname}
-        touched={touched.lastname}
-        autoCompleteType="name"
-        {...textInputProps}
-        wrapperStyle={[
-            textInputProps.wrapperStyle,
-            styles.inlineInputs,
-            styles.inlineInputRight,
-        ]}
-    />
-</View>
-
-<FormCheckBox
-    field="tos"
-    label={i18n.t("tosLabel")}
-    error={errors.tos}
-    value={values.tos}
-    touched={touched.tos}
-    {...checkBoxProps}
-/>
-
-<FormCheckBox
-    field="emailNotifications"
-    label={i18n.t("emailNotificationsLabel")}
-    error={errors.emailNotifications}
-    value={values.emailNotifications}
-    touched={touched.emailNotifications}
-    {...checkBoxProps}
-/>
-
-*/
