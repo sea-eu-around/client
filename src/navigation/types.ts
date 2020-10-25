@@ -48,6 +48,7 @@ export type TabDiscoverParamList = {
 
 export type TabMatchingParamList = {
     TabMatchingScreen: undefined;
+    MatchFilteringScreen: undefined;
 };
 
 export type TabMessagingParamList = {

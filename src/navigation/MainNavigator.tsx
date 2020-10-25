@@ -1,6 +1,6 @@
-import {MaterialIcons} from "@expo/vector-icons";
+import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
+import {createStackNavigator, StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
@@ -18,6 +18,9 @@ import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
 import TabProfileScreen from "../screens/TabProfileScreen";
 import i18n from "i18n-js";
+import TabMatchingScreen from "../screens/TabMatchingScreen";
+import MatchFilteringScreen from "../screens/MatchFilteringScreen";
+import {Text, TouchableOpacity, View} from "react-native";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -106,12 +109,55 @@ function TabDiscoverNavigator(): JSX.Element {
 const TabMatchingStack = createStackNavigator<TabMatchingParamList>();
 
 function TabMatchingNavigator(): JSX.Element {
+    const filteringHeaderBackImage = (): JSX.Element => {
+        return <MaterialIcons name="close" size={32} />;
+    };
+    const filteringHeaderReset = (): JSX.Element => {
+        //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
+        return <Text style={{marginRight: 16}}>reset</Text>;
+    };
+    const matchingHeaderRight = (
+        navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">,
+    ) => (): JSX.Element => {
+        return (
+            <View style={{flexDirection: "row", paddingRight: 10}}>
+                <TouchableOpacity>
+                    <MaterialIcons name="refresh" size={32} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("MatchFilteringScreen");
+                    }}
+                >
+                    <FontAwesome name="sliders" size={30} style={{paddingHorizontal: 5}} />
+                </TouchableOpacity>
+            </View>
+        );
+    };
+
     return (
         <TabMatchingStack.Navigator>
             <TabMatchingStack.Screen
                 name="TabMatchingScreen"
-                component={TabTwoScreen}
-                options={{headerTitle: "Tab Title"}}
+                component={TabMatchingScreen}
+                options={({navigation}) => ({
+                    headerShown: true,
+                    headerLeft: () => null,
+                    headerTitle: "Matching",
+                    headerTitleAlign: "center",
+                    headerRight: matchingHeaderRight(navigation),
+                })}
+            />
+            <TabMatchingStack.Screen
+                name="MatchFilteringScreen"
+                component={MatchFilteringScreen}
+                options={{
+                    headerShown: true,
+                    headerTitle: "Filters",
+                    headerTitleAlign: "center",
+                    headerBackImage: filteringHeaderBackImage,
+                    headerRight: filteringHeaderReset,
+                }}
             />
         </TabMatchingStack.Navigator>
     );
