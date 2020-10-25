@@ -45,10 +45,17 @@ export type ProfileState = {
     userProfile: FullProfile;
 };
 
+export type MatchingState = {
+    userIds: [1, 2, 3, 4, 6, 7];
+    loadedPreviews: {[key: string]: {id: number}};
+    loadedProfiles: {[key: string]: {id: number}};
+};
+
 export type AppState = {
     auth: AuthState;
     settings: SettingsState;
     profile: ProfileState;
+    matching: MatchingState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)

@@ -93,6 +93,7 @@ export const requestLogin = (email: string, password: string): AppThunk => async
         });
 
         const json = await response.json();
+        console.log("login response :");
         console.log(json);
 
         if (json.success) {
