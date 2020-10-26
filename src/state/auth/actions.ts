@@ -15,6 +15,7 @@ import {
 } from "../types";
 import {BACKEND_URL} from "../../constants/config";
 import {LoginDto, TokenDto, UserDto} from "../../api/dto";
+import {requestBackend} from "../../api/utils";
 
 // Register actions
 
@@ -27,28 +28,10 @@ export const registerBegin = (email: string, password: string): RegisterBeginAct
 // Redux-thunk asynchronous action creator
 export const requestRegister = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(registerBegin(email, password));
-    try {
-        const response = await fetch(`${BACKEND_URL}/auth/register`, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({email, password}),
-        });
+    const response = await requestBackend("auth/register", "POST", {}, {email, password});
 
-        const json = await response.json();
-        console.log(json);
-
-        if (json.success) {
-            dispatch(registerSuccess(json.data as UserDto));
-        } else {
-            dispatch(registerFailure(json.codes));
-        }
-    } catch (error) {
-        console.error(error);
-        dispatch(registerFailure([]));
-    }
+    if (response.success) dispatch(registerSuccess(response.data as UserDto));
+    else dispatch(registerFailure(response.codes));
 };
 
 export const registerSuccess = (user: UserDto): RegisterSuccessAction => ({
@@ -82,30 +65,12 @@ export const loginFailure = (errors: string[]): LogInFailureAction => ({
 
 export const requestLogin = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(loginBegin(email, password));
-    try {
-        const response = await fetch(`${BACKEND_URL}/auth/login`, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({email, password}),
-        });
 
-        const json = await response.json();
-        console.log("login response :");
-        console.log(json);
-
-        if (json.success) {
-            const payload = json.data as LoginDto;
-            dispatch(loginSuccess(payload.token, payload.user));
-        } else {
-            dispatch(loginFailure(json.codes));
-        }
-    } catch (error) {
-        console.error(error);
-        dispatch(loginFailure([]));
-    }
+    const response = await requestBackend("auth/login", "POST", {}, {email, password});
+    if (response.success) {
+        const payload = response.data as LoginDto;
+        dispatch(loginSuccess(payload.token, payload.user));
+    } else dispatch(loginFailure(response.codes));
 };
 
 export const logout = (): LogOutAction => ({
@@ -115,31 +80,14 @@ export const logout = (): LogOutAction => ({
 // Account validation actions
 
 export const requestValidateAccount = (validationToken: string, email: string): AppThunk => async (dispatch) => {
-    try {
-        // TODO remove the email from here
-        const response = await fetch(`${BACKEND_URL}/auth/verify`, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                token: validationToken,
-                email,
-            }),
-        });
+    // TODO remove the email from here
+    const response = await requestBackend("auth/verify", "POST", {}, {token: validationToken, email});
 
-        const json = await response.json();
-        console.log(json);
-
-        if (json.success) {
-            dispatch(validateAccountSuccess(json.data.email));
-        } else {
-            dispatch(validateAccountFailure(json.codes));
-        }
-    } catch (error) {
-        console.error(error);
-        dispatch(validateAccountFailure([]));
+    if (response.success) {
+        const {email} = response.data as {email: string};
+        dispatch(validateAccountSuccess(email));
+    } else {
+        dispatch(validateAccountFailure(response.codes));
     }
 };
 
