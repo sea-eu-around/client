@@ -47,7 +47,7 @@ export function getLoginTextInputsStyleProps(
     theme: ThemeValues,
     wrapperVerticalMargin = 0,
 ): Partial<FormTextInputProps> {
-    const focusedStyle = Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null;
+    const focusedStyle = Platform.OS === "web" ? ({outline: "none"} as TextStyle) : null;
 
     const commonStyle = StyleSheet.create({
         textInputWrapper: {
@@ -119,7 +119,12 @@ export const loginTabsStyles = StyleSheet.create({
 
 export function getOnboardingTextInputsStyleProps(theme: ThemeValues): Partial<FormTextInputProps> {
     const focusedStyle =
-        Platform.OS === "web" ? ({outlineColor: "transparent", backgroundColor: "transparent"} as TextStyle) : null;
+        Platform.OS === "web"
+            ? ({
+                  backgroundColor: "transparent",
+                  outline: "none",
+              } as TextStyle)
+            : null;
 
     const commonStyle = StyleSheet.create({
         textInputWrapper: {
