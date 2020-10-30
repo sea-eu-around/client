@@ -17,6 +17,7 @@ export default {
         okay: "#00b16a",
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorLight,
+        componentBorder: "#eee",
     },
     dark: {
         text: "#fff",
@@ -33,5 +34,6 @@ export default {
         okay: "#00b16a",
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorDark,
+        componentBorder: "#ccc", // TODO
     },
 };
