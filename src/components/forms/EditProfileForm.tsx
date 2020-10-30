@@ -4,7 +4,6 @@ import themes from "../../constants/themes";
 import i18n from "i18n-js";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
-import {VALIDATOR_EMAIL} from "../../validators";
 import {FullProfile} from "../../model/profile";
 import {Avatar} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
@@ -24,6 +23,7 @@ import NationalityPicker from "../NationalityPicker";
 import {FormattedNationality} from "../FormattedNationality";
 import {getUniversityFromEmail} from "../../model/utils";
 import {FormattedUniversity} from "../FormattedUniversity";
+import InterestsPicker from "../InterestsPicker";
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
@@ -37,24 +37,11 @@ export type EditProfileFormProps = ConnectedProps<typeof reduxConnector> & {
     onFieldChanged?: (fields: Partial<FullProfile>) => void;
 };
 
-// State
-export type EditProfileFormState = {
-
-};
-
 function FormFieldSpacer(): JSX.Element {
     return <View style={{height: 30}}></View>;
 }
 
-
-class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileFormState> {
-    constructor(props: EditProfileFormProps) {
-        super(props);
-        this.state = {
-
-        } as EditProfileFormState;
-    }
-
+class EditProfileForm extends React.Component<EditProfileFormProps> {
     render() {
         const {theme, profile} = this.props;
 
@@ -185,13 +172,13 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                         <FormRow
                             label={i18n.t("emailAddress")}
                             initialValue={profile.email}
-                            validator={VALIDATOR_EMAIL}
+                            // validator={VALIDATOR_EMAIL}
                             display={<Text>{profile.email}</Text>}
                             renderInput={(value: string, error: string | null, onChange: (value: string) => void) => (
                                 <ValidatedTextInput
                                     placeholder={i18n.t("emailAddress")}
                                     value={value}
-                                    error={error}
+                                    error={error || undefined}
                                     onChangeText={(val) => onChange(val)}
                                     keyboardType="email-address"
                                     autoCompleteType="email"
@@ -275,6 +262,17 @@ class EditProfileForm extends React.Component<EditProfileFormProps, EditProfileF
                             noModal={true}
                             style={{height: 100}}
                         />
+                        <FormFieldSpacer />
+                        <FormRow
+                            label={i18n.t("interests")}
+                            initialValue={profile.interests}
+                            display={<InterestsPicker></InterestsPicker>}
+                            noModal={true}
+                            style={{height: 100}}
+                        />
+                        <FormFieldSpacer />
+                        <FormFieldSpacer />
+                        <FormFieldSpacer />
                     </KeyboardAvoidingView>
                 </ScrollView>
             </View>
