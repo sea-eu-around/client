@@ -49,7 +49,7 @@ export async function requestBackend(
         const response = await fetch(`${BACKEND_URL}/${endpoint}`, {
             method,
             headers,
-            body: JSON.stringify(body),
+            ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
         });
 
         const json = await response.json();
@@ -59,7 +59,8 @@ export async function requestBackend(
         return json;
     } catch (error) {
         console.error(
-            `An unexpected error occured with a request to ${endpoint}. Method = ${method}, auth = ${auth}, params=${params}, body=${body}`,
+            `An unexpected error occured with a request to ${endpoint}. ` +
+                `Method = ${method}, auth = ${auth}, params=${JSON.stringify(params)}, body=${JSON.stringify(body)}`,
         );
         return {success: false, codes: ["error.unknown"]};
     }
