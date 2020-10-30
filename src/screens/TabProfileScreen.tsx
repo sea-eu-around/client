@@ -6,8 +6,8 @@ import {AppState} from "../state/types";
 import Colors from "../constants/themes";
 import {MainNavigatorTabs} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
-import {FullProfile} from "../model/profile";
 import {setProfileFields} from "../state/profile/actions";
+import {MyProfileDto} from "../api/dto";
 
 const mapStateToProps = (state: AppState) => ({
     theme: Colors[state.settings.theme],
@@ -34,7 +34,7 @@ function TabProfileScreen({theme, profile, dispatch}: TabProfileScreenProps): JS
         <View style={[styles.container, {backgroundColor: theme.background}]}>
             <EditProfileForm
                 profile={profile}
-                onFieldChanged={(fields: Partial<FullProfile>) => {
+                onFieldChanged={(fields: Partial<MyProfileDto>) => {
                     dispatch(setProfileFields(fields));
                 }}
             ></EditProfileForm>

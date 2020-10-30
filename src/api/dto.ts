@@ -26,6 +26,10 @@ export type UserProfileDto = {
     languages: SpokenLanguage[];
 };
 
+export type MyProfileDto = UserProfileDto & {
+    email: string;
+};
+
 export type TokenDto = {
     expiresIn: number;
     accessToken: string;

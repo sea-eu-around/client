@@ -4,7 +4,6 @@ import themes from "../../constants/themes";
 import i18n from "i18n-js";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
-import {FullProfile} from "../../model/profile";
 import {Avatar} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
 import {ScrollView} from "react-native";
@@ -24,6 +23,7 @@ import {FormattedNationality} from "../FormattedNationality";
 import {getUniversityFromEmail} from "../../model/utils";
 import {FormattedUniversity} from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
+import {MyProfileDto} from "../../api/dto";
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
@@ -33,8 +33,8 @@ const reduxConnector = connect(mapStateToProps);
 
 // Component props
 export type EditProfileFormProps = ConnectedProps<typeof reduxConnector> & {
-    profile: FullProfile;
-    onFieldChanged?: (fields: Partial<FullProfile>) => void;
+    profile: MyProfileDto;
+    onFieldChanged?: (fields: Partial<MyProfileDto>) => void;
 };
 
 function FormFieldSpacer(): JSX.Element {
@@ -114,7 +114,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
             },
         });
 
-        const onFieldChanged = (fields: Partial<FullProfile>) => {
+        const onFieldChanged = (fields: Partial<MyProfileDto>) => {
             if (this.props.onFieldChanged !== undefined) this.props.onFieldChanged(fields);
         };
 
