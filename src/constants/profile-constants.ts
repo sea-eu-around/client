@@ -37,19 +37,4 @@ export const STAFF_ROLES: StaffRole[] = [
 export type Gender = "MALE" | "FEMALE";
 export const GENDERS: Gender[] = ["MALE", "FEMALE"];
 
-export const HOBBIES = [
-    "3D printing",
-    "Acrobatics",
-    "Acting",
-    "Amateur radio",
-    "Animation",
-    "Aquascaping",
-    "Astrology",
-    "Astronomy",
-    "Baking",
-    "Baton twirling",
-    "Blogging",
-];
-export type Hobby = typeof HOBBIES[number];
-
 export const MIN_AGE = 18;
