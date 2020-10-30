@@ -3,9 +3,13 @@ import {MIN_PASSWORD_LENGTH} from "../validators";
 export default {
     en: {
         welcome: "Welcome",
-        name: "Charlie",
-        login: "Login",
-        tablogin: "Login",
+        // Component-related
+        picker: {
+            callToAction: "Select (%d selected)",
+        },
+
+        login: "Log in",
+        tablogin: "Log in",
         tabsignup: "Sign up",
         emailAddress: "Email address",
         password: "Password",
@@ -21,6 +25,10 @@ export default {
         lastname: "Last name",
         tosLabel: "I have read and agree to the Terms of Service and Privacy Policy",
         emailNotificationsLabel: "Send me useful notifications by email.",
+        emailValidation: {
+            validating: "Validating",
+            success: ["Your account has been validated! You may now ", "log in"],
+        },
         createAccount: "Create account",
         validation: {
             required: "Required field.",
@@ -359,6 +367,15 @@ export default {
             za: "Zhuang / Chuang",
             zh: "Chinese",
             zu: "Zulu",
+        },
+        interests: "Interests",
+        interestsPicker: {
+            placeholder: "Select interests",
+            searchPlaceholder: "Search",
+            multiple: "%d selected",
+        },
+        interestNames: {
+            Netflix: "netflix",
         },
     },
     fr: {
