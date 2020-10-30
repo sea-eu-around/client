@@ -2,7 +2,7 @@ import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
 import {FullProfile} from "../model/profile";
-import {CreateProfileDto, TokenDto, UserDto} from "../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, TokenDto, UserDto} from "../api/dto";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
@@ -43,6 +43,8 @@ export type SettingsState = {
 
 export type ProfileState = {
     userProfile: FullProfile;
+    offers: OfferDto[];
+    interests: InterestDto[];
 };
 
 export type MatchingState = {
@@ -166,10 +168,21 @@ export type SettingsAction = SetThemeAction | SetLocaleAction;
 /*### PROFILE ###*/
 
 export enum PROFILE_ACTION_TYPES {
+    LOAD_USER_PROFILE = "PROFILE/LOAD_USER_PROFILE",
+    LOAD_PROFILE_OFFERS = "LOAD_PROFILE_OFFERS",
+    LOAD_PROFILE_OFFERS_SUCCESS = "LOAD_PROFILE_OFFERS_SUCCESS",
+    LOAD_PROFILE_INTERESTS = "LOAD_PROFILE_INTERESTS",
+    LOAD_PROFILE_INTERESTS_SUCCESS = "LOAD_PROFILE_INTERESTS_SUCCESS",
     PROFILE_SET_FIELDS = "PROFILE/SET_FIELDS",
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
 }
+
+// TODO loaduserprofile
+export type LoadUserProfileAction = {
+    type: string;
+    id: string;
+};
 
 export type SetProfileFieldsAction = {
     type: string;
@@ -185,4 +198,29 @@ export type CreateProfileSuccessAction = {
     type: string;
 };
 
-export type ProfileAction = SetProfileFieldsAction | CreateProfileAction | CreateProfileSuccessAction;
+export type LoadProfileOffersAction = {
+    type: string;
+};
+
+export type LoadProfileOffersSuccessAction = {
+    type: string;
+    offers: OfferDto[];
+};
+
+export type LoadProfileInterestsAction = {
+    type: string;
+};
+
+export type LoadProfileInterestsSuccessAction = {
+    type: string;
+    interests: InterestDto[];
+};
+
+export type ProfileAction =
+    | SetProfileFieldsAction
+    | CreateProfileAction
+    | CreateProfileSuccessAction
+    | LoadProfileOffersAction
+    | LoadProfileOffersSuccessAction
+    | LoadProfileInterestsAction
+    | LoadProfileInterestsSuccessAction;
