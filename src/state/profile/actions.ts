@@ -7,10 +7,8 @@ import {
     LoadProfileInterestsSuccessAction,
 } from "../types";
 import {FullProfile} from "../../model/profile";
-import {BACKEND_URL} from "../../constants/config";
 import {CreateProfileDto, InterestDto, OfferDto} from "../../api/dto";
 import {Role} from "../../constants/profile-constants";
-import store from "../store";
 import {requestBackend} from "../../api/utils";
 
 export const setProfileFields = (fields: Partial<FullProfile>): SetProfileFieldsAction => ({
