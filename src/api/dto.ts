@@ -1,4 +1,5 @@
-import {Gender} from "../constants/profile-constants";
+import {Gender, Role, StaffRole} from "../constants/profile-constants";
+import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
 import {SpokenLanguage} from "../model/spoken-language";
 
@@ -8,6 +9,21 @@ export type UserDto = {
     active: boolean;
     onboarded: boolean;
     verificationToken: string; // TODO temporary
+};
+
+export type UserProfileDto = {
+    firstName: string;
+    lastName: string;
+    university: UniversityKey;
+    levelOfStudy: number;
+    nationality: CountryCode;
+    role: Role;
+    staffRole?: StaffRole;
+    birthDate: Date;
+    gender: Gender;
+    interests: string[];
+    avatarUri: string;
+    languages: SpokenLanguage[];
 };
 
 export type TokenDto = {
@@ -38,3 +54,15 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 };
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
+
+export type OfferDto = {
+    key: string;
+    allowInterRole: boolean;
+    category: boolean;
+    target: number;
+};
+
+export type InterestDto = {
+    id: string;
+    name: string;
+};
