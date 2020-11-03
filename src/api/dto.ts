@@ -60,10 +60,11 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
 export type OfferDto = {
-    key: string;
+    id: string;
+    category: string;
+    allowChooseProfile: boolean;
+    allowChooseGender: boolean;
     allowInterRole: boolean;
-    category: boolean;
-    target: number;
 };
 
 export type InterestDto = {
