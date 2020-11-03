@@ -6,11 +6,11 @@ import {
     LoadProfileOffersSuccessAction,
     LoadProfileInterestsSuccessAction,
 } from "../types";
-import {CreateProfileDto, InterestDto, MyProfileDto, OfferDto} from "../../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, UserProfileDto} from "../../api/dto";
 import {Role} from "../../constants/profile-constants";
 import {requestBackend} from "../../api/utils";
 
-export const setProfileFields = (fields: Partial<MyProfileDto>): SetProfileFieldsAction => ({
+export const setProfileFields = (fields: Partial<UserProfileDto>): SetProfileFieldsAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS,
     fields,
 });

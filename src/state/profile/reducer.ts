@@ -1,3 +1,4 @@
+import {UserProfileDto} from "../../api/dto";
 import {
     ProfileState,
     ProfileAction,
@@ -9,19 +10,24 @@ import {
 } from "../types";
 
 export const initialState: ProfileState = {
-    userProfile: {
-        firstName: "Fred",
-        lastName: "Roger",
+    user: {
         email: "fred.roger@univ-brest.fr",
-        university: "univ-brest",
-        levelOfStudy: 2,
-        nationality: "FR",
-        role: "staff",
-        gender: "MALE",
-        birthDate: new Date(1999, 6, 2),
-        interests: ["netflix"],
-        languages: [],
-        avatarUri: "",
+        onboarded: false,
+        role: "student",
+        active: true,
+        verificationToken: "",
+        profile: {
+            firstName: "Fred",
+            lastName: "Roger",
+            university: "univ-brest",
+            levelOfStudy: 2,
+            nationality: "FR",
+            gender: "MALE",
+            birthDate: new Date(1999, 6, 2),
+            interests: ["netflix"],
+            languages: [],
+            avatarUri: "",
+        } as UserProfileDto,
     },
     offers: [],
     interests: [],
@@ -35,7 +41,7 @@ export const profileReducer = (
     switch (action.type) {
         case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS: {
             const {fields} = <SetProfileFieldsAction>action;
-            return {...newState, userProfile: {...state.userProfile, ...fields}};
+            return {...newState, user: {...state.user, profile: {...state.user.profile, ...fields}}};
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
             const {offers} = <LoadProfileOffersSuccessAction>action;

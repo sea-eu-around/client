@@ -1,7 +1,7 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
-import {CreateProfileDto, InterestDto, MyProfileDto, OfferDto, TokenDto, UserDto} from "../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, TokenDto, UserDto, UserProfileDto} from "../api/dto";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
@@ -41,7 +41,7 @@ export type SettingsState = {
 };
 
 export type ProfileState = {
-    userProfile: MyProfileDto;
+    user: UserDto;
     offers: OfferDto[];
     interests: InterestDto[];
 };
@@ -185,7 +185,7 @@ export type LoadUserProfileAction = {
 
 export type SetProfileFieldsAction = {
     type: string;
-    fields: Partial<MyProfileDto>;
+    fields: Partial<UserProfileDto>;
 };
 
 export type CreateProfileAction = {

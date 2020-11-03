@@ -3,21 +3,12 @@ import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
 import {SpokenLanguage} from "../model/spoken-language";
 
-export type UserDto = {
-    role: "USER" | "ADMIN" | "TEACHER" | "STUDENT";
-    email: string;
-    active: boolean;
-    onboarded: boolean;
-    verificationToken: string; // TODO temporary
-};
-
 export type UserProfileDto = {
     firstName: string;
     lastName: string;
     university: UniversityKey;
     levelOfStudy: number;
     nationality: CountryCode;
-    role: Role;
     staffRole?: StaffRole;
     birthDate: Date;
     gender: Gender;
@@ -26,8 +17,13 @@ export type UserProfileDto = {
     languages: SpokenLanguage[];
 };
 
-export type MyProfileDto = UserProfileDto & {
+export type UserDto = {
+    role: Role;
     email: string;
+    active: boolean;
+    onboarded: boolean;
+    verificationToken: string; // TODO temporary
+    profile: UserProfileDto;
 };
 
 export type TokenDto = {
