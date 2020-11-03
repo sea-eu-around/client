@@ -69,5 +69,5 @@ export type OfferDto = {
 
 export type InterestDto = {
     id: string;
-    name: string;
+    key: string;
 };
