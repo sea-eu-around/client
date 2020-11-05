@@ -8,14 +8,17 @@ export type OnboardingProps = {
 } & MaterialTopTabScreenProps<OnboardingScreens>;
 
 export const ONBOARDING_ORDER: (keyof OnboardingScreens)[] = [
+    "OnboardingLanguageScreen",
+    "OnboardingTosScreen",
+    "OnboardingPrivacyScreen",
     "OnboardingNameScreen",
     "OnboardingPersonalInfoScreen",
-    "OnboardingLanguageScreen",
+    //"OnboardingLanguageScreen",
+    "OnboardingInterestsScreen",
     "OnboardingRoleScreen",
     "OnboardingRoleSpecificScreen1",
-    /*"OnboardingRoleSpecificScreen2",
-    "OnboardingCollaborateScreen",
-    "OnboardingDiscoverScreen",
-    "OnboardingMeetScreen",*/
-    "OnboardingTosScreen1",
+    //"OnboardingRoleSpecificScreen2",
+    "OnboardingOffersScreen1",
+    "OnboardingOffersScreen2",
+    "OnboardingOffersScreen3",
 ];

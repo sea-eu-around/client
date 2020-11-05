@@ -107,20 +107,18 @@ const OnboardingStack = createMaterialTopTabNavigator<OnboardingScreens>();
 export default function OnboardingNavigator(): JSX.Element {
     const screens = ONBOARDING_ORDER.map((name: keyof OnboardingScreens, i: number) => {
         const ComponentClass = ONBOARDING_SCREENS[name];
-        const Wrapper = (props: MaterialTopTabScreenProps<OnboardingScreens>): JSX.Element => {
-            return (
-                <ComponentClass
-                    next={() => {
-                        if (i < ONBOARDING_ORDER.length - 1) props.navigation.navigate(ONBOARDING_ORDER[i + 1]);
-                    }}
-                    previous={() => {
-                        if (i > 0) props.navigation.navigate(ONBOARDING_ORDER[i - 1]);
-                    }}
-                    index={i}
-                    {...props}
-                />
-            );
-        };
+        const Wrapper = (props: MaterialTopTabScreenProps<OnboardingScreens>): JSX.Element => (
+            <ComponentClass
+                next={() => {
+                    if (i < ONBOARDING_ORDER.length - 1) props.navigation.navigate(ONBOARDING_ORDER[i + 1]);
+                }}
+                previous={() => {
+                    if (i > 0) props.navigation.navigate(ONBOARDING_ORDER[i - 1]);
+                }}
+                index={i}
+                {...props}
+            />
+        );
 
         return <OnboardingStack.Screen key={i} name={name} component={Wrapper} />;
     });

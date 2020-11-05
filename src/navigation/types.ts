@@ -29,13 +29,15 @@ export type OnboardingScreens = {
     OnboardingNameScreen: undefined;
     OnboardingPersonalInfoScreen: undefined;
     OnboardingLanguageScreen: undefined;
+    OnboardingInterestsScreen: undefined;
     OnboardingRoleScreen: undefined;
     OnboardingRoleSpecificScreen1: undefined;
     OnboardingRoleSpecificScreen2: undefined;
-    OnboardingDiscoverScreen: undefined;
-    OnboardingMeetScreen: undefined;
-    OnboardingCollaborateScreen: undefined;
-    OnboardingTosScreen1: undefined;
+    OnboardingOffersScreen1: undefined;
+    OnboardingOffersScreen2: undefined;
+    OnboardingOffersScreen3: undefined;
+    OnboardingTosScreen: undefined;
+    OnboardingPrivacyScreen: undefined;
 };
 
 export type SignupTabNavigatorScreens = {

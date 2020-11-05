@@ -70,8 +70,9 @@ class OnboardingRoleSpecificScreen2 extends React.Component<OnboardingRoleSpecif
 
                     return (
                         <OnboardingSlide
-                            title={i18n.t("onboarding.collaborate.title")}
-                            subtitle={i18n.t("onboarding.collaborate.subtitle")}
+                            title={i18n.t("role-specific screen 2")}
+                            //title={i18n.t("onboarding.collaborate.title")}
+                            //subtitle={i18n.t("onboarding.collaborate.subtitle")}
                             handleSubmit={handleSubmit}
                             {...this.props}
                         >
