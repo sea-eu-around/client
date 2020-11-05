@@ -7,11 +7,11 @@ import Colors from "../constants/themes";
 import {MainNavigatorTabs} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
 import {setProfileFields} from "../state/profile/actions";
-import {MyProfileDto} from "../api/dto";
+import {UserProfileDto} from "../api/dto";
 
 const mapStateToProps = (state: AppState) => ({
     theme: Colors[state.settings.theme],
-    profile: state.profile.userProfile,
+    user: state.profile.user,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
 
 type TabProfileScreenProps = ConnectedProps<typeof reduxConnector> & StackScreenProps<MainNavigatorTabs, "TabProfile">;
 
-function TabProfileScreen({theme, profile, dispatch}: TabProfileScreenProps): JSX.Element {
+function TabProfileScreen({theme, user, dispatch}: TabProfileScreenProps): JSX.Element {
     return (
         <View style={[styles.container, {backgroundColor: theme.background}]}>
             <EditProfileForm
-                profile={profile}
-                onFieldChanged={(fields: Partial<MyProfileDto>) => {
+                user={user}
+                onFieldChanged={(fields: Partial<UserProfileDto>) => {
                     dispatch(setProfileFields(fields));
                 }}
             ></EditProfileForm>
