@@ -39,12 +39,16 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
             >
                 <View style={loginTabsStyles.formWrapper}>
                     <LoginForm navigation={navigation}></LoginForm>
-                    <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
-                        <Text style={{fontSize: 22}}>debug: connect</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("OnboardingScreen")}>
-                        <Text style={{fontSize: 22}}>debug: onboarding</Text>
-                    </TouchableOpacity>
+                    <View style={{flexDirection: "row"}}>
+                        <Text style={{fontSize: 20}}>debug:&nbsp;&nbsp;&nbsp;</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("MainScreen")}>
+                            <Text style={{fontSize: 20}}>connect</Text>
+                        </TouchableOpacity>
+                        <Text style={{fontSize: 20}}> | </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("OnboardingScreen")}>
+                            <Text style={{fontSize: 20}}>on-boarding</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         );
