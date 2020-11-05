@@ -23,7 +23,19 @@ export default {
         signupWelcome: "We can't wait for you to join our community!\n\nJust one more step.",
         firstname: "First name",
         lastname: "Last name",
-        tosLabel: "I have read and agree to the Terms of Service and Privacy Policy",
+        tos: {
+            modal: {
+                disclaimer1:
+                    "Please understand that you will not be able to use our services if you decide to decline the terms of service.",
+                disclaimer2: "Declining will abort the profile creation process.",
+            },
+            decline: "Decline",
+            accept: "Accept",
+            readMore: ["Read more about our terms of service ", "here", "."],
+        },
+        privacy: {
+            readMore: ["Read more about our privacy policy ", "here", "."],
+        },
         emailNotificationsLabel: "Send me useful notifications by email.",
         emailValidation: {
             validating: "Validating",
@@ -49,7 +61,6 @@ export default {
             languages: {
                 multiple: "You cannot add two entries for the same language.",
             },
-            tosAccept: "You cannot continue without agreeing to our Terms of Service and Privacy Policy.",
         },
         pageNotFound: "404: Page not found.",
         pageDoesntExist: "This page doesn't exist.",
@@ -142,6 +153,9 @@ export default {
             language: {
                 title: "Languages",
             },
+            interests: {
+                title: "Interests",
+            },
             role: {
                 title: "I am a...",
             },
@@ -153,13 +167,27 @@ export default {
                     title: "Staff position",
                 },
             },
-            collaborate: {
+            offers1: {
+                title: "Meet",
+                subtitle: "Meet up with new friends in real life.",
+            },
+            offers2: {
+                title: "Discover",
+                subtitle: "Find out about other cultures.",
+            },
+            offers3: {
                 title: "Collaborate",
                 subtitle: "Find people to work on projects, academic or not.",
             },
-            tos1: {
+            tos: {
                 title: "Terms of service",
-                subtitle: "blablabla",
+                subtitle:
+                    "I am aware that I am entering a space of intercultural exchange and I am committed to caring and respectful exchanges with other members. My name and surname will be visible by other users.",
+            },
+            privacy: {
+                title: "Privacy policy",
+                subtitle:
+                    "I am entering a university community. I agree to provide some personal data, that will not be shared with anyone but the SEA-EU Around community.",
             },
         },
         spokenLanguages: "Spoken languages",
@@ -369,6 +397,7 @@ export default {
             zu: "Zulu",
         },
         interests: "Interests",
+        chooseInterests: "Choose interests",
         interestsPicker: {
             placeholder: "Select interests",
             searchPlaceholder: "Search",
@@ -376,6 +405,20 @@ export default {
         },
         interestNames: {
             Netflix: "netflix",
+        },
+        offers: {
+            "drink-a-beer": {
+                name: "Drink a beer",
+                help: "I am open to grabbing a beer with the people I meet on this platform.",
+            },
+            "visit-campus": {
+                name: "Visit my campus",
+                help: "I am open to helping someone visit my campus.",
+            },
+            "provide-couch": {
+                name: "Provide a couch",
+                help: "I am open to letting someone sleep on my couch.",
+            },
         },
     },
     fr: {
