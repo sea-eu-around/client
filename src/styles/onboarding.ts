@@ -41,3 +41,28 @@ export const onboardingStyle = StyleSheet.create({
         lineHeight: 25,
     } as TextStyle,
 });
+
+export const tosSlideStyle = StyleSheet.create({
+    actionsWrapper: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+    },
+    actionButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    actionButtonText: {
+        fontSize: 16,
+        paddingHorizontal: 2,
+        textTransform: "uppercase",
+        letterSpacing: 1,
+    },
+    readMoreText: {
+        fontSize: 16,
+        lineHeight: 20,
+        textAlign: "justify",
+        marginBottom: 40,
+        letterSpacing: 0.4,
+    },
+});
