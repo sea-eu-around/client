@@ -37,6 +37,7 @@ export const initialState: AuthState = {
         staffRole: null,
         languages: [],
         offerValues: {},
+        interestIds: [],
     },
 };
 
