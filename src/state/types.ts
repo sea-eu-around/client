@@ -1,7 +1,7 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {Theme} from "../types";
-import {CreateProfileDto, InterestDto, OfferDto, TokenDto, UserDto, UserProfileDto} from "../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, OfferValueDto, TokenDto, UserDto, UserProfileDto} from "../api/dto";
 import {Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
@@ -17,6 +17,13 @@ export type OnboardingState = {
     levelOfStudy: number;
     staffRole: StaffRole | null;
     languages: SpokenLanguage[];
+    interestIds: string[];
+    offerValues: {
+        [key: string]: {
+            roles: Role[];
+            genders: Gender[];
+        };
+    };
 };
 
 export type AuthState = {
@@ -79,6 +86,7 @@ export enum AUTH_ACTION_TYPES {
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
     SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
+    SET_ONBOARDING_OFFER_VALUE = "AUTH/SET_ONBOARDING_OFFER_VALUE",
 }
 
 export type RegisterBeginAction = {
@@ -133,6 +141,12 @@ export type SetOnboardingValuesAction = {
     values: Partial<OnboardingState>;
 };
 
+export type SetOnboardingOfferValueAction = {
+    type: string;
+    id: string;
+    value: Partial<OfferValueDto>;
+};
+
 export type AuthAction =
     | RegisterBeginAction
     | RegisterSuccessAction
@@ -143,7 +157,8 @@ export type AuthAction =
     | LogOutAction
     | ValidateAccountSuccessAction
     | ValidateAccountFailureAction
-    | SetOnboardingValuesAction;
+    | SetOnboardingValuesAction
+    | SetOnboardingOfferValueAction;
 
 /*### SETTINGS ###*/
 

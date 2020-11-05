@@ -12,9 +12,10 @@ import {
     OnboardingState,
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
+    SetOnboardingOfferValueAction,
 } from "../types";
 import {BACKEND_URL} from "../../constants/config";
-import {LoginDto, TokenDto, UserDto} from "../../api/dto";
+import {LoginDto, OfferValueDto, TokenDto, UserDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
 
 // Register actions
@@ -106,4 +107,10 @@ export const validateAccountFailure = (errors: string[]): ValidateAccountFailure
 export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboardingValuesAction => ({
     type: AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES,
     values,
+});
+
+export const setOnboardingOfferValue = (id: string, value: Partial<OfferValueDto>): SetOnboardingOfferValueAction => ({
+    type: AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE,
+    id,
+    value,
 });

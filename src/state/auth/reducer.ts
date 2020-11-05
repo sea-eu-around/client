@@ -10,6 +10,7 @@ import {
     ValidateAccountSuccessAction,
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
+    SetOnboardingOfferValueAction,
 } from "../types";
 
 export const initialState: AuthState = {
@@ -35,6 +36,7 @@ export const initialState: AuthState = {
         levelOfStudy: -1,
         staffRole: null,
         languages: [],
+        offerValues: {},
     },
 };
 
@@ -115,6 +117,22 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
             const {values} = <SetOnboardingValuesAction>action;
             return {...newState, onboarding: {...state.onboarding, ...values}};
+        }
+        case AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE: {
+            const {id, value} = <SetOnboardingOfferValueAction>action;
+            return {
+                ...newState,
+                onboarding: {
+                    ...state.onboarding,
+                    offerValues: {
+                        ...state.onboarding.offerValues,
+                        [id]: {
+                            ...(state.onboarding.offerValues[id] || {roles: [], genders: []}),
+                            ...value,
+                        },
+                    },
+                },
+            };
         }
         default:
             return state;
