@@ -55,15 +55,21 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
+export type OfferCategory = "discover" | "collaborate" | "meet";
+
 export type OfferDto = {
     id: string;
-    category: string;
-    allowChooseProfile: boolean;
+    category: OfferCategory;
+    allowChooseRole: boolean;
     allowChooseGender: boolean;
     allowInterRole: boolean;
 };
 
+export type OfferValueDto = {
+    roles: Role[];
+    genders: Gender[];
+};
+
 export type InterestDto = {
     id: string;
-    key: string;
 };
