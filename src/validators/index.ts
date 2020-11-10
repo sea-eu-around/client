@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import {DEGREES} from "../constants/profile-constants";
 import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 
 export const MIN_PASSWORD_LENGTH = 8;
@@ -39,5 +40,5 @@ export const VALIDATOR_LASTNAME = Yup.string().trim().required("validation.requi
 export const VALIDATOR_ONBOARDING_BIRTHDATE = Yup.date().nullable().required("validation.required"); // make it nullable so we can use null to represent a non given value (will fail the 'required' test anyway)
 export const VALIDATOR_ONBOARDING_GENDER = Yup.string().nullable().required("validation.required");
 export const VALIDATOR_ONBOARDING_NATIONALITY = Yup.string().nullable().required("validation.required");
-export const VALIDATOR_ONBOARDING_LEVEL_OF_STUDY = Yup.number().notOneOf([-1], "validation.required");
+export const VALIDATOR_ONBOARDING_DEGREE = Yup.string().oneOf(DEGREES, "validation.required");
 export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.addAtLeastOne");
