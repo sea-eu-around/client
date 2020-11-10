@@ -4,13 +4,14 @@ import React from "react";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import store from "./state/store";
 import {Provider} from "react-redux";
 import configureLocalization from "./localization";
 import {YellowBox} from "react-native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvider";
+import store from "./state/store";
 
-// YellowBox.ignoreWarnings(["Require cycle"]); // TODO temporary
+// YellowBox.ignoreWarnings(["Require cycle"]);
 YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]); // TODO: Remove when fixed
 
 function App() {
@@ -24,8 +25,10 @@ function App() {
         return (
             <SafeAreaProvider>
                 <Provider store={store}>
-                    <Navigation colorScheme={colorScheme} />
-                    <StatusBar />
+                    <ConnectedThemeProvider>
+                        <Navigation colorScheme={colorScheme} />
+                        <StatusBar />
+                    </ConnectedThemeProvider>
                 </Provider>
             </SafeAreaProvider>
         );
