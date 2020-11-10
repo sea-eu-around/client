@@ -22,19 +22,30 @@ export default {
             ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
-                    TabOne: {
+                    TabDiscover: {
                         screens: {
-                            TabOneScreen: "one",
+                            TabDiscoverScreen: "discover",
                         },
                     },
-                    TabTwo: {
+                    TabMatching: {
                         screens: {
-                            TabTwoScreen: "two",
+                            TabMatchingScreen: "match",
+                            MAtchFilteringScren: "match/filters",
+                        },
+                    },
+                    TabMessaging: {
+                        screens: {
+                            TabMessagingScreen: "messaging",
                         },
                     },
                     TabProfile: {
                         screens: {
                             TabProfileScreen: "profile",
+                        },
+                    },
+                    TabNotifications: {
+                        screens: {
+                            TabNotificationsScreen: "notifications",
                         },
                     },
                 },
