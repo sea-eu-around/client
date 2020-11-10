@@ -1,20 +1,22 @@
-import {Gender, Role, StaffRole} from "../constants/profile-constants";
+import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
 import {SpokenLanguage} from "../model/spoken-language";
 
 export type UserProfileDto = {
+    id: string;
     firstName: string;
     lastName: string;
-    university: UniversityKey;
-    levelOfStudy: number;
     nationality: CountryCode;
-    staffRole?: StaffRole;
-    birthDate: Date;
+    birthdate: Date;
     gender: Gender;
     interests: string[];
     avatarUri: string;
     languages: SpokenLanguage[];
+    educationFields: string[];
+    staffRole?: StaffRole;
+    degree?: Degree;
+    university: UniversityKey;
 };
 
 export type UserDto = {
@@ -37,16 +39,19 @@ export type LoginDto = {
 };
 
 export type CreateProfileDtoCommon = {
+    type: Role;
     firstName: string;
     lastName: string;
     gender: Gender;
     birthdate: string;
     nationality: CountryCode;
     languages: SpokenLanguage[];
+    interests: string[];
+    profileOffers: OfferValueDto[];
 };
 
 export type CreateProfileDtoStudent = CreateProfileDtoCommon & {
-    degree: string;
+    degree: Degree;
 };
 
 export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
@@ -55,7 +60,11 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
-export type OfferCategory = "discover" | "collaborate" | "meet";
+export enum OfferCategory {
+    Discover = "discover",
+    Collaborate = "collaborate",
+    Meet = "meet",
+}
 
 export type OfferDto = {
     id: string;
@@ -66,8 +75,12 @@ export type OfferDto = {
 };
 
 export type OfferValueDto = {
-    roles: Role[];
-    genders: Gender[];
+    offerId: string;
+    allowStaff: boolean;
+    allowStudent: boolean;
+    allowMale: boolean;
+    allowFemale: boolean;
+    allowOther: boolean;
 };
 
 export type InterestDto = {
