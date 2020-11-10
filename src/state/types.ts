@@ -1,8 +1,8 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
-import {Theme} from "../types";
+import {ThemeKey} from "../types";
 import {CreateProfileDto, InterestDto, OfferDto, OfferValueDto, TokenDto, UserDto, UserProfileDto} from "../api/dto";
-import {Gender, Role, StaffRole} from "../constants/profile-constants";
+import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
 import {SpokenLanguage} from "../model/spoken-language";
@@ -10,20 +10,15 @@ import {SpokenLanguage} from "../model/spoken-language";
 export type OnboardingState = {
     firstname: string;
     lastname: string;
-    birthDate: Date | null;
+    birthdate: Date | null;
     gender: Gender | null;
     nationality: CountryCode | null;
     role: Role | null;
-    levelOfStudy: number;
+    degree: Degree | null;
     staffRole: StaffRole | null;
     languages: SpokenLanguage[];
     interestIds: string[];
-    offerValues: {
-        [key: string]: {
-            roles: Role[];
-            genders: Gender[];
-        };
-    };
+    offerValues: {[key: string]: OfferValueDto};
 };
 
 export type AuthState = {
@@ -34,7 +29,6 @@ export type AuthState = {
     registerEmail: string;
     registerFailure: boolean;
     registerErrors: string[];
-    registerSuccess: boolean;
     loginErrors: string[];
     validatedEmail: string | null;
     verificationToken: string | null; // TODO temporary
@@ -43,20 +37,29 @@ export type AuthState = {
 };
 
 export type SettingsState = {
-    theme: Theme;
+    theme: ThemeKey;
     locale: SupportedLocale;
+    localizedLanguageItems: {value: string; label: string}[];
 };
 
 export type ProfileState = {
     user: UserDto;
     offers: OfferDto[];
     interests: InterestDto[];
+    fetchedProfiles: UserProfileDto[];
+    fetchingProfiles: boolean;
+    fetchingPage: number;
+};
+
+export type MatchingFiltersState = {
+    offers: {[key: string]: boolean};
+    universities: string[];
+    degrees: Degree[];
+    languages: string[];
 };
 
 export type MatchingState = {
-    userIds: [1, 2, 3, 4, 6, 7];
-    loadedPreviews: {[key: string]: {id: number}};
-    loadedProfiles: {[key: string]: {id: number}};
+    filters: MatchingFiltersState;
 };
 
 export type AppState = {
@@ -169,7 +172,7 @@ export enum SETTINGS_ACTION_TYPES {
 
 export type SetThemeAction = {
     type: string;
-    theme: Theme;
+    theme: ThemeKey;
 };
 
 export type SetLocaleAction = {
@@ -190,9 +193,12 @@ export enum PROFILE_ACTION_TYPES {
     PROFILE_SET_FIELDS = "PROFILE/SET_FIELDS",
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
+    FETCH_PROFILES_BEGIN = "PROFILE/FETCH_PROFILES_BEGIN",
+    FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
+    FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",
+    FETCH_PROFILES_FAILURE = "PROFILE/FETCH_PROFILES_FAILURE",
 }
 
-// TODO loaduserprofile
 export type LoadUserProfileAction = {
     type: string;
     id: string;
@@ -230,6 +236,23 @@ export type LoadProfileInterestsSuccessAction = {
     interests: InterestDto[];
 };
 
+export type BeginFetchProfilesAction = {
+    type: string;
+};
+
+export type FetchProfilesFailureAction = {
+    type: string;
+};
+
+export type FetchProfilesAction = {
+    type: string;
+};
+
+export type FetchProfilesSuccessAction = {
+    type: string;
+    profiles: UserProfileDto[];
+};
+
 export type ProfileAction =
     | SetProfileFieldsAction
     | CreateProfileAction
@@ -237,4 +260,33 @@ export type ProfileAction =
     | LoadProfileOffersAction
     | LoadProfileOffersSuccessAction
     | LoadProfileInterestsAction
-    | LoadProfileInterestsSuccessAction;
+    | LoadProfileInterestsSuccessAction
+    | BeginFetchProfilesAction
+    | FetchProfilesAction
+    | FetchProfilesSuccessAction
+    | FetchProfilesFailureAction;
+
+/*### MATCHING ###*/
+
+export enum MATCHING_ACTION_TYPES {
+    SET_FILTERS = "MATCHING/SET_FILTERS",
+    SET_OFFER_FILTER = "MATCHING/SET_OFFER_FILTER",
+    RESET_MATCHING_FILTERS = "MATCHING/RESET_MATCHING_FILTERS",
+}
+
+export type SetOfferFilterAction = {
+    type: string;
+    offerId: string;
+    value: boolean;
+};
+
+export type ResetMatchingFiltersAction = {
+    type: string;
+};
+
+export type SetMatchingFiltersAction = {
+    type: string;
+    filters: Partial<MatchingFiltersState>;
+};
+
+export type MatchingAction = SetOfferFilterAction | SetMatchingFiltersAction | ResetMatchingFiltersAction;
