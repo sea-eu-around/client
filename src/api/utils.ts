@@ -7,15 +7,15 @@ export type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyPar
 export type RequestResponse = {success: boolean; codes: string[]} & {[key: string]: unknown};
 
 /**
- * Encode arguments for an HTTP request (e.g. ?param1=value1&param2=value2)
+ * Encode parameters for an HTTP request (e.g. param1=value1&param2=value2)
  * @param args - A map that contains argument keys and associated values.
  * @returns the given arguments, formatted into a HTTP request suffix.
  */
-export function encodeRequestArguments(args: URLParams): string {
+export function encodeRequestParams(args: URLParams): string {
     const keys = Object.keys(args);
     if (keys.length == 0) return "";
     else {
-        return "?" + keys.map((key: string) => `${key}=${encodeURIComponent(args[key])}`).join("&");
+        return keys.map((key: string) => `${key}=${encodeURIComponent(args[key])}`).join("&");
     }
 }
 
@@ -33,6 +33,7 @@ export async function requestBackend(
     params: URLParams = {},
     body: URLBodyParams = {},
     auth = false,
+    verbose = true,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
@@ -45,16 +46,26 @@ export async function requestBackend(
         else console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
     }
 
+    const formattedParams = encodeRequestParams(params);
+
     try {
-        const response = await fetch(`${BACKEND_URL}/${endpoint}`, {
+        if (verbose) {
+            console.log(`Sending request: ${method} /${endpoint}?${formattedParams}`);
+            console.log(`  headers: ${JSON.stringify(headers)}`);
+            console.log(`  body   : ${JSON.stringify(body)}`);
+        }
+
+        const response = await fetch(`${BACKEND_URL}/${endpoint}?${formattedParams}`, {
             method,
             headers,
             ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
         });
 
         const json = await response.json();
-        console.log(`Response from endpoint ${endpoint}:`);
-        console.log(json);
+        /*if (verbose) {
+            console.log(`Response from endpoint ${endpoint}:`);
+            console.log(json);
+        }*/
 
         return json;
     } catch (error) {
