@@ -3,11 +3,10 @@ import i18n from "i18n-js";
 import translations from "./constants/translations";
 
 export type SupportedLocale = "en" | "fr";
-export const SUPPORTED_LOCALES: string[] = ["en", "fr"];
+export const SUPPORTED_LOCALES: SupportedLocale[] = ["en", "fr"];
 
 export function getDefaultLocale(): SupportedLocale {
-    const idx = SUPPORTED_LOCALES.indexOf(Localization.locale);
-    return idx == -1 ? "en" : (SUPPORTED_LOCALES[idx] as SupportedLocale);
+    return SUPPORTED_LOCALES.find((l: SupportedLocale) => l == Localization.locale) || "en";
 }
 
 export default function configureLocalization(): void {
