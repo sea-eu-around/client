@@ -69,6 +69,14 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
                 fetchingPage: state.fetchingPage + 1,
             };
         }
+        case PROFILE_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
+            return {
+                ...state,
+                fetchedProfiles: [],
+                fetchingProfiles: false,
+                fetchingPage: 1,
+            };
+        }
         default:
             return state;
     }

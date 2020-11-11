@@ -9,6 +9,7 @@ import {
     BeginFetchProfilesAction,
     FetchProfilesFailureAction,
     ProfileState,
+    FetchProfilesRefreshAction,
 } from "../types";
 import {CreateProfileDto, InterestDto, OfferDto, UserProfileDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
@@ -129,4 +130,8 @@ export const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
 export const fetchProfilesSuccess = (profiles: UserProfileDto[]): FetchProfilesSuccessAction => ({
     type: PROFILE_ACTION_TYPES.FETCH_PROFILES_SUCCESS,
     profiles,
+});
+
+export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
+    type: PROFILE_ACTION_TYPES.FETCH_PROFILES_REFRESH,
 });

@@ -205,6 +205,7 @@ export enum PROFILE_ACTION_TYPES {
     FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
     FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",
     FETCH_PROFILES_FAILURE = "PROFILE/FETCH_PROFILES_FAILURE",
+    FETCH_PROFILES_REFRESH = "PROFILE/FETCH_PROFILES_REFRESH",
 }
 
 export type LoadUserProfileAction = {
@@ -261,6 +262,10 @@ export type FetchProfilesSuccessAction = {
     profiles: UserProfileDto[];
 };
 
+export type FetchProfilesRefreshAction = {
+    type: string;
+};
+
 export type ProfileAction =
     | SetProfileFieldsAction
     | CreateProfileAction
@@ -272,7 +277,8 @@ export type ProfileAction =
     | BeginFetchProfilesAction
     | FetchProfilesAction
     | FetchProfilesSuccessAction
-    | FetchProfilesFailureAction;
+    | FetchProfilesFailureAction
+    | FetchProfilesRefreshAction;
 
 /*### MATCHING ###*/
 
