@@ -2,7 +2,6 @@ import {StatusBar} from "expo-status-bar";
 import {registerRootComponent} from "expo";
 import React from "react";
 import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import {Provider} from "react-redux";
 import configureLocalization from "./localization";
@@ -16,8 +15,6 @@ YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]); // TODO: 
 
 function App() {
     const isLoadingComplete = useCachedResources();
-    const colorScheme = useColorScheme();
-    console.log(colorScheme);
     configureLocalization();
 
     if (!isLoadingComplete) {
