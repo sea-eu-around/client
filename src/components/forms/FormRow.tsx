@@ -1,12 +1,14 @@
-import {connect, ConnectedProps} from "react-redux";
-import themes from "../../constants/themes";
-import {AppState} from "../../state/types";
 import * as React from "react";
-import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View} from "react-native";
+import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} from "react-native";
 import {formStyle} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Schema, ValidationError} from "yup";
+import {Theme} from "../../types";
+import {preTheme} from "../../styles/utils";
+import {AppState} from "../../state/types";
+import {connect, ConnectedProps} from "react-redux";
+import themes from "../../constants/themes";
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
@@ -54,7 +56,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
         this.setState({...this.state, error});
     }
 
-    onChange(value: T) {
+    onChange(value: T): void {
         this.setState({...this.state, value}, () => {
             this.validate();
         });
@@ -73,7 +75,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
         }
     }
 
-    apply() {
+    apply(): void {
         if (this.validate()) {
             this.setModal(false);
             if (this.props.apply) this.props.apply(this.state.value);
@@ -84,80 +86,30 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
         const {label, theme} = this.props;
         const {value, error} = this.state;
 
-        const errorStyle = {
-            fontSize: 12,
-            color: theme.error,
-        };
+        const styles = themedStyles(theme);
 
         return (
-            <TouchableOpacity
-                style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0,0,0,0.5)",
-                }}
-                onPress={() => this.setModal(false)}
-                activeOpacity={1}
-            >
-                <View
-                    style={{
-                        width: "80%",
-                        maxWidth: 500,
-                        backgroundColor: "#fff",
-                        paddingHorizontal: 10,
-                        paddingVertical: 20,
-                        borderRadius: 4,
-                        borderColor: "#ccc",
-                        borderWidth: 0.5,
-                        borderStyle: "solid",
-                    }}
-                >
-                    <Text
-                        style={{
-                            color: theme.textLight,
-                            textTransform: "uppercase",
-                            letterSpacing: 1.5,
-                            fontSize: 13,
-                            marginBottom: 12,
-                        }}
-                    >
-                        {label}
-                    </Text>
+            <TouchableOpacity style={styles.modalTouchable} onPress={() => this.setModal(false)} activeOpacity={1}>
+                <View style={styles.modalWrapper}>
+                    <Text style={styles.modalLabel}>{label}</Text>
                     {this.props.renderInput(value, error, (value: T) => this.onChange(value))}
-                    <Text style={errorStyle}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
-                    <View style={[formStyle.actionRow, {height: 50, marginTop: 20}]}>
+                    <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
+                    <View style={styles.modalActions}>
                         <TouchableOpacity
                             accessibilityRole="button"
                             accessibilityLabel="CANCEL"
                             onPress={() => this.setModal(false)}
-                            style={[
-                                formStyle.buttonMajor,
-                                {
-                                    flex: 1,
-                                    backgroundColor: theme.actionNeutral,
-                                    marginRight: 6,
-                                    height: 50,
-                                },
-                            ]}
+                            style={styles.modalCancel}
                         >
-                            <Text style={[formStyle.buttonMajorText, {lineHeight: 50}]}>{i18n.t("cancel")}</Text>
+                            <Text style={styles.modalActionText}>{i18n.t("cancel")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessibilityRole="button"
                             accessibilityLabel="OK"
                             onPress={() => this.apply()}
-                            style={[
-                                formStyle.buttonMajor,
-                                {
-                                    flex: 1,
-                                    backgroundColor: theme.accent,
-                                    marginLeft: 6,
-                                    height: 50,
-                                },
-                            ]}
+                            style={styles.modalOk}
                         >
-                            <Text style={[formStyle.buttonMajorText, {lineHeight: 50}]}>{i18n.t("apply")}</Text>
+                            <Text style={styles.modalActionText}>{i18n.t("apply")}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -169,21 +121,12 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
         const {theme, label, children, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
         const {modalOpen} = this.state;
 
+        const styles = themedStyles(theme);
+
         return (
-            <React.Fragment>
+            <>
                 <TouchableOpacity
-                    style={[
-                        {
-                            width: "100%",
-                            flexDirection: "row",
-                            backgroundColor: "#fff",
-                            paddingHorizontal: 10,
-                            height: 80,
-                            elevation: 1,
-                            justifyContent: "space-evenly",
-                        },
-                        style,
-                    ]}
+                    style={[styles.cardWrapper, style]}
                     activeOpacity={0.9}
                     disabled={noModal}
                     onPress={() => {
@@ -191,34 +134,19 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
                     }}
                     {...otherProps}
                 >
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: "column",
-                            justifyContent: "space-evenly",
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: theme.textLight,
-                                textTransform: "uppercase",
-                                letterSpacing: 1,
-                                fontSize: 11,
-                            }}
-                        >
-                            {label}
-                        </Text>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardLabel}>{label}</Text>
                         <View>
                             {display !== undefined && display}
                             {display === undefined && children}
                         </View>
                     </View>
                     {!noModal && (
-                        <View style={{justifyContent: "center"}}>
+                        <View style={styles.rightIconContainer}>
                             <MaterialIcons
                                 name={locked ? "lock" : "keyboard-arrow-right"}
                                 size={locked ? 30 : 40}
-                                style={{color: theme.textLight}}
+                                style={styles.rightIcon}
                             ></MaterialIcons>
                         </View>
                     )}
@@ -233,9 +161,90 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
                         )}
                     </React.Fragment>
                 )}
-            </React.Fragment>
+            </>
         );
     }
 }
 
-export default connect(mapStateToProps)(FormRowComponent);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        modalTouchable: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+        },
+        modalWrapper: {
+            width: "80%",
+            maxWidth: 500,
+            backgroundColor: "#fff",
+            paddingHorizontal: 10,
+            paddingVertical: 20,
+            borderRadius: 4,
+            borderColor: "#ccc",
+            borderWidth: 0.5,
+            borderStyle: "solid",
+        },
+        modalErrorText: {
+            fontSize: 12,
+            color: theme.error,
+        },
+        modalLabel: {
+            color: theme.textLight,
+            textTransform: "uppercase",
+            letterSpacing: 1.5,
+            fontSize: 13,
+            marginBottom: 12,
+        },
+        modalActions: {
+            ...formStyle.actionRow,
+            height: 50,
+            marginTop: 20,
+        },
+        modalCancel: {
+            ...formStyle.buttonMajor,
+            flex: 1,
+            backgroundColor: theme.actionNeutral,
+            marginRight: 6,
+            height: 50,
+        },
+        modalOk: {
+            ...formStyle.buttonMajor,
+            flex: 1,
+            backgroundColor: theme.accent,
+            marginLeft: 6,
+            height: 50,
+        },
+        modalActionText: {
+            ...formStyle.buttonMajorText,
+            lineHeight: 50,
+        },
+        cardWrapper: {
+            width: "100%",
+            flexDirection: "row",
+            backgroundColor: "#fff",
+            paddingHorizontal: 10,
+            elevation: 1,
+            justifyContent: "space-evenly",
+            paddingVertical: 15,
+            minHeight: 80,
+        },
+        cardContent: {
+            flex: 1,
+            flexDirection: "column",
+            //justifyContent: "space-evenly",
+            justifyContent: "space-between",
+        },
+        cardLabel: {
+            color: theme.textLight,
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            fontSize: 11,
+            marginBottom: 10,
+        },
+        rightIconContainer: {justifyContent: "center"},
+        rightIcon: {color: theme.textLight},
+    });
+});
+
+export default reduxConnector(FormRowComponent);

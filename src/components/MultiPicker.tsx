@@ -4,9 +4,10 @@ import i18n from "i18n-js";
 import DropDownPicker from "react-native-dropdown-picker";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
-import themes from "../constants/themes";
-import {Overlay} from "react-native-elements";
-import {getPickerStyles} from "../styles/picker";
+import {Overlay, withTheme} from "react-native-elements";
+import {pickerStyles} from "../styles/picker";
+import {ThemeProps} from "../types";
+import {SupportedLocale} from "../localization";
 
 type PickerItem = {
     value: string;
@@ -15,8 +16,7 @@ type PickerItem = {
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-    stateLocale: state.settings.locale,
+    locale: state.settings.locale,
 }));
 
 // Component props
@@ -24,16 +24,17 @@ export type MultiPickerProps = ConnectedProps<typeof reduxConnector> & {
     values: string[];
     genLabel?: (value: string) => string;
     onChange?: (values: string[]) => void;
-    defaultValues?: string[];
+    selected?: string[];
     placeholder?: string;
     multipleText?: string;
     searchablePlaceholder?: string;
-} & ViewProps;
+    showSelected?: boolean;
+} & ViewProps &
+    ThemeProps;
 
 // Component state
 export type MultiPickerState = {
-    items: PickerItem[];
-    selected: string[];
+    items: Map<SupportedLocale, PickerItem[]>;
     open: boolean;
     dropdownWrapperHeight: number;
 };
@@ -41,26 +42,36 @@ export type MultiPickerState = {
 class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
     static defaultProps = {
         items: [],
-        defaultItems: [],
-        defaultValues: [],
+        showSelected: true,
+        selected: [],
     };
+
+    tempSelected: string[] = [];
 
     constructor(props: MultiPickerProps) {
         super(props);
         this.state = {
-            items: [],
+            items: new Map(),
             open: false,
             dropdownWrapperHeight: 0,
-            selected: props.defaultValues || [],
         };
     }
 
     updateItems() {
-        const items = this.props.values.map((value: string) => ({
-            value,
-            label: this.props.genLabel ? i18n.t(this.props.genLabel(value)) : value,
-        }));
-        this.setState({...this.state, items});
+        const locale = this.props.locale;
+        if (!this.state.items.has(locale) || this.state.items.get(locale)?.length != this.props.values.length) {
+            const items = new Map(this.state.items);
+            items.set(
+                locale,
+                this.props.values.map((value: string) => ({
+                    value,
+                    label: this.props.genLabel ? i18n.t(this.props.genLabel(value)) : value,
+                })),
+            );
+            this.setState({...this.state, items});
+        }
+
+        this.tempSelected = this.props.selected || [];
     }
 
     componentDidMount() {
@@ -68,66 +79,79 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
     }
 
     componentDidUpdate(oldProps: MultiPickerProps) {
-        if (oldProps.stateLocale != this.props.stateLocale || oldProps.values.length != this.state.items.length) {
+        if (oldProps.locale != this.props.locale || oldProps.values.length != this.props.values.length) {
             this.updateItems();
         }
     }
 
     open() {
+        this.tempSelected = this.props.selected || [];
         this.setState({...this.state, open: true});
     }
 
     close() {
         this.setState({...this.state, open: false});
+        if (this.props.onChange) {
+            this.props.onChange(this.tempSelected);
+        }
     }
 
     render(): JSX.Element {
-        const {theme, onChange, genLabel, placeholder, multipleText, searchablePlaceholder, ...viewProps} = this.props;
+        const {
+            theme,
+            locale,
+            selected,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            onChange,
+            genLabel,
+            placeholder,
+            multipleText,
+            searchablePlaceholder,
+            showSelected,
+            ...viewProps
+        } = this.props;
+        const styles = pickerStyles(theme);
 
-        const pickerStyles = getPickerStyles(theme);
-
-        const selectedViews = this.state.selected.map((val: string, i: number) => (
-            <View key={i} style={pickerStyles.selectedItemView}>
-                <Text numberOfLines={1}>{genLabel ? i18n.t(genLabel(val)) : val}</Text>
-            </View>
-        ));
+        const selectedItems = selected || [];
 
         return (
             <View {...viewProps}>
-                {!this.state.open && (
+                <View>
+                    <TouchableOpacity onPress={() => this.open()} style={styles.openButton}>
+                        <Text style={styles.openButtonText}>
+                            {i18n.t("picker.callToAction").replace("%d", selectedItems.length.toString())}
+                        </Text>
+                    </TouchableOpacity>
                     <View>
-                        <TouchableOpacity onPress={() => this.open()} style={pickerStyles.openButton}>
-                            <Text style={pickerStyles.openButtonText}>
-                                {i18n.t("picker.callToAction").replace("%d", this.state.selected.length.toString())}
-                            </Text>
-                        </TouchableOpacity>
-                        <View>{selectedViews}</View>
+                        {showSelected &&
+                            selectedItems.map((val: string, i: number) => (
+                                <View key={i} style={styles.selectedItemView}>
+                                    <Text numberOfLines={1}>{genLabel ? i18n.t(genLabel(val)) : val}</Text>
+                                </View>
+                            ))}
                     </View>
-                )}
+                </View>
                 {this.state.open && (
                     <Overlay
-                        overlayStyle={pickerStyles.overlay}
+                        overlayStyle={styles.overlay}
                         isVisible={this.state.open}
                         onRequestClose={() => this.close()}
                         onBackdropPress={() => this.close()}
                     >
                         <>
                             <View
-                                style={pickerStyles.dropdownWrapper}
+                                style={styles.dropdownWrapper}
                                 onLayout={(e: LayoutChangeEvent) => {
                                     this.setState({...this.state, dropdownWrapperHeight: e.nativeEvent.layout.height});
                                 }}
                             >
                                 <DropDownPicker
-                                    items={this.state.items}
+                                    items={this.state.items.get(locale) || []}
                                     multiple={true}
                                     searchable={true}
-                                    defaultValue={this.state.selected}
+                                    defaultValue={selected}
                                     onChangeItem={(values: string[]) => {
-                                        console.log(values);
-                                        //const values = items.map((it: PickerItem) => it.value);
-                                        this.setState({...this.state, selected: values});
-                                        if (onChange) onChange(values);
+                                        this.tempSelected = values;
                                     }}
                                     placeholder={placeholder}
                                     multipleText={multipleText}
@@ -138,17 +162,17 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                                     //arrowSize: 20,
                                     dropDownMaxHeight={this.state.dropdownWrapperHeight - 50}
                                     // Style props
-                                    containerStyle={pickerStyles.dropdownContainerStyle}
-                                    style={pickerStyles.dropdownStyle}
-                                    itemStyle={pickerStyles.dropdownItemStyle}
-                                    activeItemStyle={pickerStyles.dropdownActiveItemStyle}
-                                    activeLabelStyle={pickerStyles.dropdownActiveLabelStyle}
-                                    labelStyle={pickerStyles.dropdownLabelStyle}
+                                    containerStyle={styles.dropdownContainerStyle}
+                                    style={styles.dropdownStyle}
+                                    itemStyle={styles.dropdownItemStyle}
+                                    activeItemStyle={styles.dropdownActiveItemStyle}
+                                    activeLabelStyle={styles.dropdownActiveLabelStyle}
+                                    labelStyle={styles.dropdownLabelStyle}
                                 />
                             </View>
                             <View>
-                                <TouchableOpacity onPress={() => this.close()} style={pickerStyles.okButton}>
-                                    <Text style={pickerStyles.okButtonText}>OK</Text>
+                                <TouchableOpacity onPress={() => this.close()} style={styles.okButton}>
+                                    <Text style={styles.okButtonText}>OK</Text>
                                 </TouchableOpacity>
                             </View>
                         </>
@@ -159,4 +183,4 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
     }
 }
 
-export default reduxConnector(MultiPicker);
+export default reduxConnector(withTheme(MultiPicker));

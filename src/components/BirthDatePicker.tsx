@@ -1,19 +1,11 @@
 import * as React from "react";
-import {Platform, StyleProp, ViewStyle} from "react-native";
+import {Platform} from "react-native";
 import {MIN_AGE} from "../constants/profile-constants";
 import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
-import themes from "../constants/themes";
-import {AppState} from "../state/types";
-import {connect, ConnectedProps} from "react-redux";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
 
 // Component props
-export type BirthDatePickerProps = ConnectedProps<typeof reduxConnector> & {
-    date: Date;
+export type BirthDatePickerProps = {
+    date?: Date;
     open: boolean;
     onSelect?: (date: Date) => void;
     onHide?: () => void;
@@ -32,7 +24,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
         };
     }
 
-    componentDidUpdate(oldProps: BirthDatePickerProps) {
+    componentDidUpdate(oldProps: BirthDatePickerProps): void {
         if (!oldProps.open && this.props.open) this.showModal();
         if (oldProps.open && !this.props.open) this.hideModal();
     }
@@ -48,10 +40,10 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
         }
     }
 
-    onChange = (date: Date | undefined) => {
+    onChange(date: Date | undefined): void {
         if (Platform.OS != "ios") this.hideModal();
         if (date && this.props.onSelect) this.props.onSelect(date);
-    };
+    }
 
     render(): JSX.Element {
         const {date} = this.props;
@@ -61,7 +53,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
         maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
 
         return (
-            <React.Fragment>
+            <>
                 {open && (
                     <DateTimePicker
                         minimumDate={new Date(1900, 0, 0)}
@@ -71,9 +63,9 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
                         mode="date"
                     />
                 )}
-            </React.Fragment>
+            </>
         );
     }
 }
 
-export default reduxConnector(BirthDatePicker);
+export default BirthDatePicker;

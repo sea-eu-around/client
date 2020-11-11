@@ -1,19 +1,14 @@
 import * as React from "react";
-
+import {StyleSheet} from "react-native";
 import CountryPicker, {Country, CountryCode, TranslationLanguageCode} from "react-native-country-picker-modal";
 import i18n from "i18n-js";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
-import themes from "../constants/themes";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+import {ThemeProps} from "../types";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../styles/utils";
 
 // Component props
-export type NationalityPickerProps = ConnectedProps<typeof reduxConnector> & {
-    nationality: CountryCode;
+export type NationalityPickerProps = ThemeProps & {
+    nationality?: CountryCode;
     open?: boolean;
     onSelect?: (countryCode: CountryCode) => void;
     onHide?: () => void;
@@ -49,13 +44,14 @@ class NationalityPicker extends React.Component<NationalityPickerProps, National
     }
 
     render(): JSX.Element {
+        const {theme} = this.props;
         const {open} = this.state;
+        const styles = themedStyles(theme);
 
         return (
             <CountryPicker
-                countryCode={this.props.nationality}
+                countryCode={this.props.nationality || "FR"}
                 filterProps={{placeholder: i18n.t("search")}}
-                containerButtonStyle={{display: "none"}}
                 withFlag={true}
                 withFilter={true}
                 withEmoji={false}
@@ -65,9 +61,18 @@ class NationalityPicker extends React.Component<NationalityPickerProps, National
                 onClose={() => this.hideModal()}
                 translation={i18n.t("countryPickerLanguageCode") as TranslationLanguageCode}
                 visible={open}
+                containerButtonStyle={styles.pickerContainerButton}
             ></CountryPicker>
         );
     }
 }
 
-export default reduxConnector(NationalityPicker);
+const themedStyles = preTheme(() => {
+    return StyleSheet.create({
+        pickerContainerButton: {
+            display: "none",
+        },
+    });
+});
+
+export default withTheme(NationalityPicker);

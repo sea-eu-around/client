@@ -1,21 +1,18 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
-import OnboardingSlide from "./OnboardingSlide";
+import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
-import themes from "../../constants/themes";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
-import {OnboardingProps} from ".";
 import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import SpokenLanguagesInput from "../../components/SpokenLanguagesInput";
-import {SpokenLanguage} from "../../model/spoken-language";
+import {SpokenLanguageDto} from "../../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
     onboardingState: state.auth.onboarding,
 }));
 
@@ -23,14 +20,14 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     languages: VALIDATOR_ONBOARDING_LANGUAGES,
 });
 
-type OnboardingLanguageScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingProps;
+type OnboardingLanguageScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
 type OnboardingLanguageScreenState = {
     hasErrors: boolean;
 };
 
 type OnboardingLanguageFormState = {
-    languages: SpokenLanguage[];
+    languages: SpokenLanguageDto[];
 };
 
 class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenProps, OnboardingLanguageScreenState> {
@@ -69,7 +66,7 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
                             <InputLabel style={{marginBottom: 6}}>{i18n.t("spokenLanguages")}</InputLabel>
                             <SpokenLanguagesInput
                                 languages={values.languages}
-                                onChange={(languages: SpokenLanguage[], hasErrors: boolean) => {
+                                onChange={(languages: SpokenLanguageDto[], hasErrors: boolean) => {
                                     setFieldValue("languages", languages);
                                     this.setState({...this.state, hasErrors});
                                 }}

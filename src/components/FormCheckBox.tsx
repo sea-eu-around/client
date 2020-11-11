@@ -1,6 +1,7 @@
 import React from "react";
 import {ValidatedCheckBox, ValidatedCheckBoxProps} from "./ValidatedCheckBox";
 
+// Component props
 export type FormCheckBoxProps = {
     field: string;
     touched: boolean | undefined;

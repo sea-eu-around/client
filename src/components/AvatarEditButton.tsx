@@ -1,32 +1,15 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import * as React from "react";
-import {connect, ConnectedProps} from "react-redux";
-import themes from "../constants/themes";
-import {AppState} from "../state/types";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import {Platform, StyleProp, TextStyle} from "react-native";
-
-// Map props from store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+import {Platform, StyleSheet} from "react-native";
+import {Theme, ThemeProps} from "../types";
+import {preTheme} from "../styles/utils";
+import {withTheme} from "react-native-elements";
 
 // Component props
-export type AvatarEditButtonProps = ConnectedProps<typeof reduxConnector> & {
+export type AvatarEditButtonProps = ThemeProps & {
     onPictureSelected?: (uri: string) => void;
-};
-
-const styles = {
-    buttonStyle: {
-        position: "absolute",
-        bottom: 0,
-        right: 0,
-        backgroundColor: "#eee",
-        borderRadius: 20,
-        padding: 4,
-    } as StyleProp<TextStyle>,
 };
 
 class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
@@ -67,16 +50,24 @@ class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
 
     render(): JSX.Element {
         const {theme} = this.props;
+        const styles = themedStyles(theme);
 
-        return (
-            <MaterialIcons
-                onPress={() => this.showPicker()}
-                size={24}
-                style={[styles.buttonStyle, {color: theme.accentSecondary}]}
-                name="image"
-            />
-        );
+        return <MaterialIcons onPress={() => this.showPicker()} size={24} style={styles.buttonStyle} name="image" />;
     }
 }
 
-export default reduxConnector(AvatarEditButton);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        buttonStyle: {
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            borderRadius: 20,
+            padding: 4,
+            backgroundColor: "#eee",
+            color: theme.accentSecondary,
+        },
+    });
+});
+
+export default withTheme(AvatarEditButton);

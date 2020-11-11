@@ -1,9 +1,9 @@
 import * as React from "react";
-
 import i18n from "i18n-js";
 import {Gender, GENDERS} from "../constants/profile-constants";
 import {ButtonGroup} from "react-native-elements";
 
+// Component props
 export type GenderToggleProps = {
     gender?: Gender | null;
     onSelect?: (gender: Gender) => void;

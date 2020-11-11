@@ -1,33 +1,26 @@
 import * as React from "react";
-
 import i18n from "i18n-js";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
-import themes from "../constants/themes";
-import {Text, TextStyle, TouchableOpacity} from "react-native";
+import {Text, TextStyle, TouchableOpacity, StyleSheet} from "react-native";
 import {logout} from "../state/auth/actions";
+import {Theme, ThemeProps} from "../types";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../styles/utils";
+import {connect, ConnectedProps} from "react-redux";
 
 // Map props from store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+const reduxConnector = connect();
 
 // Component props
-export type LogOutButtonProps = ConnectedProps<typeof reduxConnector> & {
+export type LogOutButtonProps = {
     onLogOut: () => void;
     style: TextStyle;
-};
-
-const styles = {
-    text: {
-        fontSize: 20,
-    },
-};
+} & ConnectedProps<typeof reduxConnector> &
+    ThemeProps;
 
 class LogOutButton extends React.Component<LogOutButtonProps> {
     render(): JSX.Element {
         const {dispatch, theme, onLogOut, style} = this.props;
+        const styles = themedStyles(theme);
 
         return (
             <TouchableOpacity
@@ -36,10 +29,19 @@ class LogOutButton extends React.Component<LogOutButtonProps> {
                     if (onLogOut) onLogOut();
                 }}
             >
-                <Text style={[styles.text, {color: theme.error}, style]}>{i18n.t("logOut")}</Text>
+                <Text style={[styles.text, style]}>{i18n.t("logOut")}</Text>
             </TouchableOpacity>
         );
     }
 }
 
-export default reduxConnector(LogOutButton);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        text: {
+            fontSize: 20,
+            color: theme.error,
+        },
+    });
+});
+
+export default reduxConnector(withTheme(LogOutButton));

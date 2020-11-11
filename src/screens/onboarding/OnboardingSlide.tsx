@@ -1,30 +1,30 @@
 import * as React from "react";
 import {Text, View, TouchableOpacity} from "react-native";
-import {connect, ConnectedProps} from "react-redux";
-import {OnboardingProps} from ".";
-import themes from "../../constants/themes";
-import {AppState} from "../../state/types";
+import {withTheme} from "react-native-elements";
 import {onboardingStyle} from "../../styles/onboarding";
-import {ONBOARDING_ORDER} from ".";
+import {ThemeProps} from "../../types";
 
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+export type OnboardingScreenProps = {
+    index: number;
+    previous: () => void;
+    next: () => void;
+    hasNext: boolean;
+};
 
 export type OnboardingSlideProps = {
     title?: string;
     subtitle?: string;
     handleSubmit?: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
     hideNavNext?: boolean;
-} & OnboardingProps &
-    ConnectedProps<typeof reduxConnector>;
+} & OnboardingScreenProps &
+    ThemeProps;
 
 class OnboardingSlide extends React.Component<OnboardingSlideProps> {
     render(): JSX.Element {
-        const {title, subtitle, index, hideNavNext, handleSubmit, next} = this.props;
+        const {title, subtitle, index, hideNavNext, hasNext, handleSubmit, next, theme} = this.props;
+        const styles = onboardingStyle(theme);
 
         const hasPrevious = index > 0;
-        const hasNext = index < ONBOARDING_ORDER.length - 1;
 
         const navigateRight = () => {
             if (handleSubmit) handleSubmit();
@@ -32,31 +32,31 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
         };
 
         return (
-            <View style={onboardingStyle.slideWrapper}>
-                <View style={onboardingStyle.slideContentWrapper}>
-                    <View style={onboardingStyle.header}>
-                        {title && <Text style={onboardingStyle.title}>{title}</Text>}
-                        {subtitle && <Text style={onboardingStyle.subtitle}>{subtitle}</Text>}
+            <View style={styles.slideWrapper}>
+                <View style={styles.slideContentWrapper}>
+                    <View style={styles.header}>
+                        {title && <Text style={styles.title}>{title}</Text>}
+                        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
                     </View>
                     {this.props.children}
                 </View>
-                <View style={onboardingStyle.slideNavWrapper}>
+                <View style={styles.slideNavWrapper}>
                     {hasPrevious && (
-                        <TouchableOpacity style={onboardingStyle.navButton} onPress={() => this.props.previous()}>
-                            <Text style={onboardingStyle.navButtonText}>← previous</Text>
+                        <TouchableOpacity style={styles.navButton} onPress={() => this.props.previous()}>
+                            <Text style={styles.navButtonText}>← previous</Text>
                         </TouchableOpacity>
                     )}
                     {!hideNavNext && hasNext && (
                         <TouchableOpacity
-                            style={onboardingStyle.navButton}
+                            style={styles.navButton}
                             /*onPress={() => this.props.navigation.navigate(next)}*/ onPress={navigateRight}
                         >
-                            <Text style={onboardingStyle.navButtonText}>next →</Text>
+                            <Text style={styles.navButtonText}>next →</Text>
                         </TouchableOpacity>
                     )}
                     {!hasNext && (
-                        <TouchableOpacity style={onboardingStyle.navButton} onPress={navigateRight}>
-                            <Text style={onboardingStyle.navButtonText}>finish →</Text>
+                        <TouchableOpacity style={styles.navButton} onPress={navigateRight}>
+                            <Text style={styles.navButtonText}>finish →</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -65,4 +65,4 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
     }
 }
 
-export default reduxConnector(OnboardingSlide);
+export default withTheme(OnboardingSlide);

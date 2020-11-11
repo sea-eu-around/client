@@ -5,12 +5,13 @@ import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {AppState, MyThunkDispatch} from "../../state/types";
-import themes from "../../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
 import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
-import {FormProps} from "../../types";
+import {FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../../styles/utils";
 
 export type SignupFormState = {
     email: string;
@@ -33,14 +34,13 @@ const SignupFormSchema = Yup.object().shape({
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
     registerFailure: state.auth.registerFailure,
     registerErrors: state.auth.registerErrors,
 });
 const reduxConnector = connect(mapStateToProps);
 
 // Component props
-type SignupFormProps = FormProps<SignupFormState> & ConnectedProps<typeof reduxConnector>;
+type SignupFormProps = FormProps<SignupFormState> & ConnectedProps<typeof reduxConnector> & ThemeProps;
 
 class SignupForm extends React.Component<SignupFormProps> {
     submit(values: SignupFormState) {
@@ -65,32 +65,7 @@ class SignupForm extends React.Component<SignupFormProps> {
 
     render(): JSX.Element {
         const {theme} = this.props;
-
-        const styles = StyleSheet.create({
-            titleWrapper: {
-                width: "100%",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                marginBottom: 20,
-            },
-            title: {
-                fontSize: 22,
-                color: theme.text,
-            },
-            inlineInputs: {
-                flex: 1,
-            },
-            inlineInputLeft: {
-                marginRight: 5,
-            },
-            inlineInputRight: {
-                marginLeft: 5,
-            },
-            createAccountButton: {
-                width: "60%",
-                backgroundColor: theme.accent,
-            },
-        });
+        const styles = themedStyles(theme);
 
         return (
             <React.Fragment>
@@ -148,7 +123,7 @@ class SignupForm extends React.Component<SignupFormProps> {
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("createAccount")}
                                         onPress={() => handleSubmit()}
-                                        style={[formStyle.buttonMajor, styles.createAccountButton]}
+                                        style={styles.createAccountButton}
                                     >
                                         <Text style={formStyle.buttonMajorText}>{i18n.t("createAccount")}</Text>
                                     </TouchableOpacity>
@@ -162,4 +137,33 @@ class SignupForm extends React.Component<SignupFormProps> {
     }
 }
 
-export default reduxConnector(SignupForm);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        titleWrapper: {
+            width: "100%",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            marginBottom: 20,
+        },
+        title: {
+            fontSize: 22,
+            color: theme.text,
+        },
+        inlineInputs: {
+            flex: 1,
+        },
+        inlineInputLeft: {
+            marginRight: 5,
+        },
+        inlineInputRight: {
+            marginLeft: 5,
+        },
+        createAccountButton: {
+            ...formStyle.buttonMajor,
+            width: "60%",
+            backgroundColor: theme.accent,
+        },
+    });
+});
+
+export default reduxConnector(withTheme(SignupForm));

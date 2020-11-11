@@ -10,10 +10,6 @@ export type EducationFieldPickerProps = {
 };
 
 class EducationFieldPicker extends React.Component<EducationFieldPickerProps> {
-    static defaultProps = {
-        fields: [],
-    };
-
     render(): JSX.Element {
         const {fields, onChange} = this.props;
 
@@ -21,7 +17,7 @@ class EducationFieldPicker extends React.Component<EducationFieldPickerProps> {
             <MultiPicker
                 values={EDUCATION_FIELDS}
                 genLabel={(field: string) => `educationFields.${field}`}
-                defaultValues={fields}
+                selected={fields}
                 onChange={(values: string[]) => {
                     if (onChange) onChange(values);
                 }}

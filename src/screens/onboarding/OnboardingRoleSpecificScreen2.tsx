@@ -1,6 +1,6 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
-import OnboardingSlide from "./OnboardingSlide";
+import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {
@@ -8,42 +8,41 @@ import {
     VALIDATOR_ONBOARDING_GENDER,
     VALIDATOR_ONBOARDING_NATIONALITY,
 } from "../../validators";
-import themes from "../../constants/themes";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
-import {OnboardingProps} from ".";
 import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import {Gender} from "../../constants/profile-constants";
 import {GenderToggle} from "../../components/GenderToggle";
 import {CountryCode} from "../../model/country-codes";
+import {ThemeProps} from "../../types";
+import {withTheme} from "react-native-elements";
 
 const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
     onboardingState: state.auth.onboarding,
 }));
 
 const VALIDATION_SCHEMA = Yup.object().shape({
-    birthDate: VALIDATOR_ONBOARDING_BIRTHDATE,
+    birthdate: VALIDATOR_ONBOARDING_BIRTHDATE,
     gender: VALIDATOR_ONBOARDING_GENDER,
     nationality: VALIDATOR_ONBOARDING_NATIONALITY,
 });
 
-type OnboardingRoleSpecificScreen2Props = ConnectedProps<typeof reduxConnector> & OnboardingProps;
+type OnboardingRoleSpecificScreen2Props = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 type OnboardingRoleSpecificScreen2FormState = {
-    birthDate: Date | null;
+    birthdate: Date | null;
     gender: Gender | null;
     nationality: CountryCode | null;
 };
 
 class OnboardingRoleSpecificScreen2 extends React.Component<OnboardingRoleSpecificScreen2Props> {
     submit(values: OnboardingRoleSpecificScreen2FormState) {
-        if (values.birthDate && values.gender && values.nationality) {
+        if (values.birthdate && values.gender && values.nationality) {
             this.props.dispatch(
                 setOnboardingValues({
-                    birthDate: values.birthDate,
+                    birthdate: values.birthdate,
                     gender: values.gender,
                     nationality: values.nationality,
                 }),
@@ -90,4 +89,4 @@ class OnboardingRoleSpecificScreen2 extends React.Component<OnboardingRoleSpecif
     }
 }
 
-export default reduxConnector(OnboardingRoleSpecificScreen2);
+export default reduxConnector(withTheme(OnboardingRoleSpecificScreen2));

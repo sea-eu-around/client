@@ -2,20 +2,18 @@ import {Formik, FormikProps} from "formik";
 import * as React from "react";
 import {KeyboardAvoidingView} from "react-native";
 import {FormTextInput} from "../../components/FormTextInput";
-import OnboardingSlide from "./OnboardingSlide";
+import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {VALIDATOR_FIRSTNAME, VALIDATOR_LASTNAME} from "../../validators";
 import {getOnboardingTextInputsStyleProps} from "../../styles/forms";
-import themes from "../../constants/themes";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
-import {OnboardingProps} from ".";
-import LanguagePicker from "../../components/LanguagePicker";
+import {ThemeProps} from "../../types";
+import {withTheme} from "react-native-elements";
 
 const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
     onboardingState: state.auth.onboarding,
 }));
 
@@ -24,7 +22,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     lastname: VALIDATOR_LASTNAME,
 });
 
-type OnboardingNameScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingProps;
+type OnboardingNameScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 type OnboardingNameFormState = {
     firstname: string;
@@ -88,4 +86,4 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
     }
 }
 
-export default reduxConnector(OnboardingNameScreen);
+export default reduxConnector(withTheme(OnboardingNameScreen));

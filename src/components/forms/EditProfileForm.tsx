@@ -1,17 +1,14 @@
 import * as React from "react";
-import {KeyboardAvoidingView, Platform, StyleSheet, Text, TextStyle, View} from "react-native";
-import themes from "../../constants/themes";
+import {KeyboardAvoidingView, Platform, Text, TextStyle, View} from "react-native";
 import i18n from "i18n-js";
-import {AppState} from "../../state/types";
-import {connect, ConnectedProps} from "react-redux";
-import {Avatar} from "react-native-elements";
+import {Avatar, withTheme} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
-import {ScrollView} from "react-native";
-import {LevelOfStudyControl} from "../LevelOfStudyControl";
+import {ScrollView, StyleSheet} from "react-native";
+import DegreeToggle from "../DegreeToggle";
 import {CountryCode} from "../../model/country-codes";
-import {RoleToggle} from "../RoleToggle";
-import {Gender, Role, StaffRole} from "../../constants/profile-constants";
-import {StaffRoleToggle} from "../StaffRoleToggle";
+import RoleToggle from "../RoleToggle";
+import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
+import StaffRoleToggle from "../StaffRoleToggle";
 import {GenderToggle} from "../GenderToggle";
 import BirthDatePicker from "../BirthDatePicker";
 import AvatarEditButton from "../AvatarEditButton";
@@ -23,18 +20,16 @@ import {FormattedNationality} from "../FormattedNationality";
 import {getUniversityFromEmail} from "../../model/utils";
 import {FormattedUniversity} from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
-import {MyProfileDto} from "../../api/dto";
-
-// Map props from the store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+import {SpokenLanguageDto, UserDto, UserProfileDto} from "../../api/dto";
+import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
+import SpokenLanguagesInput from "../SpokenLanguagesInput";
+import {Theme, ThemeProps} from "../../types";
+import {preTheme} from "../../styles/utils";
 
 // Component props
-export type EditProfileFormProps = ConnectedProps<typeof reduxConnector> & {
-    profile: MyProfileDto;
-    onFieldChanged?: (fields: Partial<MyProfileDto>) => void;
+export type EditProfileFormProps = ThemeProps & {
+    user: UserDto;
+    onFieldChanged?: (fields: Partial<UserProfileDto>) => void;
 };
 
 function FormFieldSpacer(): JSX.Element {
@@ -43,78 +38,12 @@ function FormFieldSpacer(): JSX.Element {
 
 class EditProfileForm extends React.Component<EditProfileFormProps> {
     render() {
-        const {theme, profile} = this.props;
+        const {theme, user} = this.props;
+        const styles = themedStyles(theme);
 
-        const styles = StyleSheet.create({
-            titleWrapper: {
-                width: "100%",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                marginBottom: 20,
-            },
-            title: {
-                fontSize: 22,
-                color: theme.text,
-            },
-            buttonSend: {
-                flex: 1,
-                backgroundColor: theme.accent,
-                marginLeft: 6,
-            },
-            screenWrapper: {
-                backgroundColor: theme.background,
-                width: "100%",
-            },
-            topView: {
-                backgroundColor: "#af645d",
-                width: "160%",
-                height: 260,
-                borderBottomLeftRadius: 200,
-                borderBottomRightRadius: 200,
-                paddingVertical: 50,
-                alignItems: "center",
-                alignSelf: "center",
-            },
-            scrollWrapper: {
-                width: "100%",
-            },
-            formWrapper: {
-                flex: 1,
-                width: "90%",
-                maxWidth: 600,
-                flexDirection: "column",
-                alignItems: "center",
-                alignSelf: "center",
-                paddingTop: 40,
-                marginBottom: 300,
-                //backgroundColor: "red",
-            },
-            name: {
-                fontSize: 30,
-                color: theme.textInverted,
-                marginTop: 10,
-            },
-            university: {
-                fontSize: 14,
-                color: theme.textInverted,
-                paddingLeft: 20,
-            },
-            universityContainer: {
-                marginVertical: 5,
-            },
-            avatarAccessory: {
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                borderWidth: 0,
-                borderColor: "transparent",
-                shadowRadius: 0,
-                textShadowRadius: 0,
-                color: "#444",
-            },
-        });
+        const profile = user.profile;
 
-        const onFieldChanged = (fields: Partial<MyProfileDto>) => {
+        const onFieldChanged = (fields: Partial<UserProfileDto>) => {
             if (this.props.onFieldChanged !== undefined) this.props.onFieldChanged(fields);
         };
 
@@ -161,7 +90,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                     <FormattedUniversity
                         containerStyle={styles.universityContainer}
                         style={styles.university}
-                        university={getUniversityFromEmail(profile.email)}
+                        university={getUniversityFromEmail(user.email)}
                     ></FormattedUniversity>
                 </View>
                 <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="always">
@@ -171,9 +100,9 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         </View>
                         <FormRow
                             label={i18n.t("emailAddress")}
-                            initialValue={profile.email}
+                            initialValue={user.email}
                             // validator={VALIDATOR_EMAIL}
-                            display={<Text>{profile.email}</Text>}
+                            display={<Text>{user.email}</Text>}
                             renderInput={(value: string, error: string | null, onChange: (value: string) => void) => (
                                 <ValidatedTextInput
                                     placeholder={i18n.t("emailAddress")}
@@ -186,19 +115,19 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                                     {...textInputStyleProps}
                                 />
                             )}
-                            apply={(email: string) => onFieldChanged({email})}
+                            //apply={(email: string) => onFieldChanged({email})}
                             locked={true}
                         />
                         <FormFieldSpacer />
                         <FormRow
                             label={i18n.t("dateOfBirth")}
-                            initialValue={profile.birthDate}
-                            display={<FormattedDate date={profile.birthDate} />}
+                            initialValue={profile.birthdate}
+                            display={<FormattedDate date={profile.birthdate} />}
                             overrideModal={(hide: () => void) => (
                                 <BirthDatePicker
-                                    date={profile.birthDate}
+                                    date={profile.birthdate}
                                     open={true}
-                                    onSelect={(birthDate: Date) => onFieldChanged({birthDate})}
+                                    onSelect={(birthdate: Date) => onFieldChanged({birthdate})}
                                     onHide={hide}
                                 />
                             )}
@@ -231,48 +160,81 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         <FormFieldSpacer />
                         <FormRow
                             label={i18n.t("role")}
-                            initialValue={profile.role}
+                            initialValue={user.role}
                             display={
                                 <React.Fragment>
-                                    <RoleToggle role={profile.role} onSelect={(role: Role) => onFieldChanged({role})} />
-                                    {profile.role == "staff" && (
+                                    <RoleToggle
+                                        role={user.role}
+                                        /*onSelect={(role: Role) => onFieldChanged({role})}*/
+                                        disabled={true}
+                                    />
+                                    {user.role == "staff" && (
                                         <StaffRoleToggle
                                             staffRole={profile.staffRole || null}
                                             onSelect={(staffRole: StaffRole) => onFieldChanged({staffRole})}
                                         />
                                     )}
-                                    {profile.role == "student" && (
-                                        <LevelOfStudyControl
-                                            levelIndex={profile.levelOfStudy}
-                                            onUpdateIndex={(levelIndex: number) =>
-                                                onFieldChanged({levelOfStudy: levelIndex})
-                                            }
+                                    {user.role == "student" && (
+                                        <DegreeToggle
+                                            degree={profile.degree}
+                                            onUpdate={(degree?: Degree) => onFieldChanged({degree})}
                                         />
                                     )}
                                 </React.Fragment>
                             }
                             noModal={true}
-                            style={{height: profile.role == "staff" ? 130 : 130}}
                         />
                         <FormFieldSpacer />
                         <FormRow
                             label={i18n.t("fieldsOfEducation")}
-                            initialValue={profile.gender}
-                            display={<EducationFieldPicker></EducationFieldPicker>}
+                            initialValue={profile.educationFields}
+                            display={<EducationFieldPicker fields={profile.educationFields}></EducationFieldPicker>}
                             noModal={true}
-                            style={{height: 100}}
                         />
                         <FormFieldSpacer />
                         <FormRow
                             label={i18n.t("interests")}
                             initialValue={profile.interests}
-                            display={<InterestsPicker></InterestsPicker>}
+                            display={<InterestsPicker interests={profile.interests}></InterestsPicker>}
                             noModal={true}
-                            style={{height: 100}}
                         />
                         <FormFieldSpacer />
-                        <FormFieldSpacer />
-                        <FormFieldSpacer />
+                        <FormRow
+                            label={i18n.t("spokenLanguages")}
+                            initialValue={profile.languages}
+                            validator={VALIDATOR_ONBOARDING_LANGUAGES}
+                            display={
+                                <>
+                                    {profile.languages.map((l: SpokenLanguageDto, i: number) => (
+                                        <View key={i}>
+                                            <Text>
+                                                {i18n.t(`languageNames.${l.code}`)} (
+                                                {i18n.t(`languageLevels.${l.level}`)})
+                                            </Text>
+                                        </View>
+                                    ))}
+                                </>
+                            }
+                            renderInput={(
+                                value: SpokenLanguageDto[],
+                                error: string | null,
+                                onChange: (value: SpokenLanguageDto[]) => void,
+                            ) => (
+                                <>
+                                    <SpokenLanguagesInput
+                                        languages={value}
+                                        onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
+                                    />
+                                    <FormFieldSpacer />
+                                    <FormFieldSpacer />
+                                    <FormFieldSpacer />
+                                    <FormFieldSpacer />
+                                    <FormFieldSpacer />
+                                    <FormFieldSpacer />
+                                </>
+                            )}
+                            apply={(languages: SpokenLanguageDto[]) => onFieldChanged({languages})}
+                        />
                     </KeyboardAvoidingView>
                 </ScrollView>
             </View>
@@ -280,4 +242,74 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
     }
 }
 
-export default reduxConnector(EditProfileForm);
+export const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        titleWrapper: {
+            width: "100%",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            marginBottom: 20,
+        },
+        title: {
+            fontSize: 22,
+            color: theme.text,
+        },
+        buttonSend: {
+            flex: 1,
+            backgroundColor: theme.accent,
+            marginLeft: 6,
+        },
+        screenWrapper: {
+            backgroundColor: theme.background,
+            width: "100%",
+        },
+        topView: {
+            backgroundColor: "#af645d",
+            width: "160%",
+            height: 260,
+            borderBottomLeftRadius: 200,
+            borderBottomRightRadius: 200,
+            paddingVertical: 50,
+            alignItems: "center",
+            alignSelf: "center",
+        },
+        scrollWrapper: {
+            width: "100%",
+        },
+        formWrapper: {
+            flex: 1,
+            width: "90%",
+            maxWidth: 600,
+            flexDirection: "column",
+            alignItems: "center",
+            alignSelf: "center",
+            paddingTop: 40,
+            marginBottom: 300,
+        },
+        name: {
+            fontSize: 30,
+            color: theme.textInverted,
+            marginTop: 10,
+        },
+        university: {
+            fontSize: 14,
+            color: theme.textInverted,
+            paddingLeft: 20,
+        },
+        universityContainer: {
+            marginVertical: 5,
+        },
+        avatarAccessory: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            borderWidth: 0,
+            borderColor: "transparent",
+            shadowRadius: 0,
+            textShadowRadius: 0,
+            color: "#444",
+        },
+    });
+});
+
+export default withTheme(EditProfileForm);

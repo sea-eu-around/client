@@ -1,36 +1,37 @@
 import * as React from "react";
-
-import {Text, TextProps, TextStyle} from "react-native";
-import {connect, ConnectedProps} from "react-redux";
-import themes from "../constants/themes";
-import {AppState} from "../state/types";
+import {Text, TextProps, StyleSheet} from "react-native";
 import i18n from "i18n-js";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+import {Theme, ThemeProps} from "../types";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../styles/utils";
 
 // Component props
-export type InputErrorTextProps = ConnectedProps<typeof reduxConnector> & TextProps & {error: string | null};
+export type InputErrorTextProps = ThemeProps & TextProps & {error: string | string[] | null | undefined};
 
 class InputErrorText extends React.Component<InputErrorTextProps> {
     render(): JSX.Element {
         const {theme, style, error, ...otherProps} = this.props;
+        const styles = themedStyles(theme);
 
-        const defaultStyle: TextStyle = {
-            fontSize: 12,
-            marginTop: 2,
-            marginBottom: -12, // prevents an offset from appearing when there is an error
-            color: theme.error,
-        };
+        const errorStr: string | null = error ? (typeof error === "string" ? error : error[0]) : null;
 
         return (
-            <Text {...otherProps} style={[defaultStyle, style]}>
-                {error ? i18n.t(error) : ""}
+            <Text {...otherProps} style={[styles.text, style]}>
+                {errorStr ? i18n.t(errorStr) : ""}
             </Text>
         );
     }
 }
 
-export default reduxConnector(InputErrorText);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        text: {
+            fontSize: 12,
+            marginTop: 2,
+            marginBottom: -12, // prevents an offset from appearing when there is an error
+            color: theme.error,
+        },
+    });
+});
+
+export default withTheme(InputErrorText);

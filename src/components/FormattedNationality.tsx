@@ -1,15 +1,16 @@
 import * as React from "react";
-
 import {Text, TextProps, View} from "react-native";
 import {CountryCode, Flag, TranslationLanguageCode} from "react-native-country-picker-modal";
 import {CountryInfo, getCountryInfoAsync} from "react-native-country-picker-modal/lib/CountryService";
 import i18n from "i18n-js";
 
+// Component props
 export type FormattedNationalityProps = {
     countryCode: CountryCode;
     flagSize?: number;
 } & TextProps;
 
+// Component state
 export type FormattedNationalityState = {
     countryName: string;
 };

@@ -1,20 +1,14 @@
 import * as React from "react";
-
-import {TouchableOpacity, View} from "react-native";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
-import themes from "../constants/themes";
+import {TouchableOpacity, View, StyleSheet} from "react-native";
 import NationalityPicker from "./NationalityPicker";
 import {FormattedNationality} from "./FormattedNationality";
 import {CountryCode} from "../model/country-codes";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+import {Theme, ThemeProps} from "../types";
+import {preTheme} from "../styles/utils";
+import {withTheme} from "react-native-elements";
 
 // Component props
-export type NationalityControlProps = ConnectedProps<typeof reduxConnector> & {
+export type NationalityControlProps = ThemeProps & {
     nationality?: CountryCode;
     onSelect?: (countryCode: CountryCode) => void;
     onHide?: () => void;
@@ -47,29 +41,10 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
     render(): JSX.Element {
         const {onSelect, onHide, nationality, theme} = this.props;
         const {open} = this.state;
-
-        const styles = {
-            button: {
-                width: "100%",
-                height: 60,
-                borderRadius: 0,
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: theme.accentTernary,
-                backgroundColor: "transparent",
-                justifyContent: "center",
-            },
-            buttonOk: {
-                borderBottomWidth: 2,
-                borderBottomColor: theme.okay,
-            },
-            nationality: {
-                fontSize: 20,
-            },
-        };
+        const styles = themedStyles(theme);
 
         return (
-            <View style={{width: "100%"}}>
+            <View style={styles.wrapper}>
                 <TouchableOpacity
                     style={[styles.button, nationality ? styles.buttonOk : {}]}
                     onPress={() => this.showModal()}
@@ -93,4 +68,29 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
     }
 }
 
-export default reduxConnector(NationalityControl);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        wrapper: {
+            width: "100%",
+        },
+        button: {
+            width: "100%",
+            height: 60,
+            borderRadius: 0,
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.accentTernary,
+            backgroundColor: "transparent",
+            justifyContent: "center",
+        },
+        buttonOk: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.okay,
+        },
+        nationality: {
+            fontSize: 20,
+        },
+    });
+});
+
+export default withTheme(NationalityControl);

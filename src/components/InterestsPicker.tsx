@@ -19,10 +19,6 @@ export type InterestsPickerProps = ConnectedProps<typeof reduxConnector> & {
 };
 
 class InterestsPicker extends React.Component<InterestsPickerProps> {
-    static defaultProps = {
-        interests: [],
-    };
-
     componentDidMount() {
         if (values.length == 0) this.updateValues();
     }
@@ -32,7 +28,7 @@ class InterestsPicker extends React.Component<InterestsPickerProps> {
     }
 
     updateValues() {
-        values = this.props.allInterests.map((interest: InterestDto) => interest.name); // TODO replace with key
+        values = this.props.allInterests.map((interest: InterestDto) => interest.id);
 
         console.log("Interests : " + this.props.allInterests.length);
         this.forceUpdate();
@@ -44,8 +40,8 @@ class InterestsPicker extends React.Component<InterestsPickerProps> {
         return (
             <MultiPicker
                 values={values}
-                genLabel={(interestKey: string) => `interestNames.${interestKey}`}
-                defaultValues={interests}
+                genLabel={(interestId: string) => `interestNames.${interestId}`}
+                selected={interests}
                 onChange={(values: string[]) => {
                     if (onChange) onChange(values);
                 }}

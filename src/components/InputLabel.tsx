@@ -1,35 +1,34 @@
 import * as React from "react";
-
-import {Text, TextProps, TextStyle} from "react-native";
-import {connect, ConnectedProps} from "react-redux";
-import themes from "../constants/themes";
-import {AppState} from "../state/types";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+import {Text, TextProps, StyleSheet} from "react-native";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../styles/utils";
+import {Theme, ThemeProps} from "../types";
 
 // Component props
-export type InputLabelProps = ConnectedProps<typeof reduxConnector> & TextProps;
+export type InputLabelProps = ThemeProps & TextProps;
 
 class InputLabel extends React.Component<InputLabelProps> {
     render(): JSX.Element {
         const {theme, style, ...otherProps} = this.props;
-
-        const defaultStyle: TextStyle = {
-            color: theme.textLight,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            fontSize: 12,
-        };
+        const styles = themedStyles(theme);
 
         return (
-            <Text {...otherProps} style={[defaultStyle, style]}>
+            <Text {...otherProps} style={[styles.text, style]}>
                 {this.props.children}
             </Text>
         );
     }
 }
 
-export default reduxConnector(InputLabel);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        text: {
+            color: theme.textLight,
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            fontSize: 12,
+        },
+    });
+});
+
+export default withTheme(InputLabel);

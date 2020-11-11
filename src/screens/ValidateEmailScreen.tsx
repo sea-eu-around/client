@@ -1,43 +1,21 @@
 import * as React from "react";
 import {Text, View, StyleSheet, Linking, Platform, ActivityIndicator} from "react-native";
 import {AppState, MyThunkDispatch} from "../state/types";
-import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
 import {requestValidateAccount} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import i18n from "i18n-js";
+import {ThemeProps} from "../types";
+import {preTheme} from "../styles/utils";
 
 const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
     validated: state.auth.validated,
     registerEmail: state.auth.registerEmail,
     verificationToken: state.auth.verificationToken,
 });
 const reduxConnector = connect(mapStateToProps);
 
-type ValidateEmailScreenProps = ConnectedProps<typeof reduxConnector>;
-
-const styles = StyleSheet.create({
-    container: {
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-    },
-    wrapper: {
-        width: "70%",
-    },
-    title: {
-        fontSize: 20,
-        marginVertical: 20,
-        textAlign: "center",
-    },
-    successText: {
-        fontSize: 18,
-        lineHeight: 40,
-        textAlign: "center",
-    },
-});
+type ValidateEmailScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps;
 
 class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
     componentDidMount() {
@@ -56,6 +34,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
 
     render(): JSX.Element {
         const {theme, validated} = this.props;
+        const styles = themedStyles(theme);
 
         return (
             <View style={styles.container}>
@@ -81,5 +60,29 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
         );
     }
 }
+
+const themedStyles = preTheme(() => {
+    return StyleSheet.create({
+        container: {
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+        },
+        wrapper: {
+            width: "70%",
+        },
+        title: {
+            fontSize: 20,
+            marginVertical: 20,
+            textAlign: "center",
+        },
+        successText: {
+            fontSize: 18,
+            lineHeight: 40,
+            textAlign: "center",
+        },
+    });
+});
 
 export default reduxConnector(ValidateEmailScreen);

@@ -1,35 +1,35 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
-import OnboardingSlide from "./OnboardingSlide";
+import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
-import {VALIDATOR_ONBOARDING_LEVEL_OF_STUDY} from "../../validators";
-import themes from "../../constants/themes";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
-import {OnboardingProps} from ".";
 import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
-import {StaffRole, STAFF_ROLES} from "../../constants/profile-constants";
-import {LevelOfStudyControl} from "../../components/LevelOfStudyControl";
+import {Degree, StaffRole, STAFF_ROLES} from "../../constants/profile-constants";
+import DegreeToggle from "../../components/DegreeToggle";
 import EducationFieldPicker from "../../components/EducationFieldPicker";
 import {TouchableOpacity, Text, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
+import {VALIDATOR_ONBOARDING_DEGREE} from "../../validators";
+import {Theme, ThemeProps} from "../../types";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../../styles/utils";
 
 const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
     onboardingState: state.auth.onboarding,
 }));
 
 const VALIDATION_SCHEMA = Yup.object().shape({
-    levelOfStudy: VALIDATOR_ONBOARDING_LEVEL_OF_STUDY,
+    degree: VALIDATOR_ONBOARDING_DEGREE,
 });
 
-type OnboardingRoleSpecificScreen1Props = ConnectedProps<typeof reduxConnector> & OnboardingProps;
+type OnboardingRoleSpecificScreen1Props = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 type OnboardingRoleSpecificScreen1FormState = {
-    levelOfStudy: number;
+    degree: Degree;
     staffRole: StaffRole | null;
 };
 
@@ -40,8 +40,8 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
     }
 
     studentRender(): JSX.Element {
-        const {onboardingState} = this.props;
-        const spacing = 30;
+        const {onboardingState, theme} = this.props;
+        const styles = studentThemedStyles(theme);
 
         return (
             <Formik
@@ -60,14 +60,14 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
                             handleSubmit={handleSubmit}
                             {...this.props}
                         >
-                            <InputLabel style={{marginTop: spacing}}>{i18n.t("levelOfStudy")}</InputLabel>
-                            <LevelOfStudyControl
-                                levelIndex={values.levelOfStudy}
-                                onUpdateIndex={(i: number) => setFieldValue("levelOfStudy", i)}
+                            <InputLabel style={styles.label}>{i18n.t("levelOfStudy")}</InputLabel>
+                            <DegreeToggle
+                                degree={values.degree}
+                                onUpdate={(degree?: Degree) => setFieldValue("degree", degree)}
                             />
-                            {touched.levelOfStudy && <InputErrorText error={errors.levelOfStudy}></InputErrorText>}
+                            {touched.degree && <InputErrorText error={errors.degree}></InputErrorText>}
 
-                            <InputLabel style={{marginTop: spacing}}>{i18n.t("fieldsOfEducation")}</InputLabel>
+                            <InputLabel style={styles.label}>{i18n.t("fieldsOfEducation")}</InputLabel>
                             <EducationFieldPicker></EducationFieldPicker>
                         </OnboardingSlide>
                     );
@@ -78,29 +78,14 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
 
     staffRender(): JSX.Element {
         const {theme} = this.props;
-        const styles = StyleSheet.create({
-            button: {
-                height: 60,
-                flexDirection: "row",
-                alignItems: "center",
-            },
-            buttonText: {
-                fontFamily: "sans-serif-thin",
-                fontSize: 25,
-                letterSpacing: 1.25,
-            },
-            buttonIcon: {
-                fontSize: 30,
-                marginRight: 10,
-            },
-        });
+        const styles = staffThemedStyles(theme);
 
         const icons = ["school", "library-books", "help", "account-balance", "build", "verified-user"];
 
         const buttons = STAFF_ROLES.map((sr: string, i: number) => (
             <TouchableOpacity key={i} style={styles.button} onPress={() => this.submit({staffRole: sr as StaffRole})}>
-                <MaterialIcons name={icons[i]} style={[styles.buttonIcon, {color: theme.accent}]}></MaterialIcons>
-                <Text style={[styles.buttonText, {color: theme.text}]}>{i18n.t(`staffRoles.${sr}`)}</Text>
+                <MaterialIcons name={icons[i]} style={styles.buttonIcon}></MaterialIcons>
+                <Text style={styles.buttonText}>{i18n.t(`staffRoles.${sr}`)}</Text>
             </TouchableOpacity>
         ));
 
@@ -133,4 +118,33 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
     }
 }
 
-export default reduxConnector(OnboardingRoleSpecificScreen1);
+export const studentThemedStyles = preTheme(() => {
+    return StyleSheet.create({
+        label: {
+            marginTop: 30,
+        },
+    });
+});
+
+export const staffThemedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        button: {
+            height: 60,
+            flexDirection: "row",
+            alignItems: "center",
+        },
+        buttonText: {
+            fontFamily: "sans-serif-thin",
+            fontSize: 25,
+            letterSpacing: 1.25,
+            color: theme.text,
+        },
+        buttonIcon: {
+            fontSize: 30,
+            marginRight: 10,
+            color: theme.accent,
+        },
+    });
+});
+
+export default reduxConnector(withTheme(OnboardingRoleSpecificScreen1));

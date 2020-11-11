@@ -1,19 +1,14 @@
 import * as React from "react";
-import {View} from "react-native";
+import {View, StyleSheet} from "react-native";
 import {TouchableOpacity} from "react-native-gesture-handler";
-import themes from "../constants/themes";
-import {AppState} from "../state/types";
-import {connect, ConnectedProps} from "react-redux";
 import BirthDatePicker from "./BirthDatePicker";
 import {FormattedDate} from "./FormattedDate";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: themes[state.settings.theme],
-}));
+import {Theme, ThemeProps} from "../types";
+import {preTheme} from "../styles/utils";
+import {withTheme} from "react-native-elements";
 
 // Component props
-export type BirthDateControlProps = ConnectedProps<typeof reduxConnector> & {
+export type BirthDateControlProps = ThemeProps & {
     date?: Date;
     onSelect?: (date: Date) => void;
     onHide?: () => void;
@@ -45,29 +40,10 @@ class BirthDateControl extends React.Component<BirthDateControlProps, BirthDateC
     render(): JSX.Element {
         const {date, onSelect, theme} = this.props;
         const {open} = this.state;
-
-        const styles = {
-            button: {
-                width: "100%",
-                height: 60,
-                borderRadius: 0,
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: theme.accentTernary,
-                backgroundColor: "transparent",
-                justifyContent: "center",
-            },
-            buttonOk: {
-                borderBottomWidth: 2,
-                borderBottomColor: theme.okay,
-            },
-            dateText: {
-                fontSize: 20,
-            },
-        };
+        const styles = themedStyles(theme);
 
         return (
-            <View style={{width: "100%"}}>
+            <View style={styles.wrapper}>
                 <TouchableOpacity style={[styles.button, date ? styles.buttonOk : {}]} onPress={() => this.showModal()}>
                     {date && <FormattedDate style={styles.dateText} date={date} />}
                     {/*!date && <Text>Click to change value</Text>*/}
@@ -85,4 +61,29 @@ class BirthDateControl extends React.Component<BirthDateControlProps, BirthDateC
     }
 }
 
-export default reduxConnector(BirthDateControl);
+const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        wrapper: {
+            width: "100%",
+        },
+        button: {
+            width: "100%",
+            height: 60,
+            borderRadius: 0,
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.accentTernary,
+            backgroundColor: "transparent",
+            justifyContent: "center",
+        },
+        buttonOk: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.okay,
+        },
+        dateText: {
+            fontSize: 20,
+        },
+    });
+});
+
+export default withTheme(BirthDateControl);

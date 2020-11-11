@@ -1,6 +1,7 @@
 import React from "react";
 import {ValidatedTextInput, ValidatedTextInputProps} from "./ValidatedTextInput";
 
+// Component props
 export type FormTextInputProps = {
     field: string;
     touched: boolean | undefined;

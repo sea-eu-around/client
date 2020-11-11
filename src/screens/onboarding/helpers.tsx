@@ -10,9 +10,10 @@ import {
     OfferValueDto,
 } from "../../api/dto";
 import OfferControl from "../../components/OfferControl";
-import {LEVELS_OF_STUDY} from "../../constants/profile-constants";
 import {setOnboardingOfferValue} from "../../state/auth/actions";
-import {OnboardingState} from "../../state/types";
+import {createProfile} from "../../state/profile/actions";
+import store from "../../state/store";
+import {MyThunkDispatch, OnboardingState} from "../../state/types";
 
 export function createOfferControls(
     offers: OfferDto[],
@@ -26,29 +27,41 @@ export function createOfferControls(
             <OfferControl
                 key={i}
                 offer={offer}
-                value={onboardingState.offerValues[offer.id] || {roles: [], genders: []}}
+                value={
+                    onboardingState.offerValues[offer.id] || {
+                        offerId: offer.id,
+                        allowFemale: true,
+                        allowMale: true,
+                        allowOther: true,
+                        allowStudent: true,
+                        allowStaff: true,
+                    }
+                }
                 onChange={(value: Partial<OfferValueDto>) => dispatch(setOnboardingOfferValue(offer.id, value))}
                 style={{marginVertical: 20}}
             />
         ));
 }
 
-export function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDto | null {
+function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDto | null {
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
     const base: CreateProfileDtoCommon = {
+        type: onboardingState.role!,
         firstName: onboardingState.firstname!,
         lastName: onboardingState.lastname!,
         gender: onboardingState.gender!,
-        birthdate: onboardingState.birthDate!.toJSON(),
+        birthdate: onboardingState.birthdate!.toJSON(),
         nationality: onboardingState.nationality!,
         languages: onboardingState.languages,
+        interests: onboardingState.interestIds,
+        profileOffers: Object.values(onboardingState.offerValues),
     };
 
     if (onboardingState.role == "student") {
         return {
             ...base,
-            degree: LEVELS_OF_STUDY[onboardingState.levelOfStudy],
+            degree: onboardingState.degree,
         } as CreateProfileDtoStudent;
     } else if (onboardingState.role == "staff") {
         return {
@@ -57,4 +70,9 @@ export function onboardingStateToDto(onboardingState: OnboardingState): CreatePr
         } as CreateProfileDtoStaff;
     }
     return null;
+}
+
+export function finishOnboarding(onboardingState: OnboardingState): void {
+    const createProfileDto = onboardingStateToDto(onboardingState);
+    if (createProfileDto) (store.dispatch as MyThunkDispatch)(createProfile(createProfileDto));
 }
