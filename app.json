@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "AdoptAStudent",
-    "slug": "AdoptAStudent",
-    "version": "1.0.0",
+    "name": "SEA-EU Around",
+    "slug": "SEA-EU Around",
+    "version": "0.0.1",
     "entryPoint": "./src/App.tsx",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
