@@ -102,7 +102,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             label={i18n.t("emailAddress")}
                             initialValue={user.email}
                             // validator={VALIDATOR_EMAIL}
-                            display={<Text>{user.email}</Text>}
+                            display={<Text style={styles.cardText}>{user.email}</Text>}
                             renderInput={(value: string, error: string | null, onChange: (value: string) => void) => (
                                 <ValidatedTextInput
                                     placeholder={i18n.t("emailAddress")}
@@ -122,7 +122,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         <FormRow
                             label={i18n.t("dateOfBirth")}
                             initialValue={profile.birthdate}
-                            display={<FormattedDate date={profile.birthdate} />}
+                            display={<FormattedDate style={styles.cardText} date={profile.birthdate} />}
                             overrideModal={(hide: () => void) => (
                                 <BirthDatePicker
                                     date={profile.birthdate}
@@ -136,7 +136,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         <FormRow
                             label={i18n.t("nationality")}
                             initialValue={profile.nationality}
-                            display={<FormattedNationality countryCode={profile.nationality} />}
+                            display={<FormattedNationality style={styles.cardText} countryCode={profile.nationality} />}
                             overrideModal={(hide: () => void) => (
                                 <NationalityPicker
                                     nationality={profile.nationality}
@@ -162,7 +162,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             label={i18n.t("role")}
                             initialValue={user.role}
                             display={
-                                <React.Fragment>
+                                <>
                                     <RoleToggle
                                         role={user.role}
                                         /*onSelect={(role: Role) => onFieldChanged({role})}*/
@@ -180,7 +180,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                                             onUpdate={(degree?: Degree) => onFieldChanged({degree})}
                                         />
                                     )}
-                                </React.Fragment>
+                                </>
                             }
                             noModal={true}
                         />
@@ -288,13 +288,12 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         name: {
             fontSize: 30,
-            color: theme.textInverted,
+            color: theme.textWhite,
             marginTop: 10,
         },
         university: {
             fontSize: 14,
-            color: theme.textInverted,
-            paddingLeft: 20,
+            color: theme.textWhite,
         },
         universityContainer: {
             marginVertical: 5,
@@ -308,6 +307,9 @@ export const themedStyles = preTheme((theme: Theme) => {
             shadowRadius: 0,
             textShadowRadius: 0,
             color: "#444",
+        },
+        cardText: {
+            color: theme.text,
         },
     });
 });

@@ -55,5 +55,8 @@ export const pickerStyles = preTheme((theme: Theme) => {
             fontSize: 12,
             overflow: "hidden",
         },
+        selectedItemText: {
+            color: theme.text,
+        },
     });
 });

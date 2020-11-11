@@ -182,6 +182,7 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): Partial<FormTex
             borderBottomColor: theme.accentTernary,
             backgroundColor: "transparent",
             fontSize: 20,
+            color: theme.text,
         },
         textInputError: {
             borderBottomWidth: 2,

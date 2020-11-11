@@ -1,7 +1,6 @@
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
-import {ColorSchemeName} from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
 import ValidationEmailSentScreen from "../screens/ValidationEmailSentScreen";
@@ -11,18 +10,20 @@ import LoginNavigator from "./LoginNavigator";
 import MainNavigator from "./MainNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import {rootNavigationRef} from "./utils";
+import {withTheme} from "react-native-elements";
+import {ThemeProps} from "../types";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
-export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}): JSX.Element {
+function Navigation({theme}: ThemeProps): JSX.Element {
     return (
         <NavigationContainer
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
-            theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
         >
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} options={{title: "Login"}} />
@@ -35,3 +36,5 @@ export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}
         </NavigationContainer>
     );
 }
+
+export default withTheme(Navigation);

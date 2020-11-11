@@ -82,6 +82,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         dateText: {
             fontSize: 20,
+            color: theme.text,
         },
     });
 });

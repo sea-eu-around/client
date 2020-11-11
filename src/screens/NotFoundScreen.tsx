@@ -3,7 +3,7 @@ import * as React from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
 import {RootNavigatorScreens} from "../navigation/types";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 
@@ -26,14 +26,14 @@ class NotFoundScreen extends React.Component<NotFoundScreenProps> {
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: "#fff",
             alignItems: "center",
             justifyContent: "center",
             padding: 20,
+            backgroundColor: theme.background,
         },
         title: {
             fontSize: 64,

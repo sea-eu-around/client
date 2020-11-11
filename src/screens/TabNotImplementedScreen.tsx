@@ -5,7 +5,7 @@ import {withTheme} from "react-native-elements";
 import LogOutButton from "../components/LogOutButton";
 import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 
 export type TabNotImplementedScreenProps = ThemeProps;
 
@@ -25,19 +25,21 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
             width: "100%",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor: theme.background,
         },
         title: {
             width: "100%",
             textAlign: "center",
             fontSize: 20,
             fontWeight: "bold",
+            color: theme.text,
         },
         constructionIcon: {
             color: "#eecc00",
@@ -47,7 +49,7 @@ const themedStyles = preTheme(() => {
             marginVertical: 30,
             height: 1,
             width: "80%",
-            backgroundColor: "#eee",
+            backgroundColor: theme.cardBackground,
         },
         logoutButton: {
             marginVertical: 20,

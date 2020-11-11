@@ -222,7 +222,7 @@ const themedStyles = preTheme((theme: Theme) => {
         cardWrapper: {
             width: "100%",
             flexDirection: "row",
-            backgroundColor: "#fff",
+            backgroundColor: theme.cardBackground,
             paddingHorizontal: 10,
             elevation: 1,
             justifyContent: "space-evenly",

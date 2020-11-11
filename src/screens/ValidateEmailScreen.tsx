@@ -5,7 +5,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {requestValidateAccount} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import i18n from "i18n-js";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 
 const mapStateToProps = (state: AppState) => ({
@@ -61,13 +61,14 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
             height: "100%",
+            backgroundColor: theme.background,
         },
         wrapper: {
             width: "70%",

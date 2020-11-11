@@ -89,6 +89,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         nationality: {
             fontSize: 20,
+            color: theme.text,
         },
     });
 });

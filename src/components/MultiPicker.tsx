@@ -126,7 +126,9 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                         {showSelected &&
                             selectedItems.map((val: string, i: number) => (
                                 <View key={i} style={styles.selectedItemView}>
-                                    <Text numberOfLines={1}>{genLabel ? i18n.t(genLabel(val)) : val}</Text>
+                                    <Text style={styles.selectedItemText} numberOfLines={1}>
+                                        {genLabel ? i18n.t(genLabel(val)) : val}
+                                    </Text>
                                 </View>
                             ))}
                     </View>

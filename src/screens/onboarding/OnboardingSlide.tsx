@@ -1,3 +1,4 @@
+import {FontAwesome} from "@expo/vector-icons";
 import * as React from "react";
 import {Text, View, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
@@ -43,7 +44,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                 <View style={styles.slideNavWrapper}>
                     {hasPrevious && (
                         <TouchableOpacity style={styles.navButton} onPress={() => this.props.previous()}>
-                            <Text style={styles.navButtonText}>← previous</Text>
+                            <FontAwesome style={styles.navButtonIcon} name="arrow-circle-left"></FontAwesome>
                         </TouchableOpacity>
                     )}
                     {!hideNavNext && hasNext && (
@@ -51,12 +52,14 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             style={styles.navButton}
                             /*onPress={() => this.props.navigation.navigate(next)}*/ onPress={navigateRight}
                         >
-                            <Text style={styles.navButtonText}>next →</Text>
+                            <FontAwesome style={styles.navButtonIcon} name="arrow-circle-right"></FontAwesome>
                         </TouchableOpacity>
                     )}
                     {!hasNext && (
                         <TouchableOpacity style={styles.navButton} onPress={navigateRight}>
-                            <Text style={styles.navButtonText}>finish →</Text>
+                            <Text style={styles.navButtonText}>
+                                finish
+                            </Text>
                         </TouchableOpacity>
                     )}
                 </View>

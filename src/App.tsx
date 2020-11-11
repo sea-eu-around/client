@@ -17,6 +17,7 @@ YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]); // TODO: 
 function App() {
     const isLoadingComplete = useCachedResources();
     const colorScheme = useColorScheme();
+    console.log(colorScheme);
     configureLocalization();
 
     if (!isLoadingComplete) {
@@ -26,7 +27,7 @@ function App() {
             <SafeAreaProvider>
                 <Provider store={store}>
                     <ConnectedThemeProvider>
-                        <Navigation colorScheme={colorScheme} />
+                        <Navigation />
                         <StatusBar />
                     </ConnectedThemeProvider>
                 </Provider>

@@ -2,13 +2,14 @@ import {StyleSheet, TextStyle} from "react-native";
 import {Theme} from "../types";
 import {preTheme} from "./utils";
 
-export const onboardingStyle = preTheme(() => {
+export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
         slideWrapper: {
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
             height: "100%",
+            backgroundColor: theme.background,
         },
         header: {
             marginBottom: "20%",
@@ -19,29 +20,29 @@ export const onboardingStyle = preTheme(() => {
         slideNavWrapper: {
             width: "100%",
             flexDirection: "row",
-            height: 30,
-            justifyContent: "center",
+            justifyContent: "space-around",
+            alignItems: "center",
             position: "absolute",
-            bottom: 40,
+            bottom: 50,
         },
-        navButton: {
-            flex: 1,
-        },
-        navButtonText: {
-            fontSize: 20,
-            textAlign: "center",
+        navButton: {},
+        navButtonIcon: {
+            fontSize: 40,
+            color: theme.text,
         },
         title: {
             fontFamily: "sans-serif-thin",
             fontSize: 40,
             letterSpacing: 1.75,
             marginBottom: 20,
+            color: theme.text,
         } as TextStyle,
         subtitle: {
             fontSize: 18,
             textAlign: "justify",
             letterSpacing: 0.4,
             lineHeight: 25,
+            color: theme.textLight,
         } as TextStyle,
     });
 });
@@ -69,7 +70,7 @@ export const tosSlideStyle = preTheme((theme: Theme) => {
             paddingHorizontal: 2,
             textTransform: "uppercase",
             letterSpacing: 1,
-            color: theme.accentSecondary,
+            color: theme.okay,
         },
         readMoreText: {
             fontSize: 16,
@@ -77,6 +78,7 @@ export const tosSlideStyle = preTheme((theme: Theme) => {
             textAlign: "justify",
             marginBottom: 40,
             letterSpacing: 0.4,
+            color: theme.textLight,
         },
     });
 });

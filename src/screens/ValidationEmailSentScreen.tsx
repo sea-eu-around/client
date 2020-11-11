@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
 import {AppState} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {rootNavigate} from "../navigation/utils";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 
@@ -44,13 +44,14 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
             height: "100%",
+            backgroundColor: theme.background,
         },
         wrapper: {
             width: "70%",
