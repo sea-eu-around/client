@@ -1,11 +1,19 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {ThemeKey} from "../types";
-import {CreateProfileDto, InterestDto, OfferDto, OfferValueDto, TokenDto, UserDto, UserProfileDto} from "../api/dto";
+import {
+    CreateProfileDto,
+    InterestDto,
+    OfferDto,
+    OfferValueDto,
+    SpokenLanguageDto,
+    TokenDto,
+    UserDto,
+    UserProfileDto,
+} from "../api/dto";
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
-import {SpokenLanguage} from "../model/spoken-language";
 
 export type OnboardingState = {
     firstname: string;
@@ -16,7 +24,7 @@ export type OnboardingState = {
     role: Role | null;
     degree: Degree | null;
     staffRole: StaffRole | null;
-    languages: SpokenLanguage[];
+    languages: SpokenLanguageDto[];
     interestIds: string[];
     offerValues: {[key: string]: OfferValueDto};
 };
