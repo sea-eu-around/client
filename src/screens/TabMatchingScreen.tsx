@@ -1,12 +1,24 @@
-import {StackScreenProps} from "@react-navigation/stack";
+import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
+import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
+import {t} from "i18n-js";
 import * as React from "react";
-import {LayoutRectangle, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View} from "react-native";
+import {
+    ActivityIndicator,
+    LayoutRectangle,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {UserProfileDto} from "../api/dto";
 import ProfilePreview from "../components/ProfilePreview";
 import {TabMatchingParamList} from "../navigation/types";
-import {fetchProfiles} from "../state/profile/actions";
+import {fetchProfiles, refreshFetchedProfiles} from "../state/profile/actions";
+import store from "../state/store";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
@@ -38,12 +50,20 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
         this.scrollViewRef = React.createRef<ScrollView>();
     }
 
+    fetchMore() {
+        (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
+    }
+
     hideProfile(id: string) {
         this.setState({...this.state, hiddenProfiles: this.state.hiddenProfiles.concat(id)});
     }
 
     componentDidMount() {
-        (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
+        if (this.props.profiles.length == 0) this.fetchMore();
+    }
+
+    componentDidUpdate() {
+        if (this.props.profiles.length == 0) this.fetchMore();
     }
 
     render(): JSX.Element {
@@ -82,11 +102,21 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                     onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
                         const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
                         const distanceToBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
-                        if (!fetchingProfiles && distanceToBottom < SCROLL_DISTANCE_TO_LOAD)
-                            (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
+                        if (!fetchingProfiles && distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                     }}
                 >
-                    <View style={styles.matchContainer}>{previewComponents}</View>
+                    <View style={styles.matchContainer}>
+                        {previewComponents}
+                        <View style={styles.loadingIndicatorContainer}>
+                            {fetchingProfiles && (
+                                <ActivityIndicator
+                                    style={styles.loadingIndicator}
+                                    size="large"
+                                    color={theme.accentSecondary}
+                                />
+                            )}
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
         );
@@ -127,8 +157,34 @@ const themedStyles = preTheme(() => {
             borderColor: "red",
             borderWidth: 0,
         },
+        loadingIndicatorContainer: {
+            marginVertical: 10,
+            height: 50,
+        },
+        loadingIndicator: {
+              
+        },
     });
 });
+
+export const MatchingHeaderRight = (
+    navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">,
+) => (): JSX.Element => {
+    return (
+        <View style={{flexDirection: "row", paddingRight: 10}}>
+            <TouchableOpacity onPress={() => store.dispatch(refreshFetchedProfiles())}>
+                <MaterialIcons name="refresh" size={32} />
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate("MatchFilteringScreen");
+                }}
+            >
+                <FontAwesome name="sliders" size={30} style={{paddingHorizontal: 5}} />
+            </TouchableOpacity>
+        </View>
+    );
+};
 
 export default reduxConnector(withTheme(TabMatchingScreen));
 

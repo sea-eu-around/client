@@ -1,6 +1,6 @@
-import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
+import {MaterialIcons} from "@expo/vector-icons";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {createStackNavigator, StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
+import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {
@@ -17,11 +17,8 @@ import themes from "../constants/themes";
 import {connect, ConnectedProps} from "react-redux";
 import TabProfileScreen from "../screens/TabProfileScreen";
 import i18n from "i18n-js";
-import TabMatchingScreen from "../screens/TabMatchingScreen";
-import MatchFilteringScreen from "../screens/MatchFilteringScreen";
-import {Text, TouchableOpacity, View} from "react-native";
-import store from "../state/store";
-import {resetMatchingFilters} from "../state/matching/actions";
+import TabMatchingScreen, {MatchingHeaderRight} from "../screens/TabMatchingScreen";
+import MatchFilteringScreen, {FilteringHeaderBackImage, FilteringHeaderRight} from "../screens/MatchFilteringScreen";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -110,39 +107,6 @@ function TabDiscoverNavigator(): JSX.Element {
 const TabMatchingStack = createStackNavigator<TabMatchingParamList>();
 
 function TabMatchingNavigator(): JSX.Element {
-    const filteringHeaderBackImage = (): JSX.Element => {
-        return <MaterialIcons name="close" size={32} />;
-    };
-    const filteringHeaderReset = (): JSX.Element => {
-        //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
-        return (
-            <TouchableOpacity
-                style={{marginRight: 16, padding: 10}}
-                onPress={() => store.dispatch(resetMatchingFilters())}
-            >
-                <Text>reset</Text>
-            </TouchableOpacity>
-        );
-    };
-    const matchingHeaderRight = (
-        navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">,
-    ) => (): JSX.Element => {
-        return (
-            <View style={{flexDirection: "row", paddingRight: 10}}>
-                <TouchableOpacity>
-                    <MaterialIcons name="refresh" size={32} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate("MatchFilteringScreen");
-                    }}
-                >
-                    <FontAwesome name="sliders" size={30} style={{paddingHorizontal: 5}} />
-                </TouchableOpacity>
-            </View>
-        );
-    };
-
     return (
         <TabMatchingStack.Navigator>
             <TabMatchingStack.Screen
@@ -153,7 +117,7 @@ function TabMatchingNavigator(): JSX.Element {
                     headerLeft: () => null,
                     headerTitle: "Matching",
                     headerTitleAlign: "center",
-                    headerRight: matchingHeaderRight(navigation),
+                    headerRight: MatchingHeaderRight(navigation),
                 })}
             />
             <TabMatchingStack.Screen
@@ -163,8 +127,8 @@ function TabMatchingNavigator(): JSX.Element {
                     headerShown: true,
                     headerTitle: "Filters",
                     headerTitleAlign: "center",
-                    headerBackImage: filteringHeaderBackImage,
-                    headerRight: filteringHeaderReset,
+                    headerBackImage: FilteringHeaderBackImage,
+                    headerRight: FilteringHeaderRight,
                 }}
             />
         </TabMatchingStack.Navigator>

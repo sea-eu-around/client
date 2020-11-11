@@ -1,10 +1,10 @@
 import * as React from "react";
-import {StyleSheet, Switch, Text, View} from "react-native";
+import {StyleSheet, Switch, Text, TouchableOpacity, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {OfferCategory, OfferDto} from "../api/dto";
 import MultiUniversityPicker from "../components/MultiUniversityPicker";
-import {setMatchingFilters, setOfferFilter} from "../state/matching/actions";
+import {resetMatchingFilters, setMatchingFilters, setOfferFilter} from "../state/matching/actions";
 import {AppState} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
@@ -12,6 +12,8 @@ import i18n from "i18n-js";
 import DegreeToggleMulti from "../components/DegreeToggleMulti";
 import MultiLanguagePicker from "../components/MultiLanguagePicker";
 import {Degree} from "../constants/profile-constants";
+import {MaterialIcons} from "@expo/vector-icons";
+import store from "../state/store";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -130,5 +132,17 @@ const themedStyles = preTheme(() => {
         },
     });
 });
+
+export const FilteringHeaderBackImage = (): JSX.Element => {
+    return <MaterialIcons name="close" size={32} />;
+};
+export const FilteringHeaderRight = (): JSX.Element => {
+    //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
+    return (
+        <TouchableOpacity style={{marginRight: 16, padding: 10}} onPress={() => store.dispatch(resetMatchingFilters())}>
+            <Text>reset</Text>
+        </TouchableOpacity>
+    );
+};
 
 export default reduxConnector(withTheme(MatchFilteringScreen));
