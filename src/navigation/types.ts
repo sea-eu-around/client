@@ -1,3 +1,5 @@
+import {ONBOARDING_SCREENS} from "../screens/onboarding";
+
 export type RootNavigatorScreens = {
     MainScreen: undefined;
     LoginScreen: undefined;
@@ -11,8 +13,8 @@ export type MainNavigatorTabs = {
     TabDiscover: undefined;
     TabMatching: undefined;
     TabMessaging: undefined;
-    TabNotifications: undefined;
     TabProfile: undefined;
+    TabNotifications: undefined;
 };
 
 export type LoginNavigatorTabs = {
@@ -25,20 +27,7 @@ export type LoginTabNavigatorScreens = {
     ForgotPassword: undefined;
 } & RootNavigatorScreens;
 
-export type OnboardingScreens = {
-    OnboardingNameScreen: undefined;
-    OnboardingPersonalInfoScreen: undefined;
-    OnboardingLanguageScreen: undefined;
-    OnboardingInterestsScreen: undefined;
-    OnboardingRoleScreen: undefined;
-    OnboardingRoleSpecificScreen1: undefined;
-    OnboardingRoleSpecificScreen2: undefined;
-    OnboardingOffersScreen1: undefined;
-    OnboardingOffersScreen2: undefined;
-    OnboardingOffersScreen3: undefined;
-    OnboardingTosScreen: undefined;
-    OnboardingPrivacyScreen: undefined;
-};
+export type OnboardingScreens = typeof ONBOARDING_SCREENS;
 
 export type SignupTabNavigatorScreens = {
     SignupForm: undefined;
