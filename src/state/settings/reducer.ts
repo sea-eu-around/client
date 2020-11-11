@@ -20,12 +20,17 @@ export const initialState: SettingsState = {
 
 export const settingsReducer = (state: SettingsState = initialState, action: SettingsAction): SettingsState => {
     switch (action.type) {
-        case SETTINGS_ACTION_TYPES.SET_THEME:
+        case SETTINGS_ACTION_TYPES.SET_THEME: {
             const {theme} = <SetThemeAction>action;
             return {...state, theme};
-        case SETTINGS_ACTION_TYPES.SET_LOCALE:
+        }
+        case SETTINGS_ACTION_TYPES.TOGGLE_THEME: {
+            return {...state, theme: state.theme == "light" ? "dark" : "light"};
+        }
+        case SETTINGS_ACTION_TYPES.SET_LOCALE: {
             const {locale} = <SetLocaleAction>action;
             return {...state, locale, localizedLanguageItems: getLocalizedLanguageItems(locale)};
+        }
         default:
             return state;
     }
