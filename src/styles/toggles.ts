@@ -1,12 +1,12 @@
 import {ButtonGroupProps} from "react-native-elements";
-import {ThemeValues} from "../types";
+import {Theme} from "../types";
 
-export function getToggleStyleProps(nobuttonBariant: boolean, theme: ThemeValues): Partial<ButtonGroupProps> {
+export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Partial<ButtonGroupProps> {
     if (nobuttonBariant) {
         return {
             containerStyle: {
                 backgroundColor: "transparent",
-                width: 150,
+                flex: 1,
                 height: 30,
                 borderWidth: 0,
                 marginHorizontal: 0,

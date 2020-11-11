@@ -1,7 +1,8 @@
 import {StyleSheet, Platform, TextStyle} from "react-native";
-import {ThemeValues} from "../types";
+import {Theme} from "../types";
 import {FormTextInputProps} from "../components/FormTextInput";
 import {FormCheckBoxProps} from "../components/FormCheckBox";
+import {preTheme} from "./utils";
 
 export const formStyle = StyleSheet.create({
     inputErrorText: {
@@ -43,10 +44,7 @@ export const formStyle = StyleSheet.create({
     },
 });
 
-export function getLoginTextInputsStyleProps(
-    theme: ThemeValues,
-    wrapperVerticalMargin = 0,
-): Partial<FormTextInputProps> {
+export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin = 0): Partial<FormTextInputProps> {
     const focusedStyle = Platform.OS === "web" ? ({outline: "none"} as TextStyle) : null;
 
     const commonStyle = StyleSheet.create({
@@ -82,7 +80,7 @@ export function getLoginTextInputsStyleProps(
     };
 }
 
-export function getLoginCheckBoxStyleProps(theme: ThemeValues): Partial<FormCheckBoxProps> {
+export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxProps> {
     const commonStyle = StyleSheet.create({
         checkboxWrapper: {
             width: "100%",
@@ -99,25 +97,27 @@ export function getLoginCheckBoxStyleProps(theme: ThemeValues): Partial<FormChec
     };
 }
 
-export const loginTabsStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        alignItems: "center",
-        padding: 0,
-    },
-    formWrapper: {
-        flex: 1,
-        width: "70%",
-        maxWidth: 400,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        //backgroundColor: "red",
-    },
+export const loginTabsStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            padding: 0,
+            backgroundColor: theme.background,
+        },
+        formWrapper: {
+            flex: 1,
+            width: "70%",
+            maxWidth: 400,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+        },
+    });
 });
 
-export function getOnboardingTextInputsStyleProps(theme: ThemeValues): Partial<FormTextInputProps> {
+export function getOnboardingTextInputsStyleProps(theme: Theme): Partial<FormTextInputProps> {
     const focusedStyle =
         Platform.OS === "web"
             ? ({
