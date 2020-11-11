@@ -25,12 +25,13 @@ export type ProfilePreviewProps = ThemeProps & {
     onExpand?: (layout: LayoutRectangle) => void;
     onSwipeLeft?: () => void;
     onSwipeRight?: () => void;
+    onHidden?: () => void;
 };
 
 // Component state
 export type ProfilePreviewState = {
     expanded: boolean;
-    removed: boolean;
+    hidden: boolean;
     height: ReAnimated.Value<number>;
 };
 
@@ -39,7 +40,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
 
     constructor(props: ProfilePreviewProps) {
         super(props);
-        this.state = {expanded: false, removed: false, height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT)};
+        this.state = {expanded: false, hidden: false, height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT)};
         this.layout = {x: 0, y: 0, width: 0, height: 0};
     }
 
@@ -61,14 +62,15 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         }).start();
     }
 
-    remove() {
-        this.setState({...this.state, removed: true});
+    hide() {
+        this.setState({...this.state, hidden: true});
+        ReAnimated.timing(this.state.height, {
+            toValue: 0,
+            duration: 100,
+            easing: Easing.linear,
+        }).start();
         setTimeout(() => {
-            ReAnimated.timing(this.state.height, {
-                toValue: 0,
-                duration: 100,
-                easing: Easing.linear,
-            }).start();
+            if (this.props.onHidden) this.props.onHidden();
         }, 100);
     }
 
@@ -99,11 +101,11 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                     childrenContainerStyle={styles.swipeable}
                     onSwipeableRightWillOpen={() => {
                         if (this.props.onSwipeLeft) this.props.onSwipeLeft();
-                        this.remove();
+                        this.hide();
                     }}
                     onSwipeableLeftWillOpen={() => {
                         if (this.props.onSwipeRight) this.props.onSwipeRight();
-                        this.remove();
+                        this.hide();
                     }}
                     //leftThreshold={400}
                     //rightThreshold={300}
