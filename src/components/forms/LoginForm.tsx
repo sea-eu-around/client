@@ -8,7 +8,6 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {LoginTabNavigatorScreens} from "../../navigation/types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
-import {setTheme} from "../../state/settings/actions";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
 import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
@@ -30,7 +29,6 @@ const LoginFormSchema = Yup.object().shape({
 
 // Map props from the store
 const mapStateToProps = (state: AppState) => ({
-    themeName: state.settings.theme,
     connecting: state.auth.connecting,
     remoteErrors: state.auth.loginErrors,
     validatedEmail: state.auth.validatedEmail,
@@ -58,7 +56,7 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
     }
 
     render(): JSX.Element {
-        const {theme, themeName, dispatch, navigation, connecting, remoteErrors} = this.props;
+        const {theme, navigation, connecting, remoteErrors} = this.props;
 
         const styles = themedStyles(theme);
 
@@ -83,7 +81,7 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
                     this.setFieldValue = setFieldValue;
 
                     return (
-                        <React.Fragment>
+                        <>
                             <FormTextInput
                                 field="email"
                                 placeholder={i18n.t("emailAddress")}
@@ -131,18 +129,7 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
                             >
                                 <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
                             </TouchableOpacity>
-
-                            <TouchableOpacity
-                                accessibilityRole="link"
-                                accessibilityLabel={"Toggle theme"}
-                                onPress={() => {
-                                    dispatch(setTheme(themeName == "light" ? "dark" : "light"));
-                                }}
-                                style={styles.forgotPwdLink}
-                            >
-                                <Text style={styles.forgotPasswordText}>Toggle Theme</Text>
-                            </TouchableOpacity>
-                        </React.Fragment>
+                        </>
                     );
                 }}
             </Formik>
