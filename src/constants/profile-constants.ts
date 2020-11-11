@@ -15,16 +15,38 @@ export const EDUCATION_FIELDS = [
     "field-08",
     "field-09",
     "field-10",
+    /*
+    "natural-and-physical-science",
+    "information-technology",
+    "engineering-and-related-technology",
+    "architecture-and-building",
+    "agriculture-environnement",
+    "health",
+    "education",
+    "management-and-commerce",
+    "society-and-culture",
+    "creatice-art",
+    "food-and-hospitality",
+    */
 ];
 
-export const LEVELS_OF_STUDY = ["L1", "L2", "L3", "M1", "M2", "PhD"];
+export type Degree = "bsc1" | "bsc2" | "bsc3" | "m1" | "m2" | "phd";
+export const DEGREES: Degree[] = ["bsc1", "bsc2", "bsc3", "m1", "m2", "phd"];
 
-export const LANGUAGE_LEVELS = ["A2", "B1", "B2", "C1", "C2", "native"];
+export type LanguageLevel = "a1" | "a2" | "b1" | "b2" | "c1" | "c2" | "native";
+export const LANGUAGE_LEVELS: LanguageLevel[] = ["a1", "a2", "b1", "b2", "c1", "c2", "native"];
 
 export type Role = "student" | "staff";
 export const ROLES: Role[] = ["student", "staff"];
 
-export type StaffRole = "teaching" | "researcher" | "supporting" | "administrative" | "technical" | "ambassador";
+export type StaffRole =
+    | "teaching"
+    | "researcher"
+    | "supporting"
+    | "administrative"
+    | "technical"
+    | "ambassador"
+    | "other";
 export const STAFF_ROLES: StaffRole[] = [
     "teaching",
     "researcher",
@@ -32,9 +54,10 @@ export const STAFF_ROLES: StaffRole[] = [
     "administrative",
     "technical",
     "ambassador",
+    "other",
 ];
 
-export type Gender = "MALE" | "FEMALE";
-export const GENDERS: Gender[] = ["MALE", "FEMALE"];
+export type Gender = "male" | "female" | "other";
+export const GENDERS: Gender[] = ["male", "female", "other"];
 
 export const MIN_AGE = 18;
