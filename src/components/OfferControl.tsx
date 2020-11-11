@@ -89,6 +89,7 @@ const themedStyles = preTheme((theme: Theme) => {
         offerName: {
             textTransform: "uppercase",
             letterSpacing: 1,
+            color: theme.text,
         },
         helpIcon: {
             fontSize: 20,
