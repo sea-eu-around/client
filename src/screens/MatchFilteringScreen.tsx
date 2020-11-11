@@ -7,7 +7,7 @@ import MultiUniversityPicker from "../components/MultiUniversityPicker";
 import {resetMatchingFilters, setMatchingFilters, setOfferFilter} from "../state/matching/actions";
 import {AppState} from "../state/types";
 import {preTheme} from "../styles/utils";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import DegreeToggleMulti from "../components/DegreeToggleMulti";
 import MultiLanguagePicker from "../components/MultiLanguagePicker";
@@ -99,7 +99,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps> {
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -108,6 +108,7 @@ const themedStyles = preTheme(() => {
             flexDirection: "column",
             width: "100%",
             padding: 40,
+            backgroundColor: theme.background,
         },
         sectionContainer: {
             width: "100%",
