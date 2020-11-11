@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SEA-EU Around",
-    "slug": "SEA-EU Around",
+    "slug": "SEA-EU_Around",
     "version": "0.0.1",
     "entryPoint": "./src/App.tsx",
     "orientation": "portrait",
