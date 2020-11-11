@@ -1,7 +1,9 @@
 import {CountryCode} from "../model/country-codes";
 
+export type UniversityKey = "univ-cadiz" | "univ-brest" | "univ-gdansk" | "univ-malta" | "univ-kiel" | "univ-split";
+
 export type University = {
-    key: string;
+    key: UniversityKey;
     domain: string;
     country: CountryCode;
 };
