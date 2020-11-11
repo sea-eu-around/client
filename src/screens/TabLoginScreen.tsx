@@ -12,6 +12,9 @@ import {rootNavigate} from "../navigation/utils";
 import {ThemeProps} from "../types";
 import store from "../state/store";
 import {withTheme} from "react-native-elements";
+import {APP_VERSION, DEBUG_MODE} from "../constants/config";
+import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {toggleTheme} from "../state/settings/actions";
 
 type TabLoginScreenProps = ThemeProps & StackScreenProps<LoginTabNavigatorScreens, "LoginScreen">;
 
@@ -24,24 +27,45 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
             <KeyboardAvoidingView behavior="height" style={styles.container}>
                 <View style={styles.formWrapper}>
                     <LoginForm navigation={navigation}></LoginForm>
-                    <View style={{flexDirection: "row"}}>
-                        <Text style={{fontSize: 20}}>debug:&nbsp;&nbsp;&nbsp;</Text>
-                        <TouchableOpacity onPress={() => rootNavigate("MainScreen")}>
-                            <Text style={{fontSize: 20}}>access</Text>
-                        </TouchableOpacity>
-                        <Text style={{fontSize: 20}}> | </Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                (store.dispatch as MyThunkDispatch)(debugConnect());
-                            }}
-                        >
-                            <Text style={{fontSize: 20}}>register</Text>
-                        </TouchableOpacity>
-                        <Text style={{fontSize: 20}}> | </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("OnboardingScreen")}>
-                            <Text style={{fontSize: 20}}>on-boarding</Text>
-                        </TouchableOpacity>
+                    {DEBUG_MODE && (
+                        <View style={styles.debugContainer}>
+                            <Text style={styles.debugTitle}>[DEBUG]</Text>
+                            <TouchableOpacity style={styles.debugButton} onPress={() => rootNavigate("MainScreen")}>
+                                <Text style={styles.debugButtonText}>access</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.debugButtonText}> | </Text>
+                            <TouchableOpacity
+                                style={styles.debugButton}
+                                onPress={() => {
+                                    (store.dispatch as MyThunkDispatch)(debugConnect());
+                                }}
+                            >
+                                <Text style={styles.debugButtonText}>register</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.debugButtonText}> | </Text>
+                            <TouchableOpacity
+                                style={styles.debugButton}
+                                onPress={() => navigation.navigate("OnboardingScreen")}
+                            >
+                                <Text style={styles.debugButtonText}>on-boarding</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+                <View style={styles.versionInfoContainer}>
+                    <Text style={styles.versionText}>
+                        <Text style={{fontWeight: "bold"}}>Version:</Text>
+                        <Text> {APP_VERSION}</Text>
+                    </Text>
+                    <View style={styles.versionDisclaimerContainer}>
+                        <MaterialIcons style={styles.versionDisclaimerIcon} name="warning" size={16}></MaterialIcons>
+                        <Text style={styles.versionText}> This is an alpha version</Text>
                     </View>
+                </View>
+                <View style={styles.toggleThemeContainer}>
+                    <TouchableOpacity style={styles.toggleThemeButton} onPress={() => store.dispatch(toggleTheme())}>
+                        <MaterialCommunityIcons style={styles.toggleThemeIcon} name="theme-light-dark" color="black" />
+                    </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
         );

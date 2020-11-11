@@ -114,6 +114,48 @@ export const loginTabsStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             justifyContent: "center",
         },
+        versionInfoContainer: {
+            position: "absolute",
+            flexDirection: "column",
+            bottom: 5,
+            left: 5,
+        },
+        versionText: {color: theme.textLight},
+        versionDisclaimerContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+        },
+        versionDisclaimerIcon: {color: theme.error},
+        debugContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+        },
+        debugTitle: {
+            fontWeight: "bold",
+            width: 75,
+            fontSize: 16,
+            color: theme.textLight,
+            letterSpacing: 0.8,
+        },
+        debugButton: {
+            padding: 6,
+        },
+        debugButtonText: {
+            fontSize: 16,
+            color: theme.error,
+        },
+        toggleThemeContainer: {
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+        },
+        toggleThemeButton: {
+            padding: 10,
+        },
+        toggleThemeIcon: {
+            fontSize: 26,
+            color: theme.textLight,
+        },
     });
 });
 
