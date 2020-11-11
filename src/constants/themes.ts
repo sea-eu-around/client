@@ -3,6 +3,7 @@ const tintColorDark = "#fff";
 
 export default {
     light: {
+        id: "light",
         text: "#000",
         textLight: "#666",
         textInverted: "#fff",
@@ -20,6 +21,7 @@ export default {
         componentBorder: "#eee",
     },
     dark: {
+        id: "dark",
         text: "#fff",
         textLight: "#ccc",
         textInverted: "#111",
