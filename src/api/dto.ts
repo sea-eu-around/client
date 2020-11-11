@@ -1,7 +1,11 @@
-import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
+import {Degree, Gender, LanguageLevel, Role, StaffRole} from "../constants/profile-constants";
 import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
-import {SpokenLanguage} from "../model/spoken-language";
+
+export type SpokenLanguageDto = {
+    code: string;
+    level: LanguageLevel;
+};
 
 export type UserProfileDto = {
     id: string;
@@ -12,7 +16,7 @@ export type UserProfileDto = {
     gender: Gender;
     interests: string[];
     avatarUri: string;
-    languages: SpokenLanguage[];
+    languages: SpokenLanguageDto[];
     educationFields: string[];
     staffRole?: StaffRole;
     degree?: Degree;
@@ -45,7 +49,7 @@ export type CreateProfileDtoCommon = {
     gender: Gender;
     birthdate: string;
     nationality: CountryCode;
-    languages: SpokenLanguage[];
+    languages: SpokenLanguageDto[];
     interests: string[];
     profileOffers: OfferValueDto[];
 };
