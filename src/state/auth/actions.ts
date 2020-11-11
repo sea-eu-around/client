@@ -14,9 +14,10 @@ import {
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
 } from "../types";
-import {BACKEND_URL} from "../../constants/config";
 import {LoginDto, OfferValueDto, TokenDto, UserDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
+import store from "../store";
+import {createProfile} from "../profile/actions";
 
 // Register actions
 
@@ -114,3 +115,39 @@ export const setOnboardingOfferValue = (id: string, value: Partial<OfferValueDto
     id,
     value,
 });
+
+export const debugConnect = (): AppThunk => async (dispatch) => {
+    const email = `test${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`;
+    const password = "PASSword$1";
+
+    await dispatch(requestRegister(email, password));
+    const {verificationToken} = store.getState().auth;
+
+    if (verificationToken) {
+        await dispatch(requestValidateAccount(verificationToken, email));
+        await dispatch(requestLogin(email, password));
+        await dispatch(
+            createProfile({
+                type: "student",
+                birthdate: new Date().toJSON(),
+                firstName: "Test",
+                lastName: "Test",
+                degree: "m1",
+                gender: "male",
+                languages: [
+                    {code: "fr", level: "native"},
+                    {code: "en", level: "b1"},
+                ],
+                nationality: "FR",
+                interests: [],
+                profileOffers: [
+                    {offerId: "provide-a-couch", allowMale: true, allowFemale: true, allowOther: true, allowStaff: false, allowStudent: true},
+                    {offerId: "grab-a-drink", allowMale: true, allowFemale: true, allowOther: true, allowStaff: false, allowStudent: true},
+                    {offerId: "talk-a-bot", allowMale: true, allowFemale: true, allowOther: true, allowStaff: true, allowStudent: true},
+                    {offerId: "chat-to-practice", allowMale: true, allowFemale: true, allowOther: true, allowStaff: true, allowStudent: false},
+                ],
+                educationField: "natural-and-physical-science", // TODO update education field
+            }),
+        );
+    }
+};

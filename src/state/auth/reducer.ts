@@ -20,7 +20,6 @@ export const initialState: AuthState = {
     validated: false,
     verificationToken: null, // TODO temporary
     registerEmail: "",
-    registerSuccess: false,
     registerFailure: false,
     registerErrors: [],
     validatedEmail: null,
@@ -29,11 +28,11 @@ export const initialState: AuthState = {
     onboarding: {
         firstname: "",
         lastname: "",
-        birthDate: null,
+        birthdate: null,
         gender: null,
         nationality: null,
         role: null,
-        levelOfStudy: -1,
+        degree: null,
         staffRole: null,
         languages: [],
         offerValues: {},
@@ -42,49 +41,45 @@ export const initialState: AuthState = {
 };
 
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
-    const newState: AuthState = {...state}; // shallow copy
-
     switch (action.type) {
         case AUTH_ACTION_TYPES.REGISTER_BEGIN: {
             const {email} = <RegisterBeginAction>action;
             return {
-                ...newState,
+                ...state,
                 registerFailure: false,
                 registerErrors: [],
-                registerSuccess: false,
                 registerEmail: email,
             };
         }
         case AUTH_ACTION_TYPES.REGISTER_FAILURE: {
             const {errors} = <RegisterFailureAction>action;
-            return {...newState, registerFailure: true, registerErrors: errors, registerSuccess: false};
+            return {...state, registerFailure: true, registerErrors: errors};
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             const {
                 user: {verificationToken, onboarded},
             } = <RegisterSuccessAction>action;
             return {
-                ...newState,
+                ...state,
                 registerFailure: false,
                 registerErrors: [],
-                registerSuccess: true,
                 verificationToken,
                 onboarded,
             };
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
             const {email} = <ValidateAccountSuccessAction>action;
-            return {...newState, validated: true, validatedEmail: email};
+            return {...state, validated: true, validatedEmail: email};
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE: {
-            return {...newState, validated: false};
+            return {...state, validated: false};
         }
         case AUTH_ACTION_TYPES.LOG_IN_BEGIN: {
-            return {...newState, connecting: true, loginErrors: []};
+            return {...state, connecting: true, loginErrors: []};
         }
         case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
             const {errors} = <LogInFailureAction>action;
-            return {...newState, connecting: false, loginErrors: errors};
+            return {...state, connecting: false, loginErrors: errors};
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {
@@ -103,7 +98,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             }
 
             return {
-                ...newState,
+                ...state,
                 connecting: false,
                 authenticated: true,
                 loginErrors: [],
@@ -113,22 +108,29 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
-            return {...newState, token: null, authenticated: false};
+            return {...state, token: null, authenticated: false};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
             const {values} = <SetOnboardingValuesAction>action;
-            return {...newState, onboarding: {...state.onboarding, ...values}};
+            return {...state, onboarding: {...state.onboarding, ...values}};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE: {
             const {id, value} = <SetOnboardingOfferValueAction>action;
             return {
-                ...newState,
+                ...state,
                 onboarding: {
                     ...state.onboarding,
                     offerValues: {
                         ...state.onboarding.offerValues,
                         [id]: {
-                            ...(state.onboarding.offerValues[id] || {roles: [], genders: []}),
+                            ...(state.onboarding.offerValues[id] || {
+                                id,
+                                allowFemale: true,
+                                allowMale: true,
+                                allowOther: true,
+                                allowStaff: true,
+                                allowStudent: true,
+                            }),
                             ...value,
                         },
                     },

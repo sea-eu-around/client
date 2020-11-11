@@ -2,8 +2,7 @@ import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createStackNavigator, StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import TabOneScreen from "../screens/TabOneScreen";
-import TabTwoScreen from "../screens/TabTwoScreen";
+import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {
     MainNavigatorTabs,
     RootNavigatorScreens,
@@ -21,6 +20,8 @@ import i18n from "i18n-js";
 import TabMatchingScreen from "../screens/TabMatchingScreen";
 import MatchFilteringScreen from "../screens/MatchFilteringScreen";
 import {Text, TouchableOpacity, View} from "react-native";
+import store from "../state/store";
+import {resetMatchingFilters} from "../state/matching/actions";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -99,7 +100,7 @@ function TabDiscoverNavigator(): JSX.Element {
         <TabDiscoverStack.Navigator>
             <TabDiscoverStack.Screen
                 name="TabDiscoverScreen"
-                component={TabOneScreen}
+                component={TabNotImplementedScreen}
                 options={{headerTitle: "Discover"}}
             />
         </TabDiscoverStack.Navigator>
@@ -114,7 +115,14 @@ function TabMatchingNavigator(): JSX.Element {
     };
     const filteringHeaderReset = (): JSX.Element => {
         //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
-        return <Text style={{marginRight: 16}}>reset</Text>;
+        return (
+            <TouchableOpacity
+                style={{marginRight: 16, padding: 10}}
+                onPress={() => store.dispatch(resetMatchingFilters())}
+            >
+                <Text>reset</Text>
+            </TouchableOpacity>
+        );
     };
     const matchingHeaderRight = (
         navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">,
@@ -170,7 +178,7 @@ function TabMessagingNavigator(): JSX.Element {
         <TabMessagingStack.Navigator>
             <TabMessagingStack.Screen
                 name="TabMessagingScreen"
-                component={TabTwoScreen}
+                component={TabNotImplementedScreen}
                 options={{headerTitle: "Tab Title"}}
             />
         </TabMessagingStack.Navigator>
@@ -184,7 +192,7 @@ function TabNotificationsNavigator(): JSX.Element {
         <TabNotificationsStack.Navigator>
             <TabNotificationsStack.Screen
                 name="TabNotificationsScreen"
-                component={TabTwoScreen}
+                component={TabNotImplementedScreen}
                 options={{headerTitle: "Tab Title"}}
             />
         </TabNotificationsStack.Navigator>
