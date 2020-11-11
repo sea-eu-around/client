@@ -1,9 +1,9 @@
 import {SetLocaleAction, SetThemeAction, SETTINGS_ACTION_TYPES} from "../types";
-import {Theme} from "../../types";
+import {ThemeKey} from "../../types";
 import {SupportedLocale} from "../../localization";
 import i18n from "i18n-js";
 
-export const setTheme = (theme: Theme): SetThemeAction =>
+export const setTheme = (theme: ThemeKey): SetThemeAction =>
     ({type: SETTINGS_ACTION_TYPES.SET_THEME, theme} as SetThemeAction);
 
 export const setLocale = (locale: SupportedLocale): SetLocaleAction => {
