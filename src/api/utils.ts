@@ -33,7 +33,7 @@ export async function requestBackend(
     params: URLParams = {},
     body: URLBodyParams = {},
     auth = false,
-    verbose = true,
+    verbose = false,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
@@ -43,7 +43,10 @@ export async function requestBackend(
     if (auth) {
         const token = store.getState().auth.token;
         if (token) headers.Authorization = `Bearer ${token.accessToken}`;
-        else console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
+        else {
+            console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
+            return {success: false, codes: ["error.no-auth"]};
+        }
     }
 
     const formattedParams = encodeRequestParams(params);
@@ -62,10 +65,10 @@ export async function requestBackend(
         });
 
         const json = await response.json();
-        /*if (verbose) {
+        if (verbose) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
-        }*/
+        }
 
         return json;
     } catch (error) {
