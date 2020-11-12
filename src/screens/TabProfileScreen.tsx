@@ -2,14 +2,13 @@ import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {StyleSheet, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
+import {AppState, MyThunkDispatch} from "../state/types";
 import {MainNavigatorTabs} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
-import {setProfileFields} from "../state/profile/actions";
-import {UserProfileDto} from "../api/dto";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
+import {fetchUser, setProfileFields} from "../state/profile/actions";
 
 const mapStateToProps = (state: AppState) => ({
     user: state.profile.user,
@@ -21,6 +20,10 @@ type TabProfileScreenProps = ConnectedProps<typeof reduxConnector> &
     StackScreenProps<MainNavigatorTabs, "TabProfile">;
 
 class TabProfileScreen extends React.Component<TabProfileScreenProps> {
+    componentDidMount() {
+        (this.props.dispatch as MyThunkDispatch)(fetchUser());
+    }
+
     render(): JSX.Element {
         const {theme, user, dispatch} = this.props;
         const styles = themedStyles(theme);
@@ -29,9 +32,7 @@ class TabProfileScreen extends React.Component<TabProfileScreenProps> {
             <View style={styles.container}>
                 <EditProfileForm
                     user={user}
-                    onFieldChanged={(fields: Partial<UserProfileDto>) => {
-                        dispatch(setProfileFields(fields));
-                    }}
+                    onChange={(fields) => (dispatch as MyThunkDispatch)(setProfileFields(fields))}
                 ></EditProfileForm>
             </View>
         );
