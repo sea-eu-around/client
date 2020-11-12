@@ -1,7 +1,7 @@
 import {BACKEND_URL} from "../constants/config";
 import store from "../state/store";
 
-export type Primitive = string | number | boolean;
+export type Primitive = string | number | boolean | undefined;
 export type URLParams = {[key: string]: Primitive};
 export type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 export type RequestResponse = {success: boolean; codes: string[]} & {[key: string]: unknown};
@@ -15,7 +15,12 @@ export function encodeRequestParams(args: URLParams): string {
     const keys = Object.keys(args);
     if (keys.length == 0) return "";
     else {
-        return keys.map((key: string) => `${key}=${encodeURIComponent(args[key])}`).join("&");
+        return keys
+            .map((key: string) => {
+                const val = args[key];
+                return val === undefined ? "" : `${key}=${encodeURIComponent(val)}`;
+            })
+            .join("&");
     }
 }
 
