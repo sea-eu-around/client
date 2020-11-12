@@ -16,8 +16,9 @@ export default function useCachedResources(): boolean {
                 SplashScreen.preventAutoHideAsync();
 
                 // Start loading profile offers
-                // TODO show something if the backend couldn't be reached
-                // TODO store in AsyncStorage so the data doesn't need to be fetched every time (maybe use versioning so it can be updated when needed)
+                // TODO Improve data loading
+                //  - show something if the backend couldn't be reached
+                //  - store in AsyncStorage so the data doesn't need to be fetched every time (maybe use versioning so it can be updated when needed)
                 (store.dispatch as MyThunkDispatch)(loadProfileOffers());
 
                 // Start loading profile interests
