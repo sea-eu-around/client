@@ -6,7 +6,6 @@ import {
     PROFILE_ACTION_TYPES,
     LoadProfileOffersSuccessAction,
     LoadProfileInterestsSuccessAction,
-    FetchProfilesSuccessAction,
 } from "../types";
 
 export const initialState: ProfileState = {
@@ -33,9 +32,6 @@ export const initialState: ProfileState = {
     },
     offers: [],
     interests: [],
-    fetchedProfiles: [],
-    fetchingProfiles: false,
-    fetchingPage: 1,
 };
 
 export const profileReducer = (state: ProfileState = initialState, action: ProfileAction): ProfileState => {
@@ -53,29 +49,6 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
             // Sort alphabetically
             interests.sort((a, b) => (a.id > b.id ? 1 : -1));
             return {...state, interests};
-        }
-        case PROFILE_ACTION_TYPES.FETCH_PROFILES_BEGIN: {
-            return {...state, fetchingProfiles: true};
-        }
-        case PROFILE_ACTION_TYPES.FETCH_PROFILES_FAILURE: {
-            return {...state, fetchingProfiles: false};
-        }
-        case PROFILE_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
-            const {profiles} = <FetchProfilesSuccessAction>action;
-            return {
-                ...state,
-                fetchedProfiles: state.fetchedProfiles.concat(profiles),
-                fetchingProfiles: false,
-                fetchingPage: state.fetchingPage + 1,
-            };
-        }
-        case PROFILE_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
-            return {
-                ...state,
-                fetchedProfiles: [],
-                fetchingProfiles: false,
-                fetchingPage: 1,
-            };
         }
         default:
             return state;

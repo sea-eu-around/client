@@ -54,9 +54,6 @@ export type ProfileState = {
     user: UserDto;
     offers: OfferDto[];
     interests: InterestDto[];
-    fetchedProfiles: UserProfileDto[];
-    fetchingProfiles: boolean;
-    fetchingPage: number;
 };
 
 export type MatchingFiltersState = {
@@ -68,6 +65,9 @@ export type MatchingFiltersState = {
 
 export type MatchingState = {
     filters: MatchingFiltersState;
+    fetchedProfiles: UserProfileDto[];
+    fetchingProfiles: boolean;
+    fetchingPage: number;
 };
 
 export type AppState = {
@@ -206,11 +206,6 @@ export enum PROFILE_ACTION_TYPES {
     PROFILE_SET_FIELDS = "PROFILE/SET_FIELDS",
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
-    FETCH_PROFILES_BEGIN = "PROFILE/FETCH_PROFILES_BEGIN",
-    FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
-    FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",
-    FETCH_PROFILES_FAILURE = "PROFILE/FETCH_PROFILES_FAILURE",
-    FETCH_PROFILES_REFRESH = "PROFILE/FETCH_PROFILES_REFRESH",
 }
 
 export type LoadUserProfileAction = {
@@ -278,12 +273,7 @@ export type ProfileAction =
     | LoadProfileOffersAction
     | LoadProfileOffersSuccessAction
     | LoadProfileInterestsAction
-    | LoadProfileInterestsSuccessAction
-    | BeginFetchProfilesAction
-    | FetchProfilesAction
-    | FetchProfilesSuccessAction
-    | FetchProfilesFailureAction
-    | FetchProfilesRefreshAction;
+    | LoadProfileInterestsSuccessAction;
 
 /*### MATCHING ###*/
 
@@ -291,6 +281,14 @@ export enum MATCHING_ACTION_TYPES {
     SET_FILTERS = "MATCHING/SET_FILTERS",
     SET_OFFER_FILTER = "MATCHING/SET_OFFER_FILTER",
     RESET_MATCHING_FILTERS = "MATCHING/RESET_MATCHING_FILTERS",
+    FETCH_PROFILES_BEGIN = "PROFILE/FETCH_PROFILES_BEGIN",
+    FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
+    FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",
+    FETCH_PROFILES_FAILURE = "PROFILE/FETCH_PROFILES_FAILURE",
+    FETCH_PROFILES_REFRESH = "PROFILE/FETCH_PROFILES_REFRESH",
+    LIKE_PROFILE_SUCCESS = "MATCHING/LIKE_PROFILE_SUCCESS",
+    DISLIKE_PROFILE_SUCCESS = "MATCHING/DISLIKE_PROFILE_SUCCESS",
+    BLOCK_PROFILE_SUCCESS = "MATCHING/BLOCK_PROFILE_SUCCESS",
 }
 
 export type SetOfferFilterAction = {
@@ -308,4 +306,30 @@ export type SetMatchingFiltersAction = {
     filters: Partial<MatchingFiltersState>;
 };
 
-export type MatchingAction = SetOfferFilterAction | SetMatchingFiltersAction | ResetMatchingFiltersAction;
+export type LikeProfileSuccessAction = {
+    type: string;
+    profileId: string;
+};
+
+export type DislikeProfileSuccessAction = {
+    type: string;
+    profileId: string;
+};
+
+export type BlockProfileSuccessAction = {
+    type: string;
+    profileId: string;
+};
+
+export type MatchingAction =
+    | SetOfferFilterAction
+    | SetMatchingFiltersAction
+    | ResetMatchingFiltersAction
+    | BeginFetchProfilesAction
+    | FetchProfilesAction
+    | FetchProfilesSuccessAction
+    | FetchProfilesFailureAction
+    | FetchProfilesRefreshAction
+    | LikeProfileSuccessAction
+    | DislikeProfileSuccessAction
+    | BlockProfileSuccessAction;

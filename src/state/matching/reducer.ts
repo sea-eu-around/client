@@ -1,3 +1,4 @@
+import {UserProfileDto} from "../../api/dto";
 import {DEGREES} from "../../constants/profile-constants";
 import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {
@@ -6,6 +7,10 @@ import {
     MATCHING_ACTION_TYPES,
     SetOfferFilterAction,
     SetMatchingFiltersAction,
+    FetchProfilesSuccessAction,
+    DislikeProfileSuccessAction,
+    BlockProfileSuccessAction,
+    LikeProfileSuccessAction,
 } from "../types";
 
 export const initialState: MatchingState = {
@@ -15,6 +20,9 @@ export const initialState: MatchingState = {
         degrees: DEGREES,
         languages: [],
     },
+    fetchedProfiles: [],
+    fetchingProfiles: false,
+    fetchingPage: 1,
 };
 
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
@@ -45,6 +53,50 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                     degrees: DEGREES,
                     languages: [],
                 },
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_PROFILES_BEGIN: {
+            return {...state, fetchingProfiles: true};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE: {
+            return {...state, fetchingProfiles: false};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
+            const {profiles} = <FetchProfilesSuccessAction>action;
+            return {
+                ...state,
+                fetchedProfiles: state.fetchedProfiles.concat(profiles),
+                fetchingProfiles: false,
+                fetchingPage: state.fetchingPage + 1,
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
+            return {
+                ...state,
+                fetchedProfiles: [],
+                fetchingProfiles: false,
+                fetchingPage: 1,
+            };
+        }
+        case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
+            const {profileId} = <LikeProfileSuccessAction>action;
+            return {
+                ...state,
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
+            };
+        }
+        case MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS: {
+            const {profileId} = <DislikeProfileSuccessAction>action;
+            return {
+                ...state,
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
+            };
+        }
+        case MATCHING_ACTION_TYPES.BLOCK_PROFILE_SUCCESS: {
+            const {profileId} = <BlockProfileSuccessAction>action;
+            return {
+                ...state,
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
             };
         }
         default:
