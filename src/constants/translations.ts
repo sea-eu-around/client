@@ -530,6 +530,11 @@ export default {
                 help: "I am open to letting someone sleep on my couch.",
             },
         },
+        block: {
+            warning:
+                "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
+            action: "Block",
+        },
     },
     fr: {
         welcome: "Bienvenue",
