@@ -1,4 +1,5 @@
-import {UserProfileDto} from "../../api/dto";
+import {convertDtoToProfile} from "../../api/converters";
+import {ResponseProfileDto, UserProfileDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
 import {
@@ -46,7 +47,7 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
     const response = await requestBackend("profiles", "GET", {page: state.fetchingPage, limit: 5}, {}, true, true);
 
     // TODO temp fake profiles
-    const testProfiles: UserProfileDto[] = [
+    /*const testProfiles: UserProfileDto[] = [
         {
             id: "SpGiGSsGDdGSpogjQgsfGhfSdDFPFhGdShD",
             firstName: "John",
@@ -82,10 +83,12 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
             ],
             educationFields: [],
         },
-    ];
+    ];*/
     //response.data = testProfiles;
 
-    if (response.success) dispatch(fetchProfilesSuccess(response.data as UserProfileDto[]));
+    const dtos = response.data as ResponseProfileDto[];
+
+    if (response.success) dispatch(fetchProfilesSuccess(dtos.map(convertDtoToProfile)));
     else dispatch(fetchProfilesFailure());
 };
 

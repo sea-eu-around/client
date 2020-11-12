@@ -21,6 +21,7 @@ export type UserProfileDto = {
     staffRole?: StaffRole;
     degree?: Degree;
     university: UniversityKey;
+    profileOffers: OfferValueDto[];
 };
 
 export type UserDto = {
@@ -30,6 +31,15 @@ export type UserDto = {
     onboarded: boolean;
     verificationToken: string; // TODO temporary
     profile: UserProfileDto;
+};
+
+export type ResponseUserDto = {
+    role: Role;
+    email: string;
+    active: boolean;
+    onboarded: boolean;
+    verificationToken: string; // TODO temporary
+    profile: ResponseProfileDto;
 };
 
 export type TokenDto = {
@@ -52,6 +62,7 @@ export type CreateProfileDtoCommon = {
     languages: SpokenLanguageDto[];
     interests: string[];
     profileOffers: OfferValueDto[];
+    educationFields: string[];
 };
 
 export type CreateProfileDtoStudent = CreateProfileDtoCommon & {
@@ -59,10 +70,12 @@ export type CreateProfileDtoStudent = CreateProfileDtoCommon & {
 };
 
 export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
-    staffRole: string;
+    staffRole: StaffRole;
 };
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
+
+export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey};
 
 export enum OfferCategory {
     Discover = "discover",
