@@ -12,11 +12,15 @@ import {
 import i18n from "i18n-js";
 import {Avatar, withTheme} from "react-native-elements";
 import {UserProfileDto} from "../api/dto";
-import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
+import {MaterialIcons} from "@expo/vector-icons";
+import BlockProfileModal from "./modals/BlockProfileModal";
+import {MyThunkDispatch} from "../state/types";
+import {blockProfile} from "../state/matching/actions";
+import store from "../state/store";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
@@ -31,8 +35,8 @@ export type ProfilePreviewProps = ThemeProps & {
 // Component state
 export type ProfilePreviewState = {
     expanded: boolean;
-    hidden: boolean;
     height: ReAnimated.Value<number>;
+    blockModalOpen: boolean;
 };
 
 class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreviewState> {
@@ -40,7 +44,11 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
 
     constructor(props: ProfilePreviewProps) {
         super(props);
-        this.state = {expanded: false, hidden: false, height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT)};
+        this.state = {
+            expanded: false,
+            height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT),
+            blockModalOpen: false,
+        };
         this.layout = {x: 0, y: 0, width: 0, height: 0};
     }
 
@@ -62,16 +70,17 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         }).start();
     }
 
-    hide() {
-        this.setState({...this.state, hidden: true});
+    hide(onFinish?: () => void) {
+        const duration = this.state.expanded ? 160 : 120;
         ReAnimated.timing(this.state.height, {
             toValue: 0,
-            duration: 100,
+            duration,
             easing: Easing.linear,
         }).start();
         setTimeout(() => {
+            if (onFinish) onFinish();
             if (this.props.onHidden) this.props.onHidden();
-        }, 100);
+        }, duration);
     }
 
     toggleExpanded() {
@@ -84,14 +93,14 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
 
     render() {
         const {theme, profile, style} = this.props;
-        const {expanded, height} = this.state;
+        const {expanded, height, blockModalOpen} = this.state;
         const styles = themedStyles(theme);
 
-        const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
+        // const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
 
         return (
             <ReAnimated.View
-                style={[styles.wrapper, style, {height: height}]}
+                style={[styles.wrapper, style, {height}]}
                 onLayout={(e: LayoutChangeEvent) => {
                     this.layout = e.nativeEvent.layout;
                 }}
@@ -109,31 +118,20 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                     }}
                     //leftThreshold={400}
                     //rightThreshold={300}
-                    renderRightActions={(
-                        progressAnimatedValue: Animated.AnimatedInterpolation,
-                        dragAnimatedValue: Animated.AnimatedInterpolation,
-                    ) => {
-                        return (
-                            <Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
-                                <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
-                                    <Text style={styles.swipeActionText}>HIDE</Text>
-                                </View>
-                            </Animated.View>
-                        );
-                    }}
-                    renderLeftActions={(
-                        progressAnimatedValue: Animated.AnimatedInterpolation,
-                        dragAnimatedValue: Animated.AnimatedInterpolation,
-                    ) => {
-                        return (
-                            <View style={[styles.swipeAction, styles.swipeActionLeft]}>
-                                <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
-                                    <Text style={styles.swipeActionText}>MATCH</Text>
-                                </View>
+                    renderRightActions={() => (
+                        <Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
+                            <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
+                                <Text style={styles.swipeActionText}>HIDE</Text>
                             </View>
-                        );
-                    }}
-                    useNativeAnimations={false}
+                        </Animated.View>
+                    )}
+                    renderLeftActions={() => (
+                        <View style={[styles.swipeAction, styles.swipeActionLeft]}>
+                            <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
+                                <Text style={styles.swipeActionText}>MATCH</Text>
+                            </View>
+                        </View>
+                    )}
                 >
                     <TouchableOpacity
                         onPress={() => this.toggleExpanded()}
@@ -163,19 +161,39 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                             </Text>
                             <Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>
                         </View>
-                        {/*expanded && (
-                            <View style={styles.actionContainer}>
-                                <TouchableOpacity style={styles.matchButton}>
-                                    <Text style={styles.matchButtonText}>MATCH</Text>
+                        {expanded && (
+                            <>
+                                <TouchableOpacity
+                                    style={styles.blockButton}
+                                    onPress={() => this.setState({...this.state, blockModalOpen: true})}
+                                >
+                                    <MaterialIcons style={styles.blockButtonIcon} name="block" />
                                 </TouchableOpacity>
-                            </View>
-                        )*/}
+                                {blockModalOpen && (
+                                    <BlockProfileModal
+                                        profile={profile}
+                                        onHide={() => this.setState({...this.state, blockModalOpen: false})}
+                                        onBlock={() => {
+                                            this.hide(() =>
+                                                (store.dispatch as MyThunkDispatch)(blockProfile(profile.id)),
+                                            );
+                                        }}
+                                    />
+                                )}
+                            </>
+                        )}
                     </TouchableOpacity>
                 </Swipeable>
             </ReAnimated.View>
         );
     }
 }
+
+/*<View style={styles.actionContainer}>
+    <TouchableOpacity style={styles.matchButton}>
+        <Text style={styles.matchButtonText}>MATCH</Text>
+    </TouchableOpacity>
+</View>*/
 
 /*
 
@@ -220,8 +238,6 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         swipeable: {
             width: "100%",
-            //borderBottomColor: theme.accent,
-            //borderBottomWidth: 4,
             borderRadius: 10,
             elevation: 1,
             padding: 10,
@@ -310,6 +326,15 @@ const themedStyles = preTheme((theme: Theme) => {
             textAlign: "center",
             color: theme.textInverted,
         },*/
+        blockButton: {
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+        },
+        blockButtonIcon: {
+            fontSize: 30,
+            color: theme.error,
+        },
     });
 });
 

@@ -17,17 +17,16 @@ import {connect, ConnectedProps} from "react-redux";
 import {UserProfileDto} from "../api/dto";
 import ProfilePreview from "../components/ProfilePreview";
 import {TabMatchingParamList} from "../navigation/types";
-import {dislikeProfile, likeProfile} from "../state/matching/actions";
-import {fetchProfiles, refreshFetchedProfiles} from "../state/profile/actions";
+import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
 import store from "../state/store";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 
 const mapStateToProps = (state: AppState) => ({
-    profiles: state.profile.fetchedProfiles,
-    fetchingProfiles: state.profile.fetchingProfiles,
-    justRefreshed: state.profile.fetchingPage == 1,
+    profiles: state.matching.fetchedProfiles,
+    fetchingProfiles: state.matching.fetchingProfiles,
+    justRefreshed: state.matching.fetchingPage == 1,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -37,27 +36,22 @@ type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
     StackScreenProps<TabMatchingParamList, "TabMatchingScreen">;
 
 // Component state
-type TabMatchingScreenState = {
-    hiddenProfiles: {[key: string]: boolean};
-};
+/*type TabMatchingScreenState = {
+
+};*/
 
 const SCROLL_DISTANCE_TO_LOAD = 50;
 
-class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatchingScreenState> {
+class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     scrollViewRef: React.RefObject<ScrollView>;
 
     constructor(props: TabMatchingScreenProps) {
         super(props);
-        this.state = {hiddenProfiles: {}};
         this.scrollViewRef = React.createRef<ScrollView>();
     }
 
     fetchMore() {
         (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
-    }
-
-    hideProfile(id: string) {
-        this.setState({...this.state, hiddenProfiles: {...this.state.hiddenProfiles, [id]: true}});
     }
 
     componentDidMount() {
@@ -72,11 +66,10 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
 
     render(): JSX.Element {
         const {profiles, theme, fetchingProfiles, dispatch} = this.props;
-        const {hiddenProfiles} = this.state;
         const styles = themedStyles(theme);
 
         const previewComponents = profiles
-            .filter((profile) => !hiddenProfiles[profile.id])
+            //.filter((profile) => !hiddenProfiles[profile.id])
             .map((profile: UserProfileDto) => (
                 <ProfilePreview
                     key={profile.id}
@@ -87,7 +80,6 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                     }}
                     onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
                     onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
-                    onHidden={() => this.hideProfile(profile.id)}
                 />
             ));
 
