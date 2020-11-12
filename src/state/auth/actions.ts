@@ -14,7 +14,8 @@ import {
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
 } from "../types";
-import {LoginDto, OfferValueDto, TokenDto, UserDto} from "../../api/dto";
+import {LoginDto, OfferValueDto, TokenDto} from "../../api/dto";
+import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
 import {createProfile} from "../profile/actions";
@@ -32,11 +33,11 @@ export const requestRegister = (email: string, password: string): AppThunk => as
     dispatch(registerBegin(email, password));
     const response = await requestBackend("auth/register", "POST", {}, {email, password});
 
-    if (response.success) dispatch(registerSuccess(response.data as UserDto));
+    if (response.success) dispatch(registerSuccess(response.data as User));
     else dispatch(registerFailure(response.codes));
 };
 
-export const registerSuccess = (user: UserDto): RegisterSuccessAction => ({
+export const registerSuccess = (user: User): RegisterSuccessAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_SUCCESS,
     user,
 });
@@ -54,7 +55,7 @@ export const loginBegin = (email: string, password: string): LogInBeginAction =>
     password,
 });
 
-export const loginSuccess = (token: TokenDto, user: UserDto): LogInSuccessAction => ({
+export const loginSuccess = (token: TokenDto, user: User): LogInSuccessAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_SUCCESS,
     token,
     user,

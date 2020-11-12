@@ -1,16 +1,9 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {ThemeKey} from "../types";
-import {
-    CreateProfileDto,
-    InterestDto,
-    OfferDto,
-    OfferValueDto,
-    SpokenLanguageDto,
-    TokenDto,
-    UserDto,
-    UserProfileDto,
-} from "../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, OfferValueDto, SpokenLanguageDto, TokenDto} from "../api/dto";
+import {UserProfile} from "../model/user-profile";
+import {User} from "../model/user";
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
@@ -51,7 +44,7 @@ export type SettingsState = {
 };
 
 export type ProfileState = {
-    user: UserDto | null;
+    user: User | null;
     offers: OfferDto[];
     interests: InterestDto[];
 };
@@ -65,7 +58,7 @@ export type MatchingFiltersState = {
 
 export type MatchingState = {
     filters: MatchingFiltersState;
-    fetchedProfiles: UserProfileDto[];
+    fetchedProfiles: UserProfile[];
     fetchingProfiles: boolean;
     fetchingPage: number;
 };
@@ -108,7 +101,7 @@ export type RegisterBeginAction = {
 
 export type RegisterSuccessAction = {
     type: string;
-    user: UserDto;
+    user: User;
 };
 
 export type RegisterFailureAction = {
@@ -125,7 +118,7 @@ export type LogInBeginAction = {
 export type LogInSuccessAction = {
     type: string;
     token: TokenDto;
-    user: UserDto;
+    user: User;
 };
 
 export type LogInFailureAction = {
@@ -216,12 +209,12 @@ export type LoadUserProfileAction = {
 
 export type SetProfileFieldsAction = {
     type: string;
-    fields: Partial<UserProfileDto>;
+    fields: Partial<UserProfile>;
 };
 
 export type SetProfileFieldsSuccessAction = {
     type: string;
-    fields: Partial<UserProfileDto>;
+    fields: Partial<UserProfile>;
 };
 
 export type CreateProfileAction = {
@@ -253,7 +246,7 @@ export type LoadProfileInterestsSuccessAction = {
 
 export type FetchUserSuccessAction = {
     type: string;
-    user: UserDto;
+    user: User;
 };
 
 export type ProfileAction =
@@ -326,7 +319,7 @@ export type FetchProfilesFailureAction = {
 
 export type FetchProfilesSuccessAction = {
     type: string;
-    profiles: UserProfileDto[];
+    profiles: UserProfile[];
 };
 
 export type MatchingAction =

@@ -1,13 +1,8 @@
-import {
-    CreateProfileDto,
-    CreateProfileDtoCommon,
-    ResponseProfileDto,
-    ResponseUserDto,
-    UserDto,
-    UserProfileDto,
-} from "./dto";
+import {CreateProfileDto, CreateProfileDtoCommon, ResponseProfileDto, ResponseUserDto} from "./dto";
+import {UserProfile} from "../model/user-profile";
+import {User} from "../model/user";
 
-export function convertDtoToProfile(dto: ResponseProfileDto): UserProfileDto {
+export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
     return {
         ...dto,
         avatarUri: "", // TODO add to response dto
@@ -15,7 +10,7 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfileDto {
     };
 }
 
-export function convertProfileToCreateDto(profile: UserProfileDto): CreateProfileDto {
+export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDto {
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const staff = profile.staffRole !== undefined;
     const common: CreateProfileDtoCommon = {
@@ -29,14 +24,14 @@ export function convertProfileToCreateDto(profile: UserProfileDto): CreateProfil
         : {...common, type: "student", degree: profile.degree!};
 }
 
-export function convertPartialProfileToCreateDto(profile: Partial<UserProfileDto>): Partial<CreateProfileDto> {
+export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>): Partial<CreateProfileDto> {
     return {
         ...profile,
         birthdate: profile.birthdate?.toJSON(),
     };
 }
 
-export function convertDtoToUser(dto: ResponseUserDto): UserDto {
+export function convertDtoToUser(dto: ResponseUserDto): User {
     return {
         ...dto,
         profile: convertDtoToProfile(dto.profile),

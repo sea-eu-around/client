@@ -1,36 +1,11 @@
 import {Degree, Gender, LanguageLevel, Role, StaffRole} from "../constants/profile-constants";
 import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
+import {User} from "../model/user";
 
 export type SpokenLanguageDto = {
     code: string;
     level: LanguageLevel;
-};
-
-export type UserProfileDto = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    nationality: CountryCode;
-    birthdate: Date;
-    gender: Gender;
-    interests: string[];
-    avatarUri: string;
-    languages: SpokenLanguageDto[];
-    educationFields: string[];
-    staffRole?: StaffRole;
-    degree?: Degree;
-    university: UniversityKey;
-    profileOffers: OfferValueDto[];
-};
-
-export type UserDto = {
-    role: Role;
-    email: string;
-    active: boolean;
-    onboarded: boolean;
-    verificationToken: string; // TODO temporary
-    profile: UserProfileDto;
 };
 
 export type ResponseUserDto = {
@@ -48,7 +23,7 @@ export type TokenDto = {
 };
 
 export type LoginDto = {
-    user: UserDto;
+    user: User;
     token: TokenDto;
 };
 

@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {UserProfileDto} from "../api/dto";
+import {UserProfile} from "../model/user-profile";
 import ProfilePreview from "../components/ProfilePreview";
 import {TabMatchingParamList} from "../navigation/types";
 import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
@@ -70,7 +70,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
 
         const previewComponents = profiles
             //.filter((profile) => !hiddenProfiles[profile.id])
-            .map((profile: UserProfileDto) => (
+            .map((profile: UserProfile) => (
                 <ProfilePreview
                     key={profile.id}
                     profile={profile}

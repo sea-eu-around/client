@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import i18n from "i18n-js";
 import {Avatar, withTheme} from "react-native-elements";
-import {UserProfileDto} from "../api/dto";
+import {UserProfile} from "../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import {Theme, ThemeProps} from "../types";
@@ -24,7 +24,7 @@ import store from "../state/store";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
-    profile: UserProfileDto;
+    profile: UserProfile;
     style?: ViewStyle;
     onExpand?: (layout: LayoutRectangle) => void;
     onSwipeLeft?: () => void;

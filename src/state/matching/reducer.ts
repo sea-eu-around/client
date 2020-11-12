@@ -1,4 +1,4 @@
-import {UserProfileDto} from "../../api/dto";
+import {UserProfile} from "../../model/user-profile";
 import {DEGREES} from "../../constants/profile-constants";
 import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {
@@ -82,21 +82,21 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             const {profileId} = <LikeProfileSuccessAction>action;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
             };
         }
         case MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS: {
             const {profileId} = <DislikeProfileSuccessAction>action;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
             };
         }
         case MATCHING_ACTION_TYPES.BLOCK_PROFILE_SUCCESS: {
             const {profileId} = <BlockProfileSuccessAction>action;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfileDto) => p.id != profileId),
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
             };
         }
         default:

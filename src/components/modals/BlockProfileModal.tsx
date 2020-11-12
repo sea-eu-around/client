@@ -5,10 +5,10 @@ import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
-import {UserProfileDto} from "../../api/dto";
+import {UserProfile} from "../../model/user-profile";
 
 export type BlockProfileModalProps = ThemeProps &
-    Partial<CustomModalProps> & {onBlock: () => void; profile: UserProfileDto};
+    Partial<CustomModalProps> & {onBlock: () => void; profile: UserProfile};
 
 class BlockProfileModal extends React.Component<BlockProfileModalProps> {
     render() {

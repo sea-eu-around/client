@@ -7,16 +7,18 @@ import {
     SetProfileFieldsSuccessAction,
     FetchUserSuccessAction,
 } from "../types";
-import {CreateProfileDto, InterestDto, OfferDto, ResponseUserDto, UserDto, UserProfileDto} from "../../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, ResponseUserDto} from "../../api/dto";
+import {UserProfile} from "../../model/user-profile";
+import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 
-export const setProfileFieldsSuccess = (fields: Partial<UserProfileDto>): SetProfileFieldsSuccessAction => ({
+export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
     fields,
 });
 
-export const setProfileFields = (fields: Partial<UserProfileDto>): AppThunk => async (dispatch) => {
+export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch) => {
     const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
     const response = await requestBackend("profiles", "PATCH", {}, dto, true, true);
     if (response.success) {
@@ -72,7 +74,7 @@ export const fetchUser = (): AppThunk => async (dispatch) => {
     }
 };
 
-export const fetchUserSuccess = (user: UserDto): FetchUserSuccessAction => ({
+export const fetchUserSuccess = (user: User): FetchUserSuccessAction => ({
     type: PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS,
     user,
 });

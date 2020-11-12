@@ -20,7 +20,9 @@ import {FormattedNationality} from "../FormattedNationality";
 import {getUniversityFromEmail} from "../../model/utils";
 import {FormattedUniversity} from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
-import {SpokenLanguageDto, UserDto, UserProfileDto} from "../../api/dto";
+import {SpokenLanguageDto} from "../../api/dto";
+import {UserProfile} from "../../model/user-profile";
+import {User} from "../../model/user";
 import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
 import SpokenLanguagesInput from "../SpokenLanguagesInput";
 import {Theme, ThemeProps} from "../../types";
@@ -28,8 +30,8 @@ import {preTheme} from "../../styles/utils";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
-    user: UserDto | null;
-    onChange?: (fields: Partial<UserProfileDto>) => void;
+    user: User | null;
+    onChange?: (fields: Partial<UserProfile>) => void;
 };
 
 function FormFieldSpacer(): JSX.Element {
@@ -37,7 +39,7 @@ function FormFieldSpacer(): JSX.Element {
 }
 
 class EditProfileForm extends React.Component<EditProfileFormProps> {
-    onFieldChanged(fields: Partial<UserProfileDto>): void {
+    onFieldChanged(fields: Partial<UserProfile>): void {
         if (this.props.onChange !== undefined) this.props.onChange(fields);
     }
 

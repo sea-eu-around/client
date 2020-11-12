@@ -1,5 +1,6 @@
 import {convertDtoToProfile} from "../../api/converters";
-import {ResponseProfileDto, UserProfileDto} from "../../api/dto";
+import {ResponseProfileDto} from "../../api/dto";
+import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
 import {
@@ -96,7 +97,7 @@ export const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE,
 });
 
-export const fetchProfilesSuccess = (profiles: UserProfileDto[]): FetchProfilesSuccessAction => ({
+export const fetchProfilesSuccess = (profiles: UserProfile[]): FetchProfilesSuccessAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS,
     profiles,
 });
