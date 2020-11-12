@@ -1,12 +1,12 @@
-import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
+import {FontAwesome} from "@expo/vector-icons";
 import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
-import {t} from "i18n-js";
 import * as React from "react";
 import {
     ActivityIndicator,
     LayoutRectangle,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
@@ -17,15 +17,17 @@ import {connect, ConnectedProps} from "react-redux";
 import {UserProfileDto} from "../api/dto";
 import ProfilePreview from "../components/ProfilePreview";
 import {TabMatchingParamList} from "../navigation/types";
+import {dislikeProfile, likeProfile} from "../state/matching/actions";
 import {fetchProfiles, refreshFetchedProfiles} from "../state/profile/actions";
 import store from "../state/store";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 
 const mapStateToProps = (state: AppState) => ({
     profiles: state.profile.fetchedProfiles,
     fetchingProfiles: state.profile.fetchingProfiles,
+    justRefreshed: state.profile.fetchingPage == 1,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -36,7 +38,7 @@ type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
 
 // Component state
 type TabMatchingScreenState = {
-    hiddenProfiles: string[];
+    hiddenProfiles: {[key: string]: boolean};
 };
 
 const SCROLL_DISTANCE_TO_LOAD = 50;
@@ -46,7 +48,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
 
     constructor(props: TabMatchingScreenProps) {
         super(props);
-        this.state = {hiddenProfiles: []};
+        this.state = {hiddenProfiles: {}};
         this.scrollViewRef = React.createRef<ScrollView>();
     }
 
@@ -55,26 +57,26 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 
     hideProfile(id: string) {
-        this.setState({...this.state, hiddenProfiles: this.state.hiddenProfiles.concat(id)});
+        this.setState({...this.state, hiddenProfiles: {...this.state.hiddenProfiles, [id]: true}});
     }
 
     componentDidMount() {
         if (this.props.profiles.length == 0) this.fetchMore();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(oldProps: TabMatchingScreenProps) {
         if (this.props.profiles.length == 0) this.fetchMore();
+        // Reset the hidden profiles when the user purposedly refreshes
+        if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenProfiles: {}});
     }
 
     render(): JSX.Element {
-        const {profiles, theme, fetchingProfiles} = this.props;
+        const {profiles, theme, fetchingProfiles, dispatch} = this.props;
+        const {hiddenProfiles} = this.state;
         const styles = themedStyles(theme);
 
-        console.log(this.state.hiddenProfiles);
-        const isNotHidden = (profile: UserProfileDto) => this.state.hiddenProfiles.indexOf(profile.id) == -1;
-
         const previewComponents = profiles
-            .filter((profile) => isNotHidden(profile))
+            .filter((profile) => !hiddenProfiles[profile.id])
             .map((profile: UserProfileDto) => (
                 <ProfilePreview
                     key={profile.id}
@@ -83,13 +85,9 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                         const scroll = this.scrollViewRef.current;
                         if (scroll) scroll.scrollTo({y: layout.y, animated: true});
                     }}
-                    onSwipeRight={() => {
-                        //this.hideProfile(profile.id);
-                    }}
-                    onSwipeLeft={() => {
-                        //this.hideProfile(profile.id);
-                    }}
-                    //style={{marginVertical: 10}}
+                    onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
+                    onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
+                    onHidden={() => this.hideProfile(profile.id)}
                 />
             ));
 
@@ -98,7 +96,12 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                 <ScrollView
                     ref={this.scrollViewRef}
                     style={styles.scroller}
-                    scrollToOverflowEnabled={true}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={fetchingProfiles}
+                            onRefresh={() => store.dispatch(refreshFetchedProfiles())}
+                        />
+                    }
                     onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
                         const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
                         const distanceToBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
@@ -108,12 +111,8 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                     <View style={styles.matchContainer}>
                         {previewComponents}
                         <View style={styles.loadingIndicatorContainer}>
-                            {fetchingProfiles && (
-                                <ActivityIndicator
-                                    style={styles.loadingIndicator}
-                                    size="large"
-                                    color={theme.accentSecondary}
-                                />
+                            {fetchingProfiles && profiles.length > 0 && (
+                                <ActivityIndicator size="large" color={theme.accentSecondary} />
                             )}
                         </View>
                     </View>
@@ -123,7 +122,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -132,6 +131,7 @@ const themedStyles = preTheme(() => {
             flexDirection: "column",
             width: "100%",
             height: "100%",
+            backgroundColor: theme.background,
         },
         topBar: {
             flexBasis: 90,
@@ -161,30 +161,37 @@ const themedStyles = preTheme(() => {
             marginVertical: 10,
             height: 50,
         },
-        loadingIndicator: {
-              
+        filtersIcon: {
+            paddingHorizontal: 5,
+            fontSize: 26,
+            color: theme.textLight,
+        },
+        headerContainer: {
+            flexDirection: "row",
+            paddingRight: 10,
         },
     });
 });
 
-export const MatchingHeaderRight = (
-    navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">,
-) => (): JSX.Element => {
-    return (
-        <View style={{flexDirection: "row", paddingRight: 10}}>
-            <TouchableOpacity onPress={() => store.dispatch(refreshFetchedProfiles())}>
+type MatchingHeaderRightProps = {
+    navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">;
+} & ThemeProps;
+
+export const MatchingHeaderRight = withTheme(
+    ({navigation, theme}: MatchingHeaderRightProps): JSX.Element => {
+        const styles = themedStyles(theme);
+        return (
+            <View style={styles.headerContainer}>
+                {/*<TouchableOpacity onPress={() => store.dispatch(refreshFetchedProfiles())}>
                 <MaterialIcons name="refresh" size={32} />
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate("MatchFilteringScreen");
-                }}
-            >
-                <FontAwesome name="sliders" size={30} style={{paddingHorizontal: 5}} />
-            </TouchableOpacity>
-        </View>
-    );
-};
+            </TouchableOpacity>*/}
+                <TouchableOpacity onPress={() => navigation.navigate("MatchFilteringScreen")}>
+                    <FontAwesome name="sliders" style={styles.filtersIcon} />
+                </TouchableOpacity>
+            </View>
+        );
+    },
+);
 
 export default reduxConnector(withTheme(TabMatchingScreen));
 
