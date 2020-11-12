@@ -1,32 +1,41 @@
 import {
     AppThunk,
-    SetProfileFieldsAction,
     CreateProfileSuccessAction,
     PROFILE_ACTION_TYPES,
     LoadProfileOffersSuccessAction,
     LoadProfileInterestsSuccessAction,
+    SetProfileFieldsSuccessAction,
+    FetchUserSuccessAction,
 } from "../types";
-import {CreateProfileDto, InterestDto, OfferDto, UserProfileDto} from "../../api/dto";
+import {CreateProfileDto, InterestDto, OfferDto, ResponseUserDto, UserDto, UserProfileDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
+import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 
-export const setProfileFields = (fields: Partial<UserProfileDto>): SetProfileFieldsAction => ({
-    type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS,
+export const setProfileFieldsSuccess = (fields: Partial<UserProfileDto>): SetProfileFieldsSuccessAction => ({
+    type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
     fields,
 });
+
+export const setProfileFields = (fields: Partial<UserProfileDto>): AppThunk => async (dispatch) => {
+    const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
+    const response = await requestBackend("profiles", "PATCH", {}, dto, true, true);
+    if (response.success) {
+        dispatch(setProfileFieldsSuccess(fields));
+    } else {
+        console.log("error in setProfileFields");
+    }
+};
 
 export const createProfileSuccess = (): CreateProfileSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS,
 });
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch) => {
-    const response = await requestBackend("profiles", "POST", {}, profile, true);
+    const response = await requestBackend("profiles", "POST", {}, profile, true, true);
     if (response.success || true) {
         // TODO remove createprofile bypass
         dispatch(createProfileSuccess());
     }
-    /* else {
-        
-    }*/
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
@@ -34,9 +43,6 @@ export const loadProfileOffers = (): AppThunk => async (dispatch) => {
     if (response.success) {
         dispatch(loadProfileOffersSuccess(response.data as OfferDto[]));
     }
-    /* else {
-        
-    }*/
 };
 
 export const loadProfileOffersSuccess = (offers: OfferDto[]): LoadProfileOffersSuccessAction => ({
@@ -51,12 +57,22 @@ export const loadProfileInterests = (): AppThunk => async (dispatch) => {
     if (response.success) {
         dispatch(loadProfileInterestsSuccess(response.data as InterestDto[]));
     }
-    /* else {
-        
-    }*/
 };
 
 export const loadProfileInterestsSuccess = (interests: InterestDto[]): LoadProfileInterestsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.LOAD_PROFILE_INTERESTS_SUCCESS,
     interests,
+});
+
+export const fetchUser = (): AppThunk => async (dispatch) => {
+    const response = await requestBackend("auth/me", "GET", {}, {}, true, true);
+    if (response.success) {
+        const dto = response.data as ResponseUserDto;
+        dispatch(fetchUserSuccess(convertDtoToUser(dto)));
+    }
+};
+
+export const fetchUserSuccess = (user: UserDto): FetchUserSuccessAction => ({
+    type: PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS,
+    user,
 });

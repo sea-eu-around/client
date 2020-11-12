@@ -51,7 +51,7 @@ export type SettingsState = {
 };
 
 export type ProfileState = {
-    user: UserDto;
+    user: UserDto | null;
     offers: OfferDto[];
     interests: InterestDto[];
 };
@@ -203,9 +203,10 @@ export enum PROFILE_ACTION_TYPES {
     LOAD_PROFILE_OFFERS_SUCCESS = "LOAD_PROFILE_OFFERS_SUCCESS",
     LOAD_PROFILE_INTERESTS = "LOAD_PROFILE_INTERESTS",
     LOAD_PROFILE_INTERESTS_SUCCESS = "LOAD_PROFILE_INTERESTS_SUCCESS",
-    PROFILE_SET_FIELDS = "PROFILE/SET_FIELDS",
+    PROFILE_SET_FIELDS_SUCCESS = "PROFILE/SET_FIELDS_SUCCESS",
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
+    FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
 }
 
 export type LoadUserProfileAction = {
@@ -214,6 +215,11 @@ export type LoadUserProfileAction = {
 };
 
 export type SetProfileFieldsAction = {
+    type: string;
+    fields: Partial<UserProfileDto>;
+};
+
+export type SetProfileFieldsSuccessAction = {
     type: string;
     fields: Partial<UserProfileDto>;
 };
@@ -245,25 +251,9 @@ export type LoadProfileInterestsSuccessAction = {
     interests: InterestDto[];
 };
 
-export type BeginFetchProfilesAction = {
+export type FetchUserSuccessAction = {
     type: string;
-};
-
-export type FetchProfilesFailureAction = {
-    type: string;
-};
-
-export type FetchProfilesAction = {
-    type: string;
-};
-
-export type FetchProfilesSuccessAction = {
-    type: string;
-    profiles: UserProfileDto[];
-};
-
-export type FetchProfilesRefreshAction = {
-    type: string;
+    user: UserDto;
 };
 
 export type ProfileAction =
@@ -273,7 +263,8 @@ export type ProfileAction =
     | LoadProfileOffersAction
     | LoadProfileOffersSuccessAction
     | LoadProfileInterestsAction
-    | LoadProfileInterestsSuccessAction;
+    | LoadProfileInterestsSuccessAction
+    | FetchUserSuccessAction;
 
 /*### MATCHING ###*/
 
@@ -321,12 +312,28 @@ export type BlockProfileSuccessAction = {
     profileId: string;
 };
 
+export type FetchProfilesRefreshAction = {
+    type: string;
+};
+
+export type BeginFetchProfilesAction = {
+    type: string;
+};
+
+export type FetchProfilesFailureAction = {
+    type: string;
+};
+
+export type FetchProfilesSuccessAction = {
+    type: string;
+    profiles: UserProfileDto[];
+};
+
 export type MatchingAction =
     | SetOfferFilterAction
     | SetMatchingFiltersAction
     | ResetMatchingFiltersAction
     | BeginFetchProfilesAction
-    | FetchProfilesAction
     | FetchProfilesSuccessAction
     | FetchProfilesFailureAction
     | FetchProfilesRefreshAction

@@ -1,15 +1,16 @@
-import {UserProfileDto} from "../../api/dto";
 import {
     ProfileState,
     ProfileAction,
-    SetProfileFieldsAction,
     PROFILE_ACTION_TYPES,
     LoadProfileOffersSuccessAction,
     LoadProfileInterestsSuccessAction,
+    SetProfileFieldsSuccessAction,
+    FetchUserSuccessAction,
 } from "../types";
 
 export const initialState: ProfileState = {
-    user: {
+    user: null,
+    /*{ TODO remove
         email: "fred.roger@univ-brest.fr",
         onboarded: false,
         role: "student",
@@ -28,17 +29,20 @@ export const initialState: ProfileState = {
             languages: [],
             avatarUri: "",
             educationFields: ["field-06", "field-07"],
+            profileOffers: [],
         } as UserProfileDto,
-    },
+    }*/
     offers: [],
     interests: [],
 };
 
 export const profileReducer = (state: ProfileState = initialState, action: ProfileAction): ProfileState => {
     switch (action.type) {
-        case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS: {
-            const {fields} = <SetProfileFieldsAction>action;
-            return {...state, user: {...state.user, profile: {...state.user.profile, ...fields}}};
+        case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS: {
+            if (state.user) {
+                const {fields} = <SetProfileFieldsSuccessAction>action;
+                return {...state, user: {...state.user, profile: {...state.user.profile, ...fields}}};
+            } else return {...state};
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
             const {offers} = <LoadProfileOffersSuccessAction>action;
@@ -49,6 +53,10 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
             // Sort alphabetically
             interests.sort((a, b) => (a.id > b.id ? 1 : -1));
             return {...state, interests};
+        }
+        case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
+            const {user} = <FetchUserSuccessAction>action;
+            return {...state, user};
         }
         default:
             return state;
