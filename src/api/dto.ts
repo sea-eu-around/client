@@ -101,6 +101,11 @@ export type InterestDto = {
     id: string;
 };
 
+export type SignedUrlResponseDto = {
+    fileName: string;
+    s3Url: string;
+};
+
 export type AvatarSuccessfulUpdatedDto = {
     avatar: string;
 };
