@@ -6,6 +6,7 @@ import {rootNavigate} from "../navigation/utils";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import {FontAwesome} from "@expo/vector-icons";
 
 // Map props from state
 const mapStateToProps = (state: AppState) => ({
@@ -23,7 +24,7 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
         return (
             <View style={styles.container}>
                 <View style={styles.wrapper}>
-                    <Text style={{marginVertical: 100, textAlign: "center"}}>image here</Text>
+                    <FontAwesome name="envelope-o" style={styles.mailIcon}></FontAwesome>
                     <Text style={styles.description}>
                         To validate your account, click the link in the email we just sent to
                     </Text>
@@ -55,19 +56,20 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         wrapper: {
             width: "70%",
+            alignItems: "center",
         },
         description: {
             fontSize: 16,
             textAlign: "center",
         },
+        mailIcon: {
+            marginVertical: 30,
+            fontSize: 50,
+            color: theme.text,
+        },
         email: {
             fontSize: 16,
-            textAlign: "center",
             fontWeight: "bold",
-        },
-        okButton: {
-            height: 50,
-            marginVertical: 20,
         },
     });
 });
