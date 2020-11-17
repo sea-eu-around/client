@@ -34,10 +34,7 @@ export const createProfileSuccess = (): CreateProfileSuccessAction => ({
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch) => {
     const response = await requestBackend("profiles", "POST", {}, profile, true, true);
-    if (response.success || true) {
-        // TODO remove createprofile bypass
-        dispatch(createProfileSuccess());
-    }
+    if (response.success) dispatch(createProfileSuccess());
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {

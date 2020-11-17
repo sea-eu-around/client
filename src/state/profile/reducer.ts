@@ -10,28 +10,6 @@ import {
 
 export const initialState: ProfileState = {
     user: null,
-    /*{ TODO remove
-        email: "fred.roger@univ-brest.fr",
-        onboarded: false,
-        role: "student",
-        active: true,
-        verificationToken: "",
-        profile: {
-            id: "fr1FgS3qfqGfqdkiumpi8LP5qfS9Af0Bqf1Jzaf8Ofq",
-            firstName: "Fred",
-            lastName: "Roger",
-            university: "univ-brest",
-            degree: "phd",
-            nationality: "FR",
-            gender: "male",
-            birthdate: new Date(1999, 6, 2),
-            interests: ["netflix"],
-            languages: [],
-            avatarUri: "",
-            educationFields: ["field-06", "field-07"],
-            profileOffers: [],
-        } as UserProfileDto,
-    }*/
     offers: [],
     interests: [],
 };
