@@ -18,6 +18,7 @@ import {Gender} from "../../constants/profile-constants";
 import {GenderToggle} from "../../components/GenderToggle";
 import NationalityControl from "../../components/NationalityControl";
 import {CountryCode} from "../../model/country-codes";
+import EducationFieldPicker from "../../components/EducationFieldPicker";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -35,6 +36,7 @@ type OnboardingPersonalInfoFormState = {
     birthdate: Date | null;
     gender: Gender | null;
     nationality: CountryCode | null;
+    educationFields: string[];
 };
 
 class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInfoScreenProps> {
@@ -94,6 +96,13 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                                 onSelect={(gender: Gender) => setFieldValue("gender", gender)}
                             />
                             {touched.gender && <InputErrorText error={errors.gender}></InputErrorText>}
+
+                            <InputLabel style={{marginTop: spacing}}>{i18n.t("fieldsOfEducation")}</InputLabel>
+                            <EducationFieldPicker
+                                fields={values.educationFields}
+                                onChange={(fields: string[]) => setFieldValue("educationFields", fields)}
+                                showSelected={false}
+                            ></EducationFieldPicker>
                         </OnboardingSlide>
                     );
                 }}
