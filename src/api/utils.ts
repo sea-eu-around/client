@@ -1,3 +1,4 @@
+import {Alert} from "react-native";
 import {BACKEND_URL} from "../constants/config";
 import store from "../state/store";
 
@@ -5,6 +6,12 @@ export type Primitive = string | number | boolean | Primitive[] | undefined;
 export type URLParams = {[key: string]: Primitive};
 export type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 export type RequestResponse = {success: boolean; codes: string[]} & {[key: string]: unknown};
+
+function encodeURIPrimitive(v: Primitive): string {
+    return Array.isArray(v)
+        ? v.map((v) => encodeURIPrimitive(v)).join(",")
+        : encodeURIComponent(v as string | number | boolean);
+}
 
 /**
  * Encode parameters for an HTTP request (e.g. param1=value1&param2=value2)
@@ -18,7 +25,7 @@ export function encodeRequestParams(args: URLParams): string {
         return keys
             .map((key: string) => {
                 const val = args[key];
-                return val === undefined ? "" : `${key}=${encodeURIComponent(val)}`;
+                return val === undefined ? "" : `${key}=${encodeURIPrimitive(val)}`;
             })
             .join("&");
     }
@@ -50,6 +57,7 @@ export async function requestBackend(
         if (token) headers.Authorization = `Bearer ${token.accessToken}`;
         else {
             console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
+            Alert.alert("A request could not be authenticated.");
             return {success: false, codes: ["error.no-auth"]};
         }
     }
