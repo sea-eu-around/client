@@ -3,7 +3,7 @@ import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
-import {createOfferControls, finishOnboarding} from "./helpers";
+import {createOfferControls} from "./helpers";
 import {OfferCategory} from "../../api/dto";
 
 // State-linked props
@@ -23,7 +23,7 @@ class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props
             <OnboardingSlide
                 title={i18n.t("onboarding.offers3.title")}
                 subtitle={i18n.t("onboarding.offers3.subtitle")}
-                handleSubmit={() => finishOnboarding(onboardingState)}
+                isLastSlide={true}
                 {...this.props}
             >
                 {createOfferControls(offers, OfferCategory.Collaborate, onboardingState, dispatch)}
