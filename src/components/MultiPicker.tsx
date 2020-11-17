@@ -70,8 +70,6 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             );
             this.setState({...this.state, items});
         }
-
-        this.tempSelected = this.props.selected || [];
     }
 
     componentDidMount() {
