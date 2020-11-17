@@ -1,5 +1,5 @@
 import {convertDtoToProfile} from "../../api/converters";
-import {ResponseProfileDto} from "../../api/dto";
+import {FetchProfilesResponseDto} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
@@ -41,65 +41,41 @@ export const beginFetchProfiles = (): BeginFetchProfilesAction => ({
 
 export const fetchProfiles = (): AppThunk => async (dispatch) => {
     const state: MatchingState = store.getState().matching;
-    if (state.fetchingProfiles) return;
+    if (state.fetchingProfiles || !state.canFetchMore) return;
+    const filters = state.filters;
 
     dispatch(beginFetchProfiles());
 
-    const response = await requestBackend("profiles", "GET", {page: state.fetchingPage, limit: 5}, {}, true, true);
-
-    // TODO temp fake profiles
-    /*const testProfiles: UserProfileDto[] = [
+    const response = await requestBackend(
+        "profiles",
+        "GET",
         {
-            id: "SpGiGSsGDdGSpogjQgsfGhfSdDFPFhGdShD",
-            firstName: "John",
-            lastName: "Doe",
-            university: "univ-brest",
-            degree: "bsc3",
-            nationality: "FR",
-            birthdate: new Date(),
-            gender: "male",
-            interests: ["netflix"],
-            avatarUri: "",
-            languages: [
-                {code: "fr", level: "native"},
-                {code: "en", level: "c2"},
-            ],
-            educationFields: [],
+            page: state.fetchingPage,
+            limit: 5,
+            universities: filters.universities,
+            spokenLanguages: filters.languages,
+            degrees: filters.degrees,
         },
-        {
-            id: "FQSFDPSfpgsdsdfPIUJIjGSfgpQgqujpgodREjPGS",
-            firstName: "Matt",
-            lastName: "Brooks",
-            university: "univ-cadiz",
-            degree: "m2",
-            nationality: "FR",
-            birthdate: new Date(),
-            gender: "male",
-            interests: ["netflix"],
-            avatarUri: "",
-            languages: [
-                {code: "es", level: "native"},
-                {code: "en", level: "c1"},
-                {code: "fr", level: "b2"},
-            ],
-            educationFields: [],
-        },
-    ];*/
-    //response.data = testProfiles;
+        {},
+        true,
+        true,
+    );
 
-    const dtos = response.data as ResponseProfileDto[];
-
-    if (response.success) dispatch(fetchProfilesSuccess(dtos.map(convertDtoToProfile)));
-    else dispatch(fetchProfilesFailure());
+    if (response.success) {
+        const resp = (response as unknown) as FetchProfilesResponseDto;
+        const canFetchMore = resp.meta.currentPage < resp.meta.totalPages;
+        dispatch(fetchProfilesSuccess(resp.data.map(convertDtoToProfile), canFetchMore));
+    } else dispatch(fetchProfilesFailure());
 };
 
 export const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE,
 });
 
-export const fetchProfilesSuccess = (profiles: UserProfile[]): FetchProfilesSuccessAction => ({
+export const fetchProfilesSuccess = (profiles: UserProfile[], canFetchMore: boolean): FetchProfilesSuccessAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS,
     profiles,
+    canFetchMore,
 });
 
 export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({

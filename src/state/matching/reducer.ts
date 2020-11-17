@@ -1,5 +1,5 @@
 import {UserProfile} from "../../model/user-profile";
-import {DEGREES} from "../../constants/profile-constants";
+import {DEGREES, ROLES} from "../../constants/profile-constants";
 import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {
     MatchingState,
@@ -19,10 +19,12 @@ export const initialState: MatchingState = {
         universities: [],
         degrees: DEGREES,
         languages: [],
+        roles: [],
     },
     fetchedProfiles: [],
     fetchingProfiles: false,
     fetchingPage: 1,
+    canFetchMore: true,
 };
 
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
@@ -52,6 +54,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                     universities: PARTNER_UNIVERSITIES.map((univ: University) => univ.key),
                     degrees: DEGREES,
                     languages: [],
+                    roles: ROLES,
                 },
             };
         }
@@ -59,15 +62,16 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, fetchingProfiles: true};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE: {
-            return {...state, fetchingProfiles: false};
+            return {...state, fetchingProfiles: false, canFetchMore: false};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
-            const {profiles} = <FetchProfilesSuccessAction>action;
+            const {profiles, canFetchMore} = <FetchProfilesSuccessAction>action;
             return {
                 ...state,
                 fetchedProfiles: state.fetchedProfiles.concat(profiles),
                 fetchingProfiles: false,
                 fetchingPage: state.fetchingPage + 1,
+                canFetchMore,
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
@@ -76,6 +80,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 fetchedProfiles: [],
                 fetchingProfiles: false,
                 fetchingPage: 1,
+                canFetchMore: true,
             };
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
