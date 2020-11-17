@@ -12,6 +12,7 @@ import OnboardingNavigator from "./OnboardingNavigator";
 import {rootNavigationRef} from "./utils";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
+import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -31,6 +32,7 @@ function Navigation({theme}: ThemeProps): JSX.Element {
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
                 <Stack.Screen name="ValidateEmailScreen" component={ValidateEmailScreen} />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
+                <Stack.Screen name="OnboardingSuccessfulScreen" component={OnboardingSuccessfulScreen} />
                 <Stack.Screen name="NotFoundScreen" component={NotFoundScreen} options={{title: "Oops!"}} />
             </Stack.Navigator>
         </NavigationContainer>

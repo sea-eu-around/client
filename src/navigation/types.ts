@@ -6,6 +6,7 @@ export type RootNavigatorScreens = {
     ValidationEmailSentScreen: undefined;
     ValidateEmailScreen: undefined;
     OnboardingScreen: undefined;
+    OnboardingSuccessfulScreen: undefined;
     NotFoundScreen: undefined;
 };
 
@@ -20,6 +21,16 @@ export type MainNavigatorTabs = {
 export type LoginNavigatorTabs = {
     TabLogin: undefined;
     TabSignup: undefined;
+};
+
+export type MessagingNavigatorRoot = {
+    ChatScreen: undefined;
+    MessagingScreen: undefined;
+};
+
+export type MessagingNavigatorTabs = {
+    IndividualMessagingTab: undefined;
+    GroupMessagingTab: undefined;
 };
 
 export type LoginTabNavigatorScreens = {
@@ -40,10 +51,6 @@ export type TabDiscoverParamList = {
 export type TabMatchingParamList = {
     TabMatchingScreen: undefined;
     MatchFilteringScreen: undefined;
-};
-
-export type TabMessagingParamList = {
-    TabMessagingScreen: undefined;
 };
 
 export type TabNotificationsParamList = {

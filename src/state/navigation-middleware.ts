@@ -12,7 +12,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
 
     switch (action.type) {
         case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
-            rootNavigate("MainScreen");
+            rootNavigate("OnboardingSuccessfulScreen");
             break;
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
