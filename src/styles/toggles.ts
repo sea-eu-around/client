@@ -10,21 +10,16 @@ export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Par
                 height: 30,
                 borderWidth: 0,
                 marginHorizontal: 0,
-                marginVertical: 2,
+                marginTop: 2,
+                marginBottom: 5,
             },
             innerBorderStyle: {width: 0},
             buttonContainerStyle: {marginHorizontal: 5},
+            buttonStyle: {paddingBottom: 2},
             textStyle: {
                 color: theme.textLight,
                 opacity: 0.5,
             },
-            /*selectedButtonStyle: {
-                backgroundColor: "transparent",
-                borderColor: theme.accent,
-                borderStyle: "dashed",
-                borderWidth: 1,
-                borderRadius: 20,
-            },*/
             selectedButtonStyle: {
                 backgroundColor: "transparent",
                 borderColor: theme.accent,

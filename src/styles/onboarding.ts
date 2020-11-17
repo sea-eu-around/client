@@ -30,6 +30,9 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             fontSize: 40,
             color: theme.text,
         },
+        finishButtonText: {
+            fontSize: 20,
+        },
         title: {
             fontFamily: "sans-serif-thin",
             fontSize: 40,
