@@ -1,6 +1,6 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
-import {KeyboardAvoidingView} from "react-native";
+import {Keyboard, KeyboardAvoidingView} from "react-native";
 import {FormTextInput} from "../../components/FormTextInput";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
@@ -31,6 +31,7 @@ type OnboardingNameFormState = {
 
 class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
     submit(values: OnboardingNameFormState) {
+        Keyboard.dismiss();
         this.props.dispatch(setOnboardingValues(values));
         this.props.next();
     }
