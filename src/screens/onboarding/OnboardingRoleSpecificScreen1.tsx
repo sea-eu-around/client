@@ -10,7 +10,6 @@ import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import {Degree, StaffRole, STAFF_ROLES} from "../../constants/profile-constants";
 import DegreeToggle from "../../components/DegreeToggle";
-import EducationFieldPicker from "../../components/EducationFieldPicker";
 import {TouchableOpacity, Text, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {VALIDATOR_ONBOARDING_DEGREE} from "../../validators";
@@ -66,9 +65,6 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
                                 onUpdate={(degree?: Degree) => setFieldValue("degree", degree)}
                             />
                             {touched.degree && <InputErrorText error={errors.degree}></InputErrorText>}
-
-                            <InputLabel style={styles.label}>{i18n.t("fieldsOfEducation")}</InputLabel>
-                            <EducationFieldPicker></EducationFieldPicker>
                         </OnboardingSlide>
                     );
                 }}
