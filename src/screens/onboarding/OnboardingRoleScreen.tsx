@@ -31,11 +31,11 @@ class OnboardingRoleScreen extends React.Component<OnboardingRoleScreenProps> {
             <OnboardingSlide title={i18n.t("onboarding.role.title")} hideNavNext={true} {...this.props}>
                 <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({role: "student"})}>
                     <MaterialIcons name={"school"} style={styles.roleButtonIconStudent}></MaterialIcons>
-                    <Text style={styles.roleButtonTextStudent}>{i18n.t("roles.student")}</Text>
+                    <Text style={styles.roleButtonTextStudent}>{i18n.t("allRoles.student")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({role: "staff"})}>
                     <MaterialIcons name={"group"} style={styles.roleButtonIconStaff}></MaterialIcons>
-                    <Text style={styles.roleButtonTextStaff}>{i18n.t("roles.staff")}</Text>
+                    <Text style={styles.roleButtonTextStaff}>{i18n.t("allRoles.staff")}</Text>
                 </TouchableOpacity>
             </OnboardingSlide>
         );

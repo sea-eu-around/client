@@ -14,7 +14,7 @@ export type RoleToggleMultiProps = {
 
 function RoleToggleMulti(props: RoleToggleMultiProps): JSX.Element {
     const {theme, roles, noButtonVariant, onSelect, ...otherProps} = props;
-    const buttonLabels = ROLES.map((r: string) => i18n.t(`roles.${r}`));
+    const buttonLabels = ROLES.map((r: string) => i18n.t(`allRoles.${r}`));
 
     return (
         <ButtonGroup

@@ -16,7 +16,7 @@ function RoleToggle(props: RoleToggleProps): JSX.Element {
     const {role, onSelect, theme, ...otherProps} = props;
     const styles = themedStyles(theme);
 
-    const buttonLabels = ROLES.map((r: string) => i18n.t(`roles.${r}`));
+    const buttonLabels = ROLES.map((r: string) => i18n.t(`allRoles.${r}`));
 
     return (
         <ButtonGroup

@@ -153,7 +153,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                             <Text style={styles.name}>{profile.firstName + " " + profile.lastName}</Text>
                             <Text style={styles.infoText}>{i18n.t(`universities.${profile.university}`)}</Text>
                             <Text style={styles.infoText}>
-                                {i18n.t(`roles.${profile.staffRole ? "staff" : "student"}`)} (
+                                {i18n.t(`allRoles.${profile.staffRole ? "staff" : "student"}`)} (
                                 {profile.staffRole
                                     ? i18n.t(`staffRoles.${profile.staffRole}`)
                                     : i18n.t(`degrees.${profile.degree}`)}
