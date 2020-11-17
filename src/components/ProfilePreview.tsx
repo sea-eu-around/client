@@ -145,7 +145,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                 title={(profile.firstName[0] + profile.lastName[0]).toUpperCase()}
                                 containerStyle={styles.avatar}
                                 source={
-                                    profile.avatarUri && profile.avatarUri !== "" ? {uri: profile.avatarUri} : undefined
+                                    profile.avatarUrl && profile.avatarUrl !== "" ? {uri: profile.avatarUrl} : undefined
                                 }
                             ></Avatar>
                         </View>

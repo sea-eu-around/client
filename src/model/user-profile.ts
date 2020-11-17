@@ -11,7 +11,7 @@ export type UserProfile = {
     birthdate: Date;
     gender: Gender;
     interests: string[];
-    avatarUri: string;
+    avatarUrl: string;
     languages: SpokenLanguageDto[];
     educationFields: string[];
     staffRole?: StaffRole;
