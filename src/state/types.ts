@@ -20,6 +20,7 @@ export type OnboardingState = {
     languages: SpokenLanguageDto[];
     interestIds: string[];
     offerValues: {[key: string]: OfferValueDto};
+    educationFields: string[];
 };
 
 export type AuthState = {
@@ -54,6 +55,7 @@ export type MatchingFiltersState = {
     universities: string[];
     degrees: Degree[];
     languages: string[];
+    roles: Role[];
 };
 
 export type MatchingState = {
@@ -61,6 +63,7 @@ export type MatchingState = {
     fetchedProfiles: UserProfile[];
     fetchingProfiles: boolean;
     fetchingPage: number;
+    canFetchMore: boolean;
 };
 
 export type AppState = {
@@ -320,6 +323,7 @@ export type FetchProfilesFailureAction = {
 export type FetchProfilesSuccessAction = {
     type: string;
     profiles: UserProfile[];
+    canFetchMore: boolean;
 };
 
 export type MatchingAction =
