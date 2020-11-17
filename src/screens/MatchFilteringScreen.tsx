@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Switch, Text, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {OfferCategory, OfferDto} from "../api/dto";
@@ -11,9 +11,10 @@ import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import DegreeToggleMulti from "../components/DegreeToggleMulti";
 import MultiLanguagePicker from "../components/MultiLanguagePicker";
-import {Degree} from "../constants/profile-constants";
+import {Degree, Role} from "../constants/profile-constants";
 import {MaterialIcons} from "@expo/vector-icons";
 import store from "../state/store";
+import RoleToggleMulti from "../components/RoleToggleMulti";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -24,19 +25,9 @@ const reduxConnector = connect((state: AppState) => ({
 // Component props
 type MatchFilteringScreenProps = ThemeProps & ConnectedProps<typeof reduxConnector>;
 
-function Separator() {
-    return (
-        <View
-            style={{
-                height: 1,
-                width: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
-                alignSelf: "center",
-                marginVertical: 20,
-            }}
-        ></View>
-    );
-}
+export const Separator = withTheme(({theme}: ThemeProps) => {
+    return <View style={themedStyles(theme).separator}></View>;
+});
 
 class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps> {
     render(): JSX.Element {
@@ -44,7 +35,6 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps> {
         const styles = themedStyles(theme);
 
         const categories = Object.values(OfferCategory);
-        console.log("MatchFilteringScreen", filters);
 
         const offerSections = categories.map((category: OfferCategory) => (
             <View key={category} style={styles.sectionContainer}>
@@ -65,7 +55,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps> {
         ));
 
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>General</Text>
                     <View style={styles.entryContainer}>
@@ -85,30 +75,42 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps> {
                         ></MultiLanguagePicker>
                     </View>
                     <View style={styles.twoLineEntryContainer}>
-                        <Text style={styles.entryLabel}>{i18n.t("levelOfStudy")}</Text>
-                        <DegreeToggleMulti
-                            degrees={filters.degrees}
-                            onSelect={(degrees: Degree[]) => dispatch(setMatchingFilters({degrees}))}
-                            style={{width: "100%"}}
-                        ></DegreeToggleMulti>
+                        <Text style={styles.entryLabel}>{i18n.t("roles")}</Text>
+                        <RoleToggleMulti
+                            roles={filters.roles}
+                            onSelect={(roles: Role[]) => dispatch(setMatchingFilters({roles}))}
+                            noButtonVariant={true}
+                        ></RoleToggleMulti>
                     </View>
+                    {filters.roles.indexOf("student") != -1 && (
+                        <View style={styles.twoLineEntryContainer}>
+                            <Text style={styles.entryLabel}>{i18n.t("levelOfStudy")}</Text>
+                            <DegreeToggleMulti
+                                degrees={filters.degrees}
+                                onSelect={(degrees: Degree[]) => dispatch(setMatchingFilters({degrees}))}
+                                style={{width: "100%"}}
+                                noButtonVariant={true}
+                            ></DegreeToggleMulti>
+                        </View>
+                    )}
                 </View>
                 {offerSections}
-            </View>
+            </ScrollView>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
+        scroll: {
             flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            width: "100%",
-            padding: 40,
             backgroundColor: theme.background,
+        },
+        scrollContainer: {
+            //alignItems: "center",
+            //justifyContent: "center",
+            flexDirection: "column",
+            padding: 40,
         },
         sectionContainer: {
             width: "100%",
@@ -128,8 +130,15 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         entryLabel: {
             fontSize: 16,
-            marginVertical: 5,
+            marginVertical: 7,
             marginRight: 10,
+        },
+        separator: {
+            height: 1,
+            width: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.1)",
+            alignSelf: "center",
+            marginVertical: 20,
         },
     });
 });
