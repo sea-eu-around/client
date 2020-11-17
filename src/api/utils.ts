@@ -19,16 +19,11 @@ function encodeURIPrimitive(v: Primitive): string {
  * @returns the given arguments, formatted into a HTTP request suffix.
  */
 export function encodeRequestParams(args: URLParams): string {
-    const keys = Object.keys(args);
-    if (keys.length == 0) return "";
-    else {
-        return keys
-            .map((key: string) => {
-                const val = args[key];
-                return val === undefined ? "" : `${key}=${encodeURIPrimitive(val)}`;
-            })
-            .join("&");
-    }
+    const str = Object.keys(args)
+        .filter((key: string) => args[key] !== undefined)
+        .map((key: string) => `${key}=${encodeURIPrimitive(args[key])}`)
+        .join("&");
+    return str.length == 0 ? str : "?" + str;
 }
 
 /**
@@ -66,12 +61,12 @@ export async function requestBackend(
 
     try {
         if (verbose) {
-            console.log(`Sending request: ${method} /${endpoint}?${formattedParams}`);
+            console.log(`Sending request: ${method} /${endpoint}${formattedParams}`);
             console.log(`  headers: ${JSON.stringify(headers)}`);
             console.log(`  body   : ${JSON.stringify(body)}`);
         }
 
-        const response = await fetch(`${BACKEND_URL}/${endpoint}?${formattedParams}`, {
+        const response = await fetch(`${BACKEND_URL}/${endpoint}${formattedParams}`, {
             method,
             headers,
             ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
