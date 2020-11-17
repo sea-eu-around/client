@@ -34,10 +34,11 @@ export type CreateProfileDtoCommon = {
     gender: Gender;
     birthdate: string;
     nationality: CountryCode;
+    avatar: string;
     languages: SpokenLanguageDto[];
     interests: string[];
     profileOffers: OfferValueDto[];
-    educationFields: string[];
+    educationFields: EducationFieldDto[];
 };
 
 export type CreateProfileDtoStudent = CreateProfileDtoCommon & {
@@ -52,11 +53,32 @@ export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
 export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey};
 
+export type FetchProfilesResponseDto = {
+    data: ResponseProfileDto[];
+    meta: {
+        currentPage: number;
+        itemCount: number;
+        itemsPerPage: number;
+        totalItems: number;
+        totalPages: number;
+    };
+    links: {
+        first: string;
+        last: string;
+        next: string;
+        previous: string;
+    };
+};
+
 export enum OfferCategory {
     Discover = "discover",
     Collaborate = "collaborate",
     Meet = "meet",
 }
+
+export type EducationFieldDto = {
+    id: string;
+};
 
 export type OfferDto = {
     id: string;
@@ -77,4 +99,8 @@ export type OfferValueDto = {
 
 export type InterestDto = {
     id: string;
+};
+
+export type AvatarSuccessfulUpdatedDto = {
+    avatar: string;
 };
