@@ -3,7 +3,7 @@ import * as React from "react";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
-import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
+import {VALIDATOR_ONBOARDING_INTERESTS} from "../../validators";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
@@ -15,15 +15,15 @@ const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
 }));
 
-const VALIDATION_SCHEMA = Yup.object().shape({
-    languages: VALIDATOR_ONBOARDING_LANGUAGES,
-});
-
 type OnboardingInterestsScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
 type OnboardingInterestsScreenState = {
     hasErrors: boolean;
 };
+
+const VALIDATION_SCHEMA = Yup.object().shape({
+    interestIds: VALIDATOR_ONBOARDING_INTERESTS,
+});
 
 type OnboardingInterestsFormState = {
     interestIds: string[];
