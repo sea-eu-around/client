@@ -6,10 +6,12 @@ import {Platform, StyleSheet} from "react-native";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
+import {AVATAR_QUALITY} from "../constants/config";
 
 // Component props
 export type AvatarEditButtonProps = ThemeProps & {
-    onPictureSelected?: (uri: string) => void;
+    onPictureSelected?: (imageInfo: ImageInfo) => void;
 };
 
 class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
@@ -33,16 +35,17 @@ class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
         if (authorized) {
             try {
                 const result = await ImagePicker.launchImageLibraryAsync({
-                    mediaTypes: ImagePicker.MediaTypeOptions.All,
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
                     allowsEditing: true,
                     aspect: [1, 1],
-                    quality: 1,
+                    quality: AVATAR_QUALITY,
                 });
                 if (!result.cancelled) {
-                    if (this.props.onPictureSelected) this.props.onPictureSelected(result.uri);
+                    const info: ImageInfo = result;
+                    if (this.props.onPictureSelected) this.props.onPictureSelected(info);
                 }
-                console.log(result);
             } catch (e) {
+                console.error("Could not get image. Check console for error.");
                 console.log(e);
             }
         }
@@ -52,7 +55,7 @@ class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
         const {theme} = this.props;
         const styles = themedStyles(theme);
 
-        return <MaterialIcons onPress={() => this.showPicker()} size={24} style={styles.buttonStyle} name="image" />;
+        return <MaterialIcons onPress={() => this.showPicker()} style={styles.buttonStyle} name="edit" />;
     }
 }
 
@@ -64,8 +67,10 @@ const themedStyles = preTheme((theme: Theme) => {
             right: 0,
             borderRadius: 20,
             padding: 4,
-            backgroundColor: "#eee",
-            color: theme.accentSecondary,
+            backgroundColor: theme.cardBackground,
+            color: theme.text,
+            fontSize: 20,
+            elevation: 2,
         },
     });
 });
