@@ -1,7 +1,7 @@
 import {BACKEND_URL} from "../constants/config";
 import store from "../state/store";
 
-export type Primitive = string | number | boolean | undefined;
+export type Primitive = string | number | boolean | Primitive[] | undefined;
 export type URLParams = {[key: string]: Primitive};
 export type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 export type RequestResponse = {success: boolean; codes: string[]} & {[key: string]: unknown};
