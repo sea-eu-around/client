@@ -14,8 +14,8 @@ export default {
         textBlack: lightThemeText,
         textLight: "#666",
         textInverted: "#fff",
-        background: "#f9f9f9",
-        cardBackground: "#f8f8f8",
+        background: "#fafafa",
+        cardBackground: "#f7f7f7",
         accent: "#003da5", // Pantone 293c
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c
@@ -24,6 +24,7 @@ export default {
         error: "#ff4a6a",
         actionNeutral: "#555555",
         okay: "#00b16a",
+        warn: "#eecc00",
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorLight,
         componentBorder: "#eee",
@@ -45,6 +46,7 @@ export default {
         error: "#f9819d",
         actionNeutral: "#777",
         okay: "#00b16a",
+        warn: "#eecc00",
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorDark,
         componentBorder: "#555",
