@@ -7,6 +7,7 @@ import {rootNavigate} from "../navigation/utils";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
+import {withTheme} from "react-native-elements";
 
 const mapStateToProps = (state: AppState) => ({
     validated: state.auth.validated,
@@ -86,4 +87,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(ValidateEmailScreen);
+export default reduxConnector(withTheme(ValidateEmailScreen));
