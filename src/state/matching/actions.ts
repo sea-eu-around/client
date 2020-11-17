@@ -46,15 +46,19 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
 
     dispatch(beginFetchProfiles());
 
+    function nonEmptyOrUndef<T>(t: Array<T>) {
+        return t.length == 0 ? undefined : t;
+    }
+
     const response = await requestBackend(
         "profiles",
         "GET",
         {
             page: state.fetchingPage,
             limit: 5,
-            universities: filters.universities,
-            spokenLanguages: filters.languages,
-            degrees: filters.degrees,
+            universities: nonEmptyOrUndef(filters.universities),
+            spokenLanguages: nonEmptyOrUndef(filters.languages),
+            degrees: nonEmptyOrUndef(filters.degrees),
         },
         {},
         true,
