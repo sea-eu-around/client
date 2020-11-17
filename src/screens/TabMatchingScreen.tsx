@@ -35,20 +35,10 @@ type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
     StackScreenProps<TabMatchingParamList, "TabMatchingScreen">;
 
-// Component state
-/*type TabMatchingScreenState = {
-
-};*/
-
 const SCROLL_DISTANCE_TO_LOAD = 50;
 
 class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
-    scrollViewRef: React.RefObject<ScrollView>;
-
-    constructor(props: TabMatchingScreenProps) {
-        super(props);
-        this.scrollViewRef = React.createRef<ScrollView>();
-    }
+    scrollViewRef: React.RefObject<ScrollView> = React.createRef<ScrollView>();
 
     fetchMore() {
         (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
@@ -68,20 +58,18 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
         const {profiles, theme, fetchingProfiles, dispatch} = this.props;
         const styles = themedStyles(theme);
 
-        const previewComponents = profiles
-            //.filter((profile) => !hiddenProfiles[profile.id])
-            .map((profile: UserProfile) => (
-                <ProfilePreview
-                    key={profile.id}
-                    profile={profile}
-                    onExpand={(layout: LayoutRectangle) => {
-                        const scroll = this.scrollViewRef.current;
-                        if (scroll) scroll.scrollTo({y: layout.y, animated: true});
-                    }}
-                    onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
-                    onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
-                />
-            ));
+        const previewComponents = profiles.map((profile: UserProfile) => (
+            <ProfilePreview
+                key={profile.id}
+                profile={profile}
+                onExpand={(layout: LayoutRectangle) => {
+                    const scroll = this.scrollViewRef.current;
+                    if (scroll) scroll.scrollTo({y: layout.y, animated: true});
+                }}
+                onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
+                onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
+            />
+        ));
 
         return (
             <View style={styles.container}>
@@ -186,29 +174,3 @@ export const MatchingHeaderRight = withTheme(
 );
 
 export default reduxConnector(withTheme(TabMatchingScreen));
-
-/*
-
-<View style={styles.container}>
-    <View style={styles.topBar}>
-        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-            <Text style={styles.title}>Matchingg</Text>
-            <FontAwesome
-                name="sliders"
-                size={30}
-                style={{paddingHorizontal: 4}}
-                onPress={() => {
-                    navigation.navigate("MatchFilteringScreen");
-                }}
-            />
-        </View>
-        <View style={[styles.separator, {backgroundColor: "#ccc"}]} />
-    </View>
-    <View style={styles.scroller}>
-        <View style={styles.matchContainer}>
-
-        </View>
-    </View>
-</View>
-
-*/
