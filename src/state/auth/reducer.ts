@@ -37,6 +37,7 @@ export const initialState: AuthState = {
         languages: [],
         offerValues: {},
         interestIds: [],
+        educationFields: [],
     },
 };
 

@@ -69,7 +69,7 @@ export const loginFailure = (errors: string[]): LogInFailureAction => ({
 export const requestLogin = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(loginBegin(email, password));
 
-    const response = await requestBackend("auth/login", "POST", {}, {email, password});
+    const response = await requestBackend("auth/login", "POST", {}, {email, password}, false, true);
     if (response.success) {
         const payload = response.data as LoginDto;
         dispatch(loginSuccess(payload.token, payload.user));
@@ -130,24 +130,44 @@ export const debugConnect = (): AppThunk => async (dispatch) => {
         await dispatch(
             createProfile({
                 type: "student",
-                birthdate: new Date().toJSON(),
-                firstName: "Test",
+                birthdate: "2002-11-12T07:21:22.110Z",
+                firstName: "Kevin410891",
                 lastName: "Test",
-                degree: "m1",
                 gender: "male",
                 languages: [
                     {code: "fr", level: "native"},
-                    {code: "en", level: "b1"},
+                    {code: "en", level: "c1"},
                 ],
                 nationality: "FR",
                 interests: [],
                 profileOffers: [
-                    {offerId: "provide-a-couch", allowMale: true, allowFemale: true, allowOther: true, allowStaff: false, allowStudent: true},
-                    {offerId: "grab-a-drink", allowMale: true, allowFemale: true, allowOther: true, allowStaff: false, allowStudent: true},
-                    {offerId: "talk-a-bot", allowMale: true, allowFemale: true, allowOther: true, allowStaff: true, allowStudent: true},
-                    {offerId: "chat-to-practice", allowMale: true, allowFemale: true, allowOther: true, allowStaff: true, allowStudent: false},
+                    {
+                        offerId: "provide-a-couch",
+                        allowMale: true,
+                        allowFemale: true,
+                        allowOther: true,
+                        allowStaff: false,
+                        allowStudent: true,
+                    },
+                    {
+                        offerId: "grab-a-drink",
+                        allowMale: true,
+                        allowFemale: true,
+                        allowOther: true,
+                        allowStaff: false,
+                        allowStudent: true,
+                    },
+                    {
+                        offerId: "talk-a-bit",
+                        allowMale: true,
+                        allowFemale: true,
+                        allowOther: true,
+                        allowStaff: true,
+                        allowStudent: true,
+                    },
                 ],
-                educationField: "natural-and-physical-science", // TODO update education field
+                educationFields: [],
+                degree: "m2",
             }),
         );
     }
