@@ -15,7 +15,7 @@ export type FormattedNationalityState = {
     countryName: string;
 };
 
-export class FormattedNationality extends React.Component<FormattedNationalityProps, FormattedNationalityState> {
+class FormattedNationality extends React.Component<FormattedNationalityProps, FormattedNationalityState> {
     constructor(props: FormattedNationalityProps) {
         super(props);
         this.state = {
@@ -52,3 +52,5 @@ export class FormattedNationality extends React.Component<FormattedNationalityPr
         );
     }
 }
+
+export default FormattedNationality;

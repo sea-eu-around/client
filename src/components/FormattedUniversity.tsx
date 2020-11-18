@@ -7,15 +7,15 @@ import {University} from "../constants/universities";
 // Component props
 export type FormattedUniversityProps = {
     university: University | null;
-    containerStyle: ViewStyle;
+    containerStyle?: ViewStyle;
 } & TextProps;
 
-export class FormattedUniversity extends React.Component<FormattedUniversityProps> {
+export default class FormattedUniversity extends React.Component<FormattedUniversityProps> {
     render(): JSX.Element {
-        const {university, ...otherProps} = this.props;
+        const {university, containerStyle, ...otherProps} = this.props;
 
         return (
-            <View style={[{flexDirection: "row"}, this.props.containerStyle]}>
+            <View style={[{flexDirection: "row"}, containerStyle]}>
                 {university && (
                     <>
                         <Flag countryCode={university.country} flagSize={18} withEmoji={false}></Flag>

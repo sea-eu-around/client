@@ -1,7 +1,7 @@
 import * as React from "react";
 import {TouchableOpacity, View, StyleSheet} from "react-native";
 import NationalityPicker from "./NationalityPicker";
-import {FormattedNationality} from "./FormattedNationality";
+import FormattedNationality from "./FormattedNationality";
 import {CountryCode} from "../model/country-codes";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
