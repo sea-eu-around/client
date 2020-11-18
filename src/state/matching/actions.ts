@@ -1,5 +1,5 @@
 import {convertDtoToProfile} from "../../api/converters";
-import {FetchProfilesResponseDto} from "../../api/dto";
+import {FetchMyMatchesResponseDto, FetchProfilesResponseDto} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
@@ -17,6 +17,9 @@ import {
     BeginFetchProfilesAction,
     MatchingState,
     LikeProfileSuccessAction,
+    FetchMyMatchesSuccessAction,
+    FetchMyMatchesFailureAction,
+    BeginFetchMyMatchesAction,
 } from "../types";
 import {PROFILES_FETCH_LIMIT} from "../../constants/config";
 
@@ -110,4 +113,31 @@ export const blockProfileSuccess = (profileId: string): BlockProfileSuccessActio
 export const blockProfile = (profileId: string): AppThunk => async (dispatch) => {
     const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, true, true);
     if (response.success) dispatch(blockProfileSuccess(profileId));
+};
+
+export const beginFetchMyMatches = (): BeginFetchMyMatchesAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN,
+});
+
+export const fetchMyMatchesFailure = (): FetchMyMatchesFailureAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE,
+});
+
+export const fetchMyMatchesSuccess = (profiles: UserProfile[]): FetchMyMatchesSuccessAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS,
+    profiles,
+});
+
+export const fetchMyMatches = (): AppThunk => async (dispatch) => {
+    const state: MatchingState = store.getState().matching;
+    if (state.fetchingMyMatches) return;
+
+    dispatch(beginFetchMyMatches());
+
+    const response = await requestBackend("matching", "GET", {}, {}, true, true);
+
+    if (response.success) {
+        const resp = response.data as FetchMyMatchesResponseDto;
+        dispatch(fetchMyMatchesSuccess(resp.map(convertDtoToProfile)));
+    } else dispatch(fetchMyMatchesFailure());
 };

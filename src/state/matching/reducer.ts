@@ -10,6 +10,7 @@ import {
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
     MatchingFiltersState,
+    FetchMyMatchesSuccessAction,
 } from "../types";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
@@ -26,6 +27,8 @@ export const initialState: MatchingState = {
     fetchingProfiles: false,
     fetchingPage: 1,
     canFetchMore: true,
+    myMatches: [],
+    fetchingMyMatches: false,
 };
 
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
@@ -70,6 +73,20 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 fetchingProfiles: false,
                 fetchingPage: 1,
                 canFetchMore: true,
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN: {
+            return {...state, fetchingMyMatches: true};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE: {
+            return {...state, fetchingMyMatches: false};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS: {
+            const {profiles} = <FetchMyMatchesSuccessAction>action;
+            return {
+                ...state,
+                myMatches: profiles,
+                fetchingMyMatches: false,
             };
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {

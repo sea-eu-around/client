@@ -70,6 +70,8 @@ export type FetchProfilesResponseDto = {
     };
 };
 
+export type FetchMyMatchesResponseDto = ResponseProfileDto[];
+
 export enum OfferCategory {
     Discover = "discover",
     Collaborate = "collaborate",

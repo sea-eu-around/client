@@ -64,6 +64,8 @@ export type MatchingState = {
     fetchingProfiles: boolean;
     fetchingPage: number;
     canFetchMore: boolean;
+    myMatches: UserProfile[];
+    fetchingMyMatches: boolean;
 };
 
 export type AppState = {
@@ -281,14 +283,16 @@ export type ProfileAction =
 export enum MATCHING_ACTION_TYPES {
     SET_FILTERS = "MATCHING/SET_FILTERS",
     SET_OFFER_FILTER = "MATCHING/SET_OFFER_FILTER",
-    FETCH_PROFILES_BEGIN = "PROFILE/FETCH_PROFILES_BEGIN",
-    FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
-    FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",
-    FETCH_PROFILES_FAILURE = "PROFILE/FETCH_PROFILES_FAILURE",
-    FETCH_PROFILES_REFRESH = "PROFILE/FETCH_PROFILES_REFRESH",
+    FETCH_PROFILES_BEGIN = "MATCHING/FETCH_PROFILES_BEGIN",
+    FETCH_PROFILES_SUCCESS = "MATCHING/FETCH_PROFILES_SUCCESS",
+    FETCH_PROFILES_FAILURE = "MATCHING/FETCH_PROFILES_FAILURE",
+    FETCH_PROFILES_REFRESH = "MATCHING/FETCH_PROFILES_REFRESH",
     LIKE_PROFILE_SUCCESS = "MATCHING/LIKE_PROFILE_SUCCESS",
     DISLIKE_PROFILE_SUCCESS = "MATCHING/DISLIKE_PROFILE_SUCCESS",
     BLOCK_PROFILE_SUCCESS = "MATCHING/BLOCK_PROFILE_SUCCESS",
+    FETCH_MY_MATCHES_BEGIN = "MATCHING/FETCH_MY_MATCHES_BEGIN",
+    FETCH_MY_MATCHES_FAILURE = "MATCHING/FETCH_MY_MATCHES_FAILURE",
+    FETCH_MY_MATCHES_SUCCESS = "MATCHING/FETCH_MY_MATCHES_SUCCESS",
 }
 
 export type SetOfferFilterAction = {
@@ -339,6 +343,19 @@ export type FetchProfilesSuccessAction = {
     canFetchMore: boolean;
 };
 
+export type BeginFetchMyMatchesAction = {
+    type: string;
+};
+
+export type FetchMyMatchesFailureAction = {
+    type: string;
+};
+
+export type FetchMyMatchesSuccessAction = {
+    type: string;
+    profiles: UserProfile[];
+};
+
 export type MatchingAction =
     | SetOfferFilterAction
     | SetMatchingFiltersAction
@@ -349,4 +366,7 @@ export type MatchingAction =
     | FetchProfilesRefreshAction
     | LikeProfileSuccessAction
     | DislikeProfileSuccessAction
-    | BlockProfileSuccessAction;
+    | BlockProfileSuccessAction
+    | BeginFetchMyMatchesAction
+    | FetchMyMatchesFailureAction
+    | FetchMyMatchesSuccessAction;
