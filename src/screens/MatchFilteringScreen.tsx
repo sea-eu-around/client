@@ -105,12 +105,12 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
         return (
             <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
                 <TouchableOpacity style={styles.resetButton} onPress={() => this.resetLocalFilters()}>
-                    <Text style={styles.resetButtonText}>Reset</Text>
+                    <Text style={styles.resetButtonText}>{i18n.t("matching.filtering.buttonReset")}</Text>
                 </TouchableOpacity>
                 <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>General</Text>
+                    <Text style={styles.sectionTitle}>{i18n.t("matching.filtering.sectionGeneral")}</Text>
                     <View style={styles.entryContainer}>
-                        <Text style={styles.entryLabel}>University</Text>
+                        <Text style={styles.entryLabel}>{i18n.t("university")}</Text>
                         <MultiUniversityPicker
                             universities={filters.universities}
                             showSelected={false}
