@@ -65,5 +65,6 @@ export type NavigatorRoute =
     | keyof RootNavigatorScreens
     | keyof MainNavigatorTabs
     | keyof LoginNavigatorTabs
+    | keyof TabMatchingParamList
     | LoginTabNavigatorScreens
     | OnboardingScreens;

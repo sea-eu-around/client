@@ -18,7 +18,7 @@ import {connect, ConnectedProps} from "react-redux";
 import TabProfileScreen from "../screens/TabProfileScreen";
 import i18n from "i18n-js";
 import TabMatchingScreen, {MatchingHeaderRight} from "../screens/TabMatchingScreen";
-import MatchFilteringScreen, {FilteringHeaderBackImage, FilteringHeaderRight} from "../screens/MatchFilteringScreen";
+import MatchFilteringScreen, {FilteringHeaderLeft, FilteringHeaderRight} from "../screens/MatchFilteringScreen";
 import {withTheme} from "react-native-elements";
 import MessagingNavigator from "./MessagingNavigator";
 import {Text} from "react-native";
@@ -134,9 +134,6 @@ const TabMatchingNavigator = withTheme(
                     options={({navigation}) => ({
                         headerShown: true,
                         headerLeft: () => null,
-                        headerStyle: {
-                            //backgroundColor: theme.accentSlight,
-                        },
                         headerTitle: "Matching",
                         headerTitleStyle: {
                             letterSpacing: 0.5,
@@ -154,7 +151,7 @@ const TabMatchingNavigator = withTheme(
                         headerShown: true,
                         headerTitle: "Filters",
                         headerTitleAlign: "center",
-                        headerBackImage: FilteringHeaderBackImage,
+                        headerLeft: FilteringHeaderLeft,
                         headerRight: FilteringHeaderRight,
                     }}
                 />
