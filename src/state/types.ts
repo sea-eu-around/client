@@ -203,6 +203,9 @@ export enum PROFILE_ACTION_TYPES {
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
     FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
+    SET_AVATAR = "PROFILE/SET_AVATAR",
+    SET_AVATAR_SUCCESS = "PROFILE/SET_AVATAR_SUCCESS",
+    SET_AVATAR_FAILURE = "PROFILE/SET_AVATAR_FAILURE",
 }
 
 export type LoadUserProfileAction = {
@@ -252,6 +255,15 @@ export type FetchUserSuccessAction = {
     user: User;
 };
 
+export type SetAvatarSuccessAction = {
+    type: string;
+    avatarUrl: string;
+};
+
+export type SetAvatarFailureAction = {
+    type: string;
+};
+
 export type ProfileAction =
     | SetProfileFieldsAction
     | CreateProfileAction
@@ -260,14 +272,15 @@ export type ProfileAction =
     | LoadProfileOffersSuccessAction
     | LoadProfileInterestsAction
     | LoadProfileInterestsSuccessAction
-    | FetchUserSuccessAction;
+    | FetchUserSuccessAction
+    | SetAvatarSuccessAction
+    | SetAvatarFailureAction;
 
 /*### MATCHING ###*/
 
 export enum MATCHING_ACTION_TYPES {
     SET_FILTERS = "MATCHING/SET_FILTERS",
     SET_OFFER_FILTER = "MATCHING/SET_OFFER_FILTER",
-    RESET_MATCHING_FILTERS = "MATCHING/RESET_MATCHING_FILTERS",
     FETCH_PROFILES_BEGIN = "PROFILE/FETCH_PROFILES_BEGIN",
     FETCH_PROFILES = "PROFILE/FETCH_PROFILES",
     FETCH_PROFILES_SUCCESS = "PROFILE/FETCH_PROFILES_SUCCESS",

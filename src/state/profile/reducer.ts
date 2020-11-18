@@ -6,6 +6,7 @@ import {
     LoadProfileInterestsSuccessAction,
     SetProfileFieldsSuccessAction,
     FetchUserSuccessAction,
+    SetAvatarSuccessAction,
 } from "../types";
 
 export const initialState: ProfileState = {
@@ -35,6 +36,11 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
         case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
             const {user} = <FetchUserSuccessAction>action;
             return {...state, user};
+        }
+        case PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS: {
+            const {avatarUrl} = <SetAvatarSuccessAction>action;
+            if (state.user === null) return {...state};
+            else return {...state, user: {...state.user, profile: {...state.user.profile, avatarUrl}}};
         }
         default:
             return state;
