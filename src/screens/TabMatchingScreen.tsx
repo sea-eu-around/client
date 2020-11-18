@@ -9,6 +9,7 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
+    Text,
     TouchableOpacity,
     View,
 } from "react-native";
@@ -22,6 +23,7 @@ import store from "../state/store";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
+import i18n from "i18n-js";
 
 const mapStateToProps = (state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
@@ -95,6 +97,12 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                                 <ActivityIndicator size="large" color={theme.accentSecondary} />
                             )}
                         </View>
+                        {!fetchingProfiles && previewComponents.length == 0 && (
+                            <View style={styles.noResultsContainer}>
+                                <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
+                                <Text style={styles.noResultsText2}>{i18n.t("matching.noResultsAdvice")}</Text>
+                            </View>
+                        )}
                     </View>
                 </ScrollView>
             </View>
@@ -149,6 +157,21 @@ const themedStyles = preTheme((theme: Theme) => {
         headerContainer: {
             flexDirection: "row",
             paddingRight: 10,
+        },
+        noResultsContainer: {
+            flex: 1,
+            alignItems: "center",
+        },
+        noResultsText1: {
+            fontSize: 20,
+            letterSpacing: 0.75,
+            color: theme.text,
+            marginVertical: 5,
+        },
+        noResultsText2: {
+            fontSize: 16,
+            letterSpacing: 0.5,
+            color: theme.text,
         },
     });
 });
