@@ -1,6 +1,4 @@
 import {UserProfile} from "../../model/user-profile";
-import {DEGREES, ROLES} from "../../constants/profile-constants";
-import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {
     MatchingState,
     MatchingAction,
@@ -11,16 +9,19 @@ import {
     DislikeProfileSuccessAction,
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
+    MatchingFiltersState,
 } from "../types";
 
+export const defaultMatchingFilters = (): MatchingFiltersState => ({
+    offers: {},
+    universities: [],
+    degrees: [],
+    languages: [],
+    roles: [],
+});
+
 export const initialState: MatchingState = {
-    filters: {
-        offers: {},
-        universities: [],
-        degrees: DEGREES,
-        languages: [],
-        roles: [],
-    },
+    filters: defaultMatchingFilters(),
     fetchedProfiles: [],
     fetchingProfiles: false,
     fetchingPage: 1,
@@ -44,18 +45,6 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {
                 ...state,
                 filters: {...state.filters, ...filters},
-            };
-        }
-        case MATCHING_ACTION_TYPES.RESET_MATCHING_FILTERS: {
-            return {
-                ...state,
-                filters: {
-                    offers: {},
-                    universities: PARTNER_UNIVERSITIES.map((univ: University) => univ.key),
-                    degrees: DEGREES,
-                    languages: [],
-                    roles: ROLES,
-                },
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_BEGIN: {

@@ -6,7 +6,6 @@ import store from "../store";
 import {
     SetOfferFilterAction,
     MATCHING_ACTION_TYPES,
-    ResetMatchingFiltersAction,
     SetMatchingFiltersAction,
     MatchingFiltersState,
     AppThunk,
@@ -29,10 +28,6 @@ export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterA
 export const setMatchingFilters = (filters: Partial<MatchingFiltersState>): SetMatchingFiltersAction => ({
     type: MATCHING_ACTION_TYPES.SET_FILTERS,
     filters,
-});
-
-export const resetMatchingFilters = (): ResetMatchingFiltersAction => ({
-    type: MATCHING_ACTION_TYPES.RESET_MATCHING_FILTERS,
 });
 
 export const beginFetchProfiles = (): BeginFetchProfilesAction => ({
