@@ -18,6 +18,7 @@ import {
     MatchingState,
     LikeProfileSuccessAction,
 } from "../types";
+import {PROFILES_FETCH_LIMIT} from "../../constants/config";
 
 export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterAction => ({
     type: MATCHING_ACTION_TYPES.SET_OFFER_FILTER,
@@ -50,7 +51,7 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
         "GET",
         {
             page: state.fetchingPage,
-            limit: 5,
+            limit: PROFILES_FETCH_LIMIT,
             universities: nonEmptyOrUndef(filters.universities),
             spokenLanguages: nonEmptyOrUndef(filters.languages),
             degrees: nonEmptyOrUndef(filters.degrees),
