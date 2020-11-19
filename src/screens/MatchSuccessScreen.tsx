@@ -6,6 +6,9 @@ import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
+import {fetchMyMatches} from "../state/matching/actions";
+import {MyThunkDispatch} from "../state/types";
+import store from "../state/store";
 
 export type TabNotImplementedScreenProps = ThemeProps;
 
@@ -26,7 +29,12 @@ class ReciprocalMatchScreen extends React.Component<TabNotImplementedScreenProps
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
-                    onPress={() => rootNavigate("TabMatchingScreen")}
+                    onPress={() => {
+                        rootNavigate("TabMatchingScreen");
+                        // Make sure the data is up to date
+                        // TODO this could be improved
+                        (store.dispatch as MyThunkDispatch)(fetchMyMatches());
+                    }}
                 >
                     <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
                 </TouchableOpacity>
