@@ -1,7 +1,15 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
 import {ThemeKey} from "../types";
-import {CreateProfileDto, InterestDto, OfferDto, OfferValueDto, SpokenLanguageDto, TokenDto} from "../api/dto";
+import {
+    CreateProfileDto,
+    InterestDto,
+    LikeProfileResponseDto,
+    OfferDto,
+    OfferValueDto,
+    SpokenLanguageDto,
+    TokenDto,
+} from "../api/dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
@@ -313,6 +321,7 @@ export type SetMatchingFiltersAction = {
 export type LikeProfileSuccessAction = {
     type: string;
     profileId: string;
+    matchStatus: LikeProfileResponseDto;
 };
 
 export type DislikeProfileSuccessAction = {

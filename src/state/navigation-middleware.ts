@@ -1,6 +1,12 @@
 import {AnyAction, Middleware, MiddlewareAPI, Dispatch} from "redux";
 import {rootNavigate} from "../navigation/utils";
-import {AppState, AUTH_ACTION_TYPES, PROFILE_ACTION_TYPES} from "./types";
+import {
+    AppState,
+    AUTH_ACTION_TYPES,
+    LikeProfileSuccessAction,
+    MATCHING_ACTION_TYPES,
+    PROFILE_ACTION_TYPES,
+} from "./types";
 
 export const navigationMiddleware: Middleware<unknown, AppState> = (store: MiddlewareAPI<Dispatch, AppState>) => (
     next: Dispatch<AnyAction>,
@@ -21,6 +27,11 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             rootNavigate("ValidationEmailSentScreen");
+            break;
+        }
+        case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
+            const {matchStatus} = action as LikeProfileSuccessAction;
+            if (matchStatus == "matched") rootNavigate("MatchSuccessScreen");
             break;
         }
     }

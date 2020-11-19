@@ -111,3 +111,5 @@ export type SignedUrlResponseDto = {
 export type AvatarSuccessfulUpdatedDto = {
     avatar: string;
 };
+
+export type LikeProfileResponseDto = "requested" | "matched";

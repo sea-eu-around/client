@@ -1,5 +1,5 @@
 import {convertDtoToProfile} from "../../api/converters";
-import {FetchMyMatchesResponseDto, FetchProfilesResponseDto} from "../../api/dto";
+import {FetchMyMatchesResponseDto, FetchProfilesResponseDto, LikeProfileResponseDto} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
@@ -85,14 +85,21 @@ export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH,
 });
 
-export const likeProfileSuccess = (profileId: string): LikeProfileSuccessAction => ({
+export const likeProfileSuccess = (
+    profileId: string,
+    matchStatus: LikeProfileResponseDto,
+): LikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS,
     profileId,
+    matchStatus,
 });
 
 export const likeProfile = (profileId: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, true, true);
-    if (response.success) dispatch(likeProfileSuccess(profileId));
+    const response = await requestBackend("matching/like", "POST", {}, {toUserId: profileId}, true, true);
+    if (response.success) {
+        const matchStatus = response.data as LikeProfileResponseDto;
+        dispatch(likeProfileSuccess(profileId, matchStatus));
+    }
 };
 
 export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction => ({
@@ -101,7 +108,7 @@ export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessA
 });
 
 export const dislikeProfile = (profileId: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, true, true);
+    const response = await requestBackend("matching/decline", "POST", {}, {toUserId: profileId}, true, true);
     if (response.success) dispatch(dislikeProfileSuccess(profileId));
 };
 
