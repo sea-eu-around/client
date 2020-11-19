@@ -87,12 +87,12 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
         const offerSections = categories.map((category: OfferCategory) => (
             <View key={category} style={styles.sectionContainer}>
                 <Separator></Separator>
-                <Text style={styles.sectionTitle}>{category}</Text>
+                <Text style={styles.sectionTitle}>{i18n.t(`offerCategories.${category}`)}</Text>
                 {offers
                     .filter((o: OfferDto) => o.category == category)
                     .map((o: OfferDto) => (
                         <View key={o.id} style={styles.entryContainer}>
-                            <Text style={styles.entryLabel}>{o.id}</Text>
+                            <Text style={styles.entryLabel}>{i18n.t(`offers.${o.id}.name`)}</Text>
                             <Switch
                                 value={filters.offers[o.id] || false}
                                 onValueChange={(value: boolean) => this.updateLocalOfferFilters(o.id, value)}
@@ -168,6 +168,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 20,
             letterSpacing: 1,
             marginBottom: 5,
+            color: theme.text,
         },
         entryContainer: {
             flexDirection: "row",
@@ -181,6 +182,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             marginVertical: 7,
             marginRight: 10,
+            color: theme.textLight,
         },
         separator: {
             height: 1,
@@ -208,23 +210,43 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export const FilteringHeaderLeft = (props: StackHeaderLeftButtonProps): JSX.Element => (
-    <TouchableOpacity style={{padding: 10}} onPress={props.onPress}>
-        <MaterialIcons name="close" size={32} style={{paddingRight: 10}} />
-    </TouchableOpacity>
+const headerStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        headerButtonIcon: {
+            fontSize: 32,
+            paddingRight: 10,
+            color: theme.text,
+        },
+    });
+});
+
+export const FilteringHeaderLeft = withTheme(
+    (props: StackHeaderLeftButtonProps & ThemeProps): JSX.Element => {
+        const styles = headerStyles(props.theme);
+        return (
+            <TouchableOpacity style={{padding: 10}} onPress={props.onPress}>
+                <MaterialIcons name="close" style={styles.headerButtonIcon} />
+            </TouchableOpacity>
+        );
+    },
 );
 
-export const FilteringHeaderRight = (): JSX.Element => (
-    <TouchableOpacity
-        style={{paddingVertical: 10}}
-        onPress={() => {
-            if (filteringScreenRef.current) filteringScreenRef.current.applyFilters();
-            rootNavigate("TabMatchingScreen");
-            store.dispatch(refreshFetchedProfiles());
-        }}
-    >
-        <MaterialIcons name="check" size={32} style={{paddingRight: 10}} />
-    </TouchableOpacity>
+export const FilteringHeaderRight = withTheme(
+    ({theme}: ThemeProps): JSX.Element => {
+        const styles = headerStyles(theme);
+        return (
+            <TouchableOpacity
+                style={{paddingVertical: 10}}
+                onPress={() => {
+                    if (filteringScreenRef.current) filteringScreenRef.current.applyFilters();
+                    rootNavigate("TabMatchingScreen");
+                    store.dispatch(refreshFetchedProfiles());
+                }}
+            >
+                <MaterialIcons name="check" style={styles.headerButtonIcon} />
+            </TouchableOpacity>
+        );
+    },
 );
 
 //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
