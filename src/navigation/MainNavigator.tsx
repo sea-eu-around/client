@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import {MaterialIcons} from "@expo/vector-icons";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
+import {createStackNavigator, StackHeaderLeftButtonProps, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {
@@ -151,8 +151,8 @@ const TabMatchingNavigator = withTheme(
                         headerShown: true,
                         headerTitle: "Filters",
                         headerTitleAlign: "center",
-                        headerLeft: FilteringHeaderLeft,
-                        headerRight: FilteringHeaderRight,
+                        headerLeft: (props: StackHeaderLeftButtonProps) => <FilteringHeaderLeft {...props} />,
+                        headerRight: () => <FilteringHeaderRight />,
                     }}
                 />
             </TabMatchingStack.Navigator>
