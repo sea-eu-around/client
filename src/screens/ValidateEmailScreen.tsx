@@ -78,11 +78,13 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 20,
             marginVertical: 20,
             textAlign: "center",
+            color: theme.text,
         },
         successText: {
             fontSize: 18,
             lineHeight: 40,
             textAlign: "center",
+            color: theme.text,
         },
     });
 });

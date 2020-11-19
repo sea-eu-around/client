@@ -61,6 +61,7 @@ const themedStyles = preTheme((theme: Theme) => {
         description: {
             fontSize: 16,
             textAlign: "center",
+            color: theme.text,
         },
         mailIcon: {
             marginVertical: 30,
@@ -70,6 +71,7 @@ const themedStyles = preTheme((theme: Theme) => {
         email: {
             fontSize: 16,
             fontWeight: "bold",
+            color: theme.text,
         },
     });
 });

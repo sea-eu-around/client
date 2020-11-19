@@ -27,7 +27,7 @@ class BlockProfileModal extends React.Component<BlockProfileModalProps> {
                                 style={[styles.actionButton, styles.actionButtonCancel]}
                                 onPress={() => hide()}
                             >
-                                <Text style={[styles.actionText]}>{i18n.t("cancel")}</Text>
+                                <Text style={styles.actionText}>{i18n.t("cancel")}</Text>
                             </TouchableHighlight>
                             <TouchableHighlight
                                 style={[styles.actionButton, styles.actionButtonDecline]}
@@ -70,11 +70,12 @@ const themedStyles = preTheme((theme: Theme) => {
         actionText: {
             fontWeight: "bold",
             textAlign: "center",
-            color: theme.textInverted,
+            color: theme.textWhite,
         },
         text: {
             fontSize: 16,
             textAlign: "justify",
+            color: theme.text,
         },
     });
 });
