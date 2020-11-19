@@ -15,7 +15,7 @@ export default {
         textLight: "#666",
         textInverted: "#fff",
         background: "#fafafa",
-        cardBackground: "#f7f7f7",
+        cardBackground: "#ffffff", //"#f7f7f7",
         accent: "#003da5", // Pantone 293c
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c
