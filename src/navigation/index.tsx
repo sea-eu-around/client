@@ -1,5 +1,5 @@
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
-import {createStackNavigator} from "@react-navigation/stack";
+import {CardStyleInterpolators, createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
@@ -13,6 +13,8 @@ import {rootNavigationRef} from "./utils";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
+import MatchSuccessScreen from "../screens/MatchSuccessScreen";
+import {Platform} from "react-native";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -34,6 +36,17 @@ function Navigation({theme}: ThemeProps): JSX.Element {
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen name="OnboardingSuccessfulScreen" component={OnboardingSuccessfulScreen} />
                 <Stack.Screen name="NotFoundScreen" component={NotFoundScreen} options={{title: "Oops!"}} />
+                <Stack.Screen
+                    name="MatchSuccessScreen"
+                    component={MatchSuccessScreen}
+                    options={{
+                        headerShown: false,
+                        cardStyleInterpolator:
+                            Platform.OS == "ios"
+                                ? CardStyleInterpolators.forVerticalIOS
+                                : CardStyleInterpolators.forFadeFromBottomAndroid,
+                    }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
