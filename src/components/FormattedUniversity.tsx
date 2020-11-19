@@ -19,7 +19,9 @@ export default class FormattedUniversity extends React.Component<FormattedUniver
                 {university && (
                     <>
                         <Flag countryCode={university.country} flagSize={18} withEmoji={false}></Flag>
-                        <Text {...otherProps}>{i18n.t(`universities.${university.key}`)}</Text>
+                        <Text {...otherProps} style={[{marginLeft: -5}, otherProps.style]}>
+                            {i18n.t(`universities.${university.key}`)}
+                        </Text>
                     </>
                 )}
             </View>
