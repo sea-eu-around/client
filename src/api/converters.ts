@@ -8,6 +8,9 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         avatarUrl: dto.avatar,
         birthdate: new Date(dto.birthdate),
         educationFields: (dto.educationFields || []).map((dto: EducationFieldDto) => dto.id),
+        profileOffers: dto.profileOffers || [],
+        interests: dto.interests || [],
+        languages: dto.languages || [],
     };
 }
 
