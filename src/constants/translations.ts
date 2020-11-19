@@ -9,7 +9,7 @@ export default {
         },
 
         login: "Log in",
-        tablogin: "Log in",
+        tabsignin: "Log in",
         tabsignup: "Sign up",
         emailAddress: "Email address",
         password: "Password",
@@ -67,7 +67,7 @@ export default {
         pageDoesntExist: "This page doesn't exist.",
         goHome: "Go to home screen",
         tabs: {
-            discover: "Discover",
+            explore: "Explore",
             matching: "Matching",
             messaging: "Messaging",
             profile: "Profile",

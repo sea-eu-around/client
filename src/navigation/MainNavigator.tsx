@@ -29,12 +29,12 @@ export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScre
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
     return (
-        <TabNavigator.Navigator initialRouteName="TabDiscover" tabBarOptions={{activeTintColor: theme.tint}}>
+        <TabNavigator.Navigator initialRouteName="TabExplore" tabBarOptions={{activeTintColor: theme.tint}}>
             <TabNavigator.Screen
-                name="TabDiscover"
-                component={TabDiscoverNavigator}
+                name="TabExplore"
+                component={TabExploreNavigator}
                 options={{
-                    tabBarLabel: (props: TabBarLabelProps) => <TabBarLabel text={i18n.t("tabs.discover")} {...props} />,
+                    tabBarLabel: (props: TabBarLabelProps) => <TabBarLabel text={i18n.t("tabs.explore")} {...props} />,
                     tabBarIcon: (props: TabBarIconProps) => <TabBarIcon name="public" {...props} />,
                 }}
             />
@@ -100,7 +100,7 @@ function TabBarLabel({text, color}: {text: string} & TabBarLabelProps): JSX.Elem
 
 const TabExploreStack = createStackNavigator<TabExploreRoot>();
 
-const TabDiscoverNavigator = (): JSX.Element => (
+const TabExploreNavigator = (): JSX.Element => (
     <TabExploreStack.Navigator>
         <TabExploreStack.Screen
             name="TabExploreScreen"

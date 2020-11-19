@@ -12,7 +12,7 @@ export type RootNavigatorScreens = {
 };
 
 export type MainNavigatorTabs = {
-    TabDiscover: undefined;
+    TabExplore: undefined;
     TabMatching: undefined;
     TabMessaging: undefined;
     TabProfile: undefined;

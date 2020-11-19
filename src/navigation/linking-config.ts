@@ -22,9 +22,9 @@ export default {
             ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
-                    TabDiscover: {
+                    TabExplore: {
                         screens: {
-                            TabDiscoverScreen: "discover",
+                            TabExploreScreen: "explore",
                         },
                     },
                     TabMatching: {
