@@ -19,53 +19,65 @@ export type MainNavigatorTabs = {
     TabNotifications: undefined;
 };
 
-export type LoginNavigatorTabs = {
-    TabLogin: undefined;
-    TabSignup: undefined;
+// TAB: Explore
+
+export type TabExploreRoot = {
+    TabExploreScreen: undefined;
 };
 
-export type MessagingNavigatorRoot = {
-    ChatScreen: undefined;
-    MessagingScreen: undefined;
-};
+// TAB: Matching
 
-export type MessagingNavigatorTabs = {
-    IndividualMessagingTab: undefined;
-    GroupMessagingTab: undefined;
-};
-
-export type LoginTabNavigatorScreens = {
-    LoginForm: undefined;
-    ForgotPassword: undefined;
-} & RootNavigatorScreens;
-
-export type OnboardingScreens = typeof ONBOARDING_SCREENS;
-
-export type SignupTabNavigatorScreens = {
-    SignupForm: undefined;
-};
-
-export type TabDiscoverParamList = {
-    TabDiscoverScreen: undefined;
-};
-
-export type TabMatchingParamList = {
+export type TabMatchingRoot = {
     TabMatchingScreen: undefined;
     MatchFilteringScreen: undefined;
 };
 
-export type TabNotificationsParamList = {
+// TAB: Messaging
+
+export type TabMessagingRoot = {
+    ChatScreen: undefined;
+    MessagingScreen: undefined;
+};
+
+export type TabMessagingTabs = {
+    IndividualMessagingTab: undefined;
+    GroupMessagingTab: undefined;
+};
+
+// TAB: Profile
+
+export type TabProfileRoot = {
+    TabProfileScreen: undefined;
+};
+
+// TAB: Notifications
+
+export type TabNotificationsRoot = {
     TabNotificationsScreen: undefined;
 };
 
-export type TabProfileParamList = {
-    TabProfileScreen: undefined;
+// Login screen
+
+export type TabLoginRoot = {
+    TabSignin: undefined;
+    TabSignup: undefined;
 };
+
+export type TabLoginSigninScreens = {
+    LoginForm: undefined;
+    ForgotPassword: undefined;
+};
+
+// Onboarding
+
+export type OnboardingScreens = typeof ONBOARDING_SCREENS;
 
 export type NavigatorRoute =
     | keyof RootNavigatorScreens
     | keyof MainNavigatorTabs
-    | keyof LoginNavigatorTabs
-    | keyof TabMatchingParamList
-    | LoginTabNavigatorScreens
-    | OnboardingScreens;
+    | keyof TabLoginRoot
+    | keyof TabMatchingRoot
+    | keyof TabNotificationsRoot
+    | keyof TabProfileRoot
+    | keyof TabLoginSigninScreens
+    | keyof OnboardingScreens;
