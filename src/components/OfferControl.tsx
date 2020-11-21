@@ -14,14 +14,14 @@ import {preTheme} from "../styles/utils";
 export type OfferControlProps = {
     offer: OfferDto;
     value: OfferValueDto;
-    onChange?: (value: Partial<OfferValueDto>) => void;
+    onChange?: (value: OfferValueDto) => void;
     style?: ViewStyle;
 } & ThemeProps;
 
 class OfferControl extends React.Component<OfferControlProps> {
-    offerValueChange(value: Partial<OfferValueDto>): void {
+    offerValueChange(changed: Partial<OfferValueDto>): void {
         const {onChange} = this.props;
-        if (onChange) onChange(value);
+        if (onChange) onChange({...this.props.value, ...changed});
     }
 
     render(): JSX.Element {

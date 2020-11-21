@@ -161,7 +161,7 @@ export type SetOnboardingValuesAction = {
 export type SetOnboardingOfferValueAction = {
     type: string;
     id: string;
-    value: Partial<OfferValueDto>;
+    value: OfferValueDto;
 };
 
 export type AuthAction =

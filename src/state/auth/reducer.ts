@@ -123,17 +123,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
                     ...state.onboarding,
                     offerValues: {
                         ...state.onboarding.offerValues,
-                        [id]: {
-                            ...(state.onboarding.offerValues[id] || {
-                                id,
-                                allowFemale: true,
-                                allowMale: true,
-                                allowOther: true,
-                                allowStaff: true,
-                                allowStudent: true,
-                            }),
-                            ...value,
-                        },
+                        [id]: value,
                     },
                 },
             };
