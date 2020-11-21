@@ -29,8 +29,8 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
         }
 
         // TODO remove this: temporary email validation request
-        const {dispatch, verificationToken, registerEmail} = this.props;
-        if (verificationToken) (dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken, registerEmail));
+        const {dispatch, verificationToken} = this.props;
+        if (verificationToken) (dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken));
     }
 
     render(): JSX.Element {
@@ -50,7 +50,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                         <>
                             <Text style={styles.successText}>
                                 {i18n.t("emailValidation.success")[0]}
-                                <Text onPress={() => rootNavigate("TabLogin")} style={{color: theme.accent}}>
+                                <Text onPress={() => rootNavigate("TabSignin")} style={{color: theme.accent}}>
                                     {i18n.t("emailValidation.success")[1]}
                                 </Text>
                             </Text>
