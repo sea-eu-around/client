@@ -1,6 +1,7 @@
 import {Alert} from "react-native";
 import {BACKEND_URL} from "../constants/config";
 import store from "../state/store";
+import {TokenDto} from "./dto";
 
 export type Primitive = string | number | boolean | Primitive[] | undefined;
 export type URLParams = {[key: string]: Primitive};
@@ -33,6 +34,8 @@ export function encodeRequestParams(args: URLParams): string {
  * @param params - The URL parameters (?param1=value1&param2=value2 ...)
  * @param body - The body of the request.
  * @param auth - Whether or not this request should be authenticated.
+ * @param verbose - Whether or not to print information about the request and response.
+ * @param authToken - The authentication token. If not given, the token from the redux store will be used.
  */
 export async function requestBackend(
     endpoint: string,
@@ -41,6 +44,7 @@ export async function requestBackend(
     body: URLBodyParams = {},
     auth = false,
     verbose = false,
+    authToken: TokenDto | undefined = undefined,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
@@ -48,7 +52,7 @@ export async function requestBackend(
     };
 
     if (auth) {
-        const token = store.getState().auth.token;
+        const token = authToken || store.getState().auth.token;
         if (token) headers.Authorization = `Bearer ${token.accessToken}`;
         else {
             console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
@@ -84,6 +88,7 @@ export async function requestBackend(
             `An unexpected error occured with a request to ${endpoint}. ` +
                 `Method = ${method}, auth = ${auth}, params=${JSON.stringify(params)}, body=${JSON.stringify(body)}`,
         );
+        console.error(error);
         return {success: false, codes: ["error.unknown"]};
     }
 }
