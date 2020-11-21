@@ -5,6 +5,7 @@ export type RootNavigatorScreens = {
     LoginScreen: undefined;
     ValidationEmailSentScreen: undefined;
     ValidateEmailScreen: undefined;
+    ChangePasswordScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
     MatchSuccessScreen: undefined;

@@ -15,6 +15,7 @@ import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
 import MatchSuccessScreen from "../screens/MatchSuccessScreen";
 import {Platform} from "react-native";
+import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -31,8 +32,9 @@ function Navigation({theme}: ThemeProps): JSX.Element {
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} options={{title: "Login"}} />
                 <Stack.Screen name="ValidationEmailSentScreen" component={ValidationEmailSentScreen} />
-                <Stack.Screen name="MainScreen" component={MainNavigator} />
                 <Stack.Screen name="ValidateEmailScreen" component={ValidateEmailScreen} />
+                <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+                <Stack.Screen name="MainScreen" component={MainNavigator} />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen name="OnboardingSuccessfulScreen" component={OnboardingSuccessfulScreen} />
                 <Stack.Screen name="NotFoundScreen" component={NotFoundScreen} options={{title: "Oops!"}} />
