@@ -19,7 +19,6 @@ export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDt
     const staff = profile.staffRole !== undefined;
     const common: CreateProfileDtoCommon = {
         ...profile,
-        avatar: profile.avatarUrl,
         type: staff ? "staff" : "student",
         birthdate: profile.birthdate.toJSON(),
         educationFields: profile.educationFields.map((id: string) => ({id})),
@@ -33,7 +32,6 @@ export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDt
 export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>): Partial<CreateProfileDto> {
     return {
         ...profile,
-        avatar: profile.avatarUrl,
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
     };

@@ -34,7 +34,6 @@ export type CreateProfileDtoCommon = {
     gender: Gender;
     birthdate: string;
     nationality: CountryCode;
-    avatar: string;
     languages: SpokenLanguageDto[];
     interests: string[];
     profileOffers: OfferValueDto[];
@@ -51,7 +50,7 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
-export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey};
+export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey; avatar: string};
 
 export type FetchProfilesResponseDto = {
     data: ResponseProfileDto[];
