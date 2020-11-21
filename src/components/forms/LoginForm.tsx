@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {LoginTabNavigatorScreens} from "../../navigation/types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
@@ -15,6 +14,7 @@ import FormError from "./FormError";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
+import {TabLoginSigninScreens} from "../../navigation/types";
 
 type LoginFormState = {
     email: string;
@@ -38,7 +38,7 @@ const reduxConnector = connect(mapStateToProps);
 // Component props
 type LoginFormProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    FormProps<LoginFormState> & {navigation: StackNavigationProp<LoginTabNavigatorScreens, "LoginScreen">};
+    FormProps<LoginFormState> & {navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">};
 
 class LoginFormComponent extends React.Component<LoginFormProps> {
     setFieldValue: null | ((field: string, value: string, shouldValidate?: boolean | undefined) => void) = null;
