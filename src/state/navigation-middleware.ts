@@ -1,18 +1,17 @@
-import {AnyAction, Middleware, MiddlewareAPI, Dispatch} from "redux";
+import {AnyAction, Middleware, Dispatch} from "redux";
 import {rootNavigate} from "../navigation/utils";
 import {
     AppState,
     AUTH_ACTION_TYPES,
     LikeProfileSuccessAction,
+    LogInSuccessAction,
     MATCHING_ACTION_TYPES,
     PROFILE_ACTION_TYPES,
 } from "./types";
 
-export const navigationMiddleware: Middleware<unknown, AppState> = (store: MiddlewareAPI<Dispatch, AppState>) => (
+export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: MiddlewareAPI<Dispatch, AppState>*/) => (
     next: Dispatch<AnyAction>,
 ) => (action: AnyAction) => {
-    const state: AppState = store.getState();
-
     // TODO action printing
     console.log(action.type);
 
@@ -22,7 +21,8 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             break;
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
-            rootNavigate(state.auth.onboarded ? "MainScreen" : "OnboardingScreen");
+            const {user} = action as LogInSuccessAction;
+            rootNavigate(user.onboarded ? "MainScreen" : "OnboardingScreen");
             break;
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
