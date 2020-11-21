@@ -21,11 +21,11 @@ class OnboardingOfferScreen2 extends React.Component<OnboardingOfferScreen2Props
 
         return (
             <OnboardingSlide
-                title={i18n.t("onboarding.offers2.title")}
-                subtitle={i18n.t("onboarding.offers2.subtitle")}
+                title={i18n.t("onboarding.offersCollaborate.title")}
+                subtitle={i18n.t("onboarding.offersCollaborate.subtitle")}
                 {...this.props}
             >
-                {createOfferControls(offers, OfferCategory.Discover, onboardingState, dispatch)}
+                {createOfferControls(offers, OfferCategory.Collaborate, onboardingState, dispatch)}
             </OnboardingSlide>
         );
     }

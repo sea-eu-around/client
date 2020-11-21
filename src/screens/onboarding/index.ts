@@ -37,7 +37,7 @@ export const ONBOARDING_ORDER: (keyof OnboardingScreens)[] = [
     "OnboardingRoleScreen",
     "OnboardingRoleSpecificScreen1",
     //"OnboardingRoleSpecificScreen2",
+    "OnboardingOffersScreen1",
     "OnboardingOffersScreen2",
     "OnboardingOffersScreen3",
-    "OnboardingOffersScreen1",
 ];
