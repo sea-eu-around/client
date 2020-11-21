@@ -31,7 +31,9 @@ export const registerBegin = (email: string, password: string): RegisterBeginAct
 // Redux-thunk asynchronous action creator
 export const requestRegister = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(registerBegin(email, password));
-    const response = await requestBackend("auth/register", "POST", {}, {email, password});
+    const locale = store.getState().settings.locale;
+
+    const response = await requestBackend("auth/register", "POST", {}, {email, password, locale});
 
     if (response.success) dispatch(registerSuccess(response.data as User));
     else dispatch(registerFailure(response.codes));
