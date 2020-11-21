@@ -1,7 +1,6 @@
 import * as React from "react";
 import {View, KeyboardAvoidingView, Text} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
-import {LoginTabNavigatorScreens} from "../navigation/types";
 import {MyThunkDispatch} from "../state/types";
 import {LoginForm} from "../components/forms/LoginForm";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
@@ -15,8 +14,9 @@ import {withTheme} from "react-native-elements";
 import {APP_VERSION, DEBUG_MODE} from "../constants/config";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {toggleTheme} from "../state/settings/actions";
+import {TabLoginSigninScreens} from "../navigation/types";
 
-type TabLoginScreenProps = ThemeProps & StackScreenProps<LoginTabNavigatorScreens, "LoginScreen">;
+type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginForm">;
 
 class LoginTabComponent extends React.Component<TabLoginScreenProps> {
     render(): JSX.Element {
@@ -45,7 +45,7 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
                             <Text style={styles.debugButtonText}> | </Text>
                             <TouchableOpacity
                                 style={styles.debugButton}
-                                onPress={() => navigation.navigate("OnboardingScreen")}
+                                onPress={() => rootNavigate("OnboardingScreen")}
                             >
                                 <Text style={styles.debugButtonText}>on-boarding</Text>
                             </TouchableOpacity>
@@ -72,7 +72,7 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
     }
 }
 
-type TabForgotPasswordProps = ThemeProps & StackScreenProps<LoginTabNavigatorScreens, "ForgotPassword">;
+type TabForgotPasswordProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPassword">;
 
 class ForgotPasswordTabComponent extends React.Component<TabForgotPasswordProps> {
     render(): JSX.Element {
