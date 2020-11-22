@@ -9,7 +9,7 @@ import {
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
 
-export function stripSuperfluousOffers(offers: OfferValueDto[] | undefined): OfferValueDto[] {
+export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
         ? offers.filter((o) => o.allowFemale || o.allowMale || o.allowOther || o.allowStaff || o.allowStudent)
         : [];
@@ -44,7 +44,7 @@ export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>):
         ...profile,
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
-        profileOffers: stripSuperfluousOffers(profile.profileOffers),
+        profileOffers: profile.profileOffers ? stripSuperfluousOffers(profile.profileOffers) : undefined,
     };
 }
 
