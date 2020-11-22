@@ -8,9 +8,8 @@ export type University = {
     country: CountryCode;
 };
 
-// TODO this data should come from the server so it is easy to add universities (no app update required)
 // List of partner universities
-export const PARTNER_UNIVERSITIES = [
+export const PARTNER_UNIVERSITIES: University[] = [
     {
         key: "univ-cadiz",
         domain: "uca.es",
@@ -41,4 +40,4 @@ export const PARTNER_UNIVERSITIES = [
         domain: "unist.hr",
         country: "HR",
     },
-] as University[];
+];
