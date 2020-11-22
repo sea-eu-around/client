@@ -13,17 +13,17 @@ export type RootNavigatorScreens = {
 };
 
 export type MainNavigatorTabs = {
-    TabExplore: undefined;
+    TabHome: undefined;
     TabMatching: undefined;
     TabMessaging: undefined;
     TabProfile: undefined;
     TabNotifications: undefined;
 };
 
-// TAB: Explore
+// TAB: Home
 
-export type TabExploreRoot = {
-    TabExploreScreen: undefined;
+export type TabHomeRoot = {
+    TabHomeScreen: undefined;
 };
 
 // TAB: Matching

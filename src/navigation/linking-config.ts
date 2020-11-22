@@ -22,9 +22,9 @@ export default {
             ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
-                    TabExplore: {
+                    TabHome: {
                         screens: {
-                            TabExploreScreen: "explore",
+                            TabHomeScreen: "home",
                         },
                     },
                     TabMatching: {
@@ -53,7 +53,7 @@ export default {
             },
             ValidateEmailSentScreen: "validate/success",
             ValidateEmailScreen: "validate",
-            ChangePassword: "new-password",
+            ChangePassword: "reset-password",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",

@@ -7,7 +7,7 @@ import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {
     MainNavigatorTabs,
     RootNavigatorScreens,
-    TabExploreRoot,
+    TabHomeRoot,
     TabMatchingRoot,
     TabNotificationsRoot,
     TabProfileRoot,
@@ -29,13 +29,13 @@ export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScre
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
     return (
-        <TabNavigator.Navigator initialRouteName="TabExplore" tabBarOptions={{activeTintColor: theme.tint}}>
+        <TabNavigator.Navigator initialRouteName="TabHome" tabBarOptions={{activeTintColor: theme.tint}}>
             <TabNavigator.Screen
-                name="TabExplore"
-                component={TabExploreNavigator}
+                name="TabHome"
+                component={TabHomeNavigator}
                 options={{
-                    tabBarLabel: (props: TabBarLabelProps) => <TabBarLabel text={i18n.t("tabs.explore")} {...props} />,
-                    tabBarIcon: (props: TabBarIconProps) => <TabBarIcon name="public" {...props} />,
+                    tabBarLabel: (props: TabBarLabelProps) => <TabBarLabel text={i18n.t("tabs.home")} {...props} />,
+                    tabBarIcon: (props: TabBarIconProps) => <TabBarIcon name="home" {...props} />,
                 }}
             />
             <TabNavigator.Screen
@@ -98,16 +98,12 @@ function TabBarLabel({text, color}: {text: string} & TabBarLabelProps): JSX.Elem
     return <Text style={{color: color, fontSize: 11, marginBottom: 3}}>{text}</Text>;
 }
 
-const TabExploreStack = createStackNavigator<TabExploreRoot>();
+const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
-const TabExploreNavigator = (): JSX.Element => (
-    <TabExploreStack.Navigator>
-        <TabExploreStack.Screen
-            name="TabExploreScreen"
-            component={TabNotImplementedScreen}
-            options={{headerShown: false}}
-        />
-    </TabExploreStack.Navigator>
+const TabHomeNavigator = (): JSX.Element => (
+    <TabHomeStack.Navigator>
+        <TabHomeStack.Screen name="TabHomeScreen" component={TabNotImplementedScreen} options={{headerShown: false}} />
+    </TabHomeStack.Navigator>
 );
 
 const TabMatchingStack = createStackNavigator<TabMatchingRoot>();
