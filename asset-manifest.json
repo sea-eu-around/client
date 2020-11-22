@@ -1,7 +1,7 @@
 {
   "files": {
-    "app.js": "/aas-app/static/js/app.2602ff0c.chunk.js",
-    "app.js.map": "/aas-app/static/js/app.2602ff0c.chunk.js.map",
+    "app.js": "/aas-app/static/js/app.04bd9bce.chunk.js",
+    "app.js.map": "/aas-app/static/js/app.04bd9bce.chunk.js.map",
     "runtime~app.js": "/aas-app/static/js/runtime~app.5f49c16c.js",
     "runtime~app.js.map": "/aas-app/static/js/runtime~app.5f49c16c.js.map",
     "static/js/2.422de539.chunk.js": "/aas-app/static/js/2.422de539.chunk.js",
@@ -35,6 +35,6 @@
   "entrypoints": [
     "static/js/runtime~app.5f49c16c.js",
     "static/js/2.422de539.chunk.js",
-    "static/js/app.2602ff0c.chunk.js"
+    "static/js/app.04bd9bce.chunk.js"
   ]
 }
