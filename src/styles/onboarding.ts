@@ -1,6 +1,7 @@
 import {StyleSheet, TextStyle} from "react-native";
 import {Theme} from "../types";
 import {preTheme} from "./utils";
+import {styleTextThin} from "./general";
 
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -34,7 +35,7 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             fontSize: 20,
         },
         title: {
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
             fontSize: 40,
             letterSpacing: 1.75,
             marginBottom: 20,
