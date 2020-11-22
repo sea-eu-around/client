@@ -1,18 +1,21 @@
 import * as React from "react";
-import {Text, View, StyleSheet, Linking, Platform, ActivityIndicator} from "react-native";
+import {Text, View, StyleSheet, Platform, ActivityIndicator} from "react-native";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {requestValidateAccount} from "../state/auth/actions";
-import {rootNavigate} from "../navigation/utils";
+import {attemptRedirectToApp} from "../navigation/utils";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import * as Linking from "expo-linking";
+import {ParsedURL} from "expo-linking";
+import {DEBUG_MODE, ENVIRONMENT} from "../constants/config";
+import store from "../state/store";
 
 const mapStateToProps = (state: AppState) => ({
     validated: state.auth.validated,
     registerEmail: state.auth.registerEmail,
-    verificationToken: state.auth.verificationToken,
 });
 const reduxConnector = connect(mapStateToProps);
 
@@ -22,15 +25,18 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
     componentDidMount() {
         if (Platform.OS == "web") {
             // Get the URL
-            Linking.getInitialURL().then((url: string | null) => {
+            Linking.parseInitialURLAsync().then((parsed: ParsedURL) => {
                 // Extract the validation token out of the URL
-                console.log(url);
+                const verifToken = parsed.queryParams ? parsed.queryParams["t"] : undefined;
+                if (verifToken) (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(verifToken));
             });
         }
 
-        // TODO remove this: temporary email validation request
-        const {dispatch, verificationToken} = this.props;
-        if (verificationToken) (dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken));
+        // In DEBUG_MODE / staging environment, attempt to use a verification token sent by the server
+        const verificationToken = store.getState().auth.verificationToken;
+        if (DEBUG_MODE && ENVIRONMENT == "staging" && verificationToken) {
+            (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken));
+        }
     }
 
     render(): JSX.Element {
@@ -50,7 +56,14 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                         <>
                             <Text style={styles.successText}>
                                 {i18n.t("emailValidation.success")[0]}
-                                <Text onPress={() => rootNavigate("TabSignin")} style={{color: theme.accent}}>
+                                <Text
+                                    onPress={() => {
+                                        // TODO get rid of this?
+                                        //rootNavigate("TabSignin");
+                                        attemptRedirectToApp("login", "TabSignin");
+                                    }}
+                                    style={{color: theme.accent}}
+                                >
                                     {i18n.t("emailValidation.success")[1]}
                                 </Text>
                             </Text>
