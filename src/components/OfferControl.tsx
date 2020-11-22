@@ -26,7 +26,7 @@ class OfferControl extends React.Component<OfferControlProps> {
     }
 
     setAllValues(b: boolean) {
-        this.offerValueChange(initOfferValue(this.props.offer.id, b));
+        this.offerValueChange(initOfferValue(this.props.offer, b));
     }
 
     render(): JSX.Element {
@@ -34,16 +34,21 @@ class OfferControl extends React.Component<OfferControlProps> {
         const styles = themedStyles(theme);
 
         const genders: Gender[] = [];
-        if (value.allowFemale) genders.push("female");
-        if (value.allowMale) genders.push("male");
-        if (value.allowOther) genders.push("other");
+        if (offer.allowChooseGender) {
+            if (value.allowFemale) genders.push("female");
+            if (value.allowMale) genders.push("male");
+            if (value.allowOther) genders.push("other");
+        }
 
         const roles: Role[] = [];
-        if (value.allowStaff) roles.push("staff");
-        if (value.allowStudent) roles.push("student");
+        if (offer.allowChooseProfileType) {
+            if (value.allowStaff) roles.push("staff");
+            if (value.allowStudent) roles.push("student");
+        }
 
-        const isSomethingSelected = genders.length > 0 || roles.length > 0;
-
+        const isSomethingSelected =
+            (!offer.allowChooseGender || genders.length > 0) && (!offer.allowInterRole || roles.length > 0);
+        console.log(value);
         return (
             <View style={[styles.wrapper, style]}>
                 <View style={styles.titleWrapper}>
@@ -52,9 +57,9 @@ class OfferControl extends React.Component<OfferControlProps> {
                         onValueChange={(value: boolean) => this.setAllValues(value)}
                     ></CheckBox>
                     <TouchableOpacity onPress={() => this.setAllValues(!isSomethingSelected)}>
-                        <Text style={styles.offerName}>{i18n.t(`offers.${offer.id}.name`)}</Text>
+                        <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
                     </TouchableOpacity>
-                    <CustomTooltip text={i18n.t(`offers.${offer.id}.help`)}>
+                    <CustomTooltip text={i18n.t(`allOffers.${offer.id}.help`)}>
                         <MaterialIcons style={styles.helpIcon} name="help"></MaterialIcons>
                     </CustomTooltip>
                 </View>
@@ -73,7 +78,7 @@ class OfferControl extends React.Component<OfferControlProps> {
                                 }
                             />
                         )}
-                        {offer.allowChooseRole && (
+                        {offer.allowChooseProfileType && (
                             <RoleToggleMulti
                                 noButtonVariant={true}
                                 roles={roles}
@@ -114,7 +119,7 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
         },
         buttonsWrapper: {
-            flexDirection: "row",
+            width: "100%",
         },
     });
 });
