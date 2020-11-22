@@ -5,6 +5,7 @@ import {
     CreateProfileDtoCommon,
     CreateProfileDtoStaff,
     CreateProfileDtoStudent,
+    initOfferValue,
     OfferCategory,
     OfferDto,
     OfferValueDto,
@@ -27,17 +28,8 @@ export function createOfferControls(
             <OfferControl
                 key={i}
                 offer={offer}
-                value={
-                    onboardingState.offerValues[offer.id] || {
-                        offerId: offer.id,
-                        allowFemale: true,
-                        allowMale: true,
-                        allowOther: true,
-                        allowStudent: true,
-                        allowStaff: true,
-                    }
-                }
-                onChange={(value: Partial<OfferValueDto>) => dispatch(setOnboardingOfferValue(offer.id, value))}
+                value={onboardingState.offerValues[offer.id] || initOfferValue(offer)}
+                onChange={(value: OfferValueDto) => dispatch(setOnboardingOfferValue(offer.id, value))}
                 style={{marginVertical: 20}}
             />
         ));
@@ -56,6 +48,7 @@ function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDt
         languages: onboardingState.languages,
         interests: onboardingState.interestIds,
         profileOffers: Object.values(onboardingState.offerValues),
+        educationFields: onboardingState.educationFields.map((id) => ({id})),
     };
 
     if (onboardingState.role == "student") {
