@@ -106,7 +106,6 @@ const themedStyles = preTheme((theme: Theme) => {
         titleWrapper: {
             flexDirection: "row",
             alignItems: "center",
-            paddingVertical: 4,
         },
         offerName: {
             textTransform: "uppercase",
