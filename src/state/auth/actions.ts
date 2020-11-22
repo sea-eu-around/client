@@ -14,11 +14,13 @@ import {
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
 } from "../types";
-import {LoginDto, OfferValueDto, TokenDto} from "../../api/dto";
+import {LoginDto, OfferValueDto, ResponseUserDto, TokenDto} from "../../api/dto";
 import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
 import {createProfile} from "../profile/actions";
+import {readCachedCredentials} from "../auth-storage-middleware";
+import {convertDtoToUser} from "../../api/converters";
 
 // Register actions
 
@@ -68,6 +70,26 @@ export const loginFailure = (errors: string[]): LogInFailureAction => ({
     errors,
 });
 
+export const attemptLoginFromCache = (): AppThunk => async (dispatch) => {
+    const credentials = await readCachedCredentials();
+
+    if (credentials) {
+        const {token} = credentials;
+
+        // Get user information
+        const response = await requestBackend("auth/me", "GET", {}, {}, true, false, token);
+
+        if (response.success) {
+            const user: User = convertDtoToUser(response.data as ResponseUserDto);
+            dispatch(loginSuccess(token, user));
+        } else {
+            // e.g. token is invalid
+            dispatch(loginFailure([]));
+        }
+    }
+    // If no credentials are available in cache, the action does nothing.
+};
+
 export const requestLogin = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(loginBegin(email, password));
 
@@ -84,9 +106,8 @@ export const logout = (): LogOutAction => ({
 
 // Account validation actions
 
-export const requestValidateAccount = (validationToken: string, email: string): AppThunk => async (dispatch) => {
-    // TODO remove the email from here
-    const response = await requestBackend("auth/verify", "POST", {}, {token: validationToken, email});
+export const requestValidateAccount = (validationToken: string): AppThunk => async (dispatch) => {
+    const response = await requestBackend("auth/verify", "POST", {}, {token: validationToken});
 
     if (response.success) {
         const {email} = response.data as {email: string};
@@ -113,7 +134,7 @@ export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboar
     values,
 });
 
-export const setOnboardingOfferValue = (id: string, value: Partial<OfferValueDto>): SetOnboardingOfferValueAction => ({
+export const setOnboardingOfferValue = (id: string, value: OfferValueDto): SetOnboardingOfferValueAction => ({
     type: AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE,
     id,
     value,
@@ -127,7 +148,7 @@ export const debugConnect = (): AppThunk => async (dispatch) => {
     const {verificationToken} = store.getState().auth;
 
     if (verificationToken) {
-        await dispatch(requestValidateAccount(verificationToken, email));
+        await dispatch(requestValidateAccount(verificationToken));
         await dispatch(requestLogin(email, password));
         await dispatch(
             createProfile({
