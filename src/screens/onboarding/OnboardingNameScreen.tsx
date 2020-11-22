@@ -13,6 +13,11 @@ import {setOnboardingValues} from "../../state/auth/actions";
 import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 
+type OnboardingNameFormState = {
+    firstname: string;
+    lastname: string;
+};
+
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
 }));
@@ -24,12 +29,13 @@ const VALIDATION_SCHEMA = Yup.object().shape({
 
 type OnboardingNameScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
-type OnboardingNameFormState = {
-    firstname: string;
-    lastname: string;
-};
-
 class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
+    shouldComponentUpdate(nextProps: Readonly<OnboardingNameScreenProps>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return prev.firstname != next.firstname || prev.lastname != next.lastname;
+    }
+
     submit(values: OnboardingNameFormState) {
         Keyboard.dismiss();
         this.props.dispatch(setOnboardingValues(values));

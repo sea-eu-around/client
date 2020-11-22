@@ -16,6 +16,12 @@ const reduxConnector = connect((state: AppState) => ({
 type OnboardingOfferScreen2Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
 class OnboardingOfferScreen2 extends React.Component<OnboardingOfferScreen2Props> {
+    shouldComponentUpdate(nextProps: Readonly<OnboardingOfferScreen2Props>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return prev.offerValues != next.offerValues;
+    }
+
     render(): JSX.Element {
         const {onboardingState, offers, dispatch} = this.props;
 

@@ -16,6 +16,12 @@ const reduxConnector = connect((state: AppState) => ({
 type OnboardingOfferScreen3Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
 class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props> {
+    shouldComponentUpdate(nextProps: Readonly<OnboardingOfferScreen3Props>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return prev.offerValues != next.offerValues;
+    }
+
     render(): JSX.Element {
         const {onboardingState, offers, dispatch} = this.props;
 
@@ -23,7 +29,6 @@ class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props
             <OnboardingSlide
                 title={i18n.t("onboarding.offersMeet.title")}
                 subtitle={i18n.t("onboarding.offersMeet.subtitle")}
-                isLastSlide={true}
                 {...this.props}
             >
                 {createOfferControls(offers, OfferCategory.Meet, onboardingState, dispatch)}

@@ -40,8 +40,20 @@ type OnboardingPersonalInfoFormState = {
 };
 
 class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInfoScreenProps> {
+    shouldComponentUpdate(nextProps: Readonly<OnboardingPersonalInfoScreenProps>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return (
+            prev.birthdate != next.birthdate ||
+            prev.gender != next.gender ||
+            prev.nationality != next.nationality ||
+            prev.educationFields != next.educationFields
+        );
+    }
+
     submit(values: OnboardingPersonalInfoFormState) {
         if (values.birthdate && values.gender && values.nationality) {
+            this.props.next();
             this.props.dispatch(
                 setOnboardingValues({
                     birthdate: values.birthdate,
@@ -49,7 +61,6 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                     nationality: values.nationality,
                 }),
             );
-            this.props.next();
         }
     }
 

@@ -36,6 +36,12 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
         this.state = {hasErrors: false};
     }
 
+    shouldComponentUpdate(nextProps: Readonly<OnboardingLanguageScreenProps>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return prev.languages != next.languages;
+    }
+
     submit(values: OnboardingLanguageFormState) {
         if (!this.state.hasErrors) {
             this.props.dispatch(setOnboardingValues({languages: values.languages}));

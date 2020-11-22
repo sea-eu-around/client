@@ -38,6 +38,12 @@ class OnboardingInterestsScreen extends React.Component<
         this.state = {hasErrors: false};
     }
 
+    shouldComponentUpdate(nextProps: Readonly<OnboardingInterestsScreenProps>) {
+        const prev = this.props.onboardingState;
+        const next = nextProps.onboardingState;
+        return prev.interestIds != next.interestIds;
+    }
+
     submit(values: OnboardingInterestsFormState) {
         if (!this.state.hasErrors) {
             this.props.dispatch(setOnboardingValues({interestIds: values.interestIds}));
