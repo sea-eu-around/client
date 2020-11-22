@@ -48,7 +48,7 @@ class OfferControl extends React.Component<OfferControlProps> {
 
         const isSomethingSelected =
             (!offer.allowChooseGender || genders.length > 0) && (!offer.allowInterRole || roles.length > 0);
-        console.log(value);
+
         return (
             <View style={[styles.wrapper, style]}>
                 <View style={styles.titleWrapper}>
