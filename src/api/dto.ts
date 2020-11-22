@@ -87,7 +87,7 @@ export type EducationFieldDto = {
 export type OfferDto = {
     id: string;
     category: OfferCategory;
-    allowChooseRole: boolean;
+    allowChooseProfileType: boolean;
     allowChooseGender: boolean;
     allowInterRole: boolean;
 };
@@ -101,14 +101,18 @@ export type OfferValueDto = {
     allowOther: boolean;
 };
 
-export const initOfferValue = (offerId: string, val = false): OfferValueDto => ({
-    offerId,
-    allowFemale: val,
-    allowMale: val,
-    allowOther: val,
-    allowStudent: val,
-    allowStaff: val,
-});
+export const initOfferValue = (o: OfferDto, val = false): OfferValueDto => {
+    const genderVal = val && o.allowChooseGender;
+    const typeVal = val && o.allowChooseProfileType;
+    return {
+        offerId: o.id,
+        allowFemale: genderVal,
+        allowMale: genderVal,
+        allowOther: genderVal,
+        allowStudent: typeVal,
+        allowStaff: typeVal,
+    };
+};
 
 export type InterestDto = {
     id: string;
