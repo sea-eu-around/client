@@ -61,6 +61,7 @@ export const tosSlideStyle = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
+            padding: 20,
         },
         actionButtonTextDecline: {
             fontSize: 16,
