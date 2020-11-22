@@ -92,7 +92,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                     .filter((o: OfferDto) => o.category == category)
                     .map((o: OfferDto) => (
                         <View key={o.id} style={styles.entryContainer}>
-                            <Text style={styles.entryLabel}>{i18n.t(`offers.${o.id}.name`)}</Text>
+                            <Text style={styles.entryLabel}>{i18n.t(`allOffers.${o.id}.name`)}</Text>
                             <Switch
                                 value={filters.offers[o.id] || false}
                                 onValueChange={(value: boolean) => this.updateLocalOfferFilters(o.id, value)}
