@@ -18,3 +18,9 @@ export const AVATAR_QUALITY = 0.75;
  * The number of profiles fetched per request when scrolling in the Matching tab.
  */
 export const PROFILES_FETCH_LIMIT = 8;
+
+/**
+ * The maximum number of spoken languages a user can select.
+ * (limited for rendering reasons).
+ */
+export const MAX_SPOKEN_LANGUAGES = 8;

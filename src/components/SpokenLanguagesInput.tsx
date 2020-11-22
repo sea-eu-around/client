@@ -9,6 +9,7 @@ import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {SpokenLanguageDto} from "../api/dto";
+import {MAX_SPOKEN_LANGUAGES} from "../constants/config";
 
 // Component props
 export type SpokenLanguagesInputProps = ThemeProps & {
@@ -22,9 +23,6 @@ export type SpokenLanguagesInputState = {
     languages: Partial<SpokenLanguageDto>[];
     errors: (string | boolean)[];
 };
-
-// TODO move
-const MAX_LANGUAGES = 5;
 
 class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, SpokenLanguagesInputState> {
     constructor(props: SpokenLanguagesInputProps) {
@@ -64,7 +62,7 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
     }
 
     addRow() {
-        if (this.state.languages.length < MAX_LANGUAGES) {
+        if (this.state.languages.length < MAX_SPOKEN_LANGUAGES) {
             const languages = this.state.languages.concat([{code: ""}]);
             this.onChange(languages);
         }
@@ -124,7 +122,7 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
         });
 
         const canAddMore =
-            this.state.languages.length < MAX_LANGUAGES &&
+            this.state.languages.length < MAX_SPOKEN_LANGUAGES &&
             this.state.languages.filter((sl: Partial<SpokenLanguageDto>) => !sl.level || !sl.code).length == 0;
 
         return (
