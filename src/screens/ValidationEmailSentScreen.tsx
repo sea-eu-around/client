@@ -7,6 +7,7 @@ import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {FontAwesome} from "@expo/vector-icons";
+import {DEBUG_MODE} from "../constants/config";
 
 // Map props from state
 const mapStateToProps = (state: AppState) => ({
@@ -30,15 +31,13 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
                     </Text>
                     <Text style={styles.email}>{registerEmail}</Text>
 
-                    <TouchableOpacity
-                        onPress={() => {
-                            rootNavigate("ValidateEmailScreen");
-                        }}
-                    >
-                        <Text style={{marginVertical: 30, textAlign: "center", fontSize: 16, color: "blue"}}>
-                            debug: click here
-                        </Text>
-                    </TouchableOpacity>
+                    {DEBUG_MODE && (
+                        <TouchableOpacity onPress={() => rootNavigate("ValidateEmailScreen")}>
+                            <Text style={{marginVertical: 30, textAlign: "center", fontSize: 16, color: "blue"}}>
+                                debug: click here
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         );
