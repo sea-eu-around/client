@@ -9,7 +9,7 @@ export type SpokenLanguageDto = {
 };
 
 export type ResponseUserDto = {
-    role: Role;
+    role: "user";
     email: string;
     active: boolean;
     onboarded: boolean;
@@ -97,6 +97,15 @@ export type OfferValueDto = {
     allowFemale: boolean;
     allowOther: boolean;
 };
+
+export const initOfferValue = (offerId: string, val = false): OfferValueDto => ({
+    offerId,
+    allowFemale: val,
+    allowMale: val,
+    allowOther: val,
+    allowStudent: val,
+    allowStaff: val,
+});
 
 export type InterestDto = {
     id: string;

@@ -16,17 +16,14 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
 
 export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDto {
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    const staff = profile.staffRole !== undefined;
     const common: CreateProfileDtoCommon = {
         ...profile,
-        type: staff ? "staff" : "student",
+        type: profile.type,
         birthdate: profile.birthdate.toJSON(),
         educationFields: profile.educationFields.map((id: string) => ({id})),
     };
 
-    return staff
-        ? {...common, type: "staff", staffRole: profile.staffRole!}
-        : {...common, type: "student", degree: profile.degree!};
+    return {...common, ...(profile.type == "staff" ? {staffRole: profile.staffRole!} : {degree: profile.degree!})};
 }
 
 export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>): Partial<CreateProfileDto> {
