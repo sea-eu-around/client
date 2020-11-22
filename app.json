@@ -1,29 +1,46 @@
 {
-  "expo": {
-    "name": "SEA-EU Around",
-    "slug": "SEA-EU_Around",
-    "version": "0.0.1",
-    "entryPoint": "./src/App.tsx",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "web": {
-      "favicon": "./assets/images/favicon.png"
+    "expo": {
+        "name": "SEA-EU Around",
+        "slug": "seaEuAround",
+        "privacy": "unlisted",
+        "version": "0.0.1",
+        "orientation": "portrait",
+        "userInterfaceStyle": "automatic",
+        "icon": "./assets/images/icon.png",
+        "scheme": "sea-eu-around",
+        "entryPoint": "./src/App.tsx",
+        "updates": {
+            "enabled": true,
+            "fallbackToCacheTimeout": 5000
+        },
+        "splash": {
+            "image": "./assets/images/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.sea-eu.around",
+            "buildNumber": "0.0.1"
+        },
+        "android": {
+            "package": "com.sea_eu.around",
+            "versionCode": 1,
+            "intentFilters": [{
+                "action": "VIEW",
+                "data": [{
+                    "scheme": "https",
+                    "host": "*.sea-eu-around.com",
+                    "pathPrefix": "/"
+                }],
+                "category": ["BROWSABLE", "DEFAULT"]
+            }]
+        },
+        "web": {
+            "favicon": "./assets/images/favicon.png"
+        }
     }
-  }
 }
