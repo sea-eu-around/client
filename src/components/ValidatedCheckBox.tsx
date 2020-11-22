@@ -1,6 +1,6 @@
-import CheckBox, {CheckBoxProps} from "@react-native-community/checkbox";
 import React from "react";
 import {TextStyle, StyleSheet, StyleProp, Text, View} from "react-native";
+import {CheckBox, CheckBoxProps} from "react-native-elements";
 import InputErrorText from "./InputErrorText";
 
 export type ValidatedCheckBoxProps = {
@@ -13,7 +13,7 @@ export type ValidatedCheckBoxProps = {
     errorStyle?: StyleProp<TextStyle>;
     labelStyle?: StyleProp<TextStyle>;
     errorTextStyle?: StyleProp<TextStyle>;
-} & CheckBoxProps;
+} & Partial<CheckBoxProps>;
 
 const staticStyle = StyleSheet.create({
     wrapper: {
@@ -55,7 +55,7 @@ export class ValidatedCheckBox extends React.Component<ValidatedCheckBoxProps> {
         return (
             <React.Fragment>
                 <View style={[staticStyle.wrapper, wrapperStyle, error ? errorStyle : {}]}>
-                    <CheckBox value={value} {...otherProps} />
+                    <CheckBox checked={value} {...otherProps} />
                     {label && <Text style={[staticStyle.label, labelStyle]}>{label}</Text>}
                 </View>
                 {showErrorText && !untouched && error && <InputErrorText style={errorTextStyle} error={error} />}

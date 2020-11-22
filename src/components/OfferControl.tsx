@@ -8,9 +8,8 @@ import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
 import CustomTooltip from "./CustomTooltip";
 import {Theme, ThemeProps} from "../types";
-import {withTheme} from "react-native-elements";
+import {CheckBox, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
-import CheckBox from "@react-native-community/checkbox";
 
 export type OfferControlProps = {
     offer: OfferDto;
@@ -53,8 +52,8 @@ class OfferControl extends React.Component<OfferControlProps> {
             <View style={[styles.wrapper, style]}>
                 <View style={styles.titleWrapper}>
                     <CheckBox
-                        value={isSomethingSelected}
-                        onValueChange={(value: boolean) => this.setAllValues(value)}
+                        checked={isSomethingSelected}
+                        onPress={() => this.setAllValues(!isSomethingSelected)}
                     ></CheckBox>
                     <TouchableOpacity onPress={() => this.setAllValues(!isSomethingSelected)}>
                         <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>

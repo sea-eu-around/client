@@ -28,7 +28,7 @@ export class FormCheckBox extends React.Component<FormCheckBoxProps> {
                 value={value}
                 untouched={!touched}
                 {...otherProps}
-                onChange={() => {
+                onPress={() => {
                     setFieldValue(field, !value);
                     setFieldTouched(field, true);
                 }}
