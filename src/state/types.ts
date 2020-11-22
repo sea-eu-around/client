@@ -5,6 +5,7 @@ import {
     CreateProfileDto,
     InterestDto,
     LikeProfileResponseDto,
+    OfferCategory,
     OfferDto,
     OfferValueDto,
     SpokenLanguageDto,
@@ -55,6 +56,7 @@ export type SettingsState = {
 export type ProfileState = {
     user: User | null;
     offers: OfferDto[];
+    offerIdToCategory: Map<string, OfferCategory>;
     interests: InterestDto[];
 };
 
