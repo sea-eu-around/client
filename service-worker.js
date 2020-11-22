@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.e91b800475043794ba76c40a58de75d4.js"
+  "/aas-app/precache-manifest.e1a6fd3f0809f439cc10841f77f577a3.js"
 );
 
 workbox.skipWaiting();
@@ -29,7 +29,7 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerNavigationRoute("index.html", {
+workbox.routing.registerNavigationRoute("\\aas-app\\index.html", {
   
   blacklist: [/^\/_/,/\/[^/]+\.[^/]+$/],
 });
