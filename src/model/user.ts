@@ -6,6 +6,7 @@ export type User = {
     email: string;
     isVerified: boolean;
     onboarded: boolean;
-    verificationToken: string; // TODO temporary
+    // Only available in debug mode on the staging server
+    verificationToken: string | null;
     profile: UserProfile;
 };
