@@ -18,7 +18,6 @@ export const initialState: AuthState = {
     token: null,
     connecting: false,
     validated: false,
-    verificationToken: null,
     registerEmail: "",
     registerFailure: false,
     registerErrors: [],

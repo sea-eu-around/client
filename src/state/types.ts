@@ -43,7 +43,7 @@ export type AuthState = {
     loginErrors: string[];
     validatedEmail: string | null;
     // This is available only in DEBUG_MODE on the staging server
-    verificationToken: string | null;
+    verificationToken?: string;
     onboarded: boolean;
     onboarding: OnboardingState;
 };

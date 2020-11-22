@@ -7,6 +7,6 @@ export type User = {
     isVerified: boolean;
     onboarded: boolean;
     // Only available in debug mode on the staging server
-    verificationToken: string | null;
+    verificationToken?: string;
     profile: UserProfile;
 };
