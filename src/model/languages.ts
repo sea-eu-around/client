@@ -108,7 +108,6 @@ export const LANGUAGES_CODES: string[] = [
     "mk",
     "ml",
     "mn",
-    "mo",
     "mr",
     "ms",
     "my",
