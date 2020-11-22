@@ -41,7 +41,6 @@ export const beginFetchProfiles = (): BeginFetchProfilesAction => ({
 export const fetchProfiles = (): AppThunk => async (dispatch) => {
     const state: MatchingState = store.getState().matching;
     if (state.fetchingProfiles || !state.canFetchMore) return;
-    const filters = state.filters;
 
     dispatch(beginFetchProfiles());
 
@@ -49,18 +48,22 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
         return t.length == 0 ? undefined : t;
     }
 
+    const filters = state.filters;
+    const filterParams = {
+        universities: nonEmptyOrUndef(filters.universities),
+        spokenLanguages: nonEmptyOrUndef(filters.languages),
+        degrees: nonEmptyOrUndef(filters.degrees),
+    };
+
     const response = await requestBackend(
         "profiles",
         "GET",
         {
             page: state.fetchingPage,
             limit: PROFILES_FETCH_LIMIT,
-            universities: nonEmptyOrUndef(filters.universities),
-            spokenLanguages: nonEmptyOrUndef(filters.languages),
-            degrees: nonEmptyOrUndef(filters.degrees),
+            ...filterParams,
         },
         {},
-        true,
         true,
     );
 
@@ -95,7 +98,7 @@ export const likeProfileSuccess = (
 });
 
 export const likeProfile = (profileId: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("matching/like", "POST", {}, {toUserId: profileId}, true, true);
+    const response = await requestBackend("matching/like", "POST", {}, {toUserId: profileId}, true);
     if (response.success) {
         const matchStatus = response.data as LikeProfileResponseDto;
         dispatch(likeProfileSuccess(profileId, matchStatus));
@@ -108,7 +111,7 @@ export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessA
 });
 
 export const dislikeProfile = (profileId: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("matching/decline", "POST", {}, {toUserId: profileId}, true, true);
+    const response = await requestBackend("matching/decline", "POST", {}, {toUserId: profileId}, true);
     if (response.success) dispatch(dislikeProfileSuccess(profileId));
 };
 
@@ -118,7 +121,7 @@ export const blockProfileSuccess = (profileId: string): BlockProfileSuccessActio
 });
 
 export const blockProfile = (profileId: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, true, true);
+    const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, true);
     if (response.success) dispatch(blockProfileSuccess(profileId));
 };
 
@@ -141,7 +144,7 @@ export const fetchMyMatches = (): AppThunk => async (dispatch) => {
 
     dispatch(beginFetchMyMatches());
 
-    const response = await requestBackend("matching", "GET", {}, {}, true, true);
+    const response = await requestBackend("matching", "GET", {}, {}, true);
 
     if (response.success) {
         const resp = response.data as FetchMyMatchesResponseDto;

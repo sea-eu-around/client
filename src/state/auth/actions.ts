@@ -94,7 +94,7 @@ export const attemptLoginFromCache = (): AppThunk => async (dispatch) => {
 export const requestLogin = (email: string, password: string): AppThunk => async (dispatch) => {
     dispatch(loginBegin(email, password));
 
-    const response = await requestBackend("auth/login", "POST", {}, {email, password}, false, true);
+    const response = await requestBackend("auth/login", "POST", {}, {email, password}, false);
     if (response.success) {
         const payload = response.data as LoginDto;
         dispatch(loginSuccess(payload.token, payload.user, false));

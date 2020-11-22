@@ -31,7 +31,7 @@ export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfil
 
 export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch) => {
     const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
-    const response = await requestBackend("profiles", "PATCH", {}, dto, true, true);
+    const response = await requestBackend("profiles", "PATCH", {}, dto, true);
     if (response.success) {
         dispatch(setProfileFieldsSuccess(fields));
     } else {
@@ -44,7 +44,7 @@ export const createProfileSuccess = (): CreateProfileSuccessAction => ({
 });
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch) => {
-    const response = await requestBackend("profiles", "POST", {}, profile, true, true);
+    const response = await requestBackend("profiles", "POST", {}, profile, true);
     if (response.success) dispatch(createProfileSuccess());
 };
 
@@ -90,7 +90,7 @@ export const loadProfileInterestsSuccess = (interests: InterestDto[]): LoadProfi
 });
 
 export const fetchUser = (): AppThunk => async (dispatch) => {
-    const response = await requestBackend("auth/me", "GET", {}, {}, true, true);
+    const response = await requestBackend("auth/me", "GET", {}, {}, true);
     if (response.success) {
         const dto = response.data as ResponseUserDto;
         dispatch(fetchUserSuccess(convertDtoToUser(dto)));
@@ -112,7 +112,7 @@ export const setAvatarFailure = (): SetAvatarFailureAction => ({
 });
 
 export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
-    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, true, true);
+    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, true);
 
     const fail = () => dispatch(setAvatarFailure());
 
@@ -132,7 +132,7 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
             });
 
             // Submit the file name to the server
-            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, true, true);
+            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, true);
 
             if (response2.success) {
                 const {avatar} = response2.data as AvatarSuccessfulUpdatedDto;
