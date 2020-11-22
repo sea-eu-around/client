@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/static/js/app.6ec66979.chunk.js",
-    "app.js.map": "/static/js/app.6ec66979.chunk.js.map",
+    "app.js": "/static/js/app.6e8a475b.chunk.js",
+    "app.js.map": "/static/js/app.6e8a475b.chunk.js.map",
     "runtime~app.js": "/static/js/runtime~app.2e9f1821.js",
     "runtime~app.js.map": "/static/js/runtime~app.2e9f1821.js.map",
-    "static/js/2.5ce7d466.chunk.js": "/static/js/2.5ce7d466.chunk.js",
-    "static/js/2.5ce7d466.chunk.js.map": "/static/js/2.5ce7d466.chunk.js.map",
+    "static/js/2.422de539.chunk.js": "/static/js/2.422de539.chunk.js",
+    "static/js/2.422de539.chunk.js.map": "/static/js/2.422de539.chunk.js.map",
     "fonts/AntDesign.ttf": "/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/./fonts/Feather.ttf",
@@ -18,14 +18,13 @@
     "fonts/MaterialCommunityIcons.ttf": "/./fonts/MaterialCommunityIcons.ttf",
     "fonts/MaterialIcons.ttf": "/./fonts/MaterialIcons.ttf",
     "fonts/SimpleLineIcons.ttf": "/./fonts/SimpleLineIcons.ttf",
-    "fonts/SpaceMono-Regular.ttf": "/./fonts/SpaceMono-Regular.ttf",
     "favicon-16.png": "/favicon-16.png",
     "favicon-32.png": "/favicon-32.png",
     "favicon.ico": "/favicon.ico",
     "index.html": "/index.html",
     "manifest.json": "/manifest.json",
     "serve.json": "/serve.json",
-    "static/js/2.5ce7d466.chunk.js.LICENSE.txt": "/static/js/2.5ce7d466.chunk.js.LICENSE.txt",
+    "static/js/2.422de539.chunk.js.LICENSE.txt": "/static/js/2.422de539.chunk.js.LICENSE.txt",
     "static/media/bell.png": "/static/media/bell.cf04af27.png",
     "static/media/close.android.png": "/static/media/close.android.0d17e028.png",
     "static/media/close.ios.png": "/static/media/close.ios.81d829c3.png",
@@ -35,7 +34,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.2e9f1821.js",
-    "static/js/2.5ce7d466.chunk.js",
-    "static/js/app.6ec66979.chunk.js"
+    "static/js/2.422de539.chunk.js",
+    "static/js/app.6e8a475b.chunk.js"
   ]
 }
