@@ -33,6 +33,8 @@ function DegreeToggleMulti(props: GenderToggleMultiProps): JSX.Element {
             buttons={buttonLabels}
             {...styleProps}
             containerStyle={[styleProps.containerStyle, style]}
+            buttonContainerStyle={[styleProps.buttonContainerStyle, {marginHorizontal: 2}]}
+            buttonStyle={[styleProps.buttonStyle, {paddingHorizontal: 0}]}
             {...otherProps}
         />
     );

@@ -13,7 +13,9 @@ export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Par
                 marginBottom: 5,
                 flexDirection: "row",
             },
-            innerBorderStyle: {width: 0},
+            innerBorderStyle: {
+                width: 0,
+            },
             buttonContainerStyle: {
                 marginHorizontal: 5,
             },
@@ -25,6 +27,7 @@ export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Par
                 color: theme.textLight,
                 opacity: 0.5,
                 fontSize: 15,
+                flexShrink: 1,
             },
             selectedButtonStyle: {
                 backgroundColor: "transparent",
