@@ -1,10 +1,10 @@
-import {Role} from "../constants/profile-constants";
+import {UserRole} from "../api/dto";
 import {UserProfile} from "./user-profile";
 
 export type User = {
-    role: "user";
+    role: UserRole;
     email: string;
-    active: boolean;
+    isVerified: boolean;
     onboarded: boolean;
     verificationToken: string; // TODO temporary
     profile: UserProfile;

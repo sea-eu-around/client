@@ -8,10 +8,13 @@ export type SpokenLanguageDto = {
     level: LanguageLevel;
 };
 
+export type UserRole = "user" | "admin";
+
 export type ResponseUserDto = {
-    role: "user";
+    id: string;
+    role: UserRole;
     email: string;
-    active: boolean;
+    isVerified: boolean;
     onboarded: boolean;
     verificationToken: string; // TODO temporary
     profile: ResponseProfileDto;
