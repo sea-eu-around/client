@@ -1,3 +1,4 @@
+import {OfferDto} from "../../api/dto";
 import {
     ProfileState,
     ProfileAction,
@@ -12,6 +13,7 @@ import {
 export const initialState: ProfileState = {
     user: null,
     offers: [],
+    offerIdToCategory: new Map(),
     interests: [],
 };
 
@@ -25,7 +27,8 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
             const {offers} = <LoadProfileOffersSuccessAction>action;
-            return {...state, offers};
+            const offerIdToCategory = new Map(offers.map((o: OfferDto) => [o.id, o.category]));
+            return {...state, offers, offerIdToCategory};
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_INTERESTS_SUCCESS: {
             const {interests} = <LoadProfileInterestsSuccessAction>action;
