@@ -16,6 +16,7 @@ import {VALIDATOR_ONBOARDING_DEGREE} from "../../validators";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
+import {styleTextThin} from "../../styles/general";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -130,7 +131,7 @@ export const staffThemedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
         },
         buttonText: {
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
             fontSize: 25,
             letterSpacing: 1.25,
             color: theme.text,

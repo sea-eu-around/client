@@ -9,6 +9,7 @@ import i18n from "i18n-js";
 import {fetchMyMatches} from "../state/matching/actions";
 import {MyThunkDispatch} from "../state/types";
 import store from "../state/store";
+import {styleTextThin} from "../styles/general";
 
 export type TabNotImplementedScreenProps = ThemeProps;
 
@@ -55,7 +56,7 @@ const themedStyles = preTheme((theme: Theme) => {
         title: {
             width: "100%",
             textAlign: "center",
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
             fontSize: 32,
             color: theme.text,
             letterSpacing: 1,

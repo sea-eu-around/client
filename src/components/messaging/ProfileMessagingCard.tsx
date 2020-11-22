@@ -17,6 +17,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
+import {styleTextThin} from "../../styles/general";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
@@ -184,7 +185,7 @@ const themedStyles = preTheme((theme: Theme) => {
         swipeActionText: {
             fontSize: 24,
             letterSpacing: 2,
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
         },
         swipeActionButton: {
             width: ACTION_BUTTON_WIDTH,

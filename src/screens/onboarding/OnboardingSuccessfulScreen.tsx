@@ -6,6 +6,7 @@ import {rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import i18n from "i18n-js";
+import {styleTextThin} from "../../styles/general";
 
 export type OnboardingSuccessfulScreenProps = ThemeProps;
 
@@ -61,7 +62,7 @@ const themedStyles = preTheme((theme: Theme) => {
             borderBottomColor: theme.textLight,
         },
         buttonText: {
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
             fontSize: 20,
             letterSpacing: 1.5,
             textTransform: "uppercase",

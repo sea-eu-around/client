@@ -10,6 +10,7 @@ import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import store from "../../state/store";
 import {preTheme} from "../../styles/utils";
+import {styleTextThin} from "../../styles/general";
 
 type OnboardingRoleScreenProps = ThemeProps & OnboardingScreenProps;
 
@@ -48,7 +49,7 @@ const themedStyles = preTheme((theme: Theme) => {
 
     const common = StyleSheet.create({
         roleButtonText: {
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
             fontSize: 40,
             letterSpacing: 1.75,
         },

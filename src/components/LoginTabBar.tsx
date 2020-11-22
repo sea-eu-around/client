@@ -134,7 +134,7 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textInverted,
             letterSpacing: 2,
             marginBottom: 70,
-            fontFamily: "sans-serif-thin",
+            ...styleTextThin,
         },*/
     });
 });
