@@ -1,5 +1,5 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
-import {rootNavigate} from "../navigation/utils";
+import {attemptRedirectToApp, rootNavigate} from "../navigation/utils";
 import {
     AppState,
     AUTH_ACTION_TYPES,
@@ -27,6 +27,10 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             rootNavigate("ValidationEmailSentScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
+            attemptRedirectToApp("login", "TabSignin");
             break;
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
