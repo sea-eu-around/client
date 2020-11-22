@@ -1,6 +1,19 @@
-import {CreateProfileDto, CreateProfileDtoCommon, EducationFieldDto, ResponseProfileDto, ResponseUserDto} from "./dto";
+import {
+    CreateProfileDto,
+    CreateProfileDtoCommon,
+    EducationFieldDto,
+    OfferValueDto,
+    ResponseProfileDto,
+    ResponseUserDto,
+} from "./dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
+
+export function stripSuperfluousOffers(offers: OfferValueDto[] | undefined): OfferValueDto[] {
+    return offers
+        ? offers.filter((o) => o.allowFemale || o.allowMale || o.allowOther || o.allowStaff || o.allowStudent)
+        : [];
+}
 
 export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
     return {
@@ -18,9 +31,9 @@ export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDt
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const common: CreateProfileDtoCommon = {
         ...profile,
-        type: profile.type,
         birthdate: profile.birthdate.toJSON(),
         educationFields: profile.educationFields.map((id: string) => ({id})),
+        profileOffers: stripSuperfluousOffers(profile.profileOffers),
     };
 
     return {...common, ...(profile.type == "staff" ? {staffRole: profile.staffRole!} : {degree: profile.degree!})};
@@ -31,6 +44,7 @@ export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>):
         ...profile,
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
+        profileOffers: stripSuperfluousOffers(profile.profileOffers),
     };
 }
 

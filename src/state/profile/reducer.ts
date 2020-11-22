@@ -1,3 +1,4 @@
+import {stripSuperfluousOffers} from "../../api/converters";
 import {OfferDto} from "../../api/dto";
 import {
     ProfileState,
@@ -22,6 +23,7 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
         case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS: {
             if (state.user) {
                 const {fields} = <SetProfileFieldsSuccessAction>action;
+                if (fields.profileOffers) fields.profileOffers = stripSuperfluousOffers(fields.profileOffers);
                 return {...state, user: {...state.user, profile: {...state.user.profile, ...fields}}};
             } else return {...state};
         }
