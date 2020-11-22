@@ -16,7 +16,6 @@ export type ResponseUserDto = {
     email: string;
     isVerified: boolean;
     onboarded: boolean;
-    verificationToken: string; // TODO temporary
     profile: ResponseProfileDto;
 };
 

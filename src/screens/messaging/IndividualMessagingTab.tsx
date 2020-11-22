@@ -16,7 +16,8 @@ const mapStateToProps = (state: AppState) => ({
 });
 const reduxConnector = connect(mapStateToProps);
 
-// TODO temp fake profiles
+// TEMP fake profiles
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const testProfiles: UserProfile[] = [
     {
         id: "SpGiGSsGDdGSpogjQgsfGhfSdDFPFhGdShD",

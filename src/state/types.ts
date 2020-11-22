@@ -42,7 +42,8 @@ export type AuthState = {
     registerErrors: string[];
     loginErrors: string[];
     validatedEmail: string | null;
-    verificationToken: string | null; // TODO temporary
+    // This is available only in DEBUG_MODE on the staging server
+    verificationToken: string | null;
     onboarded: boolean;
     onboarding: OnboardingState;
 };

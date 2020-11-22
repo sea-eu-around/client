@@ -18,7 +18,6 @@ export const initialState: AuthState = {
     token: null,
     connecting: false,
     validated: false,
-    // This is available only in DEBUG_MODE on the staging server
     verificationToken: null,
     registerEmail: "",
     registerFailure: false,

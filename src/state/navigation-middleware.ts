@@ -12,7 +12,7 @@ import {
 export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: MiddlewareAPI<Dispatch, AppState>*/) => (
     next: Dispatch<AnyAction>,
 ) => (action: AnyAction) => {
-    // TODO action printing
+    // TEMP action printing
     console.log(action.type);
 
     switch (action.type) {
