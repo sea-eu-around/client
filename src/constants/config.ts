@@ -1,7 +1,12 @@
 export const APP_VERSION = "0.0.1";
+export const APP_SCHEME = "sea-eu-around";
 export const DEBUG_MODE = true;
+export const ENVIRONMENT: "staging" | "production" = "staging";
 
-export const BACKEND_URL = "http://ec2-35-180-16-83.eu-west-3.compute.amazonaws.com:3000";
+export const BACKEND_URL =
+    ENVIRONMENT == "staging"
+        ? "https://api-staging.sea-eu-around.lad-dev.team"
+        : "https://api.sea-eu-around.lad-dev.team";
 
 /**
  * Specify the quality of compression, from 0 to 1.
