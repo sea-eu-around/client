@@ -1,38 +1,19 @@
 import * as React from "react";
 import i18n from "i18n-js";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
 import MultiPicker, {MultiPickerProps} from "./MultiPicker";
 import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    //allInterests: state.profile.interests,
-    // TODO add universities here
-}));
 
 let values: string[] = [];
 
 // Component props
-export type MultiUniversityPickerProps = ConnectedProps<typeof reduxConnector> & {
+export type MultiUniversityPickerProps = {
     universities: string[];
     onChange?: (unis: string[]) => void;
 } & Partial<MultiPickerProps>;
 
 class MultiUniversityPicker extends React.Component<MultiUniversityPickerProps> {
-    componentDidMount() {
-        if (values.length == 0) this.updateValues();
-    }
-
-    componentDidUpdate(oldProps: MultiUniversityPickerProps) {
-        //if (oldProps.allInterests.length != this.props.allInterests.length) this.updateValues();
-    }
-
-    updateValues() {
-        //values = this.props.allInterests.map((interest: InterestDto) => interest.id);
-        values = PARTNER_UNIVERSITIES.map((uni: University) => uni.key);
-
-        this.forceUpdate();
+    componentDidMount(): void {
+        if (values.length == 0) values = PARTNER_UNIVERSITIES.map((uni: University) => uni.key);
     }
 
     render(): JSX.Element {
@@ -55,4 +36,4 @@ class MultiUniversityPicker extends React.Component<MultiUniversityPickerProps> 
     }
 }
 
-export default reduxConnector(MultiUniversityPicker);
+export default MultiUniversityPicker;
