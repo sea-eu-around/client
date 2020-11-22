@@ -6,8 +6,8 @@ import translations from "../../constants/translations";
 function getLocalizedLanguageItems(locale: SupportedLocale) {
     const trans = (translations as {[key: string]: {[key: string]: unknown}})[locale];
     const languageNames = trans.languageNames as {[key: string]: string};
-    return LANGUAGES_CODES.slice(0, 20).map((code: string) => ({
-        label: languageNames[code], //i18n.t(`languageNames.${code}`), // Cannot rely on i18n as it is not initialized yet
+    return LANGUAGES_CODES.map((code: string) => ({
+        label: languageNames[code] || `Missing translation (${code})`, //i18n.t(`languageNameM${code}`${code})s, // Cannot rely on i18n as it is not initialized yet
         value: code,
     }));
 }
