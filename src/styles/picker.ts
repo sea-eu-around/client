@@ -6,13 +6,12 @@ export const pickerStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         overlay: {
             width: "90%",
-            height: "70%",
+            maxHeight: "70%",
             overflow: "hidden",
         },
         dropdownWrapper: {
             flex: 1,
         },
-        dropdownContainerStyle: {height: 50},
         dropdownStyle: {backgroundColor: "#fafafa"},
         dropdownItemStyle: {justifyContent: "flex-start"} as ViewStyle,
         dropdownActiveItemStyle: {},
@@ -25,6 +24,7 @@ export const pickerStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
             marginVertical: 5,
             paddingVertical: 20,
+            borderRadius: 4,
             backgroundColor: theme.accent,
         },
         okButtonText: {

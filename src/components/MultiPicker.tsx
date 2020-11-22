@@ -111,6 +111,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
         const styles = pickerStyles(theme);
 
         const selectedItems = selected || [];
+        const items = this.state.items.get(locale) || [];
 
         return (
             <View {...viewProps}>
@@ -133,7 +134,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                 </View>
                 {this.state.open && (
                     <Overlay
-                        overlayStyle={styles.overlay}
+                        overlayStyle={[styles.overlay, {height: 150 + items.length * 40}]}
                         isVisible={this.state.open}
                         onRequestClose={() => this.close()}
                         onBackdropPress={() => this.close()}
@@ -146,7 +147,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                                 }}
                             >
                                 <DropDownPicker
-                                    items={this.state.items.get(locale) || []}
+                                    items={items}
                                     multiple={true}
                                     searchable={true}
                                     defaultValue={selected}
@@ -159,10 +160,9 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                                     scrollViewProps={{keyboardShouldPersistTaps: "always"}} // ensures items are clickable even when the keyboard is open
                                     isVisible={true}
                                     showArrow={false}
-                                    //arrowSize: 20,
-                                    dropDownMaxHeight={this.state.dropdownWrapperHeight - 50}
+                                    dropDownMaxHeight={this.state.dropdownWrapperHeight - 10}
                                     // Style props
-                                    containerStyle={styles.dropdownContainerStyle}
+                                    selectedLabelStyle={{display: "none"}}
                                     style={styles.dropdownStyle}
                                     itemStyle={styles.dropdownItemStyle}
                                     activeItemStyle={styles.dropdownActiveItemStyle}
