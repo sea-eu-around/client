@@ -90,7 +90,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
 
         return (
             <TouchableOpacity style={styles.modalTouchable} onPress={() => this.setModal(false)} activeOpacity={1}>
-                <View style={styles.modalWrapper}>
+                <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
                     <Text style={styles.modalLabel}>{label}</Text>
                     {this.props.renderInput(value, error, (value: T) => this.onChange(value))}
                     <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
@@ -112,7 +112,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
                             <Text style={styles.modalActionText}>{i18n.t("apply")}</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </TouchableOpacity>
             </TouchableOpacity>
         );
     };
@@ -177,7 +177,7 @@ const themedStyles = preTheme((theme: Theme) => {
         modalWrapper: {
             width: "80%",
             maxWidth: 500,
-            backgroundColor: "#fff",
+            backgroundColor: theme.cardBackground,
             paddingHorizontal: 10,
             paddingVertical: 20,
             borderRadius: 4,
