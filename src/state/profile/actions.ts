@@ -22,6 +22,7 @@ import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
+import {readCachedStaticData} from "../static-storage-middleware";
 
 export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
@@ -48,9 +49,17 @@ export const createProfile = (profile: CreateProfileDto): AppThunk => async (dis
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
-    const response = await requestBackend("offers", "GET");
-    if (response.success) {
-        dispatch(loadProfileOffersSuccess(response.data as OfferDto[]));
+    const fromCache = await readCachedStaticData<OfferDto[]>("offers");
+
+    if (fromCache) {
+        // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
+        requestBackend("offers", "GET", {updatedAt: fromCache.updatedAt}).then((response) => {
+            const offers = response.data as OfferDto[];
+            if (response.success) dispatch(loadProfileOffersSuccess(offers.length == 0 ? fromCache.data : offers));
+        });
+    } else {
+        const response = await requestBackend("offers", "GET");
+        if (response.success) dispatch(loadProfileOffersSuccess(response.data as OfferDto[]));
     }
 };
 
@@ -60,11 +69,18 @@ export const loadProfileOffersSuccess = (offers: OfferDto[]): LoadProfileOffersS
 });
 
 export const loadProfileInterests = (): AppThunk => async (dispatch) => {
-    console.log("loadProfileInterests");
-    const response = await requestBackend("interests", "GET");
-    console.log("loadProfileInterests - success =", response.success);
-    if (response.success) {
-        dispatch(loadProfileInterestsSuccess(response.data as InterestDto[]));
+    const fromCache = await readCachedStaticData<InterestDto[]>("interests");
+
+    if (fromCache) {
+        // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
+        requestBackend("interests", "GET", {updatedAt: fromCache.updatedAt}).then((response) => {
+            const interests = response.data as InterestDto[];
+            if (response.success)
+                dispatch(loadProfileInterestsSuccess(interests.length == 0 ? fromCache.data : interests));
+        });
+    } else {
+        const response = await requestBackend("interests", "GET");
+        if (response.success) dispatch(loadProfileInterestsSuccess(response.data as InterestDto[]));
     }
 };
 
