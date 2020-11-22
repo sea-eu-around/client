@@ -134,6 +134,7 @@ export type LogInSuccessAction = {
     type: string;
     token: TokenDto;
     user: User;
+    usingCachedCredentials: boolean;
 };
 
 export type LogInFailureAction = {

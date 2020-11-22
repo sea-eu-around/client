@@ -49,9 +49,9 @@ export const authStorageMiddleware: Middleware<unknown, AppState> = () => (next:
 ) => {
     switch (action.type) {
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
-            const {token, user} = action as LogInSuccessAction;
-            // TODO maybe don't store it again if already authenticating from cache
-            storeAuthInformation(user.email, token);
+            const {token, user, usingCachedCredentials} = action as LogInSuccessAction;
+            // Store the authentication info only if we didn't use it already to login (in that case it is already stored)
+            if (!usingCachedCredentials) storeAuthInformation(user.email, token);
             break;
         }
         case AUTH_ACTION_TYPES.LOG_OUT:

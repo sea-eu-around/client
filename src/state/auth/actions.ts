@@ -59,10 +59,11 @@ export const loginBegin = (email: string, password: string): LogInBeginAction =>
     password,
 });
 
-export const loginSuccess = (token: TokenDto, user: User): LogInSuccessAction => ({
+export const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boolean): LogInSuccessAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_SUCCESS,
     token,
     user,
+    usingCachedCredentials,
 });
 
 export const loginFailure = (errors: string[]): LogInFailureAction => ({
@@ -81,7 +82,7 @@ export const attemptLoginFromCache = (): AppThunk => async (dispatch) => {
 
         if (response.success) {
             const user: User = convertDtoToUser(response.data as ResponseUserDto);
-            dispatch(loginSuccess(token, user));
+            dispatch(loginSuccess(token, user, true));
         } else {
             // e.g. token is invalid
             dispatch(loginFailure([]));
@@ -96,7 +97,7 @@ export const requestLogin = (email: string, password: string): AppThunk => async
     const response = await requestBackend("auth/login", "POST", {}, {email, password}, false, true);
     if (response.success) {
         const payload = response.data as LoginDto;
-        dispatch(loginSuccess(payload.token, payload.user));
+        dispatch(loginSuccess(payload.token, payload.user, false));
     } else dispatch(loginFailure(response.codes));
 };
 
