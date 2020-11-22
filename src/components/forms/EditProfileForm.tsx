@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ActivityIndicator, KeyboardAvoidingView, Platform, Text, TextStyle, View} from "react-native";
+import {ActivityIndicator, KeyboardAvoidingView, Text, View} from "react-native";
 import i18n from "i18n-js";
-import {Avatar, withTheme} from "react-native-elements";
+import {withTheme} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
 import {ScrollView, StyleSheet} from "react-native";
 import DegreeToggle from "../DegreeToggle";
@@ -13,20 +13,26 @@ import {GenderToggle} from "../GenderToggle";
 import BirthDatePicker from "../BirthDatePicker";
 import AvatarEditButton from "../AvatarEditButton";
 import FormRow from "./FormRow";
-import {ValidatedTextInput} from "../ValidatedTextInput";
 import {FormattedDate} from "../FormattedDate";
 import NationalityPicker from "../NationalityPicker";
-import {FormattedNationality} from "../FormattedNationality";
+import FormattedNationality from "../FormattedNationality";
 import {getUniversityFromEmail} from "../../model/utils";
-import {FormattedUniversity} from "../FormattedUniversity";
+import FormattedUniversity from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
-import {SpokenLanguageDto} from "../../api/dto";
+import {initOfferValue, OfferCategory, OfferDto, OfferValueDto, SpokenLanguageDto} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {User} from "../../model/user";
 import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
 import SpokenLanguagesInput from "../SpokenLanguagesInput";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
+import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
+import store from "../../state/store";
+import {AppState, MyThunkDispatch} from "../../state/types";
+import {setAvatar} from "../../state/profile/actions";
+import EnlargeableAvatar from "../EnlargeableAvatar";
+import OfferControl from "../OfferControl";
+import {connect, ConnectedProps} from "react-redux";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -48,9 +54,9 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         const styles = themedStyles(theme);
 
         const avatarTitle = user ? (user.profile.firstName[0] + user.profile.lastName[0]).toUpperCase() : "";
-        const avatarUri = user && user.profile.avatarUri ? {uri: user.profile.avatarUri} : undefined;
+        const avatarSource = user && user.profile.avatarUrl ? {uri: user.profile.avatarUrl} : undefined;
 
-        const textInputStyleProps = {
+        /*const textInputStyleProps = {
             placeholderTextColor: "#222",
             style: {
                 width: "100%",
@@ -69,19 +75,21 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 borderBottomColor: theme.okay,
             },
             focusedStyle: Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null,
-        };
+        };*/
 
         let profileFieldComponents = <></>;
 
         if (user) {
             const profile = user.profile;
+
             profileFieldComponents = (
                 <>
                     <FormRow
                         label={i18n.t("emailAddress")}
                         initialValue={user.email}
-                        // validator={VALIDATOR_EMAIL}
                         display={<Text style={styles.cardText}>{user.email}</Text>}
+                        /*
+                        validator={VALIDATOR_EMAIL}
                         renderInput={(value: string, error: string | null, onChange: (value: string) => void) => (
                             <ValidatedTextInput
                                 placeholder={i18n.t("emailAddress")}
@@ -94,7 +102,8 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                                 {...textInputStyleProps}
                             />
                         )}
-                        //apply={(email: string) => onFieldChanged({email})}
+                        apply={(email: string) => onFieldChanged({email})}
+                        */
                         locked={true}
                     />
                     <FormFieldSpacer />
@@ -139,21 +148,21 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                     <FormFieldSpacer />
                     <FormRow
                         label={i18n.t("role")}
-                        initialValue={user.role}
+                        initialValue={profile.type}
                         display={
                             <>
                                 <RoleToggle
-                                    role={user.role}
+                                    role={profile.type}
                                     /*onSelect={(role: Role) => onFieldChanged({role})}*/
                                     disabled={true}
                                 />
-                                {user.role == "staff" && (
+                                {profile.type == "staff" && (
                                     <StaffRoleToggle
                                         staffRole={profile.staffRole || null}
                                         onSelect={(staffRole: StaffRole) => this.onFieldChanged({staffRole})}
                                     />
                                 )}
-                                {user.role == "student" && (
+                                {profile.type == "student" && (
                                     <DegreeToggle
                                         degree={profile.degree}
                                         onUpdate={(degree?: Degree) => this.onFieldChanged({degree})}
@@ -167,7 +176,12 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                     <FormRow
                         label={i18n.t("fieldsOfEducation")}
                         initialValue={profile.educationFields}
-                        display={<EducationFieldPicker fields={profile.educationFields}></EducationFieldPicker>}
+                        display={
+                            <EducationFieldPicker
+                                fields={profile.educationFields}
+                                onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
+                            ></EducationFieldPicker>
+                        }
                         noModal={true}
                     />
                     <FormFieldSpacer />
@@ -218,28 +232,48 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         )}
                         apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
                     />
+                    <FormFieldSpacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Discover}
+                        profileOffers={profile.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    ></OfferCategoryRow>
+                    <FormFieldSpacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Collaborate}
+                        profileOffers={profile.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    ></OfferCategoryRow>
+                    <FormFieldSpacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Meet}
+                        profileOffers={profile.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    ></OfferCategoryRow>
                 </>
             );
         }
 
         return (
             <View style={styles.screenWrapper}>
-                <View style={[styles.topView, {backgroundColor: theme.accent}]}>
-                    <Avatar
-                        size={120}
+                <View style={styles.topView}>
+                    <EnlargeableAvatar
+                        size={140}
                         rounded
                         title={avatarTitle}
                         containerStyle={{backgroundColor: theme.accentSecondary}}
-                        source={avatarUri}
+                        avatarStyle={styles.avatar}
+                        source={avatarSource}
+                        activeOpacity={0.8}
                     >
                         {user && (
                             <AvatarEditButton
-                                onPictureSelected={(avatarUri: string) => {
-                                    this.onFieldChanged({avatarUri});
+                                onPictureSelected={(imageInfo: ImageInfo) => {
+                                    (store.dispatch as MyThunkDispatch)(setAvatar(imageInfo));
                                 }}
                             />
                         )}
-                    </Avatar>
+                    </EnlargeableAvatar>
                     <Text style={styles.name}>{user ? user.profile.firstName + " " + user.profile.lastName : ""}</Text>
                     {user && (
                         <FormattedUniversity
@@ -263,6 +297,63 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
     }
 }
 
+// Map props from the store
+const reduxConnector = connect((state: AppState) => ({
+    offers: state.profile.offers,
+    offerIdToCategory: state.profile.offerIdToCategory,
+}));
+
+type OfferCategoryRowProps = {
+    category: OfferCategory;
+    profileOffers: OfferValueDto[];
+    onApply: (offerValues: OfferValueDto[]) => void;
+} & ConnectedProps<typeof reduxConnector>;
+
+const OfferCategoryRow = reduxConnector(
+    ({category, profileOffers, onApply, offers, offerIdToCategory}: OfferCategoryRowProps): JSX.Element => {
+        let display: JSX.Element | JSX.Element[] = profileOffers
+            .filter((o) => offerIdToCategory.get(o.offerId) == category)
+            .map((value: OfferValueDto) => (
+                <Text key={`profile-${value.offerId}-display`}>{i18n.t(`allOffers.${value.offerId}.name`)}</Text>
+            ));
+
+        if (display.length == 0) display = <Text>{i18n.t("profile.noOffersSelected")}</Text>;
+
+        return (
+            <FormRow
+                label={i18n.t(`offerCategories.${category}`)}
+                initialValue={profileOffers}
+                display={display}
+                renderInput={(
+                    value: OfferValueDto[],
+                    error: string | null,
+                    onChange: (value: OfferValueDto[]) => void,
+                ) => (
+                    <>
+                        {offers
+                            .filter((o) => o.category == category)
+                            .map((offer: OfferDto) => (
+                                <OfferControl
+                                    key={`profile-${offer.id}`}
+                                    offer={offer}
+                                    value={value.find((o) => o.offerId == offer.id) || initOfferValue(offer)}
+                                    onChange={(offerVal: OfferValueDto) => {
+                                        const updatedVal = value
+                                            .filter((o) => o.offerId != offer.id)
+                                            .concat([offerVal]);
+                                        onChange(updatedVal);
+                                    }}
+                                    style={{marginVertical: 10}}
+                                />
+                            ))}
+                    </>
+                )}
+                apply={(profileOffers: OfferValueDto[]) => onApply(profileOffers)}
+            />
+        );
+    },
+);
+
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         titleWrapper: {
@@ -285,14 +376,14 @@ export const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
         },
         topView: {
-            backgroundColor: "#af645d",
             width: "160%",
-            height: 260,
+            height: 280,
             borderBottomLeftRadius: 200,
             borderBottomRightRadius: 200,
             paddingVertical: 50,
             alignItems: "center",
             alignSelf: "center",
+            backgroundColor: theme.accent,
         },
         scrollWrapper: {
             width: "100%",
@@ -318,6 +409,10 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         universityContainer: {
             marginVertical: 5,
+        },
+        avatar: {
+            borderColor: theme.cardBackground,
+            borderWidth: 2,
         },
         avatarAccessory: {
             width: 40,
