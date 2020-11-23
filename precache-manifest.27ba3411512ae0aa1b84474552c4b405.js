@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "19348b98c8e4585497b1",
-    "url": "/aas-app/static/js/app.8f91f9e1.chunk.js"
+    "revision": "1d35af111624284896c1",
+    "url": "/aas-app/static/js/app.7413dddc.chunk.js"
   },
   {
     "revision": "a712c9cf09eaabeed5ee",
@@ -84,7 +84,7 @@ self.__precacheManifest = [
     "url": "/aas-app/static/media/close.ios.81d829c3.png"
   },
   {
-    "revision": "231d15dec8158e28bc7c4b89f480a41c",
+    "revision": "203f7efc40e590af28af211535da40db",
     "url": "/aas-app/index.html"
   },
   {
