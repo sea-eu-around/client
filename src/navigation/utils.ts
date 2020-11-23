@@ -17,7 +17,9 @@ export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute
     if (Platform.OS == "web") {
         const link = `${APP_SCHEME}://${path}`;
         window.location.replace(link);
-        // TODO fallback after a timeout ?
+
         console.log(`window.location.replace(${link})`);
+        // TODO fallback after a timeout ?
+        setTimeout(fallback, 5000);
     } else fallback();
 }
