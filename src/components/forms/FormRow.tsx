@@ -19,15 +19,14 @@ const reduxConnector = connect(mapStateToProps);
 // Component props
 type FormRowProps<T> = ConnectedProps<typeof reduxConnector> & {
     label: string;
-    children: React.ReactNode;
     display?: JSX.Element;
-    noModal: boolean;
+    noModal?: boolean;
     overrideModal?: (hide: () => void) => JSX.Element;
-    renderInput: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
+    renderInput?: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
     validator?: Schema<T>;
     initialValue: T;
     apply?: (value: T) => void;
-    locked: boolean;
+    locked?: boolean;
 } & TouchableOpacityProps;
 
 // Component state
@@ -83,7 +82,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
     }
 
     renderModalContent = (): JSX.Element => {
-        const {label, theme} = this.props;
+        const {label, theme, renderInput} = this.props;
         const {value, error} = this.state;
 
         const styles = themedStyles(theme);
@@ -92,7 +91,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
             <TouchableOpacity style={styles.modalTouchable} onPress={() => this.setModal(false)} activeOpacity={1}>
                 <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
                     <Text style={styles.modalLabel}>{label}</Text>
-                    {this.props.renderInput(value, error, (value: T) => this.onChange(value))}
+                    {renderInput ? renderInput(value, error, (value: T) => this.onChange(value)) : <></>}
                     <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
                     <View style={styles.modalActions}>
                         <TouchableOpacity
@@ -118,7 +117,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
     };
 
     render(): JSX.Element {
-        const {theme, label, children, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
+        const {theme, label, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
         const {modalOpen} = this.state;
 
         const styles = themedStyles(theme);
@@ -138,7 +137,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
                         <Text style={styles.cardLabel}>{label}</Text>
                         <View>
                             {display !== undefined && display}
-                            {display === undefined && children}
+                            {display === undefined && this.props.children}
                         </View>
                     </View>
                     {!noModal && (

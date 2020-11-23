@@ -323,7 +323,7 @@ const OfferCategoryRow = reduxConnector(
             <FormRow
                 label={i18n.t(`offerCategories.${category}`)}
                 initialValue={profileOffers}
-                display={display}
+                display={<>{display}</>}
                 renderInput={(
                     value: OfferValueDto[],
                     error: string | null,
