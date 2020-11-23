@@ -20,9 +20,9 @@ export type SignupFormState = {
 };
 
 const initialState = (): SignupFormState => ({
-    email: `kevin${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`,
-    password: "PASSword$1",
-    passwordRepeat: "PASSword$1",
+    email: "",
+    password: "",
+    passwordRepeat: "",
 });
 
 // Use Yup to create the validation schema
