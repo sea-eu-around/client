@@ -186,8 +186,8 @@ export default {
         search: "Search",
         selectCountry: "Select country",
         countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
-        role: "Role",
-        roles: "Roles",
+        profileType: "Type",
+        profileTypes: "Types",
         allRoles: {
             student: "Student",
             staff: "Staff",

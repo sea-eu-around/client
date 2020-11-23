@@ -147,7 +147,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                     />
                     <FormFieldSpacer />
                     <FormRow
-                        label={i18n.t("role")}
+                        label={i18n.t("profileType")}
                         initialValue={profile.type}
                         display={
                             <>
