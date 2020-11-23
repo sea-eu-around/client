@@ -1,7 +1,14 @@
-import * as Linking from "expo-linking";
+import {LinkingOptions} from "@react-navigation/native";
+//import * as Linking from "expo-linking";
 
-export default {
-    prefixes: [Linking.makeUrl("/"), "https://sea-eu-around.com"],
+const config: LinkingOptions = {
+    prefixes: [
+        //Linking.makeUrl("/"),
+        //"https://sea-eu-around.com",
+        //"https://sea-eu-around.lad-dev.team/aas-app",
+        //"https://ladislas14.github.io/",
+        "sea-eu-around://",
+    ],
     config: {
         screens: {
             LoginScreen: {
@@ -12,11 +19,7 @@ export default {
                             ForgotPassword: "forgot-password",
                         },
                     },
-                    TabSignup: {
-                        screens: {
-                            SignupForm: "signup",
-                        },
-                    },
+                    TabSignup: "signup",
                 },
             },
             ValidationEmailSentScreen: "validation-sent",
@@ -76,3 +79,5 @@ export default {
         },
     },
 };
+
+export default config;
