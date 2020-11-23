@@ -21,6 +21,7 @@ import MessagingNavigator from "./MessagingNavigator";
 import {Text} from "react-native";
 import {LabelPosition} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
 import {ThemeProps} from "../types";
+import TabHomeScreen from "../screens/TabHomeScreen";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -102,7 +103,7 @@ const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
 const TabHomeNavigator = (): JSX.Element => (
     <TabHomeStack.Navigator>
-        <TabHomeStack.Screen name="TabHomeScreen" component={TabNotImplementedScreen} options={{headerShown: false}} />
+        <TabHomeStack.Screen name="TabHomeScreen" component={TabHomeScreen} options={{headerShown: false}} />
     </TabHomeStack.Navigator>
 );
 
@@ -116,7 +117,7 @@ const TabMatchingNavigator = withTheme(
                 component={TabMatchingScreen}
                 options={({navigation}) => ({
                     headerShown: true,
-                    headerLeft: () => null,
+                    headerLeft: () => <></>,
                     headerTitle: "Matching",
                     headerTitleStyle: {
                         letterSpacing: 0.5,
@@ -149,7 +150,7 @@ const TabNotificationsNavigator = (): JSX.Element => (
         <TabNotificationsStack.Screen
             name="TabNotificationsScreen"
             component={TabNotImplementedScreen}
-            options={{headerTitle: "Tab Title"}}
+            options={{headerShown: false}}
         />
     </TabNotificationsStack.Navigator>
 );
