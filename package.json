@@ -10,8 +10,8 @@
     "test": "jest --watchAll",
     "lint": "eslint src/**/*.{ts,js,tsx}",
     "lint:fix": "eslint src/**/*.{ts,js,tsx} --fix",
-    "deploy": "gh-pages -d web-build",
-    "predeploy": "expo build:web"
+    "deploy-web": "gh-pages -d web-build",
+    "predeploy-web": "expo build:web && echo sea-eu-around.lad-dev.team > ./web-build/CNAME"
   },
   "jest": {
     "preset": "jest-expo"
