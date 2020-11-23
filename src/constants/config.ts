@@ -1,10 +1,15 @@
+export enum Environment {
+    Staging = "staging",
+    Production = "production",
+}
+
 export const APP_VERSION = "0.0.1";
 export const APP_SCHEME = "sea-eu-around";
-export const DEBUG_MODE = true;
-export const ENVIRONMENT: "staging" | "production" = "staging";
+export const DEBUG_MODE = false;
+export const ENVIRONMENT = Environment.Production;
 
 export const BACKEND_URL =
-    ENVIRONMENT == "staging"
+    ENVIRONMENT == Environment.Staging
         ? "https://api-staging.sea-eu-around.lad-dev.team"
         : "https://api.sea-eu-around.lad-dev.team";
 

@@ -8,7 +8,7 @@ import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
-import {DEBUG_MODE, ENVIRONMENT} from "../constants/config";
+import {DEBUG_MODE, Environment, ENVIRONMENT} from "../constants/config";
 import store from "../state/store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
@@ -27,7 +27,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
     componentDidMount() {
         // In DEBUG_MODE / staging environment, attempt to use a verification token sent by the server
         const verificationToken = store.getState().auth.verificationToken;
-        if (DEBUG_MODE && ENVIRONMENT == "staging" && verificationToken) {
+        if (DEBUG_MODE && ENVIRONMENT == Environment.Staging && verificationToken) {
             (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken));
         } else if (Platform.OS == "web") {
             const route = this.props.route;
