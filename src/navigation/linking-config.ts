@@ -55,7 +55,7 @@ const config: LinkingOptions = {
                 },
             },
             ValidateEmailSentScreen: "validate/success",
-            ValidateEmailScreen: "validate",
+            ValidateEmailScreen: "validate/:token",
             ChangePassword: "reset-password",
             OnboardingScreen: {
                 screens: {
