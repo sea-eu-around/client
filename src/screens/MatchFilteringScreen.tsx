@@ -111,22 +111,28 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                     <Text style={styles.sectionTitle}>{i18n.t("matching.filtering.sectionGeneral")}</Text>
                     <View style={styles.entryContainer}>
                         <Text style={styles.entryLabel}>{i18n.t("university")}</Text>
-                        <MultiUniversityPicker
-                            universities={filters.universities}
-                            showSelected={false}
-                            onChange={(universities: string[]) => this.updateLocalFilters({universities})}
-                        ></MultiUniversityPicker>
+                        <View style={styles.entryControls}>
+                            <MultiUniversityPicker
+                                universities={filters.universities}
+                                showSelected={false}
+                                onChange={(universities: string[]) => this.updateLocalFilters({universities})}
+                            ></MultiUniversityPicker>
+                            <ClearFilterButton onPress={() => this.updateLocalFilters({universities: []})} />
+                        </View>
                     </View>
                     <View style={styles.entryContainer}>
                         <Text style={styles.entryLabel}>{i18n.t("spokenLanguages")}</Text>
-                        <MultiLanguagePicker
-                            languages={filters.languages}
-                            showSelected={false}
-                            onChange={(languages: string[]) => this.updateLocalFilters({languages})}
-                        ></MultiLanguagePicker>
+                        <View style={styles.entryControls}>
+                            <MultiLanguagePicker
+                                languages={filters.languages}
+                                showSelected={false}
+                                onChange={(languages: string[]) => this.updateLocalFilters({languages})}
+                            ></MultiLanguagePicker>
+                            <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
+                        </View>
                     </View>
                     <View style={styles.twoLineEntryContainer}>
-                        <Text style={styles.entryLabel}>{i18n.t("roles")}</Text>
+                        <Text style={styles.entryLabel}>{i18n.t("profileTypes")}</Text>
                         <RoleToggleMulti
                             roles={filters.roles}
                             onSelect={(roles: Role[]) => this.updateLocalFilters({roles})}
@@ -183,6 +189,11 @@ const themedStyles = preTheme((theme: Theme) => {
             marginVertical: 7,
             marginRight: 10,
             color: theme.textLight,
+        },
+        entryControls: {
+            flexDirection: "row",
+            alignItems: "center",
+            marginVertical: 2,
         },
         separator: {
             height: 1,
@@ -247,6 +258,14 @@ export const FilteringHeaderRight = withTheme(
             </TouchableOpacity>
         );
     },
+);
+
+export const ClearFilterButton = withTheme(
+    ({theme, onPress}: ThemeProps & {onPress: () => void}): JSX.Element => (
+        <TouchableOpacity onPress={onPress}>
+            <MaterialIcons name="close" style={{fontSize: 28, color: theme.text}} />
+        </TouchableOpacity>
+    ),
 );
 
 //return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
