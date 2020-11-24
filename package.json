@@ -11,7 +11,7 @@
     "lint": "eslint src/**/*.{ts,js,tsx}",
     "lint:fix": "eslint src/**/*.{ts,js,tsx} --fix",
     "deploy-web": "gh-pages -d web-build",
-    "predeploy-web": "expo build:web && echo sea-eu-around.lad-dev.team > ./web-build/CNAME"
+    "predeploy-web": "node deploy-tools/web/gh-pages/pre-deploy.mjs"
   },
   "jest": {
     "preset": "jest-expo"
