@@ -71,6 +71,8 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             fontWeight: "bold",
             color: theme.text,
+            width: "100%",
+            textAlign: "center",
         },
     });
 });
