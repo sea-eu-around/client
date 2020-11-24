@@ -8,6 +8,7 @@ This is the client repository for SEA-EU Around (android, iOS and web versions).
 
 ## Android
 
+First, the `versionCode` needs to be incremented in [app.json/expo/android](app.json). Otherwise, the play store won't accept the new build.  
 `expo build:android -t apk`
 
 ## Web
@@ -23,4 +24,6 @@ Here is what happens:
 
 # Contributors
 
-- Kelian BAERT (kelian.baert@gmail.com)
+- Kelian Baert (kelian.baert@gmail.com)
+- Ladislas Dellinger
+- Alfred Pichard
