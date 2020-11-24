@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -123,7 +123,9 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
                                 accessibilityRole="link"
                                 accessibilityLabel={i18n.t("forgotPassword")}
                                 onPress={() => {
-                                    navigation.navigate("ForgotPassword");
+                                    // TODO re-enable forgot password
+                                    // navigation.navigate("ForgotPassword");
+                                    Alert.alert("Temporarily disabled.");
                                 }}
                                 style={styles.forgotPwdLink}
                             >
