@@ -28,12 +28,13 @@
         },
         "android": {
             "package": "com.sea_eu.around",
-            "versionCode": 1,
+            "versionCode": 3,
+            "permissions": [],
             "intentFilters": [{
                 "action": "VIEW",
                 "data": [{
                     "scheme": "https",
-                    "host": "*.sea-eu-around.com",
+                    "host": "sea-eu-around.lad-dev.team",
                     "pathPrefix": "/"
                 }],
                 "category": ["BROWSABLE", "DEFAULT"]
