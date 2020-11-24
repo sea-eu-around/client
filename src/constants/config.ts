@@ -5,8 +5,9 @@ export enum Environment {
 
 export const APP_VERSION = "0.0.1";
 export const APP_SCHEME = "sea-eu-around";
-export const DEBUG_MODE = false;
+
 export const ENVIRONMENT = Environment.Production;
+export const DEBUG_MODE = ENVIRONMENT == Environment.Staging;
 
 export const BACKEND_URL =
     ENVIRONMENT == Environment.Staging
