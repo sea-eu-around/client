@@ -5,7 +5,7 @@ const config: LinkingOptions = {
     prefixes: [
         //Linking.makeUrl("/"),
         //"https://sea-eu-around.com",
-        //"https://sea-eu-around.lad-dev.team/aas-app",
+        //"https://sea-eu-around.lad-dev.team",
         //"https://ladislas14.github.io/",
         "sea-eu-around://",
     ],
