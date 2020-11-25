@@ -22,14 +22,14 @@ import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
-function Navigation({theme}: ThemeProps): JSX.Element {
+function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
     return (
         <NavigationContainer
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
             theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
         >
-            <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRoute}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} />
                 <Stack.Screen
                     name="ValidationEmailSentScreen"

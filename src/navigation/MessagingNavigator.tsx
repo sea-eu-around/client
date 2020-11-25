@@ -15,7 +15,7 @@ const Tab = createMaterialTopTabNavigator<TabMessagingTabs>();
 export default function MessagingNavigator(): JSX.Element {
     const insets = useSafeAreaInsets();
     return (
-        <Stack.Navigator initialRouteName="MessagingScreen" headerMode="none">
+        <Stack.Navigator headerMode="none">
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
             <Stack.Screen name="MessagingScreen">
                 {() => (

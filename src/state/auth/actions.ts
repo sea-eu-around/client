@@ -71,7 +71,7 @@ export const loginFailure = (errors: string[]): LogInFailureAction => ({
     errors,
 });
 
-export const attemptLoginFromCache = (): AppThunk => async (dispatch) => {
+export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (dispatch): Promise<boolean> => {
     const credentials = await readCachedCredentials();
 
     if (credentials) {
@@ -83,12 +83,11 @@ export const attemptLoginFromCache = (): AppThunk => async (dispatch) => {
         if (response.success) {
             const user: User = convertDtoToUser(response.data as ResponseUserDto);
             dispatch(loginSuccess(token, user, true));
-        } else {
-            // e.g. token is invalid
-            dispatch(loginFailure([]));
-        }
+            return true;
+        } else dispatch(loginFailure([])); // e.g. token is invalid
     }
     // If no credentials are available in cache, the action does nothing.
+    return false;
 };
 
 export const requestLogin = (email: string, password: string): AppThunk => async (dispatch) => {

@@ -5,7 +5,7 @@ import {Platform} from "react-native";
 import {APP_SCHEME} from "../constants/config";
 import i18n from "i18n-js";
 
-// Store a ref to several navigators
+// Store a ref to the root navigator
 export const rootNavigationRef = React.createRef<NavigationContainerRef>();
 
 export function rootNavigate(route: NavigatorRoute): void {
