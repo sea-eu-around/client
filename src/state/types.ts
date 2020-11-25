@@ -253,6 +253,7 @@ export type LoadProfileOffersAction = {
 export type LoadProfileOffersSuccessAction = {
     type: string;
     offers: OfferDto[];
+    fromCache: boolean;
 };
 
 export type LoadProfileInterestsAction = {
@@ -262,6 +263,7 @@ export type LoadProfileInterestsAction = {
 export type LoadProfileInterestsSuccessAction = {
     type: string;
     interests: InterestDto[];
+    fromCache: boolean;
 };
 
 export type FetchUserSuccessAction = {

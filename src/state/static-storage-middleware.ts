@@ -26,6 +26,8 @@ function storeStaticData<T>(key: string, data: T) {
         data,
     };
 
+    console.log("date", storageObject.updatedAt);
+
     AsyncStorage.setItem(key, JSON.stringify(storageObject));
 }
 
@@ -44,13 +46,19 @@ export const staticStorageMiddleware: Middleware<unknown, AppState> = () => (nex
 ) => {
     switch (action.type) {
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_INTERESTS_SUCCESS: {
-            const {interests} = action as LoadProfileInterestsSuccessAction;
-            storeStaticData("interests", interests);
+            const {interests, fromCache} = action as LoadProfileInterestsSuccessAction;
+            if (!fromCache) {
+                console.log("Updating the interests cache.");
+                storeStaticData("interests", interests);
+            }
             break;
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
-            const {offers} = action as LoadProfileOffersSuccessAction;
-            storeStaticData("offers", offers);
+            const {offers, fromCache} = action as LoadProfileOffersSuccessAction;
+            if (!fromCache) {
+                console.log("Updating the offers cache.");
+                storeStaticData("offers", offers);
+            }
             break;
         }
     }
