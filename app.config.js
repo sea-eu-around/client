@@ -3,17 +3,19 @@ import "dotenv/config";
 const TARGET = process.env.TARGET || "STAGING";
 
 const CLIENT_HTTP = "https";
-const CLIENT_HOST = "sea-eu-around.lad-dev.team";
 
+let CLIENT_HOST;
 let EXTRAS = {};
 
 if (TARGET === "PRODUCTION") {
+    CLIENT_HOST = "sea-eu-around.lad-dev.team";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_URL: "https://api.sea-eu-around.lad-dev.team",
         DEBUG: false,
     };
 } else {
+    CLIENT_HOST = "staging.sea-eu-around.lad-dev.team";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_URL: "https://api-staging.sea-eu-around.lad-dev.team",

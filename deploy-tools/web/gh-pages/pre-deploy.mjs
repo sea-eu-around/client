@@ -5,9 +5,6 @@ import {exec, path} from "../../utils.mjs";
 const BUILD_DIR = "./web-build";
 const HERE = "deploy-tools/web/gh-pages";
 
-const INDEX_HTML = path(`${BUILD_DIR}/index.html`);
-const DOMAIN = "sea-eu-around.lad-dev.team";
-
 const production = hasCmdArg("--production");
 const staging = hasCmdArg("--staging");
 
@@ -19,6 +16,7 @@ async function predeploy() {
     }
 
     const TARGET = production ? "PRODUCTION" : "STAGING";
+    const domain = production ? "sea-eu-around.lad-dev.team" : "staging.sea-eu-around.lad-dev.team";
 
     // Build app into the web-build directory
     console.log("# Building app");
@@ -26,7 +24,7 @@ async function predeploy() {
 
     // Create the CNAME file to specify the deployment domain
     console.log("# Echoing CNAME");
-    await exec(`echo ${DOMAIN} > ${path(`${BUILD_DIR}/CNAME`)}`);
+    await exec(`echo ${domain} > ${path(`${BUILD_DIR}/CNAME`)}`);
 
     /* See https://github.com/rafgraph/spa-github-pages for the next two steps */
 
@@ -62,6 +60,7 @@ async function predeploy() {
         </script>
     <!-- End Single Page Apps for GitHub Pages -->`;
 
+    const INDEX_HTML = path(`${BUILD_DIR}/index.html`);
     readFile(INDEX_HTML, "utf8", (err, data) => {
         if (err) return console.log(err);
 
