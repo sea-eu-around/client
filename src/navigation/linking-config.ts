@@ -1,13 +1,13 @@
 import {LinkingOptions} from "@react-navigation/native";
-//import * as Linking from "expo-linking";
+import * as Linking from "expo-linking";
 
 const config: LinkingOptions = {
     prefixes: [
-        //Linking.makeUrl("/"),
-        //"https://sea-eu-around.com",
-        //"https://sea-eu-around.lad-dev.team",
-        //"https://ladislas14.github.io/",
+        Linking.makeUrl("/"),
+        "https://sea-eu-around.lad-dev.team",
         "sea-eu-around://",
+        //"https://ladislas14.github.io/",
+        //"https://sea-eu-around.com",
     ],
     config: {
         screens: {
