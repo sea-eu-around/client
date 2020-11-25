@@ -31,7 +31,15 @@ export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScre
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
     return (
-        <TabNavigator.Navigator initialRouteName="TabHome" tabBarOptions={{activeTintColor: theme.tint}}>
+        <TabNavigator.Navigator
+            initialRouteName="TabHome"
+            tabBarOptions={{
+                activeTintColor: theme.tint,
+                style: {height: 55, paddingTop: 5, paddingBottom: 5},
+                tabStyle: {flexDirection: "column"},
+                iconStyle: {flex: 1},
+            }}
+        >
             <TabNavigator.Screen
                 name="TabHome"
                 component={TabHomeNavigator}
@@ -93,11 +101,11 @@ type TabBarLabelProps = {
 
 // TODO move
 function TabBarIcon({name, color}: {name: string} & TabBarIconProps): JSX.Element {
-    return <MaterialIcons size={26} style={{marginTop: 3}} name={name} color={color} />;
+    return <MaterialIcons size={26} name={name} color={color} />;
 }
 
 function TabBarLabel({text, color}: {text: string} & TabBarLabelProps): JSX.Element {
-    return <Text style={{color: color, fontSize: 11, marginBottom: 3}}>{text}</Text>;
+    return <Text style={{color, fontSize: 12}}>{text}</Text>;
 }
 
 const TabHomeStack = createStackNavigator<TabHomeRoot>();
