@@ -700,7 +700,7 @@ export default {
             TabNotificationsScreen: "Notifications",
             TabProfileScreen: "Profile",
             ValidationEmailSentScreen: "Validate your account",
-            ValidateEmailScreen: "Valiate your account",
+            ValidateEmailScreen: "Validate your account",
             ChangePasswordScreen: "Reset your password",
             OnboardingSuccessfulScreen: "Successful registration",
             NotFoundScreen: "Not Found",
