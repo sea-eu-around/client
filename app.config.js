@@ -2,6 +2,9 @@ import "dotenv/config";
 
 const TARGET = process.env.TARGET || "STAGING";
 
+const VERSION = "0.0.1";
+const ANDROID_VERSION_CODE = 3;
+
 const CLIENT_HTTP = "https";
 
 let CLIENT_HOST;
@@ -28,7 +31,7 @@ export default {
         name: "SEA-EU Around",
         slug: "seaEuAround",
         privacy: "unlisted",
-        version: "0.0.1",
+        version: VERSION,
         orientation: "portrait",
         userInterfaceStyle: "automatic",
         icon: "./assets/images/icon.png",
@@ -51,11 +54,11 @@ export default {
         ios: {
             supportsTablet: true,
             bundleIdentifier: "com.sea-eu.around",
-            buildNumber: "0.0.1",
+            buildNumber: VERSION,
         },
         android: {
             package: "com.sea_eu.around",
-            versionCode: 3,
+            versionCode: ANDROID_VERSION_CODE,
             permissions: [],
             intentFilters: [
                 {
