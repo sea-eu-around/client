@@ -3,7 +3,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "build-android": "set TARGET=PRODUCTION && expo build:android -t apk",
+    "build-android": "set \"TARGET=PRODUCTION\" && expo build:android -t apk",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "deploy-web:staging": "gh-pages -d web-build",
