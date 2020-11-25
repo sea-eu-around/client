@@ -3,6 +3,7 @@ import {NavigationContainerRef} from "@react-navigation/native";
 import {NavigatorRoute} from "./types";
 import {Platform} from "react-native";
 import {APP_SCHEME} from "../constants/config";
+import i18n from "i18n-js";
 
 // Store a ref to several navigators
 export const rootNavigationRef = React.createRef<NavigationContainerRef>();
@@ -22,4 +23,8 @@ export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute
         // TODO fallback after a timeout ?
         setTimeout(fallback, 5000);
     } else fallback();
+}
+
+export function screenTitle(route: NavigatorRoute): string {
+    return i18n.t(`screenTitles.${route}`) + i18n.t("screenTitles.suffix");
 }

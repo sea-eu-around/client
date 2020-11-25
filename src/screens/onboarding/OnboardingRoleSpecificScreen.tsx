@@ -26,15 +26,15 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     degree: VALIDATOR_ONBOARDING_DEGREE,
 });
 
-type OnboardingRoleSpecificScreen1Props = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
+type OnboardingRoleSpecificScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
-type OnboardingRoleSpecificScreen1FormState = {
+type OnboardingRoleSpecificScreenFormState = {
     degree: Degree;
     staffRole: StaffRole | null;
 };
 
-class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecificScreen1Props> {
-    submit(values: Partial<OnboardingRoleSpecificScreen1FormState>) {
+class OnboardingRoleSpecificScreen extends React.Component<OnboardingRoleSpecificScreenProps> {
+    submit(values: Partial<OnboardingRoleSpecificScreenFormState>) {
         this.props.dispatch(setOnboardingValues(values));
         this.props.next();
     }
@@ -45,13 +45,13 @@ class OnboardingRoleSpecificScreen1 extends React.Component<OnboardingRoleSpecif
 
         return (
             <Formik
-                initialValues={onboardingState as OnboardingRoleSpecificScreen1FormState}
+                initialValues={onboardingState as OnboardingRoleSpecificScreenFormState}
                 validationSchema={VALIDATION_SCHEMA}
                 validateOnChange={true}
                 validateOnBlur={false}
-                onSubmit={(values: OnboardingRoleSpecificScreen1FormState) => this.submit(values)}
+                onSubmit={(values: OnboardingRoleSpecificScreenFormState) => this.submit(values)}
             >
-                {(formikProps: FormikProps<OnboardingRoleSpecificScreen1FormState>) => {
+                {(formikProps: FormikProps<OnboardingRoleSpecificScreenFormState>) => {
                     const {handleSubmit, values, errors, touched, setFieldValue} = formikProps;
 
                     return (
@@ -144,4 +144,4 @@ export const staffThemedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(OnboardingRoleSpecificScreen1));
+export default reduxConnector(withTheme(OnboardingRoleSpecificScreen));

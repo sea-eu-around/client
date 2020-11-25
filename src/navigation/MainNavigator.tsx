@@ -22,6 +22,7 @@ import {Text} from "react-native";
 import {LabelPosition} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
 import {ThemeProps} from "../types";
 import TabHomeScreen from "../screens/TabHomeScreen";
+import {screenTitle} from "./utils";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -103,7 +104,11 @@ const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
 const TabHomeNavigator = (): JSX.Element => (
     <TabHomeStack.Navigator>
-        <TabHomeStack.Screen name="TabHomeScreen" component={TabHomeScreen} options={{headerShown: false}} />
+        <TabHomeStack.Screen
+            name="TabHomeScreen"
+            component={TabHomeScreen}
+            options={{headerShown: false, title: screenTitle("TabHomeScreen")}}
+        />
     </TabHomeStack.Navigator>
 );
 
@@ -126,6 +131,7 @@ const TabMatchingNavigator = withTheme(
                     headerTitleAlign: "left",
                     // eslint-disable-next-line react/display-name
                     headerRight: () => <MatchingHeaderRight navigation={navigation} />,
+                    title: screenTitle("TabMatchingScreen"),
                 })}
             />
             <TabMatchingStack.Screen
@@ -137,6 +143,7 @@ const TabMatchingNavigator = withTheme(
                     headerTitleAlign: "center",
                     headerLeft: (props: StackHeaderLeftButtonProps) => <FilteringHeaderLeft {...props} />,
                     headerRight: () => <FilteringHeaderRight />,
+                    title: screenTitle("MatchFilteringScreen"),
                 }}
             />
         </TabMatchingStack.Navigator>
@@ -150,7 +157,7 @@ const TabNotificationsNavigator = (): JSX.Element => (
         <TabNotificationsStack.Screen
             name="TabNotificationsScreen"
             component={TabNotImplementedScreen}
-            options={{headerShown: false}}
+            options={{headerShown: false, title: screenTitle("TabNotificationsScreen")}}
         />
     </TabNotificationsStack.Navigator>
 );
@@ -159,7 +166,11 @@ const TabProfileStack = createStackNavigator<TabProfileRoot>();
 
 const TabProfileNavigator = (): JSX.Element => (
     <TabProfileStack.Navigator>
-        <TabProfileStack.Screen name="TabProfileScreen" component={TabProfileScreen} options={{headerShown: false}} />
+        <TabProfileStack.Screen
+            name="TabProfileScreen"
+            component={TabProfileScreen}
+            options={{headerShown: false, title: screenTitle("TabProfileScreen")}}
+        />
     </TabProfileStack.Navigator>
 );
 

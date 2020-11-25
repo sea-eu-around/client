@@ -2,7 +2,7 @@ import * as React from "react";
 import {OnboardingScreens} from "../navigation/types";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
 import {ONBOARDING_ORDER, ONBOARDING_SCREENS} from "../screens/onboarding";
-import {rootNavigate} from "./utils";
+import {rootNavigate, screenTitle} from "./utils";
 
 const OnboardingStack = createMaterialTopTabNavigator<OnboardingScreens>();
 
@@ -22,7 +22,7 @@ const screens = ONBOARDING_ORDER.map((name: keyof OnboardingScreens, i: number) 
         }
     }
 
-    return <OnboardingStack.Screen key={i} name={name} component={temp} />;
+    return <OnboardingStack.Screen key={i} name={name} component={temp} options={{title: screenTitle(name)}} />;
 });
 
 export default function OnboardingNavigator(): JSX.Element {
