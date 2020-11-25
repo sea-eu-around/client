@@ -1,18 +1,18 @@
+import Constants from "expo-constants";
+
 export enum Environment {
-    Staging = "staging",
-    Production = "production",
+    Staging = "STAGING",
+    Production = "PRODUCTION",
 }
 
-export const APP_VERSION = "0.0.1";
-export const APP_SCHEME = "sea-eu-around";
+const extra = Constants.manifest.extra;
 
-export const ENVIRONMENT = Environment.Production;
-export const DEBUG_MODE = ENVIRONMENT == Environment.Staging;
-
-export const BACKEND_URL =
-    ENVIRONMENT == Environment.Staging
-        ? "https://api-staging.sea-eu-around.lad-dev.team"
-        : "https://api.sea-eu-around.lad-dev.team";
+export const APP_VERSION: string = extra.version;
+export const APP_SCHEME: string = extra.scheme;
+export const ENVIRONMENT: Environment = extra.TARGET;
+export const DEBUG_MODE: boolean = extra.DEBUG;
+export const CLIENT_URL: string = extra.CLIENT_URL;
+export const BACKEND_URL: string = extra.SERVER_URL;
 
 /**
  * Specify the quality of compression, from 0 to 1.

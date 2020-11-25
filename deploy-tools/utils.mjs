@@ -12,3 +12,8 @@ export const exec = async (cmd, args = [], options = {}) => {
         newProcess.on("exit", () => resolve());
     });
 };
+
+export function hasCmdArg(flag) {
+    const f = flag.toLowerCase();
+    return process.argv.slice(2).findIndex(s => s.toLowerCase() === f) !== -1;
+}
