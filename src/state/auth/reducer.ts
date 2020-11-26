@@ -3,8 +3,6 @@ import {
     AuthState,
     AuthAction,
     LogInSuccessAction,
-    RegisterFailureAction,
-    LogInFailureAction,
     RegisterBeginAction,
     RegisterSuccessAction,
     ValidateAccountSuccessAction,
@@ -36,10 +34,7 @@ export const initialState: AuthState = {
     connecting: false,
     validated: false,
     registerEmail: "",
-    registerFailure: false,
-    registerErrors: [],
     validatedEmail: null,
-    loginErrors: [],
     onboarded: false,
     onboarding: initialOnboardingState(),
 };
@@ -50,14 +45,8 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             const {email} = <RegisterBeginAction>action;
             return {
                 ...state,
-                registerFailure: false,
-                registerErrors: [],
                 registerEmail: email,
             };
-        }
-        case AUTH_ACTION_TYPES.REGISTER_FAILURE: {
-            const {errors} = <RegisterFailureAction>action;
-            return {...state, registerFailure: true, registerErrors: errors};
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             const {
@@ -65,8 +54,6 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             } = <RegisterSuccessAction>action;
             return {
                 ...state,
-                registerFailure: false,
-                registerErrors: [],
                 verificationToken,
                 onboarded,
             };
@@ -79,11 +66,10 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             return {...state, validated: false};
         }
         case AUTH_ACTION_TYPES.LOG_IN_BEGIN: {
-            return {...state, connecting: true, loginErrors: []};
+            return {...state, connecting: true};
         }
         case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
-            const {errors} = <LogInFailureAction>action;
-            return {...state, connecting: false, loginErrors: errors};
+            return {...state, connecting: false};
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {
@@ -105,7 +91,6 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
                 ...state,
                 connecting: false,
                 authenticated: true,
-                loginErrors: [],
                 token,
                 onboarded,
                 onboarding,
