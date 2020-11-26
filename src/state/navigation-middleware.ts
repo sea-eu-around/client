@@ -34,6 +34,14 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             // attemptRedirectToApp("login", "TabSignin");
             break;
         }
+        case AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS: {
+            rootNavigate("ForgotPasswordEmailSentScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS: {
+            rootNavigate("ResetPasswordSuccessScreen");
+            return;
+        }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
             const {matchStatus} = action as LikeProfileSuccessAction;
             if (matchStatus == "matched") rootNavigate("MatchSuccessScreen");
