@@ -4,13 +4,16 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
-import {StackNavigationProp} from "@react-navigation/stack";
-import {LoginTabNavigatorScreens} from "../../navigation/types";
+import {StackScreenProps} from "@react-navigation/stack";
 import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {VALIDATOR_EMAIL_LOGIN} from "../../validators";
 import {preTheme} from "../../styles/utils";
+import store from "../../state/store";
+import {MyThunkDispatch} from "../../state/types";
+import {forgotPassword} from "../../state/auth/actions";
+import {TabLoginSigninScreens} from "../../navigation/types";
 
 type ForgotPasswordFormState = {
     email: string;
@@ -22,14 +25,12 @@ const ForgotPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-export type ForgotPasswordFormProps = ThemeProps & {
-    navigation: StackNavigationProp<LoginTabNavigatorScreens, "ForgotPassword">;
-};
+export type ForgotPasswordFormProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPassword">;
 
 class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
     // Form submission handler
     submitForm({email}: ForgotPasswordFormState) {
-        console.log("Reset Password form submitted", email);
+        (store.dispatch as MyThunkDispatch)(forgotPassword(email));
     }
 
     render(): JSX.Element {
