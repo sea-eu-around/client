@@ -38,9 +38,6 @@ export type AuthState = {
     token: null | TokenDto;
     connecting: boolean;
     registerEmail: string;
-    registerFailure: boolean;
-    registerErrors: string[];
-    loginErrors: string[];
     validatedEmail: string | null;
     // This is available only in DEBUG_MODE on the staging server
     verificationToken?: string;
@@ -107,6 +104,9 @@ export enum AUTH_ACTION_TYPES {
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
     SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
     SET_ONBOARDING_OFFER_VALUE = "AUTH/SET_ONBOARDING_OFFER_VALUE",
+    FORGOT_PASSWORD_FAILURE = "AUTH/FORGOT_PASSWORD_FAILURE",
+    FORGOT_PASSWORD_SUCCESS = "AUTH/FORGOT_PASSWORD_SUCCESS",
+    RESET_PASSWORD_SUCCESS = "AUTH/RESET_PASSWORD_SUCCESS",
 }
 
 export type RegisterBeginAction = {
@@ -168,6 +168,20 @@ export type SetOnboardingOfferValueAction = {
     value: OfferValueDto;
 };
 
+export type ForgotPasswordFailureAction = {
+    type: string;
+    errors: string[];
+};
+
+export type ForgotPasswordSuccessAction = {
+    type: string;
+    email: string;
+};
+
+export type ResetPasswordSuccessAction = {
+    type: string;
+};
+
 export type AuthAction =
     | RegisterBeginAction
     | RegisterSuccessAction
@@ -179,7 +193,10 @@ export type AuthAction =
     | ValidateAccountSuccessAction
     | ValidateAccountFailureAction
     | SetOnboardingValuesAction
-    | SetOnboardingOfferValueAction;
+    | SetOnboardingOfferValueAction
+    | ForgotPasswordFailureAction
+    | ForgotPasswordSuccessAction
+    | ResetPasswordSuccessAction;
 
 /*### SETTINGS ###*/
 
