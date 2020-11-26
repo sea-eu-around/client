@@ -49,10 +49,14 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
     }
 
     const filters = state.filters;
+    const offers = Object.keys(filters.offers).filter((k) => filters.offers[k] === true);
+
     const filterParams = {
         universities: nonEmptyOrUndef(filters.universities),
         spokenLanguages: nonEmptyOrUndef(filters.languages),
         degrees: nonEmptyOrUndef(filters.degrees),
+        types: nonEmptyOrUndef(filters.types),
+        offers: nonEmptyOrUndef(offers),
     };
 
     const response = await requestBackend(

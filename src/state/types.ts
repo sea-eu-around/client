@@ -66,7 +66,7 @@ export type MatchingFiltersState = {
     universities: string[];
     degrees: Degree[];
     languages: string[];
-    roles: Role[];
+    types: Role[];
 };
 
 export type MatchingState = {

@@ -134,12 +134,12 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                     <View style={styles.twoLineEntryContainer}>
                         <Text style={styles.entryLabel}>{i18n.t("profileTypes")}</Text>
                         <RoleToggleMulti
-                            roles={filters.roles}
-                            onSelect={(roles: Role[]) => this.updateLocalFilters({roles})}
+                            roles={filters.types}
+                            onSelect={(types: Role[]) => this.updateLocalFilters({types})}
                             noButtonVariant={true}
                         ></RoleToggleMulti>
                     </View>
-                    {filters.roles.indexOf("student") != -1 && (
+                    {filters.types.indexOf("student") != -1 && (
                         <View style={styles.twoLineEntryContainer}>
                             <Text style={styles.entryLabel}>{i18n.t("levelOfStudy")}</Text>
                             <DegreeToggleMulti

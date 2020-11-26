@@ -19,7 +19,7 @@ export const defaultMatchingFilters = (): MatchingFiltersState => ({
     universities: [],
     degrees: [],
     languages: [],
-    roles: [],
+    types: [],
 });
 
 export const initialState: MatchingState = {
