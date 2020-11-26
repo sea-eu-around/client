@@ -626,23 +626,23 @@ export default {
             },
             "look-for-collaborators": {
                 name: "Look for collaborators",
-                help: "",
+                help: "I am looking for collaborators for a project.",
             },
             "answer-questions": {
                 name: "Answer questions",
-                help: "",
+                help: "I can give information about my university or answer to general questions.",
             },
             "talk-a-bit": {
                 name: "Talk a bit",
-                help: "",
+                help: "I would like to get to know new people.",
             },
             "chat-to-practice": {
                 name: "Chat to practice",
-                help: "",
+                help: "I would not mind chatting with other users who would like to improve their language skills",
             },
             "language-tandem": {
                 name: "Language tandem",
-                help: "",
+                help: "I am willing to join a language tandem to help others learn one of my languages.",
             },
         },
         block: {
