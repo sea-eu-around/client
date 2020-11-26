@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/static/js/app.48825104.chunk.js",
-    "app.js.map": "/static/js/app.48825104.chunk.js.map",
+    "app.js": "/static/js/app.ae437dbf.chunk.js",
+    "app.js.map": "/static/js/app.ae437dbf.chunk.js.map",
     "runtime~app.js": "/static/js/runtime~app.2e9f1821.js",
     "runtime~app.js.map": "/static/js/runtime~app.2e9f1821.js.map",
-    "static/js/2.f2a8976f.chunk.js": "/static/js/2.f2a8976f.chunk.js",
-    "static/js/2.f2a8976f.chunk.js.map": "/static/js/2.f2a8976f.chunk.js.map",
+    "static/js/2.28214ebb.chunk.js": "/static/js/2.28214ebb.chunk.js",
+    "static/js/2.28214ebb.chunk.js.map": "/static/js/2.28214ebb.chunk.js.map",
     "fonts/AntDesign.ttf": "/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/./fonts/Feather.ttf",
@@ -24,7 +24,7 @@
     "index.html": "/index.html",
     "manifest.json": "/manifest.json",
     "serve.json": "/serve.json",
-    "static/js/2.f2a8976f.chunk.js.LICENSE.txt": "/static/js/2.f2a8976f.chunk.js.LICENSE.txt",
+    "static/js/2.28214ebb.chunk.js.LICENSE.txt": "/static/js/2.28214ebb.chunk.js.LICENSE.txt",
     "static/media/bell.png": "/static/media/bell.cf04af27.png",
     "static/media/close.android.png": "/static/media/close.android.0d17e028.png",
     "static/media/close.ios.png": "/static/media/close.ios.81d829c3.png",
@@ -34,7 +34,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.2e9f1821.js",
-    "static/js/2.f2a8976f.chunk.js",
-    "static/js/app.48825104.chunk.js"
+    "static/js/2.28214ebb.chunk.js",
+    "static/js/app.ae437dbf.chunk.js"
   ]
 }
