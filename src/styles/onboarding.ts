@@ -1,4 +1,4 @@
-import {StyleSheet, TextStyle} from "react-native";
+import {Dimensions, StyleSheet, TextStyle} from "react-native";
 import {Theme} from "../types";
 import {preTheme} from "./utils";
 import {styleTextThin} from "./general";
@@ -6,17 +6,20 @@ import {styleTextThin} from "./general";
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
         slideWrapper: {
-            justifyContent: "center",
+            //justifyContent: "center",
             alignItems: "center",
             width: "100%",
             height: "100%",
             backgroundColor: theme.background,
         },
         header: {
-            marginBottom: "20%",
+            marginBottom: 20,
         },
         slideContentWrapper: {
-            width: "70%",
+            width: "75%",
+            height: Dimensions.get("window").height - 50,
+            flexDirection: "column",
+            justifyContent: "center",
         },
         slideNavWrapper: {
             width: "100%",
@@ -24,9 +27,11 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             justifyContent: "space-around",
             alignItems: "center",
             position: "absolute",
-            bottom: 50,
+            bottom: 20,
         },
-        navButton: {},
+        navButton: {
+            padding: 10,
+        },
         navButtonIcon: {
             fontSize: 40,
             color: theme.text,
