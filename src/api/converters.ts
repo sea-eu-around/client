@@ -51,6 +51,6 @@ export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>):
 export function convertDtoToUser(dto: ResponseUserDto): User {
     return {
         ...dto,
-        profile: convertDtoToProfile(dto.profile),
+        profile: dto.profile ? convertDtoToProfile(dto.profile) : undefined,
     };
 }

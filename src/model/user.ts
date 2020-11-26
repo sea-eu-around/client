@@ -8,5 +8,5 @@ export type User = {
     onboarded: boolean;
     // Only available in debug mode on the staging server
     verificationToken?: string;
-    profile: UserProfile;
+    profile?: UserProfile; // profile is undefined if the user hasn't been through on-boarding yet
 };
