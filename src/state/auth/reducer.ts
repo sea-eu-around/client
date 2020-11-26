@@ -11,7 +11,24 @@ import {
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
+    PROFILE_ACTION_TYPES,
+    OnboardingState,
 } from "../types";
+
+const initialOnboardingState = (): OnboardingState => ({
+    firstname: "",
+    lastname: "",
+    birthdate: null,
+    gender: null,
+    nationality: null,
+    role: null,
+    degree: null,
+    staffRole: null,
+    languages: [],
+    offerValues: {},
+    interestIds: [],
+    educationFields: [],
+});
 
 export const initialState: AuthState = {
     authenticated: false,
@@ -24,20 +41,7 @@ export const initialState: AuthState = {
     validatedEmail: null,
     loginErrors: [],
     onboarded: false,
-    onboarding: {
-        firstname: "",
-        lastname: "",
-        birthdate: null,
-        gender: null,
-        nationality: null,
-        role: null,
-        degree: null,
-        staffRole: null,
-        languages: [],
-        offerValues: {},
-        interestIds: [],
-        educationFields: [],
-    },
+    onboarding: initialOnboardingState(),
 };
 
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
@@ -108,7 +112,14 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
-            return {...state, token: null, authenticated: false};
+            return {
+                ...state,
+                token: null,
+                authenticated: false,
+                validated: false,
+                validatedEmail: null,
+                onboarded: false,
+            };
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
             const {values} = <SetOnboardingValuesAction>action;
@@ -126,6 +137,9 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
                     },
                 },
             };
+        }
+        case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
+            return {...state, onboarded: true, onboarding: initialOnboardingState()};
         }
         default:
             return state;

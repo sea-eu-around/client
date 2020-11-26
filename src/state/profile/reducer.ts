@@ -9,6 +9,7 @@ import {
     SetProfileFieldsSuccessAction,
     FetchUserSuccessAction,
     SetAvatarSuccessAction,
+    AUTH_ACTION_TYPES,
 } from "../types";
 
 export const initialState: ProfileState = {
@@ -46,6 +47,9 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
             const {avatarUrl} = <SetAvatarSuccessAction>action;
             if (state.user === null) return {...state};
             else return {...state, user: {...state.user, profile: {...state.user.profile, avatarUrl}}};
+        }
+        case AUTH_ACTION_TYPES.LOG_OUT: {
+            return {...state, user: null};
         }
         default:
             return state;

@@ -11,6 +11,7 @@ import {
     LikeProfileSuccessAction,
     MatchingFiltersState,
     FetchMyMatchesSuccessAction,
+    AUTH_ACTION_TYPES,
 } from "../types";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
@@ -108,6 +109,18 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {
                 ...state,
                 fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+            };
+        }
+        case AUTH_ACTION_TYPES.LOG_OUT: {
+            return {
+                ...state,
+                filters: defaultMatchingFilters(),
+                fetchedProfiles: [],
+                fetchingProfiles: false,
+                fetchingPage: 1,
+                canFetchMore: true,
+                myMatches: [],
+                fetchingMyMatches: false,
             };
         }
         default:
