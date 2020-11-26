@@ -3,7 +3,7 @@ import "dotenv/config";
 const TARGET = process.env.TARGET || "STAGING";
 
 const VERSION = "0.0.1";
-const ANDROID_VERSION_CODE = 3;
+const ANDROID_VERSION_CODE = 5;
 
 const CLIENT_HTTP = "https";
 
