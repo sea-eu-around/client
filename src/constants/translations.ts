@@ -650,6 +650,13 @@ export default {
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
+        // Reset password
+        resetPassword: {
+            instructions: "To choose a new password, click the link in the email we just sent you.",
+            title: "Please choose a new password",
+            button: "Send",
+            success: ["Your password has been updated! You may now ", "log in"],
+        },
         // Messaging tab
         messaging: {
             tabIndividual: "Matches",
@@ -701,10 +708,12 @@ export default {
             TabProfileScreen: "Profile",
             ValidationEmailSentScreen: "Validate your account",
             ValidateEmailScreen: "Validate your account",
-            ChangePasswordScreen: "Reset your password",
+            ResetPasswordScreen: "Reset your password",
+            ResetPasswordSuccessScreen: "Password reset",
             OnboardingSuccessfulScreen: "Successful registration",
             NotFoundScreen: "Not Found",
             MatchSuccessScreen: "Match!",
+            ForgotPasswordEmailSentScreen: "Forgot password",
         },
     },
     fr: {
