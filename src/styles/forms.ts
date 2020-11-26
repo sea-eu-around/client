@@ -4,44 +4,46 @@ import {FormTextInputProps} from "../components/FormTextInput";
 import {FormCheckBoxProps} from "../components/FormCheckBox";
 import {preTheme} from "./utils";
 
-export const formStyle = StyleSheet.create({
-    inputErrorText: {
-        fontSize: 12,
-        marginTop: 2,
-        marginBottom: -12, // prevents an offset from appearing when there is an error
-    },
-    inputRow: {
-        flexDirection: "row",
-        justifyContent: "center",
-        width: "100%",
-    },
-    actionRow: {
-        flexDirection: "row",
-        justifyContent: "center",
-        width: "100%",
-        marginTop: 25,
-    },
-    buttonMajor: {
-        justifyContent: "center",
-        height: 60,
-        borderRadius: 5,
-
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
+export const formStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        inputErrorText: {
+            fontSize: 12,
+            marginTop: 2,
+            marginBottom: -12, // prevents an offset from appearing when there is an error
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    buttonMajorText: {
-        color: "white",
-        textAlign: "center",
-        fontSize: 16,
-        letterSpacing: 1,
-        textTransform: "uppercase",
-    },
+        inputRow: {
+            flexDirection: "row",
+            justifyContent: "center",
+            width: "100%",
+        },
+        actionRow: {
+            flexDirection: "row",
+            justifyContent: "center",
+            width: "100%",
+            marginTop: 25,
+        },
+        buttonMajor: {
+            justifyContent: "center",
+            height: 55,
+            borderRadius: 5,
+
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        },
+        buttonMajorText: {
+            color: "white",
+            textAlign: "center",
+            fontSize: 16,
+            letterSpacing: 1,
+            textTransform: "uppercase",
+        },
+    });
 });
 
 export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin = 0): Partial<FormTextInputProps> {

@@ -8,7 +8,7 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
 import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
@@ -70,6 +70,7 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
         const remoteErrors = this.state.errors;
 
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <Formik
@@ -115,15 +116,15 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                                 {...textInputProps}
                             />
 
-                            <View style={formStyle.actionRow}>
+                            <View style={fstyles.actionRow}>
                                 <TouchableOpacity
                                     accessibilityRole="button"
                                     accessibilityLabel={i18n.t("login")}
                                     onPress={() => handleSubmit()}
-                                    style={[styles.loginButton]}
+                                    style={[fstyles.buttonMajor, styles.loginButton]}
                                     disabled={connecting}
                                 >
-                                    {!connecting && <Text style={formStyle.buttonMajorText}>{i18n.t("login")}</Text>}
+                                    {!connecting && <Text style={fstyles.buttonMajorText}>{i18n.t("login")}</Text>}
                                     {connecting && <ActivityIndicator size="large" color={theme.accentSecondary} />}
                                 </TouchableOpacity>
                             </View>
@@ -149,7 +150,6 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         loginButton: {
-            ...formStyle.buttonMajor,
             width: "60%",
             backgroundColor: theme.accent,
         },

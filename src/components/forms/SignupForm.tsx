@@ -6,7 +6,7 @@ import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {MyThunkDispatch} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 import {withTheme} from "react-native-elements";
@@ -71,6 +71,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <React.Fragment>
@@ -123,14 +124,14 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
                                     {...textInputProps}
                                 />
 
-                                <View style={formStyle.actionRow}>
+                                <View style={fstyles.actionRow}>
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("createAccount")}
                                         onPress={() => handleSubmit()}
-                                        style={styles.createAccountButton}
+                                        style={[fstyles.buttonMajor, styles.createAccountButton]}
                                     >
-                                        <Text style={formStyle.buttonMajorText}>{i18n.t("createAccount")}</Text>
+                                        <Text style={fstyles.buttonMajorText}>{i18n.t("createAccount")}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </React.Fragment>
@@ -164,7 +165,6 @@ const themedStyles = preTheme((theme: Theme) => {
             marginLeft: 5,
         },
         createAccountButton: {
-            ...formStyle.buttonMajor,
             width: "60%",
             backgroundColor: theme.accent,
         },

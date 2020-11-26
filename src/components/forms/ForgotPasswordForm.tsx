@@ -4,8 +4,8 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
-import {StackScreenProps} from "@react-navigation/stack";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {VALIDATOR_EMAIL_LOGIN} from "../../validators";
@@ -25,7 +25,9 @@ const ForgotPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-export type ForgotPasswordFormProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPassword">;
+export type ForgotPasswordFormProps = ThemeProps & {
+    navigation: StackNavigationProp<TabLoginSigninScreens, "ForgotPassword">;
+};
 
 class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
     // Form submission handler
@@ -36,6 +38,7 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
     render(): JSX.Element {
         const {theme, navigation} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <React.Fragment>
@@ -66,22 +69,22 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
                                     {...textInputProps}
                                 />
 
-                                <View style={formStyle.actionRow}>
+                                <View style={fstyles.actionRow}>
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("cancel")}
                                         onPress={() => navigation.goBack()}
-                                        style={[formStyle.buttonMajor, styles.buttonCancel]}
+                                        style={[fstyles.buttonMajor, styles.buttonCancel]}
                                     >
-                                        <Text style={formStyle.buttonMajorText}>{i18n.t("cancel")}</Text>
+                                        <Text style={fstyles.buttonMajorText}>{i18n.t("cancel")}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("send")}
                                         onPress={() => handleSubmit()}
-                                        style={[formStyle.buttonMajor, styles.buttonSend]}
+                                        style={[fstyles.buttonMajor, styles.buttonSend]}
                                     >
-                                        <Text style={formStyle.buttonMajorText}>{i18n.t("send")}</Text>
+                                        <Text style={fstyles.buttonMajorText}>{i18n.t("send")}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </React.Fragment>

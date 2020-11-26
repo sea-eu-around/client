@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
@@ -63,6 +63,7 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <React.Fragment>
@@ -104,14 +105,14 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     {...textInputProps}
                                 />
 
-                                <View style={formStyle.actionRow}>
+                                <View style={fstyles.actionRow}>
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("createAccount")}
                                         onPress={() => handleSubmit()}
-                                        style={styles.button}
+                                        style={[fstyles.buttonMajor, styles.button]}
                                     >
-                                        <Text style={formStyle.buttonMajorText}>{i18n.t("resetPassword.button")}</Text>
+                                        <Text style={fstyles.buttonMajorText}>{i18n.t("resetPassword.button")}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </React.Fragment>
@@ -136,7 +137,6 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         button: {
-            ...formStyle.buttonMajor,
             width: "60%",
             backgroundColor: theme.accent,
         },
