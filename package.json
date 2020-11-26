@@ -1,17 +1,19 @@
 {
   "main": "node_modules/expo/AppEntry.js",
-  "homepage": "https://sea-eu-around.lad-dev.team",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
+    "build-android": "set \"TARGET=PRODUCTION\" && expo build:android -t apk",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "deploy-web:staging": "gh-pages -d web-build",
+    "deploy-web:prod": "gh-pages -d web-build -r https://github.com/sea-eu-around/web-app.git -b main",
+    "predeploy-web:prod": "node deploy-tools/web/gh-pages/pre-deploy.mjs --production",
+    "predeploy-web:staging": "node deploy-tools/web/gh-pages/pre-deploy.mjs --staging",
     "eject": "expo eject",
     "test": "jest --watchAll",
     "lint": "eslint src/**/*.{ts,js,tsx}",
-    "lint:fix": "eslint src/**/*.{ts,js,tsx} --fix",
-    "deploy-web": "gh-pages -d web-build",
-    "predeploy-web": "node deploy-tools/web/gh-pages/pre-deploy.mjs"
+    "lint:fix": "eslint src/**/*.{ts,js,tsx} --fix"
   },
   "jest": {
     "preset": "jest-expo"

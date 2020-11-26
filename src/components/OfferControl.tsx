@@ -54,6 +54,7 @@ class OfferControl extends React.Component<OfferControlProps> {
                     <CheckBox
                         checked={isSomethingSelected}
                         onPress={() => this.setAllValues(!isSomethingSelected)}
+                        containerStyle={styles.checkboxContainer}
                     ></CheckBox>
                     <TouchableOpacity onPress={() => this.setAllValues(!isSomethingSelected)}>
                         <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
@@ -118,6 +119,10 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         buttonsWrapper: {
             width: "100%",
+        },
+        checkboxContainer: {
+            padding: 0,
+            margin: 0,
         },
     });
 });

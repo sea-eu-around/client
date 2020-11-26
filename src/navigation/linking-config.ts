@@ -1,14 +1,9 @@
 import {LinkingOptions} from "@react-navigation/native";
-//import * as Linking from "expo-linking";
+import * as Linking from "expo-linking";
+import {APP_SCHEME, CLIENT_URL} from "../constants/config";
 
 const config: LinkingOptions = {
-    prefixes: [
-        //Linking.makeUrl("/"),
-        //"https://sea-eu-around.com",
-        //"https://sea-eu-around.lad-dev.team",
-        //"https://ladislas14.github.io/",
-        "sea-eu-around://",
-    ],
+    prefixes: [Linking.makeUrl("/"), CLIENT_URL, `${APP_SCHEME}://`],
     config: {
         screens: {
             LoginScreen: {
@@ -22,6 +17,7 @@ const config: LinkingOptions = {
                     TabSignup: "signup",
                 },
             },
+            ForgotPasswordEmailSentScreen: "password-email-sent",
             ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
@@ -56,7 +52,8 @@ const config: LinkingOptions = {
             },
             ValidateEmailSentScreen: "validate/success",
             ValidateEmailScreen: "validate/:token",
-            ChangePassword: "reset-password",
+            ResetPasswordScreen: "reset-password/:token",
+            ResetPasswordSuccessScreen: "password-reset",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",
@@ -64,8 +61,7 @@ const config: LinkingOptions = {
                     OnboardingLanguageScreen: "onboarding/language",
                     OnboardingInterestsScreen: "onboarding/interests",
                     OnboardingRoleScreen: "onboarding/role/1",
-                    OnboardingRoleSpecificScreen1: "onboarding/role/2",
-                    OnboardingRoleSpecificScreen2: "onboarding/role/3",
+                    OnboardingRoleSpecificScreen: "onboarding/role/2",
                     OnboardingOffersScreen1: "onboarding/offers/1",
                     OnboardingOffersScreen2: "onboarding/offers/2",
                     OnboardingOffersScreen3: "onboarding/offers/3",

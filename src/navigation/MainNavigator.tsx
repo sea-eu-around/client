@@ -22,6 +22,7 @@ import {Text} from "react-native";
 import {LabelPosition} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
 import {ThemeProps} from "../types";
 import TabHomeScreen from "../screens/TabHomeScreen";
+import {screenTitle} from "./utils";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -30,7 +31,15 @@ export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScre
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
     return (
-        <TabNavigator.Navigator initialRouteName="TabHome" tabBarOptions={{activeTintColor: theme.tint}}>
+        <TabNavigator.Navigator
+            initialRouteName="TabHome"
+            tabBarOptions={{
+                activeTintColor: theme.tint,
+                style: {height: 55, paddingTop: 5, paddingBottom: 5},
+                tabStyle: {flexDirection: "column"},
+                iconStyle: {flex: 1},
+            }}
+        >
             <TabNavigator.Screen
                 name="TabHome"
                 component={TabHomeNavigator}
@@ -92,18 +101,22 @@ type TabBarLabelProps = {
 
 // TODO move
 function TabBarIcon({name, color}: {name: string} & TabBarIconProps): JSX.Element {
-    return <MaterialIcons size={26} style={{marginTop: 3}} name={name} color={color} />;
+    return <MaterialIcons size={26} name={name} color={color} />;
 }
 
 function TabBarLabel({text, color}: {text: string} & TabBarLabelProps): JSX.Element {
-    return <Text style={{color: color, fontSize: 11, marginBottom: 3}}>{text}</Text>;
+    return <Text style={{color, fontSize: 12}}>{text}</Text>;
 }
 
 const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
 const TabHomeNavigator = (): JSX.Element => (
     <TabHomeStack.Navigator>
-        <TabHomeStack.Screen name="TabHomeScreen" component={TabHomeScreen} options={{headerShown: false}} />
+        <TabHomeStack.Screen
+            name="TabHomeScreen"
+            component={TabHomeScreen}
+            options={{headerShown: false, title: screenTitle("TabHomeScreen")}}
+        />
     </TabHomeStack.Navigator>
 );
 
@@ -126,6 +139,7 @@ const TabMatchingNavigator = withTheme(
                     headerTitleAlign: "left",
                     // eslint-disable-next-line react/display-name
                     headerRight: () => <MatchingHeaderRight navigation={navigation} />,
+                    title: screenTitle("TabMatchingScreen"),
                 })}
             />
             <TabMatchingStack.Screen
@@ -137,6 +151,7 @@ const TabMatchingNavigator = withTheme(
                     headerTitleAlign: "center",
                     headerLeft: (props: StackHeaderLeftButtonProps) => <FilteringHeaderLeft {...props} />,
                     headerRight: () => <FilteringHeaderRight />,
+                    title: screenTitle("MatchFilteringScreen"),
                 }}
             />
         </TabMatchingStack.Navigator>
@@ -150,7 +165,7 @@ const TabNotificationsNavigator = (): JSX.Element => (
         <TabNotificationsStack.Screen
             name="TabNotificationsScreen"
             component={TabNotImplementedScreen}
-            options={{headerShown: false}}
+            options={{headerShown: false, title: screenTitle("TabNotificationsScreen")}}
         />
     </TabNotificationsStack.Navigator>
 );
@@ -159,7 +174,11 @@ const TabProfileStack = createStackNavigator<TabProfileRoot>();
 
 const TabProfileNavigator = (): JSX.Element => (
     <TabProfileStack.Navigator>
-        <TabProfileStack.Screen name="TabProfileScreen" component={TabProfileScreen} options={{headerShown: false}} />
+        <TabProfileStack.Screen
+            name="TabProfileScreen"
+            component={TabProfileScreen}
+            options={{headerShown: false, title: screenTitle("TabProfileScreen")}}
+        />
     </TabProfileStack.Navigator>
 );
 

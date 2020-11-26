@@ -1,5 +1,5 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
-import {attemptRedirectToApp, rootNavigate} from "../navigation/utils";
+import {rootNavigate} from "../navigation/utils";
 import {
     AppState,
     AUTH_ACTION_TYPES,
@@ -30,8 +30,17 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             break;
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
-            attemptRedirectToApp("login", "TabSignin");
+            // Let the user click
+            // attemptRedirectToApp("login", "TabSignin");
             break;
+        }
+        case AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS: {
+            rootNavigate("ForgotPasswordEmailSentScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS: {
+            rootNavigate("ResetPasswordSuccessScreen");
+            return;
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
             const {matchStatus} = action as LikeProfileSuccessAction;

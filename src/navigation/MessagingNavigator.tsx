@@ -7,6 +7,7 @@ import IndividualMessagingTab from "../screens/messaging/IndividualMessagingTab"
 import GroupMessagingTab from "../screens/messaging/GroupMessagingTab";
 import i18n from "i18n-js";
 import {TabMessagingRoot, TabMessagingTabs} from "./types";
+import {screenTitle} from "./utils";
 
 const Stack = createStackNavigator<TabMessagingRoot>();
 const Tab = createMaterialTopTabNavigator<TabMessagingTabs>();
@@ -14,19 +15,25 @@ const Tab = createMaterialTopTabNavigator<TabMessagingTabs>();
 export default function MessagingNavigator(): JSX.Element {
     const insets = useSafeAreaInsets();
     return (
-        <Stack.Navigator initialRouteName="MessagingScreen" headerMode="none">
+        <Stack.Navigator headerMode="none">
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
             <Stack.Screen name="MessagingScreen">
                 {() => (
                     <Tab.Navigator tabBarOptions={{style: {paddingTop: insets.top}}}>
                         <Tab.Screen
                             name="IndividualMessagingTab"
-                            options={{tabBarLabel: i18n.t("messaging.tabIndividual")}}
+                            options={{
+                                tabBarLabel: i18n.t("messaging.tabIndividual"),
+                                title: screenTitle("IndividualMessagingTab"),
+                            }}
                             component={IndividualMessagingTab}
                         />
                         <Tab.Screen
                             name="GroupMessagingTab"
-                            options={{tabBarLabel: i18n.t("messaging.tabGroup")}}
+                            options={{
+                                tabBarLabel: i18n.t("messaging.tabGroup"),
+                                title: screenTitle("GroupMessagingTab"),
+                            }}
                             component={GroupMessagingTab}
                         />
                     </Tab.Navigator>

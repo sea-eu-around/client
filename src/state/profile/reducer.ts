@@ -9,6 +9,7 @@ import {
     SetProfileFieldsSuccessAction,
     FetchUserSuccessAction,
     SetAvatarSuccessAction,
+    AUTH_ACTION_TYPES,
 } from "../types";
 
 export const initialState: ProfileState = {
@@ -24,7 +25,10 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
             if (state.user) {
                 const {fields} = <SetProfileFieldsSuccessAction>action;
                 if (fields.profileOffers) fields.profileOffers = stripSuperfluousOffers(fields.profileOffers);
-                return {...state, user: {...state.user, profile: {...state.user.profile, ...fields}}};
+                return {
+                    ...state,
+                    user: {...state.user, profile: state.user.profile ? {...state.user.profile, ...fields} : undefined},
+                };
             } else return {...state};
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
@@ -45,7 +49,15 @@ export const profileReducer = (state: ProfileState = initialState, action: Profi
         case PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS: {
             const {avatarUrl} = <SetAvatarSuccessAction>action;
             if (state.user === null) return {...state};
-            else return {...state, user: {...state.user, profile: {...state.user.profile, avatarUrl}}};
+            else {
+                return {
+                    ...state,
+                    user: {...state.user, profile: state.user.profile ? {...state.user.profile, avatarUrl} : undefined},
+                };
+            }
+        }
+        case AUTH_ACTION_TYPES.LOG_OUT: {
+            return {...state, user: null};
         }
         default:
             return state;

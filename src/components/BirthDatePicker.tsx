@@ -16,6 +16,9 @@ export type BirthDatePickerState = {
     open: boolean;
 };
 
+const maxDate = new Date(Date.now());
+maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
+
 class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePickerState> {
     constructor(props: BirthDatePickerProps) {
         super(props);
@@ -48,9 +51,6 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps, BirthDatePic
     render(): JSX.Element {
         const {date} = this.props;
         const {open} = this.state;
-
-        const maxDate = new Date(Date.now());
-        maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
 
         return (
             <>

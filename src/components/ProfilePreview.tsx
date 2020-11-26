@@ -24,7 +24,7 @@ import store from "../state/store";
 import FormattedUniversity from "./FormattedUniversity";
 import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
-import {styleTextThin} from "../styles/general";
+import {styleTextLight, styleTextThin} from "../styles/general";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
@@ -404,7 +404,7 @@ const themedStyles = preTheme((theme: Theme) => {
             overflow: "hidden",
         },
         expandedSectionTitle: {
-            fontFamily: "sans-serif-light",
+            ...styleTextLight,
             fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: 1,

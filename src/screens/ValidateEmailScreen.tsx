@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, View, StyleSheet, Platform, ActivityIndicator} from "react-native";
+import {Text, View, StyleSheet, ActivityIndicator} from "react-native";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {requestValidateAccount} from "../state/auth/actions";
@@ -13,11 +13,9 @@ import store from "../state/store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     validated: state.auth.validated,
-    registerEmail: state.auth.registerEmail,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 type ValidateEmailScreenProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
@@ -25,26 +23,17 @@ type ValidateEmailScreenProps = ConnectedProps<typeof reduxConnector> &
 
 class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
     componentDidMount() {
+        const dispatch = this.props.dispatch as MyThunkDispatch;
+
         // In DEBUG_MODE / staging environment, attempt to use a verification token sent by the server
         const verificationToken = store.getState().auth.verificationToken;
         if (DEBUG_MODE && ENVIRONMENT == Environment.Staging && verificationToken) {
-            (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(verificationToken));
-        } else if (Platform.OS == "web") {
-            const route = this.props.route;
-            // Get the URL
-            /*Linking.parseInitialURLAsync().then((parsed: ParsedURL) => {
-                console.log("Parsed URL : " + JSON.stringify(parsed));
-                // Extract the validation token out of the URL
-                const verifToken = parsed.queryParams ? parsed.queryParams["t"] : undefined;
-                if (verifToken) (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(verifToken));
-            });*/
-
-            // Extract the validation token out of the URL
-            if (route.params) {
-                const params = route.params as {[key: string]: string};
-                const {token} = params;
-                if (token) (this.props.dispatch as MyThunkDispatch)(requestValidateAccount(token));
-            }
+            dispatch(requestValidateAccount(verificationToken));
+        } else if (this.props.route.params) {
+            // Attempt to extract a validation token out of the URL
+            const params = this.props.route.params as {[key: string]: string};
+            const {token} = params;
+            if (token) dispatch(requestValidateAccount(token));
         }
     }
 

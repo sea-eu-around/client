@@ -10,6 +10,7 @@ import {SupportedLocale} from "../localization";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
+import {styleTextLight} from "../styles/general";
 
 type PickerItem = {
     id: string;
@@ -231,8 +232,7 @@ const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
         },
         selectedItem: {backgroundColor: theme.background},
         itemText: {
-            fontFamily: "sans-serif-light",
-            fontWeight: "normal",
+            ...styleTextLight,
             letterSpacing: 1.5,
             fontSize: 14,
             lineHeight: 18,

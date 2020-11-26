@@ -53,9 +53,10 @@ export const loadProfileOffers = (): AppThunk => async (dispatch) => {
 
     if (fromCache) {
         // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
-        requestBackend("offers", "GET", {updatedAt: fromCache.updatedAt}).then((response) => {
+        requestBackend("offers", "GET", {updatedAt: fromCache.updatedAt}, {}).then((response) => {
             const offers = response.data as OfferDto[];
-            if (response.success) dispatch(loadProfileOffersSuccess(offers.length == 0 ? fromCache.data : offers));
+            const cached = offers.length == 0;
+            if (response.success) dispatch(loadProfileOffersSuccess(cached ? fromCache.data : offers, cached));
         });
     } else {
         const response = await requestBackend("offers", "GET");
@@ -63,9 +64,10 @@ export const loadProfileOffers = (): AppThunk => async (dispatch) => {
     }
 };
 
-export const loadProfileOffersSuccess = (offers: OfferDto[]): LoadProfileOffersSuccessAction => ({
+export const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadProfileOffersSuccessAction => ({
     type: PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS,
     offers,
+    fromCache,
 });
 
 export const loadProfileInterests = (): AppThunk => async (dispatch) => {
@@ -73,10 +75,10 @@ export const loadProfileInterests = (): AppThunk => async (dispatch) => {
 
     if (fromCache) {
         // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
-        requestBackend("interests", "GET", {updatedAt: fromCache.updatedAt}).then((response) => {
+        requestBackend("interests", "GET", {updatedAt: fromCache.updatedAt}, {}).then((response) => {
             const interests = response.data as InterestDto[];
-            if (response.success)
-                dispatch(loadProfileInterestsSuccess(interests.length == 0 ? fromCache.data : interests));
+            const cached = interests.length == 0;
+            if (response.success) dispatch(loadProfileInterestsSuccess(cached ? fromCache.data : interests, cached));
         });
     } else {
         const response = await requestBackend("interests", "GET");
@@ -84,9 +86,13 @@ export const loadProfileInterests = (): AppThunk => async (dispatch) => {
     }
 };
 
-export const loadProfileInterestsSuccess = (interests: InterestDto[]): LoadProfileInterestsSuccessAction => ({
+export const loadProfileInterestsSuccess = (
+    interests: InterestDto[],
+    fromCache = false,
+): LoadProfileInterestsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.LOAD_PROFILE_INTERESTS_SUCCESS,
     interests,
+    fromCache,
 });
 
 export const fetchUser = (): AppThunk => async (dispatch) => {

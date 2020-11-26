@@ -10,10 +10,9 @@ import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {fetchUser, setProfileFields} from "../state/profile/actions";
 
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     user: state.profile.user,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 type TabProfileScreenProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
@@ -21,6 +20,11 @@ type TabProfileScreenProps = ConnectedProps<typeof reduxConnector> &
 
 class TabProfileScreen extends React.Component<TabProfileScreenProps> {
     componentDidMount() {
+        this.props.navigation.addListener("focus", () => this.onFocus());
+        this.onFocus();
+    }
+
+    onFocus() {
         (this.props.dispatch as MyThunkDispatch)(fetchUser());
     }
 

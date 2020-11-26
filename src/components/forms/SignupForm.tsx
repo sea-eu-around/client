@@ -4,14 +4,14 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
-import {AppState, MyThunkDispatch} from "../../state/types";
-import {connect, ConnectedProps} from "react-redux";
+import {MyThunkDispatch} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
-import {FormProps, Theme, ThemeProps} from "../../types";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
+import store from "../../state/store";
 
 export type SignupFormState = {
     email: string;
@@ -32,32 +32,37 @@ const SignupFormSchema = Yup.object().shape({
     passwordRepeat: VALIDATOR_PASSWORD_REPEAT,
 });
 
-// Map props from the store
-const mapStateToProps = (state: AppState) => ({
-    registerFailure: state.auth.registerFailure,
-    registerErrors: state.auth.registerErrors,
-});
-const reduxConnector = connect(mapStateToProps);
-
 // Component props
-type SignupFormProps = FormProps<SignupFormState> & ConnectedProps<typeof reduxConnector> & ThemeProps;
+type SignupFormProps = FormProps<SignupFormState> & ThemeProps;
 
-class SignupForm extends React.Component<SignupFormProps> {
-    submit(values: SignupFormState) {
-        console.log("Signup form submitted", values);
-        (this.props.dispatch as MyThunkDispatch)(requestRegister(values.email, values.password));
-        if (this.props.onSuccessfulSubmit !== undefined) this.props.onSuccessfulSubmit(values);
+// Component state
+type SignupFormComponentState = {failure: boolean; errors?: string[]};
+
+class SignupForm extends React.Component<SignupFormProps, SignupFormComponentState> {
+    constructor(props: SignupFormProps) {
+        super(props);
+        this.state = {failure: false};
     }
 
-    componentDidUpdate(/*prevProps: SignupFormProps*/) {
-        if (this.props.registerFailure) {
+    submit(values: SignupFormState) {
+        (store.dispatch as MyThunkDispatch)(requestRegister(values.email, values.password)).then(
+            ({success, errors}: FailableActionReturn) => {
+                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                this.setState({...this.state, failure: !success, errors});
+            },
+        );
+    }
+
+    componentDidUpdate() {
+        const {failure, errors} = this.state;
+        if (failure) {
             /*const errorTexts = this.props.registerErrors.map((err: string, i: number) => (
                 <Text key={i} style={[formStyle.errorText, {color: this.props.theme.error}]}>
                     {err}
                 </Text>
             ));*/
 
-            Alert.alert("Unable to register", this.props.registerErrors[0], [
+            Alert.alert("Unable to register", errors && errors.length > 0 ? errors[0] : "", [
                 {text: "OK", onPress: () => console.log("OK Pressed")},
             ]);
         }
@@ -66,6 +71,7 @@ class SignupForm extends React.Component<SignupFormProps> {
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <React.Fragment>
@@ -118,14 +124,14 @@ class SignupForm extends React.Component<SignupFormProps> {
                                     {...textInputProps}
                                 />
 
-                                <View style={formStyle.actionRow}>
+                                <View style={fstyles.actionRow}>
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("createAccount")}
                                         onPress={() => handleSubmit()}
-                                        style={styles.createAccountButton}
+                                        style={[fstyles.buttonMajor, styles.createAccountButton]}
                                     >
-                                        <Text style={formStyle.buttonMajorText}>{i18n.t("createAccount")}</Text>
+                                        <Text style={fstyles.buttonMajorText}>{i18n.t("createAccount")}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </React.Fragment>
@@ -159,11 +165,10 @@ const themedStyles = preTheme((theme: Theme) => {
             marginLeft: 5,
         },
         createAccountButton: {
-            ...formStyle.buttonMajor,
             width: "60%",
             backgroundColor: theme.accent,
         },
     });
 });
 
-export default reduxConnector(withTheme(SignupForm));
+export default withTheme(SignupForm);

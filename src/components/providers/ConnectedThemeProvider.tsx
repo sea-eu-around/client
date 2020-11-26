@@ -8,7 +8,8 @@ import {ThemeProvider} from "react-native-elements";
 const reduxConnector = connect((state: AppState) => ({
     currentTheme: state.settings.theme,
 }));
-export type ConnectedThemeProviderProps = ConnectedProps<typeof reduxConnector>;
+
+export type ConnectedThemeProviderProps = React.PropsWithChildren<ConnectedProps<typeof reduxConnector>>;
 
 /**
  * This provider receives the current theme from the store and passes it down to all

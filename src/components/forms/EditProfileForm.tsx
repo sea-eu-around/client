@@ -53,8 +53,10 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         const {theme, user} = this.props;
         const styles = themedStyles(theme);
 
-        const avatarTitle = user ? (user.profile.firstName[0] + user.profile.lastName[0]).toUpperCase() : "";
-        const avatarSource = user && user.profile.avatarUrl ? {uri: user.profile.avatarUrl} : undefined;
+        const avatarTitle =
+            user && user.profile ? (user.profile.firstName[0] + user.profile.lastName[0]).toUpperCase() : "";
+        const avatarSource = user && user.profile && user.profile.avatarUrl ? {uri: user.profile.avatarUrl} : undefined;
+        const fullName = user && user.profile ? user.profile.firstName + " " + user.profile.lastName : "";
 
         /*const textInputStyleProps = {
             placeholderTextColor: "#222",
@@ -79,7 +81,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 
         let profileFieldComponents = <></>;
 
-        if (user) {
+        if (user && user.profile) {
             const profile = user.profile;
 
             profileFieldComponents = (
@@ -274,7 +276,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             />
                         )}
                     </EnlargeableAvatar>
-                    <Text style={styles.name}>{user ? user.profile.firstName + " " + user.profile.lastName : ""}</Text>
+                    <Text style={styles.name}>{fullName}</Text>
                     {user && (
                         <FormattedUniversity
                             containerStyle={styles.universityContainer}

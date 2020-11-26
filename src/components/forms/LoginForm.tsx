@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -8,10 +8,10 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
-import {formStyle, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
-import {FormProps, Theme, ThemeProps} from "../../types";
+import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {TabLoginSigninScreens} from "../../navigation/types";
@@ -28,19 +28,26 @@ const LoginFormSchema = Yup.object().shape({
 });
 
 // Map props from the store
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     connecting: state.auth.connecting,
-    remoteErrors: state.auth.loginErrors,
     validatedEmail: state.auth.validatedEmail,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 // Component props
 type LoginFormProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
     FormProps<LoginFormState> & {navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">};
 
-class LoginFormComponent extends React.Component<LoginFormProps> {
+type LoginFormComponentState = {
+    errors?: string[];
+};
+
+class LoginFormComponent extends React.Component<LoginFormProps, LoginFormComponentState> {
+    constructor(props: LoginFormProps) {
+        super(props);
+        this.state = {};
+    }
+
     setFieldValue: null | ((field: string, value: string, shouldValidate?: boolean | undefined) => void) = null;
 
     componentDidUpdate(oldProps: LoginFormProps) {
@@ -50,15 +57,20 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
     }
 
     submit(values: LoginFormState) {
-        console.log("Login form submitted", values);
-        (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password));
-        if (this.props.onSuccessfulSubmit !== undefined) this.props.onSuccessfulSubmit(values);
+        (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password)).then(
+            ({success, errors}: FailableActionReturn) => {
+                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                this.setState({...this.state, errors});
+            },
+        );
     }
 
     render(): JSX.Element {
-        const {theme, navigation, connecting, remoteErrors} = this.props;
+        const {theme, navigation, connecting} = this.props;
+        const remoteErrors = this.state.errors;
 
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <Formik
@@ -104,29 +116,25 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
                                 {...textInputProps}
                             />
 
-                            <View style={formStyle.actionRow}>
+                            <View style={fstyles.actionRow}>
                                 <TouchableOpacity
                                     accessibilityRole="button"
                                     accessibilityLabel={i18n.t("login")}
                                     onPress={() => handleSubmit()}
-                                    style={[styles.loginButton]}
+                                    style={[fstyles.buttonMajor, styles.loginButton]}
                                     disabled={connecting}
                                 >
-                                    {!connecting && <Text style={formStyle.buttonMajorText}>{i18n.t("login")}</Text>}
+                                    {!connecting && <Text style={fstyles.buttonMajorText}>{i18n.t("login")}</Text>}
                                     {connecting && <ActivityIndicator size="large" color={theme.accentSecondary} />}
                                 </TouchableOpacity>
                             </View>
 
-                            <FormError error={remoteErrors.length > 0 ? remoteErrors[0] : ""} />
+                            <FormError error={remoteErrors && remoteErrors.length > 0 ? remoteErrors[0] : ""} />
 
                             <TouchableOpacity
                                 accessibilityRole="link"
                                 accessibilityLabel={i18n.t("forgotPassword")}
-                                onPress={() => {
-                                    // TODO re-enable forgot password
-                                    // navigation.navigate("ForgotPassword");
-                                    Alert.alert("Temporarily disabled.");
-                                }}
+                                onPress={() => navigation.navigate("ForgotPassword")}
                                 style={styles.forgotPwdLink}
                             >
                                 <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
@@ -142,7 +150,6 @@ class LoginFormComponent extends React.Component<LoginFormProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         loginButton: {
-            ...formStyle.buttonMajor,
             width: "60%",
             backgroundColor: theme.accent,
         },

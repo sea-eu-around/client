@@ -626,29 +626,36 @@ export default {
             },
             "look-for-collaborators": {
                 name: "Look for collaborators",
-                help: "",
+                help: "I am looking for collaborators for a project.",
             },
             "answer-questions": {
                 name: "Answer questions",
-                help: "",
+                help: "I can give information about my university or answer to general questions.",
             },
             "talk-a-bit": {
                 name: "Talk a bit",
-                help: "",
+                help: "I would like to get to know new people.",
             },
             "chat-to-practice": {
                 name: "Chat to practice",
-                help: "",
+                help: "I would not mind chatting with other users who would like to improve their language skills",
             },
             "language-tandem": {
                 name: "Language tandem",
-                help: "",
+                help: "I am willing to join a language tandem to help others learn one of my languages.",
             },
         },
         block: {
             warning:
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
+        },
+        // Reset password
+        resetPassword: {
+            instructions: "To choose a new password, click the link in the email we just sent you.",
+            title: "Please choose a new password",
+            button: "Send",
+            success: ["Your password has been updated! You may now ", "log in"],
         },
         // Messaging tab
         messaging: {
@@ -675,6 +682,38 @@ export default {
         // Profile tab
         profile: {
             noOffersSelected: "No offers selected.",
+        },
+        screenTitles: {
+            suffix: " - SEA-EU Around",
+            LoginForm: "Login",
+            ForgotPassword: "Forgot Password",
+            TabSignup: "Sign up",
+            OnboardingNameScreen: "Welcome",
+            OnboardingPersonalInfoScreen: "Profile",
+            OnboardingLanguageScreen: "Profile",
+            OnboardingInterestsScreen: "Profile",
+            OnboardingRoleScreen: "Profile",
+            OnboardingRoleSpecificScreen: "Profile",
+            OnboardingOffersScreen1: "Discover",
+            OnboardingOffersScreen2: "Collaborate",
+            OnboardingOffersScreen3: "Meet",
+            OnboardingTosScreen: "Terms of Service",
+            OnboardingPrivacyScreen: "Privacy Policy",
+            IndividualMessagingTab: "Messages",
+            GroupMessagingTab: "Groups",
+            TabHomeScreen: "Home",
+            TabMatchingScreen: "Browse",
+            MatchFilteringScreen: "Filters",
+            TabNotificationsScreen: "Notifications",
+            TabProfileScreen: "Profile",
+            ValidationEmailSentScreen: "Validate your account",
+            ValidateEmailScreen: "Validate your account",
+            ResetPasswordScreen: "Reset your password",
+            ResetPasswordSuccessScreen: "Password reset",
+            OnboardingSuccessfulScreen: "Successful registration",
+            NotFoundScreen: "Not Found",
+            MatchSuccessScreen: "Match!",
+            ForgotPasswordEmailSentScreen: "Forgot password",
         },
     },
     fr: {

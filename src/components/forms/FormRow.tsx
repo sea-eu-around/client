@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} from "react-native";
-import {formStyle} from "../../styles/forms";
+import {formStyles} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Schema, ValidationError} from "yup";
@@ -86,6 +86,7 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
         const {value, error} = this.state;
 
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <TouchableOpacity style={styles.modalTouchable} onPress={() => this.setModal(false)} activeOpacity={1}>
@@ -93,22 +94,22 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
                     <Text style={styles.modalLabel}>{label}</Text>
                     {renderInput ? renderInput(value, error, (value: T) => this.onChange(value)) : <></>}
                     <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
-                    <View style={styles.modalActions}>
+                    <View style={[fstyles.actionRow, styles.modalActions]}>
                         <TouchableOpacity
                             accessibilityRole="button"
                             accessibilityLabel="CANCEL"
                             onPress={() => this.setModal(false)}
-                            style={styles.modalCancel}
+                            style={[fstyles.buttonMajor, styles.modalCancel]}
                         >
-                            <Text style={styles.modalActionText}>{i18n.t("cancel")}</Text>
+                            <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("cancel")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessibilityRole="button"
                             accessibilityLabel="OK"
                             onPress={() => this.apply()}
-                            style={styles.modalOk}
+                            style={[fstyles.buttonMajor, styles.modalOk]}
                         >
-                            <Text style={styles.modalActionText}>{i18n.t("apply")}</Text>
+                            <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("apply")}</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableOpacity>
@@ -196,26 +197,22 @@ const themedStyles = preTheme((theme: Theme) => {
             marginBottom: 12,
         },
         modalActions: {
-            ...formStyle.actionRow,
             height: 50,
             marginTop: 20,
         },
         modalCancel: {
-            ...formStyle.buttonMajor,
             flex: 1,
             backgroundColor: theme.actionNeutral,
             marginRight: 6,
             height: 50,
         },
         modalOk: {
-            ...formStyle.buttonMajor,
             flex: 1,
             backgroundColor: theme.accent,
             marginLeft: 6,
             height: 50,
         },
         modalActionText: {
-            ...formStyle.buttonMajorText,
             lineHeight: 50,
         },
         cardWrapper: {

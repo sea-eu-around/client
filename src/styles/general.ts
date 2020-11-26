@@ -1,11 +1,7 @@
 import {Platform, TextStyle} from "react-native";
 
-export const styleTextThin: TextStyle = {
-    fontFamily: Platform.OS == "web" ? undefined : "sans-serif-thin",
-    fontWeight: Platform.OS == "web" ? "100" : undefined,
-};
+export const styleTextThin: TextStyle =
+    Platform.OS == "android" ? {fontFamily: "sans-serif-thin"} : {fontWeight: "100"};
 
-export const styleTextLight: TextStyle = {
-    fontFamily: Platform.OS == "web" ? undefined : "sans-serif-light",
-    fontWeight: Platform.OS == "web" ? "200" : undefined,
-};
+export const styleTextLight: TextStyle =
+    Platform.OS == "android" ? {fontFamily: "sans-serif-light"} : {fontWeight: "200"};
