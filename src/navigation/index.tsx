@@ -15,7 +15,9 @@ import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
 import MatchSuccessScreen from "../screens/MatchSuccessScreen";
 import {Platform} from "react-native";
-import ChangePasswordScreen from "../screens/ChangePasswordScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
+import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
+import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -32,6 +34,11 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
             <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRoute}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} />
                 <Stack.Screen
+                    name="ForgotPasswordEmailSentScreen"
+                    component={ForgotPasswordEmailSentScreen}
+                    options={{title: screenTitle("ForgotPasswordEmailSentScreen")}}
+                />
+                <Stack.Screen
                     name="ValidationEmailSentScreen"
                     component={ValidationEmailSentScreen}
                     options={{title: screenTitle("ValidationEmailSentScreen")}}
@@ -42,9 +49,14 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{title: screenTitle("ValidateEmailScreen")}}
                 />
                 <Stack.Screen
-                    name="ChangePasswordScreen"
-                    component={ChangePasswordScreen}
-                    options={{title: screenTitle("ChangePasswordScreen")}}
+                    name="ResetPasswordScreen"
+                    component={ResetPasswordScreen}
+                    options={{title: screenTitle("ResetPasswordScreen")}}
+                />
+                <Stack.Screen
+                    name="ResetPasswordSuccessScreen"
+                    component={ResetPasswordSuccessScreen}
+                    options={{title: screenTitle("ResetPasswordSuccessScreen")}}
                 />
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />

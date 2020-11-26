@@ -17,6 +17,7 @@ const config: LinkingOptions = {
                     TabSignup: "signup",
                 },
             },
+            ForgotPasswordEmailSentScreen: "password-email-sent",
             ValidationEmailSentScreen: "validation-sent",
             MainScreen: {
                 screens: {
@@ -51,7 +52,8 @@ const config: LinkingOptions = {
             },
             ValidateEmailSentScreen: "validate/success",
             ValidateEmailScreen: "validate/:token",
-            ChangePassword: "reset-password",
+            ResetPasswordScreen: "reset-password/:token",
+            ResetPasswordSuccessScreen: "password-reset",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",

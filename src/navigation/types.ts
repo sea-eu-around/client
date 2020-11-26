@@ -3,9 +3,11 @@ import {ONBOARDING_SCREENS} from "../screens/onboarding";
 export type RootNavigatorScreens = {
     MainScreen: undefined;
     LoginScreen: undefined;
+    ForgotPasswordEmailSentScreen: undefined;
     ValidationEmailSentScreen: undefined;
     ValidateEmailScreen: undefined;
-    ChangePasswordScreen: undefined;
+    ResetPasswordScreen: undefined;
+    ResetPasswordSuccessScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
     MatchSuccessScreen: undefined;
