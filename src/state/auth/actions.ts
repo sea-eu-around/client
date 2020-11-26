@@ -154,7 +154,7 @@ export const debugConnect = (): AppThunk => async (dispatch) => {
             createProfile({
                 type: "student",
                 birthdate: "2002-11-12T07:21:22.110Z",
-                firstName: "Kevin410891",
+                firstName: "Kevin" + Math.round(1e3 * Math.random()),
                 lastName: "Test",
                 gender: "male",
                 languages: [
