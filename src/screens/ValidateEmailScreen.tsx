@@ -15,7 +15,6 @@ import {RootNavigatorScreens} from "../navigation/types";
 
 const reduxConnector = connect((state: AppState) => ({
     validated: state.auth.validated,
-    registerEmail: state.auth.registerEmail,
 }));
 
 type ValidateEmailScreenProps = ConnectedProps<typeof reduxConnector> &

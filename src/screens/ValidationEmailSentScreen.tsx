@@ -10,10 +10,9 @@ import {FontAwesome} from "@expo/vector-icons";
 import {DEBUG_MODE} from "../constants/config";
 
 // Map props from state
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     registerEmail: state.auth.registerEmail,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 type ValidationEmailSentScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps;
 
