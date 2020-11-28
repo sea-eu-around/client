@@ -102,6 +102,7 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                                 touched={touched.email}
                                 keyboardType="email-address"
                                 autoCompleteType="email"
+                                textContentType="emailAddress"
                                 {...textInputProps}
                             />
 
@@ -113,6 +114,7 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                                 touched={touched.password}
                                 secureTextEntry={true}
                                 autoCompleteType="password"
+                                textContentType="password"
                                 {...textInputProps}
                             />
 
