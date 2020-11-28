@@ -12,33 +12,35 @@ import {screenTitle} from "./utils";
 const Stack = createStackNavigator<TabMessagingRoot>();
 const Tab = createMaterialTopTabNavigator<TabMessagingTabs>();
 
-export default function MessagingNavigator(): JSX.Element {
+function MessagingTabsNavigator(): JSX.Element {
     const insets = useSafeAreaInsets();
     return (
-        <Stack.Navigator headerMode="none">
+        <Tab.Navigator tabBarOptions={{style: {paddingTop: insets.top}}} initialRouteName="IndividualMessagingTab">
+            <Tab.Screen
+                name="IndividualMessagingTab"
+                options={{
+                    tabBarLabel: i18n.t("messaging.tabIndividual"),
+                    title: screenTitle("IndividualMessagingTab"),
+                }}
+                component={IndividualMessagingTab}
+            />
+            <Tab.Screen
+                name="GroupMessagingTab"
+                options={{
+                    tabBarLabel: i18n.t("messaging.tabGroup"),
+                    title: screenTitle("GroupMessagingTab"),
+                }}
+                component={GroupMessagingTab}
+            />
+        </Tab.Navigator>
+    );
+}
+
+export default function MessagingNavigator(): JSX.Element {
+    return (
+        <Stack.Navigator headerMode="none" initialRouteName="MessagingScreen">
+            <Stack.Screen name="MessagingScreen" component={MessagingTabsNavigator} />
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
-            <Stack.Screen name="MessagingScreen">
-                {() => (
-                    <Tab.Navigator tabBarOptions={{style: {paddingTop: insets.top}}}>
-                        <Tab.Screen
-                            name="IndividualMessagingTab"
-                            options={{
-                                tabBarLabel: i18n.t("messaging.tabIndividual"),
-                                title: screenTitle("IndividualMessagingTab"),
-                            }}
-                            component={IndividualMessagingTab}
-                        />
-                        <Tab.Screen
-                            name="GroupMessagingTab"
-                            options={{
-                                tabBarLabel: i18n.t("messaging.tabGroup"),
-                                title: screenTitle("GroupMessagingTab"),
-                            }}
-                            component={GroupMessagingTab}
-                        />
-                    </Tab.Navigator>
-                )}
-            </Stack.Screen>
         </Stack.Navigator>
     );
 }
