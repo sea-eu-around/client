@@ -6,8 +6,7 @@ import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 
-const mapStateToProps = (state: AppState) => ({});
-const reduxConnector = connect(mapStateToProps);
+const reduxConnector = connect((state: AppState) => ({}));
 
 type GroupMessagingTabProps = ConnectedProps<typeof reduxConnector> & ThemeProps;
 

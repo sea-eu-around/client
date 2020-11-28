@@ -3,27 +3,19 @@ import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} 
 import {formStyles} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
-import {Schema, ValidationError} from "yup";
-import {Theme} from "../../types";
+import {ArraySchema, Schema, ValidationError} from "yup";
+import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
-import {AppState} from "../../state/types";
-import {connect, ConnectedProps} from "react-redux";
-import themes from "../../constants/themes";
-
-// Map props from the store
-const mapStateToProps = (state: AppState) => ({
-    theme: themes[state.settings.theme],
-});
-const reduxConnector = connect(mapStateToProps);
+import {ThemeConsumer} from "react-native-elements";
 
 // Component props
-type FormRowProps<T> = ConnectedProps<typeof reduxConnector> & {
+type FormRowProps<T> = {
     label: string;
     display?: JSX.Element;
     noModal?: boolean;
     overrideModal?: (hide: () => void) => JSX.Element;
     renderInput?: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
-    validator?: Schema<T>;
+    validator?: Schema<unknown> | ArraySchema<unknown>;
     initialValue: T;
     apply?: (value: T) => void;
     locked?: boolean;
@@ -36,7 +28,7 @@ type FormRowState<T> = {
     value: T;
 };
 
-class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<T>> {
+class FormRow<T> extends React.Component<FormRowProps<T>, FormRowState<T>> {
     constructor(props: FormRowProps<T>) {
         super(props);
         this.state = {
@@ -82,86 +74,108 @@ class FormRowComponent<T> extends React.Component<FormRowProps<T>, FormRowState<
     }
 
     renderModalContent = (): JSX.Element => {
-        const {label, theme, renderInput} = this.props;
+        const {label, renderInput} = this.props;
         const {value, error} = this.state;
 
-        const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
-
         return (
-            <TouchableOpacity style={styles.modalTouchable} onPress={() => this.setModal(false)} activeOpacity={1}>
-                <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
-                    <Text style={styles.modalLabel}>{label}</Text>
-                    {renderInput ? renderInput(value, error, (value: T) => this.onChange(value)) : <></>}
-                    <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
-                    <View style={[fstyles.actionRow, styles.modalActions]}>
+            // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
+            <ThemeConsumer>
+                {({theme}: ThemeProps) => {
+                    const styles = themedStyles(theme);
+                    const fstyles = formStyles(theme);
+                    return (
                         <TouchableOpacity
-                            accessibilityRole="button"
-                            accessibilityLabel="CANCEL"
+                            style={styles.modalTouchable}
                             onPress={() => this.setModal(false)}
-                            style={[fstyles.buttonMajor, styles.modalCancel]}
+                            activeOpacity={1}
                         >
-                            <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("cancel")}</Text>
+                            <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
+                                <Text style={styles.modalLabel}>{label}</Text>
+                                {renderInput ? renderInput(value, error, (value: T) => this.onChange(value)) : <></>}
+                                <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
+                                <View style={[fstyles.actionRow, styles.modalActions]}>
+                                    <TouchableOpacity
+                                        accessibilityRole="button"
+                                        accessibilityLabel={i18n.t("cancel")}
+                                        onPress={() => this.setModal(false)}
+                                        style={[fstyles.buttonMajor, styles.modalCancel]}
+                                    >
+                                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>
+                                            {i18n.t("cancel")}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        accessibilityRole="button"
+                                        accessibilityLabel={i18n.t("apply")}
+                                        onPress={() => this.apply()}
+                                        style={[fstyles.buttonMajor, styles.modalOk]}
+                                    >
+                                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>
+                                            {i18n.t("apply")}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableOpacity>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            accessibilityRole="button"
-                            accessibilityLabel="OK"
-                            onPress={() => this.apply()}
-                            style={[fstyles.buttonMajor, styles.modalOk]}
-                        >
-                            <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("apply")}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
-            </TouchableOpacity>
+                    );
+                }}
+            </ThemeConsumer>
         );
     };
 
     render(): JSX.Element {
-        const {theme, label, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
+        const {label, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
         const {modalOpen} = this.state;
 
-        const styles = themedStyles(theme);
-
         return (
-            <>
-                <TouchableOpacity
-                    style={[styles.cardWrapper, style]}
-                    activeOpacity={0.9}
-                    disabled={noModal}
-                    onPress={() => {
-                        if (!locked) this.setModal(true);
-                    }}
-                    {...otherProps}
-                >
-                    <View style={styles.cardContent}>
-                        <Text style={styles.cardLabel}>{label}</Text>
-                        <View>
-                            {display !== undefined && display}
-                            {display === undefined && this.props.children}
-                        </View>
-                    </View>
-                    {!noModal && (
-                        <View style={styles.rightIconContainer}>
-                            <MaterialIcons
-                                name={locked ? "lock" : "keyboard-arrow-right"}
-                                size={locked ? 30 : 40}
-                                style={styles.rightIcon}
-                            ></MaterialIcons>
-                        </View>
-                    )}
-                </TouchableOpacity>
-                {!noModal && (
-                    <React.Fragment>
-                        {overrideModal !== undefined && modalOpen && overrideModal(() => this.setModal(false))}
-                        {overrideModal === undefined && modalOpen && (
-                            <Modal transparent={true} visible={modalOpen} animationType="slide">
-                                {this.renderModalContent()}
-                            </Modal>
-                        )}
-                    </React.Fragment>
-                )}
-            </>
+            // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
+            <ThemeConsumer>
+                {({theme}: ThemeProps) => {
+                    const styles = themedStyles(theme);
+                    return (
+                        <>
+                            <TouchableOpacity
+                                style={[styles.cardWrapper, style]}
+                                activeOpacity={0.9}
+                                disabled={noModal}
+                                onPress={() => {
+                                    if (!locked) this.setModal(true);
+                                }}
+                                {...otherProps}
+                            >
+                                <View style={styles.cardContent}>
+                                    <Text style={styles.cardLabel}>{label}</Text>
+                                    <View>
+                                        {display !== undefined && display}
+                                        {display === undefined && this.props.children}
+                                    </View>
+                                </View>
+                                {!noModal && (
+                                    <View style={styles.rightIconContainer}>
+                                        <MaterialIcons
+                                            name={locked ? "lock" : "keyboard-arrow-right"}
+                                            size={locked ? 30 : 40}
+                                            style={styles.rightIcon}
+                                        ></MaterialIcons>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            {!noModal && (
+                                <>
+                                    {overrideModal !== undefined &&
+                                        modalOpen &&
+                                        overrideModal(() => this.setModal(false))}
+                                    {overrideModal === undefined && modalOpen && (
+                                        <Modal transparent={true} visible={modalOpen} animationType="slide">
+                                            {this.renderModalContent()}
+                                        </Modal>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    );
+                }}
+            </ThemeConsumer>
         );
     }
 }
@@ -243,4 +257,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(FormRowComponent);
+export default FormRow;

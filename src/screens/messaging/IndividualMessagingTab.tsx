@@ -11,11 +11,10 @@ import i18n from "i18n-js";
 import {fetchMyMatches} from "../../state/matching/actions";
 import SearchableProfileList from "../../components/SearchableProfileList";
 
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.myMatches,
     fetchingMatches: state.matching.fetchingMyMatches,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 // TEMP fake profiles
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
