@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ScrollView, View, StyleSheet, Alert, Text, RefreshControl} from "react-native";
+import {ScrollView, View, StyleSheet, Alert, Text, RefreshControl, KeyboardAvoidingView} from "react-native";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {withTheme} from "react-native-elements";
@@ -9,6 +9,7 @@ import {UserProfile} from "../../model/user-profile";
 import ProfileMessagingCard from "../../components/messaging/ProfileMessagingCard";
 import i18n from "i18n-js";
 import {fetchMyMatches} from "../../state/matching/actions";
+import SearchableProfileList from "../../components/SearchableProfileList";
 
 const mapStateToProps = (state: AppState) => ({
     profiles: state.matching.myMatches,
@@ -115,30 +116,42 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
 
         return (
             <View style={styles.wrapper}>
-                <ScrollView
-                    style={styles.matchesContainer}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={fetchingMatches}
-                            onRefresh={() => (dispatch as MyThunkDispatch)(fetchMyMatches())}
-                        />
-                    }
+                <SearchableProfileList
+                    profiles={profiles}
+                    searchBarProps={{
+                        containerStyle: styles.searchBarContainer,
+                        inputContainerStyle: styles.searchBarInputContainer,
+                    }}
                 >
-                    {profiles.map((p: UserProfile) => (
-                        <ProfileMessagingCard
-                            key={p.id}
-                            profile={p}
-                            onPress={() => {
-                                Alert.alert("Chatting is not implemented yet", "", [{text: "OK"}]);
-                            }}
-                        />
-                    ))}
-                    {!fetchingMatches && profiles.length == 0 && (
-                        <View style={styles.noMatchesContainer}>
-                            <Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>
-                        </View>
+                    {(searchedProfiles: UserProfile[]) => (
+                        <KeyboardAvoidingView style={{flex: 1, width: "100%"}}>
+                            <ScrollView
+                                style={styles.matchesContainer}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={fetchingMatches}
+                                        onRefresh={() => (dispatch as MyThunkDispatch)(fetchMyMatches())}
+                                    />
+                                }
+                            >
+                                {searchedProfiles.map((p: UserProfile) => (
+                                    <ProfileMessagingCard
+                                        key={p.id}
+                                        profile={p}
+                                        onPress={() => {
+                                            Alert.alert("Chatting is not implemented yet", "", [{text: "OK"}]);
+                                        }}
+                                    />
+                                ))}
+                                {!fetchingMatches && profiles.length == 0 && (
+                                    <View style={styles.noMatchesContainer}>
+                                        <Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>
+                                    </View>
+                                )}
+                            </ScrollView>
+                        </KeyboardAvoidingView>
                     )}
-                </ScrollView>
+                </SearchableProfileList>
             </View>
         );
     }
@@ -170,6 +183,17 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontSize: 18,
             lineHeight: 24,
             textAlign: "center",
+        },
+
+        // Search bar
+        searchBarContainer: {
+            width: "90%",
+            marginBottom: 10,
+        },
+        searchBarInputContainer: {
+            height: 45,
+            backgroundColor: theme.cardBackground,
+            elevation: 2,
         },
     });
 });
