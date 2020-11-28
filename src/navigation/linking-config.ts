@@ -35,7 +35,8 @@ const config: LinkingOptions = {
                     TabMessaging: {
                         screens: {
                             ChatScreen: "messaging/talk",
-                            MessagingScreen: "messaging",
+                            IndividualMessagingTab: "messaging",
+                            GroupMessagingTab: "messaging/group",
                         },
                     },
                     TabProfile: {
