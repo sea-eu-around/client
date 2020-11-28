@@ -17,61 +17,81 @@ import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {UserProfile} from "../model/user-profile";
 import ProfilePreview from "../components/ProfilePreview";
-import {TabMatchingParamList} from "../navigation/types";
 import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
 import store from "../state/store";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
+import {TabMatchingRoot} from "../navigation/types";
+import {PROFILES_FETCH_LIMIT} from "../constants/config";
 
-const mapStateToProps = (state: AppState) => ({
+const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
     fetchingProfiles: state.matching.fetchingProfiles,
     justRefreshed: state.matching.fetchingPage == 1,
-});
-const reduxConnector = connect(mapStateToProps);
+}));
 
 // Component props
 type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    StackScreenProps<TabMatchingParamList, "TabMatchingScreen">;
+    StackScreenProps<TabMatchingRoot, "TabMatchingScreen">;
+
+// Component state
+type TabMatchingScreenState = {
+    hiddenIds: {[key: string]: boolean};
+};
 
 const SCROLL_DISTANCE_TO_LOAD = 50;
 
-class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
+class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatchingScreenState> {
     scrollViewRef: React.RefObject<ScrollView> = React.createRef<ScrollView>();
+
+    constructor(props: TabMatchingScreenProps) {
+        super(props);
+        this.state = {hiddenIds: {}};
+    }
 
     fetchMore() {
         (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
     }
 
+    hideProfile(p: UserProfile) {
+        this.setState({...this.state, hiddenIds: {...this.state.hiddenIds, [p.id]: true}});
+    }
+
     componentDidMount() {
-        if (this.props.profiles.length == 0) this.fetchMore();
+        const shownProfiles = this.props.profiles.length - Object.keys(this.state.hiddenIds).length;
+        if (shownProfiles == 0) this.fetchMore();
     }
 
     componentDidUpdate(oldProps: TabMatchingScreenProps) {
-        if (this.props.profiles.length == 0) this.fetchMore();
+        const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
+        if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
         // Reset the hidden profiles when the user purposedly refreshes
-        if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenProfiles: {}});
+        if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
     }
 
     render(): JSX.Element {
         const {profiles, theme, fetchingProfiles, dispatch} = this.props;
+        const {hiddenIds} = this.state;
         const styles = themedStyles(theme);
 
-        const previewComponents = profiles.map((profile: UserProfile) => (
-            <ProfilePreview
-                key={profile.id}
-                profile={profile}
-                onExpand={(layout: LayoutRectangle) => {
-                    const scroll = this.scrollViewRef.current;
-                    if (scroll) scroll.scrollTo({y: layout.y, animated: true});
-                }}
-                onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
-                onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
-            />
-        ));
+        const previewComponents = profiles
+            .filter((p) => !hiddenIds[p.id])
+            .map((profile: UserProfile) => (
+                <ProfilePreview
+                    key={profile.id}
+                    profile={profile}
+                    onExpand={(layout: LayoutRectangle) => {
+                        const scroll = this.scrollViewRef.current;
+                        if (scroll) scroll.scrollTo({y: layout.y, animated: true});
+                    }}
+                    onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
+                    onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
+                    onHidden={() => this.hideProfile(profile)}
+                />
+            ));
 
         return (
             <View style={styles.container}>
@@ -177,7 +197,7 @@ const themedStyles = preTheme((theme: Theme) => {
 });
 
 type MatchingHeaderRightProps = {
-    navigation: StackNavigationProp<TabMatchingParamList, "TabMatchingScreen">;
+    navigation: StackNavigationProp<TabMatchingRoot, "TabMatchingScreen">;
 } & ThemeProps;
 
 export const MatchingHeaderRight = withTheme(
