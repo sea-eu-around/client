@@ -3,6 +3,7 @@ import {authReducer} from "./auth/reducer";
 import {settingsReducer} from "./settings/reducer";
 import {profileReducer} from "./profile/reducer";
 import {matchingReducer} from "./matching/reducer";
+import {messagingReducer} from "./messaging/reducer";
 import thunk from "redux-thunk";
 import {navigationMiddleware} from "./navigation-middleware";
 import {authStorageMiddleware} from "./auth-storage-middleware";
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     settings: settingsReducer,
     profile: profileReducer,
     matching: matchingReducer,
+    messaging: messagingReducer,
 });
 
 const combinedMiddleware = applyMiddleware(thunk, authStorageMiddleware, staticStorageMiddleware, navigationMiddleware);
