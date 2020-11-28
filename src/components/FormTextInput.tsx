@@ -1,4 +1,5 @@
 import React from "react";
+import {TextInputProps} from "react-native";
 import {ValidatedTextInput, ValidatedTextInputProps} from "./ValidatedTextInput";
 
 // Component props
@@ -10,7 +11,20 @@ export type FormTextInputProps = {
         field: T,
     ): T extends React.ChangeEvent<unknown> ? void : (e: string | React.ChangeEvent<unknown>) => void;
     handleBlur<T = string | unknown>(fieldOrEvent: T): T extends string ? (e: unknown) => void : void;
+    isEmail?: boolean;
+    isPassword?: boolean;
 } & ValidatedTextInputProps;
+
+const emailProps: Partial<TextInputProps> = {
+    keyboardType: "email-address",
+    autoCompleteType: "email",
+    textContentType: "emailAddress",
+};
+const passwordProps: Partial<TextInputProps> = {
+    secureTextEntry: true,
+    autoCompleteType: "password",
+    textContentType: "password",
+};
 
 /**
  * An improved TextInput for less verbose Formik usage.
@@ -25,7 +39,19 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
     };
 
     render(): JSX.Element {
-        const {field, touched, handleChange, handleBlur, error, onBlur, onChangeText, ...otherProps} = this.props;
+        const {
+            field,
+            touched,
+            handleChange,
+            handleBlur,
+            error,
+            onBlur,
+            onChangeText,
+            isEmail,
+            isPassword,
+            ...otherProps
+        } = this.props;
+
         return (
             <ValidatedTextInput
                 error={touched ? error : undefined}
@@ -38,6 +64,8 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
                     if (onBlur) onBlur(e);
                     handleBlur(this.props.field)(e);
                 }}
+                {...(isEmail ? emailProps : {})}
+                {...(isPassword ? passwordProps : {})}
                 {...otherProps}
             />
         );
