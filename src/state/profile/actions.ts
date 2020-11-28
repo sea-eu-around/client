@@ -14,8 +14,10 @@ import {
     CreateProfileDto,
     InterestDto,
     OfferDto,
+    RequestResponse,
     ResponseUserDto,
     SignedUrlResponseDto,
+    SuccessfulRequestResponse,
 } from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {User} from "../../model/user";
@@ -23,6 +25,7 @@ import {requestBackend} from "../../api/utils";
 import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {readCachedStaticData} from "../static-storage-middleware";
+import {HttpStatusCode} from "../../constants/http-status";
 
 export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
@@ -32,7 +35,7 @@ export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfil
 export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch) => {
     const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
     const response = await requestBackend("profiles", "PATCH", {}, dto, true);
-    if (response.success) {
+    if (response.status === HttpStatusCode.OK) {
         dispatch(setProfileFieldsSuccess(fields));
     } else {
         console.log("error in setProfileFields");
@@ -45,23 +48,23 @@ export const createProfileSuccess = (): CreateProfileSuccessAction => ({
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch) => {
     const response = await requestBackend("profiles", "POST", {}, profile, true);
-    if (response.success) dispatch(createProfileSuccess());
+    if (response.status === HttpStatusCode.OK) dispatch(createProfileSuccess());
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
     const fromCache = await readCachedStaticData<OfferDto[]>("offers");
+    const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
-    if (fromCache) {
-        // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
-        requestBackend("offers", "GET", {updatedAt: fromCache.updatedAt}, {}).then((response) => {
-            const offers = response.data as OfferDto[];
-            const cached = offers.length == 0;
-            if (response.success) dispatch(loadProfileOffersSuccess(cached ? fromCache.data : offers, cached));
-        });
-    } else {
-        const response = await requestBackend("offers", "GET");
-        if (response.success) dispatch(loadProfileOffersSuccess(response.data as OfferDto[]));
-    }
+    requestBackend("offers", "GET", params).then((response: RequestResponse) => {
+        if (response.status === HttpStatusCode.OK) {
+            const payload = (response as SuccessfulRequestResponse).data;
+            const offers = payload as OfferDto[];
+            if (fromCache) {
+                const cacheIsGood = offers.length == 0;
+                dispatch(loadProfileOffersSuccess(cacheIsGood ? fromCache.data : offers, cacheIsGood));
+            } else dispatch(loadProfileOffersSuccess(offers));
+        }
+    });
 };
 
 export const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadProfileOffersSuccessAction => ({
@@ -72,18 +75,18 @@ export const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false):
 
 export const loadProfileInterests = (): AppThunk => async (dispatch) => {
     const fromCache = await readCachedStaticData<InterestDto[]>("interests");
+    const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
-    if (fromCache) {
-        // If we already have the data in cache, we send the request in case an update is needed, but we're not awaiting for it
-        requestBackend("interests", "GET", {updatedAt: fromCache.updatedAt}, {}).then((response) => {
-            const interests = response.data as InterestDto[];
-            const cached = interests.length == 0;
-            if (response.success) dispatch(loadProfileInterestsSuccess(cached ? fromCache.data : interests, cached));
-        });
-    } else {
-        const response = await requestBackend("interests", "GET");
-        if (response.success) dispatch(loadProfileInterestsSuccess(response.data as InterestDto[]));
-    }
+    requestBackend("interests", "GET", params).then((response: RequestResponse) => {
+        if (response.status === HttpStatusCode.OK) {
+            const payload = (response as SuccessfulRequestResponse).data;
+            const interests = payload as InterestDto[];
+            if (fromCache) {
+                const cacheIsGood = interests.length == 0;
+                dispatch(loadProfileInterestsSuccess(cacheIsGood ? fromCache.data : interests, cacheIsGood));
+            } else dispatch(loadProfileInterestsSuccess(interests));
+        }
+    });
 };
 
 export const loadProfileInterestsSuccess = (
@@ -97,9 +100,10 @@ export const loadProfileInterestsSuccess = (
 
 export const fetchUser = (): AppThunk => async (dispatch) => {
     const response = await requestBackend("auth/me", "GET", {}, {}, true);
-    if (response.success) {
-        const dto = response.data as ResponseUserDto;
-        dispatch(fetchUserSuccess(convertDtoToUser(dto)));
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const user = convertDtoToUser(payload as ResponseUserDto);
+        dispatch(fetchUserSuccess(user));
     }
 };
 
@@ -122,17 +126,16 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
 
     const fail = () => dispatch(setAvatarFailure());
 
-    if (response.success) {
-        const dto = response.data as SignedUrlResponseDto;
-        const fileName = dto.fileName;
-        const url = dto.s3Url;
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const {fileName, s3Url} = payload as SignedUrlResponseDto;
 
         try {
             // Fetch the image from the device and convert it to a blob
             const imageBlob = await (await fetch(image.uri)).blob();
 
             // PUT the image in the aws bucket
-            await fetch(url, {
+            await fetch(s3Url, {
                 method: "PUT",
                 body: imageBlob,
             });
@@ -140,8 +143,9 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
             // Submit the file name to the server
             const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, true);
 
-            if (response2.success) {
-                const {avatar} = response2.data as AvatarSuccessfulUpdatedDto;
+            if (response2.status === HttpStatusCode.OK) {
+                const payload2 = (response2 as SuccessfulRequestResponse).data;
+                const {avatar} = payload2 as AvatarSuccessfulUpdatedDto;
                 dispatch(setAvatarSuccess(avatar));
             } else fail();
         } catch (error) {

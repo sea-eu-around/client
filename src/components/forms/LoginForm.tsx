@@ -1,22 +1,25 @@
 import * as React from "react";
-import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {connect, ConnectedProps} from "react-redux";
-import {AppState, MyThunkDispatch} from "../../state/types";
+import {AppState, MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
-import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
+import {FormProps, Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {TabLoginSigninScreens} from "../../navigation/types";
+import {generalError, localizeError} from "../../api/errors";
+import FormSubmitButton from "./FormSubmitButton";
+import {RemoteValidationErrors} from "../../api/dto";
 
-type LoginFormState = {
+type FormState = {
     email: string;
     password: string;
 };
@@ -29,26 +32,24 @@ const LoginFormSchema = Yup.object().shape({
 
 // Map props from the store
 const reduxConnector = connect((state: AppState) => ({
-    connecting: state.auth.connecting,
     validatedEmail: state.auth.validatedEmail,
 }));
 
 // Component props
 type LoginFormProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    FormProps<LoginFormState> & {navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">};
+    FormProps<FormState> & {navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">};
 
-type LoginFormComponentState = {
-    errors?: string[];
-};
+type LoginFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
-class LoginFormComponent extends React.Component<LoginFormProps, LoginFormComponentState> {
+class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
+    setFieldError?: (field: string, message: string) => void;
+    setFieldValue: null | ((field: string, value: string, shouldValidate?: boolean | undefined) => void) = null;
+
     constructor(props: LoginFormProps) {
         super(props);
-        this.state = {};
+        this.state = {submitting: false};
     }
-
-    setFieldValue: null | ((field: string, value: string, shouldValidate?: boolean | undefined) => void) = null;
 
     componentDidUpdate(oldProps: LoginFormProps) {
         const {validatedEmail} = this.props;
@@ -56,30 +57,35 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
             this.setFieldValue("email", validatedEmail);
     }
 
-    submit(values: LoginFormState) {
+    submit(values: FormState) {
+        this.setState({...this.state, submitting: true});
         (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password)).then(
-            ({success, errors}: FailableActionReturn) => {
+            ({success, errors}: ValidatedActionReturn) => {
                 if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
-                this.setState({...this.state, errors});
+                if (errors && errors.fields) {
+                    const f = errors.fields;
+                    Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
+                }
+                this.setState({remoteErrors: errors, submitting: false});
             },
         );
     }
 
     render(): JSX.Element {
-        const {theme, navigation, connecting} = this.props;
-        const remoteErrors = this.state.errors;
+        const {theme, navigation} = this.props;
+        const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
         const fstyles = formStyles(theme);
 
         return (
             <Formik
-                initialValues={{email: "", password: ""} as LoginFormState}
+                initialValues={{email: "", password: ""} as FormState}
                 validationSchema={LoginFormSchema}
                 validateOnBlur={false}
-                onSubmit={(values: LoginFormState) => this.submit(values)}
+                onSubmit={(values) => this.submit(values)}
             >
-                {(formikProps: FormikProps<LoginFormState>) => {
+                {(formikProps: FormikProps<FormState>) => {
                     const {
                         handleSubmit,
                         values,
@@ -88,9 +94,11 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                         handleChange,
                         handleBlur,
                         setFieldValue,
+                        setFieldError,
                     } = formikProps;
                     const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
                     this.setFieldValue = setFieldValue;
+                    this.setFieldError = setFieldError;
 
                     return (
                         <>
@@ -100,9 +108,7 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                                 error={errors.email}
                                 value={values.email}
                                 touched={touched.email}
-                                keyboardType="email-address"
-                                autoCompleteType="email"
-                                textContentType="emailAddress"
+                                isEmail={true}
                                 {...textInputProps}
                             />
 
@@ -112,26 +118,21 @@ class LoginFormComponent extends React.Component<LoginFormProps, LoginFormCompon
                                 error={errors.password}
                                 value={values.password}
                                 touched={touched.password}
-                                secureTextEntry={true}
-                                autoCompleteType="password"
-                                textContentType="password"
+                                isPassword={true}
                                 {...textInputProps}
                             />
 
+                            <FormError error={generalError(remoteErrors)} />
+
                             <View style={fstyles.actionRow}>
-                                <TouchableOpacity
-                                    accessibilityRole="button"
-                                    accessibilityLabel={i18n.t("login")}
+                                <FormSubmitButton
                                     onPress={() => handleSubmit()}
                                     style={[fstyles.buttonMajor, styles.loginButton]}
-                                    disabled={connecting}
-                                >
-                                    {!connecting && <Text style={fstyles.buttonMajorText}>{i18n.t("login")}</Text>}
-                                    {connecting && <ActivityIndicator size="large" color={theme.accentSecondary} />}
-                                </TouchableOpacity>
+                                    textStyle={fstyles.buttonMajorText}
+                                    text={i18n.t("login")}
+                                    submitting={submitting}
+                                />
                             </View>
-
-                            <FormError error={remoteErrors && remoteErrors.length > 0 ? remoteErrors[0] : ""} />
 
                             <TouchableOpacity
                                 accessibilityRole="link"
@@ -167,4 +168,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export const LoginForm = reduxConnector(withTheme(LoginFormComponent));
+export default reduxConnector(withTheme(LoginForm));

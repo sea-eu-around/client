@@ -1,25 +1,29 @@
 import * as React from "react";
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
-import {MyThunkDispatch} from "../../state/types";
+import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
-import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
+import {FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import store from "../../state/store";
+import FormError from "./FormError";
+import {generalError, localizeError} from "../../api/errors";
+import FormSubmitButton from "./FormSubmitButton";
+import {RemoteValidationErrors} from "../../api/dto";
 
-export type SignupFormState = {
+type FormState = {
     email: string;
     password: string;
     passwordRepeat: string;
 };
 
-const initialState = (): SignupFormState => ({
+const initialState = (): FormState => ({
     email: "",
     password: "",
     passwordRepeat: "",
@@ -33,43 +37,36 @@ const SignupFormSchema = Yup.object().shape({
 });
 
 // Component props
-type SignupFormProps = FormProps<SignupFormState> & ThemeProps;
+type SignupFormProps = FormProps<FormState> & ThemeProps;
 
 // Component state
-type SignupFormComponentState = {failure: boolean; errors?: string[]};
+type SignupFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
-class SignupForm extends React.Component<SignupFormProps, SignupFormComponentState> {
+class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
+    setFieldError?: (field: string, message: string) => void;
+
     constructor(props: SignupFormProps) {
         super(props);
-        this.state = {failure: false};
+        this.state = {submitting: false};
     }
 
-    submit(values: SignupFormState) {
+    submit(values: FormState) {
+        this.setState({...this.state, submitting: true});
         (store.dispatch as MyThunkDispatch)(requestRegister(values.email, values.password)).then(
-            ({success, errors}: FailableActionReturn) => {
+            ({success, errors}: ValidatedActionReturn) => {
                 if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
-                this.setState({...this.state, failure: !success, errors});
+                if (errors && errors.fields) {
+                    const f = errors.fields;
+                    Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
+                }
+                this.setState({remoteErrors: errors, submitting: false});
             },
         );
     }
 
-    componentDidUpdate() {
-        const {failure, errors} = this.state;
-        if (failure) {
-            /*const errorTexts = this.props.registerErrors.map((err: string, i: number) => (
-                <Text key={i} style={[formStyle.errorText, {color: this.props.theme.error}]}>
-                    {err}
-                </Text>
-            ));*/
-
-            Alert.alert("Unable to register", errors && errors.length > 0 ? errors[0] : "", [
-                {text: "OK", onPress: () => console.log("OK Pressed")},
-            ]);
-        }
-    }
-
     render(): JSX.Element {
         const {theme} = this.props;
+        const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
         const fstyles = formStyles(theme);
 
@@ -83,11 +80,20 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
                     validationSchema={SignupFormSchema}
                     validateOnChange={true}
                     validateOnBlur={false}
-                    onSubmit={(values: SignupFormState) => this.submit(values)}
+                    onSubmit={(values) => this.submit(values)}
                 >
-                    {(formikProps: FormikProps<SignupFormState>) => {
-                        const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikProps;
+                    {(formikProps: FormikProps<FormState>) => {
+                        const {
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            handleChange,
+                            handleBlur,
+                            setFieldError,
+                        } = formikProps;
                         const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
+                        this.setFieldError = setFieldError;
 
                         return (
                             <React.Fragment>
@@ -97,8 +103,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
                                     error={errors.email}
                                     value={values.email}
                                     touched={touched.email}
-                                    keyboardType="email-address"
-                                    autoCompleteType="email"
+                                    isEmail={true}
                                     {...textInputProps}
                                 />
 
@@ -108,8 +113,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
                                     error={errors.password}
                                     value={values.password}
                                     touched={touched.password}
-                                    secureTextEntry={true}
-                                    autoCompleteType="password"
+                                    isPassword={true}
                                     {...textInputProps}
                                 />
 
@@ -119,20 +123,20 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormComponentSta
                                     error={errors.passwordRepeat}
                                     value={values.passwordRepeat}
                                     touched={touched.passwordRepeat}
-                                    secureTextEntry={true}
-                                    autoCompleteType="password"
+                                    isPassword={true}
                                     {...textInputProps}
                                 />
 
+                                <FormError error={generalError(remoteErrors)} />
+
                                 <View style={fstyles.actionRow}>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("createAccount")}
+                                    <FormSubmitButton
                                         onPress={() => handleSubmit()}
                                         style={[fstyles.buttonMajor, styles.createAccountButton]}
-                                    >
-                                        <Text style={fstyles.buttonMajorText}>{i18n.t("createAccount")}</Text>
-                                    </TouchableOpacity>
+                                        textStyle={fstyles.buttonMajorText}
+                                        text={i18n.t("createAccount")}
+                                        submitting={submitting}
+                                    />
                                 </View>
                             </React.Fragment>
                         );

@@ -31,7 +31,6 @@ const initialOnboardingState = (): OnboardingState => ({
 export const initialState: AuthState = {
     authenticated: false,
     token: null,
-    connecting: false,
     validated: false,
     registerEmail: "",
     validatedEmail: null,
@@ -65,12 +64,6 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE: {
             return {...state, validated: false};
         }
-        case AUTH_ACTION_TYPES.LOG_IN_BEGIN: {
-            return {...state, connecting: true};
-        }
-        case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
-            return {...state, connecting: false};
-        }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {
                 token,
@@ -89,7 +82,6 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
 
             return {
                 ...state,
-                connecting: false,
                 authenticated: true,
                 token,
                 onboarded,

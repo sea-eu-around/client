@@ -1,6 +1,5 @@
 import {
     LogOutAction,
-    LogInBeginAction,
     LogInSuccessAction,
     LogInFailureAction,
     AppThunk,
@@ -16,15 +15,17 @@ import {
     ForgotPasswordSuccessAction,
     ForgotPasswordFailureAction,
     ResetPasswordSuccessAction,
+    ValidatedThunkAction,
 } from "../types";
-import {LoginDto, OfferValueDto, ResponseUserDto, TokenDto} from "../../api/dto";
+import {LoginDto, OfferValueDto, ResponseUserDto, SuccessfulRequestResponse, TokenDto} from "../../api/dto";
 import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
 import {createProfile} from "../profile/actions";
 import {readCachedCredentials} from "../auth-storage-middleware";
 import {convertDtoToUser} from "../../api/converters";
-import {FailableAppThunk} from "../../types";
+import {HttpStatusCode} from "../../constants/http-status";
+import {gatherValidationErrors} from "../../api/errors";
 
 // Register actions
 
@@ -35,18 +36,19 @@ export const registerBegin = (email: string, password: string): RegisterBeginAct
 });
 
 // Redux-thunk asynchronous action creator
-export const requestRegister = (email: string, password: string): FailableAppThunk => async (dispatch) => {
+export const requestRegister = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
     dispatch(registerBegin(email, password));
     const locale = store.getState().settings.locale;
 
     const response = await requestBackend("auth/register", "POST", {}, {email, password, locale});
 
-    if (response.success) {
-        dispatch(registerSuccess(response.data as User));
+    if (response.status == HttpStatusCode.OK) {
+        const successResp = response as SuccessfulRequestResponse;
+        dispatch(registerSuccess(successResp.data as User));
         return {success: true};
     } else {
-        dispatch(registerFailure(response.codes));
-        return {success: false, errors: response.codes};
+        dispatch(registerFailure());
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
@@ -55,18 +57,11 @@ export const registerSuccess = (user: User): RegisterSuccessAction => ({
     user,
 });
 
-export const registerFailure = (errors: string[]): RegisterFailureAction => ({
+export const registerFailure = (): RegisterFailureAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_FAILURE,
-    errors,
 });
 
 // Log in actions
-
-export const loginBegin = (email: string, password: string): LogInBeginAction => ({
-    type: AUTH_ACTION_TYPES.LOG_IN_BEGIN,
-    email,
-    password,
-});
 
 export const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boolean): LogInSuccessAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_SUCCESS,
@@ -75,9 +70,8 @@ export const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials
     usingCachedCredentials,
 });
 
-export const loginFailure = (errors: string[]): LogInFailureAction => ({
+export const loginFailure = (): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
-    errors,
 });
 
 export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (dispatch): Promise<boolean> => {
@@ -89,27 +83,26 @@ export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (di
         // Get user information
         const response = await requestBackend("auth/me", "GET", {}, {}, true, false, token);
 
-        if (response.success) {
-            const user: User = convertDtoToUser(response.data as ResponseUserDto);
-            dispatch(loginSuccess(token, user, true));
+        if (response.status == HttpStatusCode.OK) {
+            const payload = (response as SuccessfulRequestResponse).data as ResponseUserDto;
+            dispatch(loginSuccess(token, convertDtoToUser(payload), true));
             return true;
-        } else dispatch(loginFailure([])); // e.g. token is invalid
+        } else dispatch(loginFailure()); // e.g. token is invalid
     }
     // If no credentials are available in cache, the action does nothing.
     return false;
 };
 
-export const requestLogin = (email: string, password: string): FailableAppThunk => async (dispatch) => {
-    dispatch(loginBegin(email, password));
-
+export const requestLogin = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
     const response = await requestBackend("auth/login", "POST", {}, {email, password}, false, true);
-    if (response.success) {
-        const payload = response.data as LoginDto;
+
+    if (response.status == HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data as LoginDto;
         dispatch(loginSuccess(payload.token, payload.user, false));
         return {success: true};
     } else {
-        dispatch(loginFailure(response.codes));
-        return {success: false, errors: response.codes || [response.message]};
+        dispatch(loginFailure());
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
@@ -122,11 +115,12 @@ export const logout = (): LogOutAction => ({
 export const requestValidateAccount = (validationToken: string): AppThunk => async (dispatch) => {
     const response = await requestBackend("auth/verify", "POST", {}, {token: validationToken});
 
-    if (response.success) {
-        const {email} = response.data as {email: string};
+    if (response.status == HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const {email} = payload as {email: string};
         dispatch(validateAccountSuccess(email));
     } else {
-        dispatch(validateAccountFailure(response.codes));
+        dispatch(validateAccountFailure());
     }
 };
 
@@ -135,20 +129,21 @@ export const validateAccountSuccess = (email: string): ValidateAccountSuccessAct
     email,
 });
 
-export const validateAccountFailure = (errors: string[]): ValidateAccountFailureAction => ({
+export const validateAccountFailure = (): ValidateAccountFailureAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE,
-    errors,
 });
 
 // Forgot password actions
 
-export const forgotPassword = (email: string): AppThunk => async (dispatch) => {
-    const response = await requestBackend("auth/password/forgot", "POST", {}, {email}, false, true);
+export const forgotPassword = (email: string): ValidatedThunkAction => async (dispatch) => {
+    const response = await requestBackend("auth/password/forgot", "POST", {}, {email});
 
-    if (response.success) {
+    if (response.status == HttpStatusCode.OK) {
         dispatch(forgotPasswordSuccess(email));
+        return {success: true};
     } else {
-        dispatch(forgotPasswordFailure(response.codes));
+        dispatch(forgotPasswordFailure());
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
@@ -157,19 +152,18 @@ export const forgotPasswordSuccess = (email: string): ForgotPasswordSuccessActio
     email,
 });
 
-export const forgotPasswordFailure = (errors: string[]): ForgotPasswordFailureAction => ({
+export const forgotPasswordFailure = (): ForgotPasswordFailureAction => ({
     type: AUTH_ACTION_TYPES.FORGOT_PASSWORD_FAILURE,
-    errors,
 });
 
-export const resetPassword = (token: string, password: string): FailableAppThunk => async (dispatch) => {
+export const resetPassword = (token: string, password: string): ValidatedThunkAction => async (dispatch) => {
     const response = await requestBackend("auth/password/reset", "POST", {}, {token, password});
 
-    if (response.success) {
+    if (response.status == HttpStatusCode.OK) {
         dispatch(resetPasswordSuccess());
         return {success: true};
     } else {
-        return {success: false, errors: response.codes};
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 

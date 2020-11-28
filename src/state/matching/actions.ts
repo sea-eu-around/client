@@ -1,5 +1,10 @@
 import {convertDtoToProfile} from "../../api/converters";
-import {FetchMyMatchesResponseDto, FetchProfilesResponseDto, LikeProfileResponseDto} from "../../api/dto";
+import {
+    LikeProfileResponseDto,
+    PaginatedRequestResponse,
+    ResponseProfileDto,
+    SuccessfulRequestResponse,
+} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import store from "../store";
@@ -22,6 +27,7 @@ import {
     BeginFetchMyMatchesAction,
 } from "../types";
 import {PROFILES_FETCH_LIMIT} from "../../constants/config";
+import {HttpStatusCode} from "../../constants/http-status";
 
 export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterAction => ({
     type: MATCHING_ACTION_TYPES.SET_OFFER_FILTER,
@@ -44,7 +50,8 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
 
     dispatch(beginFetchProfiles());
 
-    function nonEmptyOrUndef<T>(t: Array<T>) {
+    // Replaces empty arrays with "undefined"
+    function notEmpty<T>(t: Array<T>) {
         return t.length == 0 ? undefined : t;
     }
 
@@ -52,11 +59,11 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
     const offers = Object.keys(filters.offers).filter((k) => filters.offers[k] === true);
 
     const filterParams = {
-        universities: nonEmptyOrUndef(filters.universities),
-        spokenLanguages: nonEmptyOrUndef(filters.languages),
-        degrees: nonEmptyOrUndef(filters.degrees),
-        types: nonEmptyOrUndef(filters.types),
-        offers: nonEmptyOrUndef(offers),
+        universities: notEmpty(filters.universities),
+        spokenLanguages: notEmpty(filters.languages),
+        degrees: notEmpty(filters.degrees),
+        types: notEmpty(filters.types),
+        offers: notEmpty(offers),
     };
 
     const response = await requestBackend(
@@ -71,10 +78,11 @@ export const fetchProfiles = (): AppThunk => async (dispatch) => {
         true,
     );
 
-    if (response.success) {
-        const resp = (response as unknown) as FetchProfilesResponseDto;
-        const canFetchMore = resp.meta.currentPage < resp.meta.totalPages;
-        dispatch(fetchProfilesSuccess(resp.data.map(convertDtoToProfile), canFetchMore));
+    if (response.status === HttpStatusCode.OK) {
+        const paginated = response as PaginatedRequestResponse;
+        const profiles = (paginated.data as ResponseProfileDto[]).map(convertDtoToProfile);
+        const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+        dispatch(fetchProfilesSuccess(profiles, canFetchMore));
     } else dispatch(fetchProfilesFailure());
 };
 
@@ -103,8 +111,9 @@ export const likeProfileSuccess = (
 
 export const likeProfile = (profileId: string): AppThunk => async (dispatch) => {
     const response = await requestBackend("matching/like", "POST", {}, {toUserId: profileId}, true);
-    if (response.success) {
-        const matchStatus = response.data as LikeProfileResponseDto;
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const matchStatus = payload as LikeProfileResponseDto;
         dispatch(likeProfileSuccess(profileId, matchStatus));
     }
 };
@@ -116,7 +125,7 @@ export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessA
 
 export const dislikeProfile = (profileId: string): AppThunk => async (dispatch) => {
     const response = await requestBackend("matching/decline", "POST", {}, {toUserId: profileId}, true);
-    if (response.success) dispatch(dislikeProfileSuccess(profileId));
+    if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
 };
 
 export const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({
@@ -126,7 +135,7 @@ export const blockProfileSuccess = (profileId: string): BlockProfileSuccessActio
 
 export const blockProfile = (profileId: string): AppThunk => async (dispatch) => {
     const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, true);
-    if (response.success) dispatch(blockProfileSuccess(profileId));
+    if (response.status === HttpStatusCode.OK) dispatch(blockProfileSuccess(profileId));
 };
 
 export const beginFetchMyMatches = (): BeginFetchMyMatchesAction => ({
@@ -150,8 +159,9 @@ export const fetchMyMatches = (): AppThunk => async (dispatch) => {
 
     const response = await requestBackend("matching", "GET", {}, {}, true);
 
-    if (response.success) {
-        const resp = response.data as FetchMyMatchesResponseDto;
-        dispatch(fetchMyMatchesSuccess(resp.map(convertDtoToProfile)));
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const profiles = (payload as ResponseProfileDto[]).map(convertDtoToProfile);
+        dispatch(fetchMyMatchesSuccess(profiles));
     } else dispatch(fetchMyMatchesFailure());
 };

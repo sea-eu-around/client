@@ -8,6 +8,7 @@ import {
     OfferCategory,
     OfferDto,
     OfferValueDto,
+    RemoteValidationErrors,
     SpokenLanguageDto,
     TokenDto,
 } from "../api/dto";
@@ -16,6 +17,11 @@ import {User} from "../model/user";
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
+
+export type FailableActionReturn = {success: boolean; errors?: string[]};
+export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
+export type ValidatedActionReturn = {success: boolean; errors?: RemoteValidationErrors};
+export type ValidatedThunkAction = AppThunk<Promise<ValidatedActionReturn>>;
 
 export type OnboardingState = {
     firstname: string;
@@ -36,7 +42,6 @@ export type AuthState = {
     authenticated: boolean;
     validated: boolean;
     token: null | TokenDto;
-    connecting: boolean;
     registerEmail: string;
     validatedEmail: string | null;
     // This is available only in DEBUG_MODE on the staging server
@@ -100,7 +105,6 @@ export enum AUTH_ACTION_TYPES {
     REGISTER_BEGIN = "AUTH/REGISTER_BEGIN",
     REGISTER_SUCCESS = "AUTH/REGISTER_SUCCESS",
     REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
-    LOG_IN_BEGIN = "AUTH/LOG_IN_BEGIN",
     LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
     LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
     LOG_OUT = "AUTH/LOG_OUT",
@@ -127,13 +131,6 @@ export type RegisterSuccessAction = {
 
 export type RegisterFailureAction = {
     type: string;
-    errors: string[];
-};
-
-export type LogInBeginAction = {
-    type: string;
-    email: string;
-    password: string;
 };
 
 export type LogInSuccessAction = {
@@ -145,7 +142,6 @@ export type LogInSuccessAction = {
 
 export type LogInFailureAction = {
     type: string;
-    errors: string[];
 };
 
 export type LogOutAction = {
@@ -159,7 +155,6 @@ export type ValidateAccountSuccessAction = {
 
 export type ValidateAccountFailureAction = {
     type: string;
-    errors: string[];
 };
 
 export type SetOnboardingValuesAction = {
@@ -175,7 +170,6 @@ export type SetOnboardingOfferValueAction = {
 
 export type ForgotPasswordFailureAction = {
     type: string;
-    errors: string[];
 };
 
 export type ForgotPasswordSuccessAction = {
@@ -191,7 +185,6 @@ export type AuthAction =
     | RegisterBeginAction
     | RegisterSuccessAction
     | RegisterFailureAction
-    | LogInBeginAction
     | LogInSuccessAction
     | LogInFailureAction
     | LogOutAction

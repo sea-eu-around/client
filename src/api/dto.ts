@@ -3,6 +3,38 @@ import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
 import {User} from "../model/user";
 
+/* General response-related types */
+
+// Any response from the server should follow this structure
+export type RequestResponse = SuccessfulRequestResponse | UnprocessableEntityRequestResponse | ErrorRequestResponse;
+export type SuccessfulRequestResponse = {status: number; data: unknown} & {[key: string]: unknown};
+export type PaginatedRequestResponse = SuccessfulRequestResponse & {
+    meta: {
+        currentPage: number;
+        itemCount: number;
+        itemsPerPage: number;
+        totalItems: number;
+        totalPages: number;
+    };
+    links: {
+        first: string;
+        last: string;
+        next: string;
+        previous: string;
+    };
+};
+
+export type ErrorRequestResponse = {status: number; errorType: string; description: string};
+
+// Only on 422 status
+export type UnprocessableEntityRequestResponse = ErrorRequestResponse & {
+    errors: {property: string; codes: {description: string; code: string}[]}[];
+};
+
+export type RemoteValidationErrors = {general: string; fields: {[key: string]: string}};
+
+/* Specific DTOs */
+
 export type SpokenLanguageDto = {
     code: string;
     level: LanguageLevel;
@@ -53,25 +85,6 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
 export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey; avatar: string};
-
-export type FetchProfilesResponseDto = {
-    data: ResponseProfileDto[];
-    meta: {
-        currentPage: number;
-        itemCount: number;
-        itemsPerPage: number;
-        totalItems: number;
-        totalPages: number;
-    };
-    links: {
-        first: string;
-        last: string;
-        next: string;
-        previous: string;
-    };
-};
-
-export type FetchMyMatchesResponseDto = ResponseProfileDto[];
 
 export enum OfferCategory {
     Discover = "discover",

@@ -11,11 +11,15 @@ import {withTheme} from "react-native-elements";
 import {VALIDATOR_EMAIL_LOGIN} from "../../validators";
 import {preTheme} from "../../styles/utils";
 import store from "../../state/store";
-import {MyThunkDispatch} from "../../state/types";
+import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {forgotPassword} from "../../state/auth/actions";
 import {TabLoginSigninScreens} from "../../navigation/types";
+import {generalError, localizeError} from "../../api/errors";
+import FormError from "./FormError";
+import FormSubmitButton from "./FormSubmitButton";
+import {RemoteValidationErrors} from "../../api/dto";
 
-type ForgotPasswordFormState = {
+type FormState = {
     email: string;
 };
 
@@ -29,14 +33,31 @@ export type ForgotPasswordFormProps = ThemeProps & {
     navigation: StackNavigationProp<TabLoginSigninScreens, "ForgotPassword">;
 };
 
-class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
-    // Form submission handler
-    submitForm({email}: ForgotPasswordFormState) {
-        (store.dispatch as MyThunkDispatch)(forgotPassword(email));
+// Component state
+export type ForgotPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
+
+class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, ForgotPasswordFormState> {
+    setFieldError?: (field: string, message: string) => void;
+
+    constructor(props: ForgotPasswordFormProps) {
+        super(props);
+        this.state = {submitting: false};
+    }
+
+    submit({email}: FormState) {
+        this.setState({...this.state, submitting: true});
+        (store.dispatch as MyThunkDispatch)(forgotPassword(email)).then(({errors}: ValidatedActionReturn) => {
+            if (errors && errors.fields) {
+                const f = errors.fields;
+                Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
+            }
+            this.setState({remoteErrors: errors, submitting: false});
+        });
     }
 
     render(): JSX.Element {
         const {theme, navigation} = this.props;
+        const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
         const fstyles = formStyles(theme);
 
@@ -47,14 +68,23 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
                     <Text style={styles.description}>{i18n.t("forgotPasswordExplanation")}</Text>
                 </View>
                 <Formik
-                    initialValues={{email: ""} as ForgotPasswordFormState}
+                    initialValues={{email: ""} as FormState}
                     validationSchema={ForgotPasswordFormSchema}
                     validateOnBlur={false}
-                    onSubmit={this.submitForm}
+                    onSubmit={(values) => this.submit(values)}
                 >
-                    {(formikCfg: FormikProps<ForgotPasswordFormState>) => {
-                        const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikCfg;
+                    {(formikCfg: FormikProps<FormState>) => {
+                        const {
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            handleChange,
+                            handleBlur,
+                            setFieldError,
+                        } = formikCfg;
                         const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme)};
+                        this.setFieldError = setFieldError;
 
                         return (
                             <React.Fragment>
@@ -64,10 +94,11 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
                                     error={errors.email}
                                     value={values.email}
                                     touched={touched.email}
-                                    keyboardType="email-address"
-                                    autoCompleteType="email"
+                                    isEmail={true}
                                     {...textInputProps}
                                 />
+
+                                <FormError error={generalError(remoteErrors)} />
 
                                 <View style={fstyles.actionRow}>
                                     <TouchableOpacity
@@ -78,14 +109,13 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps> {
                                     >
                                         <Text style={fstyles.buttonMajorText}>{i18n.t("cancel")}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("send")}
+                                    <FormSubmitButton
                                         onPress={() => handleSubmit()}
                                         style={[fstyles.buttonMajor, styles.buttonSend]}
-                                    >
-                                        <Text style={fstyles.buttonMajorText}>{i18n.t("send")}</Text>
-                                    </TouchableOpacity>
+                                        textStyle={fstyles.buttonMajorText}
+                                        text={i18n.t("send")}
+                                        submitting={submitting}
+                                    />
                                 </View>
                             </React.Fragment>
                         );

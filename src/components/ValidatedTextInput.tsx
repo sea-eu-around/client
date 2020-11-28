@@ -62,8 +62,15 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
             ...otherProps
         } = this.props;
 
+        const showError = showErrorText && !untouched && error;
+
         return (
-            <View style={[wrapperStyle, {width: "100%", flexDirection: "column", position: "relative"}]}>
+            <View
+                style={[
+                    wrapperStyle,
+                    {width: "100%", flexDirection: "column", position: "relative", paddingBottom: showError ? 0 : 6},
+                ]}
+            >
                 {label && <InputLabel style={labelStyle}>{label}</InputLabel>}
                 <TextInput
                     style={[
@@ -82,7 +89,7 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
                     value={value}
                     {...otherProps}
                 />
-                {showErrorText && !untouched && error && <InputErrorText style={errorTextStyle} error={error} />}
+                {showError && <InputErrorText style={errorTextStyle} error={error} />}
             </View>
         );
     }

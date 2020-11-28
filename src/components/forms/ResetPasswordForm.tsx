@@ -1,24 +1,28 @@
 import * as React from "react";
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../FormTextInput";
 import {VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
-import {FailableActionReturn, FormProps, Theme, ThemeProps} from "../../types";
+import {FormProps, Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import store from "../../state/store";
-import {MyThunkDispatch} from "../../state/types";
+import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {resetPassword} from "../../state/auth/actions";
+import FormSubmitButton from "./FormSubmitButton";
+import FormError from "./FormError";
+import {generalError, localizeError} from "../../api/errors";
+import {RemoteValidationErrors} from "../../api/dto";
 
-export type ResetPasswordFormState = {
+type FormState = {
     password: string;
     passwordRepeat: string;
 };
 
-const initialState = (): ResetPasswordFormState => ({
+const initialState = (): FormState => ({
     password: "",
     passwordRepeat: "",
 });
@@ -30,43 +34,47 @@ const ResetPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-type ResetPasswordFormProps = {token?: string} & FormProps<ResetPasswordFormState> & ThemeProps;
+type ResetPasswordFormProps = {token?: string} & FormProps<FormState> & ThemeProps;
 
 // Component state
-type ResetPasswordFormComponentState = {failure: boolean; errors?: string[]};
+type ResetPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
-class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPasswordFormComponentState> {
+class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPasswordFormState> {
+    setFieldError?: (field: string, message: string) => void;
+
     constructor(props: ResetPasswordFormProps) {
         super(props);
-        this.state = {failure: false};
+        this.state = {submitting: false};
     }
 
-    submit(values: ResetPasswordFormState) {
+    submit(values: FormState) {
         const {token, onSuccessfulSubmit} = this.props;
+        this.setState({...this.state, submitting: true});
 
         if (token) {
             (store.dispatch as MyThunkDispatch)(resetPassword(token, values.password)).then(
-                ({success, errors}: FailableActionReturn) => {
+                ({success, errors}: ValidatedActionReturn) => {
                     if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
-                    this.setState({...this.state, failure: !success, errors});
-
-                    if (!success) {
-                        Alert.alert("Unable to change password", errors && errors.length > 0 ? errors[0] : "", [
-                            {text: "OK", onPress: () => console.log("OK Pressed")},
-                        ]);
+                    if (errors && errors.fields) {
+                        const f = errors.fields;
+                        Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                     }
+                    this.setState({remoteErrors: errors, submitting: false});
                 },
             );
+        } else {
+            this.setState({remoteErrors: {general: "error.reset_password_no_token", fields: {}}, submitting: false});
         }
     }
 
     render(): JSX.Element {
         const {theme} = this.props;
+        const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
         const fstyles = formStyles(theme);
 
         return (
-            <React.Fragment>
+            <>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("resetPassword.title")}</Text>
                 </View>
@@ -75,11 +83,20 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                     validationSchema={ResetPasswordFormSchema}
                     validateOnChange={true}
                     validateOnBlur={false}
-                    onSubmit={(values: ResetPasswordFormState) => this.submit(values)}
+                    onSubmit={(values) => this.submit(values)}
                 >
-                    {(formikProps: FormikProps<ResetPasswordFormState>) => {
-                        const {handleSubmit, values, errors, touched, handleChange, handleBlur} = formikProps;
+                    {(formikProps: FormikProps<FormState>) => {
+                        const {
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            handleChange,
+                            handleBlur,
+                            setFieldError,
+                        } = formikProps;
                         const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
+                        this.setFieldError = setFieldError;
 
                         return (
                             <React.Fragment>
@@ -89,8 +106,7 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     error={errors.password}
                                     value={values.password}
                                     touched={touched.password}
-                                    secureTextEntry={true}
-                                    autoCompleteType="password"
+                                    isPassword={true}
                                     {...textInputProps}
                                 />
 
@@ -100,26 +116,26 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     error={errors.passwordRepeat}
                                     value={values.passwordRepeat}
                                     touched={touched.passwordRepeat}
-                                    secureTextEntry={true}
-                                    autoCompleteType="password"
+                                    isPassword={true}
                                     {...textInputProps}
                                 />
 
+                                <FormError error={generalError(remoteErrors)} />
+
                                 <View style={fstyles.actionRow}>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("createAccount")}
+                                    <FormSubmitButton
                                         onPress={() => handleSubmit()}
                                         style={[fstyles.buttonMajor, styles.button]}
-                                    >
-                                        <Text style={fstyles.buttonMajorText}>{i18n.t("resetPassword.button")}</Text>
-                                    </TouchableOpacity>
+                                        textStyle={fstyles.buttonMajorText}
+                                        text={i18n.t("resetPassword.button")}
+                                        submitting={submitting}
+                                    />
                                 </View>
                             </React.Fragment>
                         );
                     }}
                 </Formik>
-            </React.Fragment>
+            </>
         );
     }
 }

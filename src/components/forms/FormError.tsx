@@ -1,13 +1,13 @@
 import * as React from "react";
-
 import {Text, View, ViewProps, StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
+import {localizeError} from "../../api/errors";
 
 // Component props
 export type FormErrorProps = ThemeProps & {
-    error: string;
+    error?: string;
 } & ViewProps;
 
 class FormError extends React.Component<FormErrorProps> {
@@ -16,9 +16,13 @@ class FormError extends React.Component<FormErrorProps> {
         const styles = themedStyles(theme);
 
         return (
-            <View style={[styles.wrapper, style]} {...otherProps}>
-                <Text style={[styles.text]}>{error}</Text>
-            </View>
+            <>
+                {error && error.length > 0 && (
+                    <View style={[styles.wrapper, style]} {...otherProps}>
+                        <Text style={styles.text}>{error ? localizeError(error) : ""}</Text>
+                    </View>
+                )}
+            </>
         );
     }
 }
@@ -26,11 +30,12 @@ class FormError extends React.Component<FormErrorProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
-            marginVertical: 10,
+            marginTop: 5,
         },
         text: {
             fontSize: 14,
             color: theme.error,
+            textAlign: "center",
         },
     });
 });

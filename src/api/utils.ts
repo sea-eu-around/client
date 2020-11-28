@@ -1,12 +1,12 @@
 import {Alert} from "react-native";
 import {BACKEND_URL} from "../constants/config";
 import store from "../state/store";
-import {TokenDto} from "./dto";
+import {RequestResponse, TokenDto} from "./dto";
 
-export type Primitive = string | number | boolean | Primitive[] | undefined;
-export type URLParams = {[key: string]: Primitive};
-export type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
-export type RequestResponse = {success: boolean; codes: string[]} & {[key: string]: unknown};
+// Request-related types
+type Primitive = string | number | boolean | Primitive[] | undefined;
+type URLParams = {[key: string]: Primitive};
+type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 
 function encodeURIPrimitive(v: Primitive): string {
     return Array.isArray(v)
@@ -57,7 +57,7 @@ export async function requestBackend(
         else {
             console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
             Alert.alert("A request could not be authenticated.");
-            return {success: false, codes: ["error.no-auth"]};
+            return {errorType: "error.no-auth", description: "Endpoint requires authentication", status: 401};
         }
     }
 
@@ -76,7 +76,7 @@ export async function requestBackend(
             ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
         });
 
-        const json = await response.json();
+        const json = {...(await response.json()), status: response.status};
         if (verbose) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
@@ -89,6 +89,6 @@ export async function requestBackend(
                 `Method = ${method}, auth = ${auth}, params=${JSON.stringify(params)}, body=${JSON.stringify(body)}`,
         );
         console.error(error);
-        return {success: false, codes: ["error.unknown"]};
+        return {errorType: "error.unknown", description: "A client-side exception was raised.", status: 400};
     }
 }

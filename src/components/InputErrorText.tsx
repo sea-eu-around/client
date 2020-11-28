@@ -1,9 +1,9 @@
 import * as React from "react";
 import {Text, TextProps, StyleSheet} from "react-native";
-import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
+import {localizeError} from "../api/errors";
 
 // Component props
 export type InputErrorTextProps = ThemeProps & TextProps & {error: string | string[] | null | undefined};
@@ -17,7 +17,7 @@ class InputErrorText extends React.Component<InputErrorTextProps> {
 
         return (
             <Text {...otherProps} style={[styles.text, style]}>
-                {errorStr ? i18n.t(errorStr) : ""}
+                {errorStr ? localizeError(errorStr) : ""}
             </Text>
         );
     }
