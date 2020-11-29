@@ -12,16 +12,20 @@ let EXTRAS = {};
 
 if (TARGET === "PRODUCTION") {
     CLIENT_HOST = "sea-eu-around.lad-dev.team";
+    const SERVER_HOST = "api.sea-eu-around.lad-dev.team";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
-        SERVER_URL: "https://api.sea-eu-around.lad-dev.team",
+        SERVER_HOST,
+        SERVER_URL: `https://${SERVER_HOST}`,
         DEBUG: false,
     };
 } else {
     CLIENT_HOST = "staging.sea-eu-around.lad-dev.team";
+    const SERVER_HOST = "api-staging.sea-eu-around.lad-dev.team";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
-        SERVER_URL: "https://api-staging.sea-eu-around.lad-dev.team",
+        SERVER_HOST,
+        SERVER_URL: `https://${SERVER_HOST}`,
         DEBUG: true,
     };
 }

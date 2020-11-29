@@ -13,6 +13,7 @@ export const APP_SCHEME: string = Constants.manifest.scheme;
 export const ENVIRONMENT: Environment = extra.TARGET;
 export const DEBUG_MODE: boolean = extra.DEBUG;
 export const CLIENT_URL: string = extra.CLIENT_URL;
+export const SERVER_HOST: string = extra.SERVER_HOST;
 export const BACKEND_URL: string = extra.SERVER_URL;
 
 /**
@@ -22,9 +23,10 @@ export const BACKEND_URL: string = extra.SERVER_URL;
 export const AVATAR_QUALITY = 0.75;
 
 /**
- * The number of profiles fetched per request when scrolling in the Matching tab.
+ * The number of resources fetched per request when scrolling in infinite scrolling containers.
  */
-export const PROFILES_FETCH_LIMIT = 8;
+export const PROFILES_FETCH_LIMIT = 8; // Matching tab
+export const ROOMS_FETCH_LIMIT = 8; // Messaging tab
 
 /**
  * The maximum number of spoken languages a user can select.
