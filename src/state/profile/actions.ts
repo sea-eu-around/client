@@ -125,7 +125,7 @@ export const createProfileSuccess = (): CreateProfileSuccessAction => ({
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
     const response = await requestBackend("profiles", "POST", {}, profile, token);
-    if (response.status === HttpStatusCode.OK) dispatch(createProfileSuccess());
+    if (response.status === HttpStatusCode.CREATED) dispatch(createProfileSuccess());
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
