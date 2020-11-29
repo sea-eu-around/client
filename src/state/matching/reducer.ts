@@ -1,6 +1,6 @@
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES} from "../auth/actions";
-import {MatchingFiltersState, MatchingState} from "../types";
+import {initialPaginatedState, MatchingFiltersState, MatchingState} from "../types";
 import {
     MatchingAction,
     MATCHING_ACTION_TYPES,
@@ -24,9 +24,7 @@ export const defaultMatchingFilters = (): MatchingFiltersState => ({
 export const initialState: MatchingState = {
     filters: defaultMatchingFilters(),
     fetchedProfiles: [],
-    fetchingProfiles: false,
-    fetchingPage: 1,
-    canFetchMore: true,
+    profilesPagination: initialPaginatedState(),
     myMatches: [],
     fetchingMyMatches: false,
 };
@@ -51,28 +49,25 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_BEGIN: {
-            return {...state, fetchingProfiles: true};
+            return {...state, profilesPagination: {...state.profilesPagination, fetching: true}};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE: {
-            return {...state, fetchingProfiles: false, canFetchMore: false};
+            return {...state, profilesPagination: {...state.profilesPagination, fetching: false, canFetchMore: false}};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
             const {profiles, canFetchMore} = <FetchProfilesSuccessAction>action;
+            const pagination = state.profilesPagination;
             return {
                 ...state,
                 fetchedProfiles: state.fetchedProfiles.concat(profiles),
-                fetchingProfiles: false,
-                fetchingPage: state.fetchingPage + 1,
-                canFetchMore,
+                profilesPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
             return {
                 ...state,
                 fetchedProfiles: [],
-                fetchingProfiles: false,
-                fetchingPage: 1,
-                canFetchMore: true,
+                profilesPagination: initialPaginatedState(),
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN: {
@@ -115,9 +110,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 ...state,
                 filters: defaultMatchingFilters(),
                 fetchedProfiles: [],
-                fetchingProfiles: false,
-                fetchingPage: 1,
-                canFetchMore: true,
+                profilesPagination: initialPaginatedState(),
                 myMatches: [],
                 fetchingMyMatches: false,
             };

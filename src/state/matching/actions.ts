@@ -121,10 +121,10 @@ export const beginFetchProfiles = (): BeginFetchProfilesAction => ({
 export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
-        matching,
+        matching: {filters, profilesPagination},
     } = getState();
 
-    if (matching.fetchingProfiles || !matching.canFetchMore) return;
+    if (profilesPagination.fetching || !profilesPagination.canFetchMore) return;
 
     dispatch(beginFetchProfiles());
 
@@ -133,7 +133,6 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         return t.length == 0 ? undefined : t;
     }
 
-    const filters = matching.filters;
     const offers = Object.keys(filters.offers).filter((k) => filters.offers[k] === true);
 
     const filterParams = {
@@ -148,7 +147,7 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         "profiles",
         "GET",
         {
-            page: matching.fetchingPage,
+            page: profilesPagination.page,
             limit: PROFILES_FETCH_LIMIT,
             ...filterParams,
         },
