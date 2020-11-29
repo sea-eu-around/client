@@ -53,7 +53,8 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 
     fetchMore() {
-        (this.props.dispatch as MyThunkDispatch)(fetchProfiles());
+        const {fetchingProfiles, dispatch} = this.props;
+        if (!fetchingProfiles) (dispatch as MyThunkDispatch)(fetchProfiles());
     }
 
     hideProfile(p: UserProfile) {
@@ -107,7 +108,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                     onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
                         const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
                         const distanceToBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
-                        if (!fetchingProfiles && distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+                        if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                     }}
                 >
                     <View style={styles.matchContainer}>
