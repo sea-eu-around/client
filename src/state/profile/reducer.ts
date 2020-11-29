@@ -1,16 +1,16 @@
 import {stripSuperfluousOffers} from "../../api/converters";
 import {OfferDto} from "../../api/dto";
+import {AUTH_ACTION_TYPES} from "../auth/actions";
+import {ProfileState} from "../types";
 import {
-    ProfileState,
+    FetchUserSuccessAction,
+    LoadProfileInterestsSuccessAction,
+    LoadProfileOffersSuccessAction,
     ProfileAction,
     PROFILE_ACTION_TYPES,
-    LoadProfileOffersSuccessAction,
-    LoadProfileInterestsSuccessAction,
-    SetProfileFieldsSuccessAction,
-    FetchUserSuccessAction,
     SetAvatarSuccessAction,
-    AUTH_ACTION_TYPES,
-} from "../types";
+    SetProfileFieldsSuccessAction,
+} from "./actions";
 
 export const initialState: ProfileState = {
     user: null,

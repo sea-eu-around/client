@@ -1,14 +1,4 @@
-import {
-    AppThunk,
-    CreateProfileSuccessAction,
-    PROFILE_ACTION_TYPES,
-    LoadProfileOffersSuccessAction,
-    LoadProfileInterestsSuccessAction,
-    SetProfileFieldsSuccessAction,
-    FetchUserSuccessAction,
-    SetAvatarSuccessAction,
-    SetAvatarFailureAction,
-} from "../types";
+import {AppThunk} from "../types";
 import {
     AvatarSuccessfulUpdatedDto,
     CreateProfileDto,
@@ -24,17 +14,103 @@ import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
 import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
-import {readCachedStaticData} from "../static-storage-middleware";
 import {HttpStatusCode} from "../../constants/http-status";
+import {readCachedStaticData} from "../persistent-storage/static";
+
+export enum PROFILE_ACTION_TYPES {
+    LOAD_USER_PROFILE = "PROFILE/LOAD_USER_PROFILE",
+    LOAD_PROFILE_OFFERS = "LOAD_PROFILE_OFFERS",
+    LOAD_PROFILE_OFFERS_SUCCESS = "LOAD_PROFILE_OFFERS_SUCCESS",
+    LOAD_PROFILE_INTERESTS = "LOAD_PROFILE_INTERESTS",
+    LOAD_PROFILE_INTERESTS_SUCCESS = "LOAD_PROFILE_INTERESTS_SUCCESS",
+    PROFILE_SET_FIELDS_SUCCESS = "PROFILE/SET_FIELDS_SUCCESS",
+    PROFILE_CREATE = "PROFILE/CREATE",
+    PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
+    FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
+    SET_AVATAR = "PROFILE/SET_AVATAR",
+    SET_AVATAR_SUCCESS = "PROFILE/SET_AVATAR_SUCCESS",
+    SET_AVATAR_FAILURE = "PROFILE/SET_AVATAR_FAILURE",
+}
+
+export type LoadUserProfileAction = {
+    type: string;
+    id: string;
+};
+
+export type SetProfileFieldsAction = {
+    type: string;
+    fields: Partial<UserProfile>;
+};
+
+export type SetProfileFieldsSuccessAction = {
+    type: string;
+    fields: Partial<UserProfile>;
+};
+
+export type CreateProfileAction = {
+    type: string;
+    profile: CreateProfileDto;
+};
+
+export type CreateProfileSuccessAction = {
+    type: string;
+};
+
+export type LoadProfileOffersAction = {
+    type: string;
+};
+
+export type LoadProfileOffersSuccessAction = {
+    type: string;
+    offers: OfferDto[];
+    fromCache: boolean;
+};
+
+export type LoadProfileInterestsAction = {
+    type: string;
+};
+
+export type LoadProfileInterestsSuccessAction = {
+    type: string;
+    interests: InterestDto[];
+    fromCache: boolean;
+};
+
+export type FetchUserSuccessAction = {
+    type: string;
+    user: User;
+};
+
+export type SetAvatarSuccessAction = {
+    type: string;
+    avatarUrl: string;
+};
+
+export type SetAvatarFailureAction = {
+    type: string;
+};
+
+export type ProfileAction =
+    | SetProfileFieldsAction
+    | CreateProfileAction
+    | CreateProfileSuccessAction
+    | LoadProfileOffersAction
+    | LoadProfileOffersSuccessAction
+    | LoadProfileInterestsAction
+    | LoadProfileInterestsSuccessAction
+    | FetchUserSuccessAction
+    | SetAvatarSuccessAction
+    | SetAvatarFailureAction;
 
 export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
     fields,
 });
 
-export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch) => {
+export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
     const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
-    const response = await requestBackend("profiles", "PATCH", {}, dto, true);
+    const response = await requestBackend("profiles", "PATCH", {}, dto, token);
     if (response.status === HttpStatusCode.OK) {
         dispatch(setProfileFieldsSuccess(fields));
     } else {
@@ -46,8 +122,9 @@ export const createProfileSuccess = (): CreateProfileSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS,
 });
 
-export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch) => {
-    const response = await requestBackend("profiles", "POST", {}, profile, true);
+export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend("profiles", "POST", {}, profile, token);
     if (response.status === HttpStatusCode.OK) dispatch(createProfileSuccess());
 };
 
@@ -98,8 +175,9 @@ export const loadProfileInterestsSuccess = (
     fromCache,
 });
 
-export const fetchUser = (): AppThunk => async (dispatch) => {
-    const response = await requestBackend("auth/me", "GET", {}, {}, true);
+export const fetchUser = (): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend("auth/me", "GET", {}, {}, token);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const user = convertDtoToUser(payload as ResponseUserDto);
@@ -121,8 +199,9 @@ export const setAvatarFailure = (): SetAvatarFailureAction => ({
     type: PROFILE_ACTION_TYPES.SET_AVATAR_FAILURE,
 });
 
-export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
-    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, true);
+export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, token);
 
     const fail = () => dispatch(setAvatarFailure());
 
@@ -141,7 +220,7 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch) => {
             });
 
             // Submit the file name to the server
-            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, true);
+            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, token);
 
             if (response2.status === HttpStatusCode.OK) {
                 const payload2 = (response2 as SuccessfulRequestResponse).data;

@@ -1,6 +1,5 @@
 import {Alert} from "react-native";
 import {BACKEND_URL} from "../constants/config";
-import store from "../state/store";
 import {RequestResponse, TokenDto} from "./dto";
 
 // Request-related types
@@ -42,23 +41,20 @@ export async function requestBackend(
     method = "GET",
     params: URLParams = {},
     body: URLBodyParams = {},
-    auth = false,
+    authToken: TokenDto | null | undefined = undefined,
     verbose = false,
-    authToken: TokenDto | undefined = undefined,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
         "Content-Type": "application/json",
     };
 
-    if (auth) {
-        const token = authToken || store.getState().auth.token;
-        if (token) headers.Authorization = `Bearer ${token.accessToken}`;
-        else {
+    if (authToken !== undefined) {
+        if (authToken === null) {
             console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
             Alert.alert("A request could not be authenticated.");
             return {errorType: "error.no-auth", description: "Endpoint requires authentication", status: 401};
-        }
+        } else headers.Authorization = `Bearer ${authToken.accessToken}`;
     }
 
     const formattedParams = encodeRequestParams(params);
@@ -86,7 +82,8 @@ export async function requestBackend(
     } catch (error) {
         console.error(
             `An unexpected error occured with a request to ${endpoint}. ` +
-                `Method = ${method}, auth = ${auth}, params=${JSON.stringify(params)}, body=${JSON.stringify(body)}`,
+                `Method = ${method}, authToken = ${authToken}, params=${JSON.stringify(params)}, ` +
+                `body=${JSON.stringify(body)}`,
         );
         console.error(error);
         return {errorType: "error.unknown", description: "A client-side exception was raised.", status: 400};

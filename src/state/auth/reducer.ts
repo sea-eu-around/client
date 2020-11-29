@@ -1,6 +1,7 @@
 import {extractNamesFromEmail} from "../../model/utils";
+import {PROFILE_ACTION_TYPES} from "../profile/actions";
+import {AuthState, OnboardingState} from "../types";
 import {
-    AuthState,
     AuthAction,
     LogInSuccessAction,
     RegisterBeginAction,
@@ -9,9 +10,7 @@ import {
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
-    PROFILE_ACTION_TYPES,
-    OnboardingState,
-} from "../types";
+} from "./actions";
 
 const initialOnboardingState = (): OnboardingState => ({
     firstname: "",

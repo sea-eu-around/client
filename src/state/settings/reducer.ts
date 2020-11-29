@@ -1,7 +1,8 @@
 import {getDefaultLocale, SupportedLocale} from "../../localization";
 import {LANGUAGES_CODES} from "../../model/languages";
-import {SettingsState, SettingsAction, SetThemeAction, SetLocaleAction, SETTINGS_ACTION_TYPES} from "../types";
 import translations from "../../constants/translations";
+import {SetLocaleAction, SetThemeAction, SettingsAction, SETTINGS_ACTION_TYPES} from "./actions";
+import {SettingsState} from "../types";
 
 function getLocalizedLanguageItems(locale: SupportedLocale) {
     const trans = (translations as {[key: string]: {[key: string]: unknown}})[locale];

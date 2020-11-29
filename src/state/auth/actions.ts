@@ -1,31 +1,92 @@
-import {
-    LogOutAction,
-    LogInSuccessAction,
-    LogInFailureAction,
-    AppThunk,
-    RegisterBeginAction,
-    RegisterSuccessAction,
-    RegisterFailureAction,
-    ValidateAccountSuccessAction,
-    ValidateAccountFailureAction,
-    OnboardingState,
-    SetOnboardingValuesAction,
-    AUTH_ACTION_TYPES,
-    SetOnboardingOfferValueAction,
-    ForgotPasswordSuccessAction,
-    ForgotPasswordFailureAction,
-    ResetPasswordSuccessAction,
-    ValidatedThunkAction,
-} from "../types";
+import {AppThunk, OnboardingState, ValidatedThunkAction} from "../types";
 import {LoginDto, OfferValueDto, ResponseUserDto, SuccessfulRequestResponse, TokenDto} from "../../api/dto";
 import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
-import store from "../store";
 import {createProfile} from "../profile/actions";
-import {readCachedCredentials} from "../auth-storage-middleware";
 import {convertDtoToUser} from "../../api/converters";
 import {HttpStatusCode} from "../../constants/http-status";
 import {gatherValidationErrors} from "../../api/errors";
+import {readCachedCredentials} from "../persistent-storage/auth";
+
+export enum AUTH_ACTION_TYPES {
+    REGISTER_BEGIN = "AUTH/REGISTER_BEGIN",
+    REGISTER_SUCCESS = "AUTH/REGISTER_SUCCESS",
+    REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
+    LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
+    LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
+    LOG_OUT = "AUTH/LOG_OUT",
+    VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
+    VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
+    VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
+    SET_ONBOARDING_OFFER_VALUE = "AUTH/SET_ONBOARDING_OFFER_VALUE",
+    FORGOT_PASSWORD_FAILURE = "AUTH/FORGOT_PASSWORD_FAILURE",
+    FORGOT_PASSWORD_SUCCESS = "AUTH/FORGOT_PASSWORD_SUCCESS",
+    RESET_PASSWORD_SUCCESS = "AUTH/RESET_PASSWORD_SUCCESS",
+}
+
+export type RegisterBeginAction = {
+    type: string;
+    email: string;
+    password: string;
+};
+
+export type RegisterSuccessAction = {type: string; user: User};
+
+export type RegisterFailureAction = {type: string};
+
+export type LogInSuccessAction = {
+    type: string;
+    token: TokenDto;
+    user: User;
+    usingCachedCredentials: boolean;
+};
+
+export type LogOutAction = {type: string};
+
+export type LogInFailureAction = {type: string};
+
+export type ValidateAccountSuccessAction = {
+    type: string;
+    email: string;
+};
+
+export type ValidateAccountFailureAction = {type: string};
+
+export type SetOnboardingValuesAction = {
+    type: string;
+    values: Partial<OnboardingState>;
+};
+
+export type SetOnboardingOfferValueAction = {
+    type: string;
+    id: string;
+    value: OfferValueDto;
+};
+
+export type ForgotPasswordFailureAction = {type: string};
+
+export type ForgotPasswordSuccessAction = {
+    type: string;
+    email: string;
+};
+
+export type ResetPasswordSuccessAction = {type: string};
+
+export type AuthAction =
+    | RegisterBeginAction
+    | RegisterSuccessAction
+    | RegisterFailureAction
+    | LogInSuccessAction
+    | LogInFailureAction
+    | LogOutAction
+    | ValidateAccountSuccessAction
+    | ValidateAccountFailureAction
+    | SetOnboardingValuesAction
+    | SetOnboardingOfferValueAction
+    | ForgotPasswordFailureAction
+    | ForgotPasswordSuccessAction
+    | ResetPasswordSuccessAction;
 
 // Register actions
 
@@ -36,11 +97,11 @@ export const registerBegin = (email: string, password: string): RegisterBeginAct
 });
 
 // Redux-thunk asynchronous action creator
-export const requestRegister = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
-    dispatch(registerBegin(email, password));
-    const locale = store.getState().settings.locale;
+export const requestRegister = (email: string, pwd: string): ValidatedThunkAction => async (dispatch, getState) => {
+    dispatch(registerBegin(email, pwd));
+    const locale = getState().settings.locale;
 
-    const response = await requestBackend("auth/register", "POST", {}, {email, password, locale});
+    const response = await requestBackend("auth/register", "POST", {}, {email, pwd, locale});
 
     if (response.status == HttpStatusCode.OK) {
         const successResp = response as SuccessfulRequestResponse;
@@ -81,7 +142,7 @@ export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (di
         const {token} = credentials;
 
         // Get user information
-        const response = await requestBackend("auth/me", "GET", {}, {}, true, false, token);
+        const response = await requestBackend("auth/me", "GET", {}, {}, token);
 
         if (response.status == HttpStatusCode.OK) {
             const payload = (response as SuccessfulRequestResponse).data as ResponseUserDto;
@@ -94,7 +155,7 @@ export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (di
 };
 
 export const requestLogin = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
-    const response = await requestBackend("auth/login", "POST", {}, {email, password}, false, true);
+    const response = await requestBackend("auth/login", "POST", {}, {email, password});
 
     if (response.status == HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as LoginDto;
@@ -184,12 +245,12 @@ export const setOnboardingOfferValue = (id: string, value: OfferValueDto): SetOn
     value,
 });
 
-export const debugConnect = (): AppThunk => async (dispatch) => {
+export const debugConnect = (): AppThunk => async (dispatch, getState) => {
     const email = `test${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`;
     const password = "PASSword$1";
 
     await dispatch(requestRegister(email, password));
-    const {verificationToken} = store.getState().auth;
+    const {verificationToken} = getState().auth;
 
     if (verificationToken) {
         await dispatch(requestValidateAccount(verificationToken));

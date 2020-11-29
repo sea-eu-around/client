@@ -1,6 +1,7 @@
 import {UserProfile} from "../../model/user-profile";
+import {AUTH_ACTION_TYPES} from "../auth/actions";
+import {MatchingFiltersState, MatchingState} from "../types";
 import {
-    MatchingState,
     MatchingAction,
     MATCHING_ACTION_TYPES,
     SetOfferFilterAction,
@@ -9,10 +10,8 @@ import {
     DislikeProfileSuccessAction,
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
-    MatchingFiltersState,
     FetchMyMatchesSuccessAction,
-    AUTH_ACTION_TYPES,
-} from "../types";
+} from "./actions";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
     offers: {},

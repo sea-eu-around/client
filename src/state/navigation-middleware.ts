@@ -1,13 +1,9 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
 import {rootNavigate} from "../navigation/utils";
-import {
-    AppState,
-    AUTH_ACTION_TYPES,
-    LikeProfileSuccessAction,
-    LogInSuccessAction,
-    MATCHING_ACTION_TYPES,
-    PROFILE_ACTION_TYPES,
-} from "./types";
+import {AUTH_ACTION_TYPES, LogInSuccessAction} from "./auth/actions";
+import {LikeProfileSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
+import {PROFILE_ACTION_TYPES} from "./profile/actions";
+import {AppState} from "./types";
 
 export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: MiddlewareAPI<Dispatch, AppState>*/) => (
     next: Dispatch<AnyAction>,
