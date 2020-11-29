@@ -105,6 +105,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                             <FormTextInput
                                 field="email"
                                 placeholder={i18n.t("emailAddress")}
+                                accessibilityLabel={i18n.t("emailAddress")}
                                 error={errors.email}
                                 value={values.email}
                                 touched={touched.email}
@@ -115,6 +116,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                             <FormTextInput
                                 field="password"
                                 placeholder={i18n.t("password")}
+                                accessibilityLabel={i18n.t("password")}
                                 error={errors.password}
                                 value={values.password}
                                 touched={touched.password}
@@ -157,7 +159,9 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.accent,
         },
         forgotPwdLink: {
-            marginTop: 40,
+            height: 48,
+            justifyContent: "center",
+            marginTop: 20,
             padding: 8, // make the button larger to click on
         },
         forgotPasswordText: {

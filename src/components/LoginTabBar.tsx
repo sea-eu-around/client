@@ -97,7 +97,7 @@ const themedStyles = preTheme((theme: Theme) => {
         tabBar: {
             width: "100%",
             maxWidth: 400,
-            height: 40,
+            height: 48,
             flexDirection: "row",
         },
         tabButton: {
@@ -111,7 +111,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         tabButtonText: {
             fontSize: 18,
-            lineHeight: 40,
+            lineHeight: 48,
             letterSpacing: 1,
             textTransform: "capitalize",
             textAlign: "center",

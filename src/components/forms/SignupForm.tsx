@@ -100,6 +100,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                 <FormTextInput
                                     field="email"
                                     placeholder={i18n.t("emailAddress")}
+                                    accessibilityLabel={i18n.t("emailAddress")}
                                     error={errors.email}
                                     value={values.email}
                                     touched={touched.email}
@@ -110,6 +111,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                 <FormTextInput
                                     field="password"
                                     placeholder={i18n.t("password")}
+                                    accessibilityLabel={i18n.t("password")}
                                     error={errors.password}
                                     value={values.password}
                                     touched={touched.password}
@@ -120,6 +122,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                 <FormTextInput
                                     field="passwordRepeat"
                                     placeholder={i18n.t("passwordRepeat")}
+                                    accessibilityLabel={i18n.t("passwordRepeat")}
                                     error={errors.passwordRepeat}
                                     value={values.passwordRepeat}
                                     touched={touched.passwordRepeat}

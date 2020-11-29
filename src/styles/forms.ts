@@ -4,7 +4,7 @@ import {FormTextInputProps} from "../components/FormTextInput";
 import {FormCheckBoxProps} from "../components/FormCheckBox";
 import {preTheme} from "./utils";
 
-export const formStyles = preTheme((theme: Theme) => {
+export const formStyles = preTheme(() => {
     return StyleSheet.create({
         inputErrorText: {
             fontSize: 12,
@@ -152,7 +152,10 @@ export const loginTabsStyles = preTheme((theme: Theme) => {
             right: 0,
         },
         toggleThemeButton: {
-            padding: 10,
+            width: 48,
+            height: 48,
+            justifyContent: "center",
+            alignItems: "center",
         },
         toggleThemeIcon: {
             fontSize: 26,
