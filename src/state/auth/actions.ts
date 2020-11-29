@@ -97,11 +97,14 @@ export const registerBegin = (email: string, password: string): RegisterBeginAct
 });
 
 // Redux-thunk asynchronous action creator
-export const requestRegister = (email: string, pwd: string): ValidatedThunkAction => async (dispatch, getState) => {
-    dispatch(registerBegin(email, pwd));
+export const requestRegister = (email: string, password: string): ValidatedThunkAction => async (
+    dispatch,
+    getState,
+) => {
+    dispatch(registerBegin(email, password));
     const locale = getState().settings.locale;
 
-    const response = await requestBackend("auth/register", "POST", {}, {email, pwd, locale});
+    const response = await requestBackend("auth/register", "POST", {}, {email, password, locale});
 
     if (response.status == HttpStatusCode.OK) {
         const successResp = response as SuccessfulRequestResponse;
