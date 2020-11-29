@@ -96,7 +96,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         tabBar: {
             width: "100%",
-            maxWidth: 400,
+            maxWidth: 420,
             height: 48,
             flexDirection: "row",
         },
