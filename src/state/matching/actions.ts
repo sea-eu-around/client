@@ -188,7 +188,7 @@ export const likeProfileSuccess = (
 
 export const likeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/like", "POST", {}, {toUserId: profileId}, token);
+    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, token);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const matchStatus = payload as LikeProfileResponseDto;
@@ -203,7 +203,7 @@ export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessA
 
 export const dislikeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/decline", "POST", {}, {toUserId: profileId}, token);
+    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, token);
     if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
 };
 
