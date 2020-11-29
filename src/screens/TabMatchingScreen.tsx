@@ -28,8 +28,8 @@ import {PROFILES_FETCH_LIMIT} from "../constants/config";
 
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
-    fetchingProfiles: state.matching.fetchingProfiles,
-    justRefreshed: state.matching.fetchingPage == 1,
+    fetchingProfiles: state.matching.profilesPagination.fetching,
+    justRefreshed: state.matching.profilesPagination.page == 1,
 }));
 
 // Component props
