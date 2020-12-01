@@ -121,12 +121,17 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                     containerStyle={styles.swipeableContainer}
                     childrenContainerStyle={styles.swipeable}
                     onSwipeableRightWillOpen={() => {
-                        if (this.props.onSwipeLeft) this.props.onSwipeLeft();
-                        this.hide();
+                        // if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                        // TODO decide
+                        this.hide(() => {
+                            if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                        });
                     }}
                     onSwipeableLeftWillOpen={() => {
-                        if (this.props.onSwipeRight) this.props.onSwipeRight();
-                        this.hide();
+                        // if (this.props.onSwipeRight) this.props.onSwipeRight();
+                        this.hide(() => {
+                            if (this.props.onSwipeRight) this.props.onSwipeRight();
+                        });
                     }}
                     leftThreshold={100}
                     rightThreshold={100}
