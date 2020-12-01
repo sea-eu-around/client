@@ -19,11 +19,15 @@ const emailProps: Partial<TextInputProps> = {
     keyboardType: "email-address",
     autoCompleteType: "email",
     textContentType: "emailAddress",
+    autoCapitalize: "none",
+    autoCorrect: false,
 };
 const passwordProps: Partial<TextInputProps> = {
     secureTextEntry: true,
     autoCompleteType: "password",
     textContentType: "password",
+    autoCapitalize: "none",
+    autoCorrect: false,
 };
 
 /**
