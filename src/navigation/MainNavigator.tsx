@@ -130,7 +130,7 @@ const TabMatchingNavigator = withTheme(
                 component={TabMatchingScreen}
                 options={({navigation}) => ({
                     headerShown: true,
-                    headerLeft: () => <></>,
+                    headerLeftContainerStyle: {display: "none"},
                     headerTitle: "Matching",
                     headerTitleStyle: {
                         letterSpacing: 0.5,
