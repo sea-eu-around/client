@@ -140,3 +140,26 @@ export type AvatarSuccessfulUpdatedDto = {
 };
 
 export type LikeProfileResponseDto = "requested" | "matched";
+
+export type ChatRoomProfileDto = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    lastMessageSeenId: string | null;
+};
+
+export type ResponseRoomDto = {
+    id: string;
+    profiles: ChatRoomProfileDto[];
+    lastMessage: ResponseChatMessageDto | null;
+};
+
+export type ResponseChatMessageDto = {
+    roomId: string;
+    id: string;
+    senderId: string;
+    sent: boolean;
+    text: string;
+    updatedAt: string;
+};

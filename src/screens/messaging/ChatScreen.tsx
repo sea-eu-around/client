@@ -1,27 +1,70 @@
-import {FontAwesome5} from "@expo/vector-icons";
+import {MaterialIcons} from "@expo/vector-icons";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {withTheme} from "react-native-elements";
-import LogOutButton from "../../components/LogOutButton";
-import {rootNavigate} from "../../navigation/utils";
+import {GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send, SendProps} from "react-native-gifted-chat";
+import {connect, ConnectedProps} from "react-redux";
+import {RootNavigatorScreens} from "../../navigation/types";
+import {leaveChatRoom, sendChatMessage} from "../../state/messaging/actions";
+import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 
-export type ChatScreenProps = ThemeProps;
+// Map props from store
+const reduxConnector = connect((state: AppState) => ({
+    activeRoom: state.messaging.activeRoom,
+    localChatUser: state.messaging.localChatUser,
+}));
+
+// Component props
+export type ChatScreenProps = ThemeProps &
+    ConnectedProps<typeof reduxConnector> &
+    StackScreenProps<RootNavigatorScreens>;
 
 class ChatScreen extends React.Component<ChatScreenProps> {
+    componentDidMount() {
+        this.props.navigation.addListener("blur", () => this.onBlur());
+    }
+
+    onBlur() {
+        const {dispatch, activeRoom} = this.props;
+        if (activeRoom) (dispatch as MyThunkDispatch)(leaveChatRoom(activeRoom));
+    }
+
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, activeRoom, localChatUser, dispatch} = this.props;
         const styles = themedStyles(theme);
 
-        return (
-            <View style={styles.container}>
-                <FontAwesome5 style={styles.constructionIcon} name="hard-hat"></FontAwesome5>
-                <Text style={styles.title}>Under construction</Text>
-                <View style={styles.separator} />
-                <LogOutButton style={styles.logoutButton} onLogOut={() => rootNavigate("LoginScreen")} />
-            </View>
-        );
+        let chatComponent = <></>;
+        if (activeRoom && localChatUser) {
+            chatComponent = (
+                <GiftedChat
+                    messages={activeRoom.messages}
+                    user={localChatUser}
+                    renderSend={(props: SendProps<IMessage>) => (
+                        <Send {...props} containerStyle={styles.sendContainer}>
+                            <MaterialIcons name="send" style={styles.send} />
+                        </Send>
+                    )}
+                    renderInputToolbar={(props: InputToolbarProps) => (
+                        <InputToolbar
+                            {...props}
+                            containerStyle={styles.inputToolbarContainer}
+                            primaryStyle={styles.inputToolbarPrimary}
+                        />
+                    )}
+                    timeFormat={"HH:mm"}
+                    onSend={(messages) => {
+                        messages.forEach((m) =>
+                            (dispatch as MyThunkDispatch)(sendChatMessage(m._id + "", m.text, m.createdAt)),
+                        );
+                    }}
+                />
+            );
+        }
+
+        return <View style={styles.container}>{chatComponent}</View>;
     }
 }
 
@@ -29,32 +72,22 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
             backgroundColor: theme.background,
+            justifyContent: "center",
         },
-        title: {
-            width: "100%",
-            textAlign: "center",
-            fontSize: 20,
-            fontWeight: "bold",
-            color: theme.text,
+        inputToolbarContainer: {
+            justifyContent: "center",
         },
-        constructionIcon: {
-            color: "#eecc00",
-            fontSize: 40,
+        inputToolbarPrimary: {},
+        sendContainer: {
+            justifyContent: "center",
         },
-        separator: {
-            marginVertical: 30,
-            height: 1,
-            width: "80%",
-            backgroundColor: theme.cardBackground,
-        },
-        logoutButton: {
-            marginVertical: 20,
+        send: {
+            fontSize: 30,
+            color: theme.accent,
+            paddingHorizontal: 12,
         },
     });
 });
 
-export default withTheme(ChatScreen);
+export default reduxConnector(withTheme(ChatScreen));

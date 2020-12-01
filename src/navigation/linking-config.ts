@@ -34,7 +34,6 @@ const config: LinkingOptions = {
                     },
                     TabMessaging: {
                         screens: {
-                            ChatScreen: "messaging/talk",
                             IndividualMessagingTab: "messaging",
                             GroupMessagingTab: "messaging/group",
                         },
@@ -55,6 +54,7 @@ const config: LinkingOptions = {
             ValidateEmailScreen: "validate/:token",
             ResetPasswordScreen: "reset-password/:token",
             ResetPasswordSuccessScreen: "password-reset",
+            ChatScreen: "chat",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",

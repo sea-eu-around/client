@@ -1,13 +1,17 @@
 import {
+    ChatRoomProfileDto,
     CreateProfileDto,
     CreateProfileDtoCommon,
     EducationFieldDto,
     OfferValueDto,
+    ResponseChatMessageDto,
     ResponseProfileDto,
+    ResponseRoomDto,
     ResponseUserDto,
 } from "./dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
+import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -52,5 +56,38 @@ export function convertDtoToUser(dto: ResponseUserDto): User {
     return {
         ...dto,
         profile: dto.profile ? convertDtoToProfile(dto.profile) : undefined,
+    };
+}
+
+export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
+    const users = dto.profiles.map((p: ChatRoomProfileDto) => ({
+        _id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        avatar: p.avatar || "",
+    }));
+
+    // Try to find the sender of the last message in the list of users that are in the room
+    let lastMessage = null;
+    if (dto.lastMessage) {
+        const msg: ResponseChatMessageDto = dto.lastMessage;
+        const sender = users.find((u) => u._id == msg.senderId);
+        if (sender) lastMessage = convertDtoToChatMessage(sender, msg);
+    }
+
+    return {
+        ...dto,
+        users,
+        messages: [],
+        lastMessage,
+    };
+}
+
+export function convertDtoToChatMessage(user: ChatRoomUser, dto: ResponseChatMessageDto): ChatRoomMessage {
+    return {
+        ...dto,
+        _id: dto.id,
+        createdAt: new Date(dto.updatedAt),
+        pending: false,
+        user,
     };
 }

@@ -63,6 +63,21 @@ export default {
                 multiple: "You cannot add two entries for the same language.",
             },
         },
+        error: {
+            error_user_not_verified: "This account's email address has not been verified yet.",
+            user_not_found: "User not found.",
+            reset_password_no_token: "Could not fulfill this request.",
+            unique: {
+                user: {
+                    email: "This email address is already in use.",
+                },
+            },
+            validation: {
+                email: {
+                    is_email: "Please provide a valid email address.",
+                },
+            },
+        },
         pageNotFound: "404: Page not found.",
         pageDoesntExist: "This page doesn't exist.",
         goHome: "Go to home screen",
@@ -701,6 +716,7 @@ export default {
             OnboardingPrivacyScreen: "Privacy Policy",
             IndividualMessagingTab: "Messages",
             GroupMessagingTab: "Groups",
+            ChatScreen: "Chat",
             TabHomeScreen: "Home",
             TabMatchingScreen: "Browse",
             MatchFilteringScreen: "Filters",

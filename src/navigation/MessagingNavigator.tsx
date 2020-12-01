@@ -1,18 +1,15 @@
-import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import ChatScreen from "../screens/messaging/ChatScreen";
 import IndividualMessagingTab from "../screens/messaging/IndividualMessagingTab";
 import GroupMessagingTab from "../screens/messaging/GroupMessagingTab";
 import i18n from "i18n-js";
-import {TabMessagingRoot, TabMessagingTabs} from "./types";
+import {TabMessagingRoot} from "./types";
 import {screenTitle} from "./utils";
 
-const Stack = createStackNavigator<TabMessagingRoot>();
-const Tab = createMaterialTopTabNavigator<TabMessagingTabs>();
+const Tab = createMaterialTopTabNavigator<TabMessagingRoot>();
 
-function MessagingTabsNavigator(): JSX.Element {
+export default function MessagingNavigator(): JSX.Element {
     const insets = useSafeAreaInsets();
     return (
         <Tab.Navigator tabBarOptions={{style: {paddingTop: insets.top}}} initialRouteName="IndividualMessagingTab">
@@ -33,14 +30,5 @@ function MessagingTabsNavigator(): JSX.Element {
                 component={GroupMessagingTab}
             />
         </Tab.Navigator>
-    );
-}
-
-export default function MessagingNavigator(): JSX.Element {
-    return (
-        <Stack.Navigator headerMode="none" initialRouteName="MessagingScreen">
-            <Stack.Screen name="MessagingScreen" component={MessagingTabsNavigator} />
-            <Stack.Screen name="ChatScreen" component={ChatScreen} />
-        </Stack.Navigator>
     );
 }

@@ -26,7 +26,7 @@ export const AVATAR_QUALITY = 0.75;
  * The number of resources fetched per request when scrolling in infinite scrolling containers.
  */
 export const PROFILES_FETCH_LIMIT = 8; // Matching tab
-export const ROOMS_FETCH_LIMIT = 8; // Messaging tab
+export const ROOMS_FETCH_LIMIT = 10; // Messaging tab
 
 /**
  * The maximum number of spoken languages a user can select.

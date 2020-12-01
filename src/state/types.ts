@@ -15,11 +15,15 @@ import {User} from "../model/user";
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
+import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
 export type ValidatedActionReturn = {success: boolean; errors?: RemoteValidationErrors};
 export type ValidatedThunkAction = AppThunk<Promise<ValidatedActionReturn>>;
+
+export type PaginatedState = {page: number; canFetchMore: boolean; fetching: boolean};
+export const initialPaginatedState = (): PaginatedState => ({page: 1, canFetchMore: true, fetching: false});
 
 export type OnboardingState = {
     firstname: string;
@@ -72,15 +76,17 @@ export type MatchingFiltersState = {
 export type MatchingState = {
     filters: MatchingFiltersState;
     fetchedProfiles: UserProfile[];
-    fetchingProfiles: boolean;
-    fetchingPage: number;
-    canFetchMore: boolean;
+    profilesPagination: PaginatedState;
     myMatches: UserProfile[];
     fetchingMyMatches: boolean;
 };
 
 export type MessagingState = {
-    temp: undefined;
+    socketState: {connecting: boolean; connected: boolean};
+    matchRooms: ChatRoom[];
+    matchRoomsPagination: PaginatedState;
+    activeRoom: ChatRoom | null;
+    localChatUser: ChatRoomUser | null;
 };
 
 export type AppState = {

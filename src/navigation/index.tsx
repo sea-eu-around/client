@@ -18,6 +18,8 @@ import {Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
+import ChatScreen from "../screens/messaging/ChatScreen";
+import ChatScreenHeader from "../components/ChatScreenHeader";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -59,6 +61,11 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{title: screenTitle("ResetPasswordSuccessScreen")}}
                 />
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
+                <Stack.Screen
+                    name="ChatScreen"
+                    component={ChatScreen}
+                    options={{header: ChatScreenHeader, headerShown: true}}
+                />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen
                     name="OnboardingSuccessfulScreen"
