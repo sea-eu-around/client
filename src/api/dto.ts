@@ -68,7 +68,7 @@ export type CreateProfileDtoCommon = {
     birthdate: string;
     nationality: CountryCode;
     languages: SpokenLanguageDto[];
-    interests: string[];
+    interests: InterestDto[];
     profileOffers: OfferValueDto[];
     educationFields: EducationFieldDto[];
 };
@@ -83,7 +83,11 @@ export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
 
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
-export type ResponseProfileDto = CreateProfileDto & {id: string; university: UniversityKey; avatar: string};
+export type ResponseProfileDto = CreateProfileDto & {
+    id: string;
+    university: UniversityKey;
+    avatar: string;
+};
 
 export enum OfferCategory {
     Discover = "discover",

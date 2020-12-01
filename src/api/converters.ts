@@ -26,7 +26,7 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         birthdate: new Date(dto.birthdate),
         educationFields: (dto.educationFields || []).map((dto: EducationFieldDto) => dto.id),
         profileOffers: dto.profileOffers || [],
-        interests: dto.interests || [],
+        interests: (dto.interests || []).map((i) => i.id),
         languages: dto.languages || [],
     };
 }
@@ -37,6 +37,7 @@ export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDt
         ...profile,
         birthdate: profile.birthdate.toJSON(),
         educationFields: profile.educationFields.map((id: string) => ({id})),
+        interests: profile.interests.map((id: string) => ({id})),
         profileOffers: stripSuperfluousOffers(profile.profileOffers),
     };
 
@@ -49,6 +50,7 @@ export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>):
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
         profileOffers: profile.profileOffers ? stripSuperfluousOffers(profile.profileOffers) : undefined,
+        interests: profile.interests?.map((id: string) => ({id})),
     };
 }
 
