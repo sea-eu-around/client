@@ -2,6 +2,7 @@ import {UserRole} from "../api/dto";
 import {UserProfile} from "./user-profile";
 
 export type User = {
+    id: string;
     role: UserRole;
     email: string;
     isVerified: boolean;
