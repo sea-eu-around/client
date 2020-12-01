@@ -58,6 +58,7 @@ export async function requestBackend(
     }
 
     const formattedParams = encodeRequestParams(params);
+    let response: Response | null = null;
 
     try {
         if (verbose) {
@@ -66,7 +67,7 @@ export async function requestBackend(
             console.log(`  body   : ${JSON.stringify(body)}`);
         }
 
-        const response = await fetch(`${BACKEND_URL}/${endpoint}${formattedParams}`, {
+        response = await fetch(`${BACKEND_URL}/${endpoint}${formattedParams}`, {
             method,
             headers,
             ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
@@ -86,6 +87,7 @@ export async function requestBackend(
                 `body=${JSON.stringify(body)}`,
         );
         console.error(error);
+        console.error("Response received from server:", response);
         return {errorType: "error.unknown", description: "A client-side exception was raised.", status: 400};
     }
 }
