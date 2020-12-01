@@ -31,14 +31,14 @@ const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScreens, "MainScreen">;
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
-    const insets = useSafeAreaInsets();
+    const {bottom} = useSafeAreaInsets();
     return (
         <TabNavigator.Navigator
             initialRouteName="TabHome"
             tabBarOptions={{
                 activeTintColor: theme.tint,
-                style: {height: 55, paddingTop: 5, paddingBottom: 5 + insets.bottom},
-                tabStyle: {flexDirection: "column"},
+                style: {height: 55 + bottom, paddingTop: 5, paddingBottom: 5},
+                tabStyle: {flexDirection: "column", paddingBottom: bottom},
                 iconStyle: {flex: 1},
             }}
         >
