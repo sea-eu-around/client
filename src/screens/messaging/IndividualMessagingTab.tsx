@@ -57,7 +57,8 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
     }
 
     componentDidUpdate() {
-        if (this.props.rooms.length < ROOMS_FETCH_LIMIT) this.fetchMore();
+        const {rooms, navigation} = this.props;
+        if (navigation.isFocused() && rooms.length < ROOMS_FETCH_LIMIT) this.fetchMore();
     }
 
     render(): JSX.Element {
