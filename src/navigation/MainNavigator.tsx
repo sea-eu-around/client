@@ -23,6 +23,7 @@ import {LabelPosition} from "@react-navigation/bottom-tabs/lib/typescript/src/ty
 import {ThemeProps} from "../types";
 import TabHomeScreen from "../screens/TabHomeScreen";
 import {screenTitle} from "./utils";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -30,12 +31,13 @@ const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScreens, "MainScreen">;
 
 function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
+    const insets = useSafeAreaInsets();
     return (
         <TabNavigator.Navigator
             initialRouteName="TabHome"
             tabBarOptions={{
                 activeTintColor: theme.tint,
-                style: {height: 55, paddingTop: 5, paddingBottom: 5},
+                style: {height: 55, paddingTop: 5, paddingBottom: 5 + insets.bottom},
                 tabStyle: {flexDirection: "column"},
                 iconStyle: {flex: 1},
             }}
