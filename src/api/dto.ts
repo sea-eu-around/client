@@ -1,7 +1,6 @@
 import {Degree, Gender, LanguageLevel, Role, StaffRole} from "../constants/profile-constants";
 import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
-import {User} from "../model/user";
 
 /* General response-related types */
 
@@ -57,7 +56,7 @@ export type TokenDto = {
 };
 
 export type LoginDto = {
-    user: User;
+    user: ResponseUserDto;
     token: TokenDto;
 };
 

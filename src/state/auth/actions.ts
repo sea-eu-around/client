@@ -162,7 +162,7 @@ export const requestLogin = (email: string, password: string): ValidatedThunkAct
 
     if (response.status == HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as LoginDto;
-        dispatch(loginSuccess(payload.token, payload.user, false));
+        dispatch(loginSuccess(payload.token, convertDtoToUser(payload.user), false));
         return {success: true};
     } else {
         dispatch(loginFailure());
