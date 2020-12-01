@@ -13,7 +13,7 @@ export type ThemedStatusBarProps = ConnectedProps<typeof reduxConnector>;
 
 function ThemedStatusBar(props: ThemedStatusBarProps): JSX.Element {
     const {theme} = props;
-    return <StatusBar style={theme == "dark" ? "dark" : "light"} />;
+    return <StatusBar style={theme == "dark" ? "light" : "dark"} />;
 }
 
 export default reduxConnector(ThemedStatusBar);
