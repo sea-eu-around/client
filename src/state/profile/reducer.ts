@@ -1,6 +1,6 @@
 import {stripSuperfluousOffers} from "../../api/converters";
 import {OfferDto} from "../../api/dto";
-import {AUTH_ACTION_TYPES} from "../auth/actions";
+import {AuthAction, AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {ProfileState} from "../types";
 import {
     FetchUserSuccessAction,
@@ -19,8 +19,15 @@ export const initialState: ProfileState = {
     interests: [],
 };
 
-export const profileReducer = (state: ProfileState = initialState, action: ProfileAction): ProfileState => {
+export const profileReducer = (
+    state: ProfileState = initialState,
+    action: ProfileAction | AuthAction,
+): ProfileState => {
     switch (action.type) {
+        case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
+            const {user} = action as LogInSuccessAction;
+            return {...state, user};
+        }
         case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS: {
             if (state.user) {
                 const {fields} = <SetProfileFieldsSuccessAction>action;
