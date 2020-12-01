@@ -102,7 +102,7 @@ export type ProfileAction =
     | SetAvatarSuccessAction
     | SetAvatarFailureAction;
 
-export const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
+const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFieldsSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS,
     fields,
 });
@@ -118,13 +118,13 @@ export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => asyn
     }
 };
 
-export const createProfileSuccess = (): CreateProfileSuccessAction => ({
+const createProfileSuccess = (): CreateProfileSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS,
 });
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("profiles", "POST", {}, profile, token);
+    const response = await requestBackend("profiles", "POST", {}, profile, token, true);
     if (response.status === HttpStatusCode.CREATED) dispatch(createProfileSuccess());
 };
 
@@ -144,7 +144,7 @@ export const loadProfileOffers = (): AppThunk => async (dispatch) => {
     });
 };
 
-export const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadProfileOffersSuccessAction => ({
+const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadProfileOffersSuccessAction => ({
     type: PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS,
     offers,
     fromCache,
@@ -166,7 +166,7 @@ export const loadProfileInterests = (): AppThunk => async (dispatch) => {
     });
 };
 
-export const loadProfileInterestsSuccess = (
+const loadProfileInterestsSuccess = (
     interests: InterestDto[],
     fromCache = false,
 ): LoadProfileInterestsSuccessAction => ({
@@ -185,17 +185,17 @@ export const fetchUser = (): AppThunk => async (dispatch, getState) => {
     }
 };
 
-export const fetchUserSuccess = (user: User): FetchUserSuccessAction => ({
+const fetchUserSuccess = (user: User): FetchUserSuccessAction => ({
     type: PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS,
     user,
 });
 
-export const setAvatarSuccess = (avatarUrl: string): SetAvatarSuccessAction => ({
+const setAvatarSuccess = (avatarUrl: string): SetAvatarSuccessAction => ({
     type: PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS,
     avatarUrl,
 });
 
-export const setAvatarFailure = (): SetAvatarFailureAction => ({
+const setAvatarFailure = (): SetAvatarFailureAction => ({
     type: PROFILE_ACTION_TYPES.SET_AVATAR_FAILURE,
 });
 

@@ -65,15 +65,15 @@ export type MessagingAction =
     | SendMessageSuccessAction
     | ReceiveChatMessageAction;
 
-export const beginFetchMatchRooms = (): FetchMatchRoomsBeginAction => ({
+const beginFetchMatchRooms = (): FetchMatchRoomsBeginAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN,
 });
 
-export const fetchMatchRoomsFailure = (): FetchMatchRoomsFailureAction => ({
+const fetchMatchRoomsFailure = (): FetchMatchRoomsFailureAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_FAILURE,
 });
 
-export const fetchMatchRoomsSuccess = (rooms: ChatRoom[], canFetchMore: boolean): FetchMatchRoomsSuccessAction => ({
+const fetchMatchRoomsSuccess = (rooms: ChatRoom[], canFetchMore: boolean): FetchMatchRoomsSuccessAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS,
     rooms,
     canFetchMore,

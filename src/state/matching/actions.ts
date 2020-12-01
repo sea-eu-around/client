@@ -114,7 +114,7 @@ export const setMatchingFilters = (filters: Partial<MatchingFiltersState>): SetM
     filters,
 });
 
-export const beginFetchProfiles = (): BeginFetchProfilesAction => ({
+const beginFetchProfiles = (): BeginFetchProfilesAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_BEGIN,
 });
 
@@ -163,11 +163,11 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
     } else dispatch(fetchProfilesFailure());
 };
 
-export const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
+const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE,
 });
 
-export const fetchProfilesSuccess = (profiles: UserProfile[], canFetchMore: boolean): FetchProfilesSuccessAction => ({
+const fetchProfilesSuccess = (profiles: UserProfile[], canFetchMore: boolean): FetchProfilesSuccessAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS,
     profiles,
     canFetchMore,
@@ -177,10 +177,7 @@ export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH,
 });
 
-export const likeProfileSuccess = (
-    profileId: string,
-    matchStatus: LikeProfileResponseDto,
-): LikeProfileSuccessAction => ({
+const likeProfileSuccess = (profileId: string, matchStatus: LikeProfileResponseDto): LikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS,
     profileId,
     matchStatus,
@@ -196,7 +193,7 @@ export const likeProfile = (profileId: string): AppThunk => async (dispatch, get
     }
 };
 
-export const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction => ({
+const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS,
     profileId,
 });
@@ -207,7 +204,7 @@ export const dislikeProfile = (profileId: string): AppThunk => async (dispatch, 
     if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
 };
 
-export const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({
+const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.BLOCK_PROFILE_SUCCESS,
     profileId,
 });
@@ -218,15 +215,15 @@ export const blockProfile = (profileId: string): AppThunk => async (dispatch, ge
     if (response.status === HttpStatusCode.OK) dispatch(blockProfileSuccess(profileId));
 };
 
-export const beginFetchMyMatches = (): BeginFetchMyMatchesAction => ({
+const beginFetchMyMatches = (): BeginFetchMyMatchesAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN,
 });
 
-export const fetchMyMatchesFailure = (): FetchMyMatchesFailureAction => ({
+const fetchMyMatchesFailure = (): FetchMyMatchesFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE,
 });
 
-export const fetchMyMatchesSuccess = (profiles: UserProfile[]): FetchMyMatchesSuccessAction => ({
+const fetchMyMatchesSuccess = (profiles: UserProfile[]): FetchMyMatchesSuccessAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS,
     profiles,
 });

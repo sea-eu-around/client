@@ -90,7 +90,7 @@ export type AuthAction =
 
 // Register actions
 
-export const registerBegin = (email: string, password: string): RegisterBeginAction => ({
+const registerBegin = (email: string, password: string): RegisterBeginAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_BEGIN,
     email,
     password,
@@ -116,25 +116,25 @@ export const requestRegister = (email: string, password: string): ValidatedThunk
     }
 };
 
-export const registerSuccess = (user: User): RegisterSuccessAction => ({
+const registerSuccess = (user: User): RegisterSuccessAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_SUCCESS,
     user,
 });
 
-export const registerFailure = (): RegisterFailureAction => ({
+const registerFailure = (): RegisterFailureAction => ({
     type: AUTH_ACTION_TYPES.REGISTER_FAILURE,
 });
 
 // Log in actions
 
-export const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boolean): LogInSuccessAction => ({
+const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boolean): LogInSuccessAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_SUCCESS,
     token,
     user,
     usingCachedCredentials,
 });
 
-export const loginFailure = (): LogInFailureAction => ({
+const loginFailure = (): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
 });
 
@@ -188,12 +188,12 @@ export const requestValidateAccount = (validationToken: string): AppThunk => asy
     }
 };
 
-export const validateAccountSuccess = (email: string): ValidateAccountSuccessAction => ({
+const validateAccountSuccess = (email: string): ValidateAccountSuccessAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS,
     email,
 });
 
-export const validateAccountFailure = (): ValidateAccountFailureAction => ({
+const validateAccountFailure = (): ValidateAccountFailureAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE,
 });
 
@@ -211,12 +211,12 @@ export const forgotPassword = (email: string): ValidatedThunkAction => async (di
     }
 };
 
-export const forgotPasswordSuccess = (email: string): ForgotPasswordSuccessAction => ({
+const forgotPasswordSuccess = (email: string): ForgotPasswordSuccessAction => ({
     type: AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS,
     email,
 });
 
-export const forgotPasswordFailure = (): ForgotPasswordFailureAction => ({
+const forgotPasswordFailure = (): ForgotPasswordFailureAction => ({
     type: AUTH_ACTION_TYPES.FORGOT_PASSWORD_FAILURE,
 });
 
@@ -231,7 +231,7 @@ export const resetPassword = (token: string, password: string): ValidatedThunkAc
     }
 };
 
-export const resetPasswordSuccess = (): ResetPasswordSuccessAction => ({
+const resetPasswordSuccess = (): ResetPasswordSuccessAction => ({
     type: AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS,
 });
 
