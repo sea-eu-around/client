@@ -8,6 +8,7 @@ export type RootNavigatorScreens = {
     ValidateEmailScreen: undefined;
     ResetPasswordScreen: undefined;
     ResetPasswordSuccessScreen: undefined;
+    ChatScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
     MatchSuccessScreen: undefined;
@@ -38,11 +39,6 @@ export type TabMatchingRoot = {
 // TAB: Messaging
 
 export type TabMessagingRoot = {
-    ChatScreen: undefined;
-    MessagingScreen: undefined;
-};
-
-export type TabMessagingTabs = {
     IndividualMessagingTab: undefined;
     GroupMessagingTab: undefined;
 };
@@ -83,6 +79,6 @@ export type NavigatorRoute =
     | keyof TabMatchingRoot
     | keyof TabNotificationsRoot
     | keyof TabProfileRoot
+    | keyof TabMessagingRoot
     | keyof TabLoginSigninScreens
-    | keyof OnboardingScreens
-    | keyof TabMessagingTabs;
+    | keyof OnboardingScreens;
