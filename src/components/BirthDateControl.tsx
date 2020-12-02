@@ -44,6 +44,7 @@ class BirthDateControl extends React.Component<BirthDateControlProps> {
                         justifyContent: "center",
                         outline: 0,
                         fontSize: 20,
+                        color: theme.text,
                     }}
                 />
             </View>

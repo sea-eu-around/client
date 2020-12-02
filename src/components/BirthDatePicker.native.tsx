@@ -1,5 +1,6 @@
 import * as React from "react";
 import {MIN_AGE} from "../constants/profile-constants";
+import DateTimePicker, {Event} from "@react-native-community/datetimepicker";
 
 // Component props
 export type BirthDatePickerProps = {
@@ -12,24 +13,27 @@ const minDate = new Date(1900, 0, 0);
 const maxDate = new Date(Date.now());
 maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
 
-const formatDate = (d: Date) => d.toISOString().split("T")[0];
-
 class BirthDatePicker extends React.Component<BirthDatePickerProps> {
     onChange(date: Date | undefined): void {
         if (date && this.props.onSelect) this.props.onSelect(date);
+        //if (Platform.OS != "ios") this.hideModal();
     }
 
     render(): JSX.Element {
-        const {date} = this.props;
+        const {date, open} = this.props;
         return (
-            <input
-                type="date"
-                min={formatDate(minDate)}
-                max={formatDate(maxDate)}
-                value={formatDate(date || maxDate)}
-                onChange={(e) => this.onChange(new Date(e.target.value))}
-                style={{display: "none"}}
-            />
+            <>
+                {open && (
+                    <DateTimePicker
+                        minimumDate={minDate}
+                        maximumDate={maxDate}
+                        value={date || maxDate}
+                        display="default"
+                        onChange={(e: Event, date: Date | undefined) => this.onChange(date)}
+                        mode="date"
+                    />
+                )}
+            </>
         );
     }
 }
