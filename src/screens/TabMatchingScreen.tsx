@@ -53,8 +53,8 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 
     fetchMore() {
-        const {fetchingProfiles, dispatch} = this.props;
-        if (!fetchingProfiles) (dispatch as MyThunkDispatch)(fetchProfiles());
+        const {fetchingProfiles, navigation, dispatch} = this.props;
+        if (!fetchingProfiles && navigation.isFocused()) (dispatch as MyThunkDispatch)(fetchProfiles());
     }
 
     hideProfile(p: UserProfile) {
@@ -67,12 +67,10 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 
     componentDidUpdate(oldProps: TabMatchingScreenProps) {
-        if (this.props.navigation.isFocused()) {
-            const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
-            if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
-            // Reset the hidden profiles when the user purposedly refreshes
-            if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
-        }
+        const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
+        if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
+        // Reset the hidden profiles when the user purposedly refreshes
+        if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
     }
 
     render(): JSX.Element {
