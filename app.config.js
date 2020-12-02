@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 const TARGET = process.env.TARGET || "STAGING";
 
 const VERSION = "0.0.1";
