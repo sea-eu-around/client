@@ -1,11 +1,9 @@
 import * as React from "react";
 import {View, StyleSheet} from "react-native";
-import {TouchableOpacity} from "react-native-gesture-handler";
-import BirthDatePicker from "./BirthDatePicker";
-import {FormattedDate} from "./FormattedDate";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import {MIN_AGE} from "../constants/profile-constants";
 
 // Component props
 export type BirthDateControlProps = ThemeProps & {
@@ -14,75 +12,49 @@ export type BirthDateControlProps = ThemeProps & {
     onHide?: () => void;
 };
 
-export type BirthDateControlState = {
-    open: boolean;
-};
+const minDate = new Date(1900, 0, 0);
+const maxDate = new Date(Date.now());
+maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
 
-class BirthDateControl extends React.Component<BirthDateControlProps, BirthDateControlState> {
-    constructor(props: BirthDateControlProps) {
-        super(props);
-        this.state = {
-            open: false,
-        };
-    }
+const formatDate = (d: Date) => d.toISOString().split("T")[0];
 
-    showModal(): void {
-        if (!this.state.open) this.setState({...this.state, open: true});
-    }
-
-    hideModal(): void {
-        if (this.state.open) {
-            this.setState({...this.state, open: false});
-            if (this.props.onHide) this.props.onHide();
-        }
-    }
-
+class BirthDateControl extends React.Component<BirthDateControlProps> {
     render(): JSX.Element {
         const {date, onSelect, theme} = this.props;
-        const {open} = this.state;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.wrapper}>
-                <TouchableOpacity style={[styles.button, date ? styles.buttonOk : {}]} onPress={() => this.showModal()}>
-                    {date && <FormattedDate style={styles.dateText} date={date} />}
-                    {/*!date && <Text>Click to change value</Text>*/}
-                </TouchableOpacity>
-                <BirthDatePicker
-                    date={date}
-                    open={open}
-                    onSelect={(value: Date) => {
-                        if (onSelect) onSelect(value);
+                <input
+                    type="date"
+                    min={formatDate(minDate)}
+                    max={formatDate(maxDate)}
+                    value={formatDate(date || maxDate)}
+                    onChange={(e) => {
+                        if (onSelect) onSelect(new Date(e.target.value));
                     }}
-                    onHide={() => this.hideModal()}
-                ></BirthDatePicker>
+                    style={{
+                        width: "100%",
+                        height: 60,
+                        borderRadius: 0,
+                        borderWidth: 0,
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme.accentTernary,
+                        backgroundColor: "transparent",
+                        justifyContent: "center",
+                        outline: 0,
+                        fontSize: 20,
+                    }}
+                />
             </View>
         );
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
+const themedStyles = preTheme(() => {
     return StyleSheet.create({
         wrapper: {
             width: "100%",
-        },
-        button: {
-            width: "100%",
-            height: 60,
-            borderRadius: 0,
-            borderWidth: 0,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.accentTernary,
-            backgroundColor: "transparent",
-            justifyContent: "center",
-        },
-        buttonOk: {
-            borderBottomWidth: 2,
-            borderBottomColor: theme.okay,
-        },
-        dateText: {
-            fontSize: 20,
-            color: theme.text,
         },
     });
 });
