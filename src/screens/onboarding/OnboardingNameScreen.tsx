@@ -1,6 +1,6 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
-import {Keyboard, KeyboardAvoidingView} from "react-native";
+import {Keyboard} from "react-native";
 import {FormTextInput} from "../../components/FormTextInput";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
@@ -72,19 +72,17 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
                             handleSubmit={handleSubmit}
                             {...this.props}
                         >
-                            <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={200}>
-                                <FormTextInput
-                                    {...textInputProps("firstname")}
-                                    label={i18n.t("firstname")}
-                                    autoCompleteType="name"
-                                />
+                            <FormTextInput
+                                {...textInputProps("firstname")}
+                                label={i18n.t("firstname")}
+                                autoCompleteType="name"
+                            />
 
-                                <FormTextInput
-                                    {...textInputProps("lastname")}
-                                    label={i18n.t("lastname")}
-                                    autoCompleteType="name"
-                                />
-                            </KeyboardAvoidingView>
+                            <FormTextInput
+                                {...textInputProps("lastname")}
+                                label={i18n.t("lastname")}
+                                autoCompleteType="name"
+                            />
                         </OnboardingSlide>
                     );
                 }}

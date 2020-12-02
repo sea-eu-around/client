@@ -17,10 +17,6 @@ const reduxConnector = connect((state: AppState) => ({
 
 type OnboardingInterestsScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
-type OnboardingInterestsScreenState = {
-    hasErrors: boolean;
-};
-
 const VALIDATION_SCHEMA = Yup.object().shape({
     interestIds: VALIDATOR_ONBOARDING_INTERESTS,
 });
@@ -29,15 +25,7 @@ type OnboardingInterestsFormState = {
     interestIds: string[];
 };
 
-class OnboardingInterestsScreen extends React.Component<
-    OnboardingInterestsScreenProps,
-    OnboardingInterestsScreenState
-> {
-    constructor(props: OnboardingInterestsScreenProps) {
-        super(props);
-        this.state = {hasErrors: false};
-    }
-
+class OnboardingInterestsScreen extends React.Component<OnboardingInterestsScreenProps> {
     shouldComponentUpdate(nextProps: Readonly<OnboardingInterestsScreenProps>) {
         const prev = this.props.onboardingState;
         const next = nextProps.onboardingState;
@@ -45,10 +33,8 @@ class OnboardingInterestsScreen extends React.Component<
     }
 
     submit(values: OnboardingInterestsFormState) {
-        if (!this.state.hasErrors) {
-            this.props.dispatch(setOnboardingValues({interestIds: values.interestIds}));
-            this.props.next();
-        }
+        this.props.dispatch(setOnboardingValues({interestIds: values.interestIds}));
+        this.props.next();
     }
 
     render(): JSX.Element {
@@ -74,9 +60,8 @@ class OnboardingInterestsScreen extends React.Component<
                             <InputLabel style={{marginBottom: 6}}>{i18n.t("chooseInterests")}</InputLabel>
                             <InterestsPicker
                                 interests={values.interestIds}
-                                onChange={(interestIds: string[], hasErrors: boolean) => {
+                                onChange={(interestIds: string[]) => {
                                     setFieldValue("interestIds", interestIds);
-                                    this.setState({...this.state, hasErrors});
                                 }}
                             ></InterestsPicker>
                             {touched.interestIds && <InputErrorText error={errors.interestIds}></InputErrorText>}

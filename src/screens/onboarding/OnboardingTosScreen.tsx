@@ -1,12 +1,12 @@
 import * as React from "react";
-import OnboardingSlide from "./OnboardingSlide";
+import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import {Text, TouchableOpacity, View} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {tosSlideStyle} from "../../styles/onboarding";
 import TOSDeclinedModal from "../../components/modals/TOSDeclinedModal";
 import i18n from "i18n-js";
 import TextLink from "../../components/TextLink";
-import {OnboardingScreenProps, ThemeProps} from "../../types";
+import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 
 // Component props
