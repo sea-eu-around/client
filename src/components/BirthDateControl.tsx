@@ -4,6 +4,7 @@ import {ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {MIN_AGE} from "../constants/profile-constants";
+import {webFontFamily} from "../styles/general";
 
 // Component props
 export type BirthDateControlProps = ThemeProps & {
@@ -45,6 +46,7 @@ class BirthDateControl extends React.Component<BirthDateControlProps> {
                         outline: 0,
                         fontSize: 20,
                         color: theme.text,
+                        ...webFontFamily,
                     }}
                 />
             </View>

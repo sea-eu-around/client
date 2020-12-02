@@ -10,7 +10,7 @@ import {SupportedLocale} from "../localization";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
-import {styleTextLight} from "../styles/general";
+import {styleTextLight, webFontFamily} from "../styles/general";
 
 type PickerItem = {
     id: string;
@@ -175,6 +175,10 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                     itemBackground: theme.cardBackground,
                     subItemBackground: theme.cardBackground,
                 }}
+                confirmFontFamily={webFontFamily}
+                itemFontFamily={webFontFamily}
+                searchTextFontFamily={webFontFamily}
+                subItemFontFamily={webFontFamily}
                 styles={{
                     ...multiSelectStyles,
                     ...(Platform.OS === "web"
@@ -235,8 +239,6 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-const fontFamilyWeb = Platform.OS === "web" ? {fontFamily: "sans-serif"} : {};
-
 const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
@@ -248,13 +250,13 @@ const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
                       top: 50,
                       bottom: 50,
                       alignSelf: "center",
-                      borderWidth: 1,
+                      borderWidth: 0,
                       maxWidth: 700,
-                      borderColor: theme.componentBorder,
+                      boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.1)",
                   }
                 : {}),
         },
-        scrollView: {paddingVertical: 10, overflowY: "auto"},
+        scrollView: {paddingVertical: 10, ...(Platform.OS === "web" ? {overflowY: "auto"} : {})},
         searchBar: {backgroundColor: theme.background},
         searchTextInput: {color: theme.text},
         toggleIcon: {backgroundColor: theme.cardBackground},
@@ -269,14 +271,9 @@ const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             lineHeight: 18,
             textTransform: "uppercase",
-            ...fontFamilyWeb,
         },
         subItemText: {
-            ...fontFamilyWeb,
             marginLeft: 5,
-        },
-        confirmText: {
-            ...fontFamilyWeb,
         },
         separator: {marginVertical: 8},
     });

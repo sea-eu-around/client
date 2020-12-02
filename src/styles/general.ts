@@ -5,3 +5,5 @@ export const styleTextThin: TextStyle =
 
 export const styleTextLight: TextStyle =
     Platform.OS == "android" ? {fontFamily: "sans-serif-light"} : {fontWeight: "200"};
+
+export const webFontFamily = {fontFamily: `"Segoe UI", Roboto, "Helvetica Neue", sans-serif`};
