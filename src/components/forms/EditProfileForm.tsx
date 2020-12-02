@@ -10,7 +10,7 @@ import RoleToggle from "../RoleToggle";
 import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
 import StaffRoleToggle from "../StaffRoleToggle";
 import {GenderToggle} from "../GenderToggle";
-import BirthDatePicker from "../BirthDatePicker";
+import BirthDatePicker from "../BirthDatePicker.native";
 import AvatarEditButton from "../AvatarEditButton";
 import FormRow from "./FormRow";
 import {FormattedDate} from "../FormattedDate";
@@ -117,8 +117,10 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             <BirthDatePicker
                                 date={profile.birthdate}
                                 open={true}
-                                onSelect={(birthdate: Date) => this.onFieldChanged({birthdate})}
-                                onHide={hide}
+                                onSelect={(birthdate: Date) => {
+                                    this.onFieldChanged({birthdate});
+                                    hide();
+                                }}
                             />
                         )}
                     />
