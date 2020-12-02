@@ -249,7 +249,8 @@ export const setOnboardingOfferValue = (id: string, value: OfferValueDto): SetOn
 });
 
 export const debugConnect = (): AppThunk => async (dispatch, getState) => {
-    const email = `test${Math.round(Math.random() * 1e6)}.test@univ-brest.fr`;
+    const n = Math.round(1e3 * Math.random());
+    const email = `test${n}.test@univ-brest.fr`;
     const password = "PASSword$1";
 
     await dispatch(requestRegister(email, password));
@@ -262,7 +263,7 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
             createProfile({
                 type: "student",
                 birthdate: "2002-11-12T07:21:22.110Z",
-                firstName: "Kevin" + Math.round(1e3 * Math.random()),
+                firstName: "Kevin" + n,
                 lastName: "Test",
                 gender: "male",
                 languages: [
