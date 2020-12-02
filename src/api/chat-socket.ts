@@ -73,7 +73,7 @@ class ChatSocket {
         if (this.socket) this.socket.connect();
         else {
             console.log("[ChatSocket] ----> Authenticating - token =", authToken.accessToken);
-            this.socket = io(SOCKET_LOCATION, {query: {authorization: authToken.accessToken}});
+            this.socket = io(SOCKET_LOCATION, {query: {authorization: authToken.accessToken}, reconnectionDelay: 5000});
             this.registerListeners(listeners);
         }
     }
