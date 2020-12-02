@@ -1,6 +1,6 @@
 import React from "react";
 import {TextInputProps} from "react-native";
-import {ValidatedTextInput, ValidatedTextInputProps} from "./ValidatedTextInput";
+import ValidatedTextInput, {ValidatedTextInputProps} from "./ValidatedTextInput";
 
 // Component props
 export type FormTextInputProps = {

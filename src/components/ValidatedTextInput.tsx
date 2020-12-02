@@ -26,7 +26,7 @@ type ValidatedTextInputState = {
 /**
  * An improved TextInput that supports better styling (including specific focused style) and displays validation errors.
  */
-export class ValidatedTextInput extends React.Component<ValidatedTextInputProps, ValidatedTextInputState> {
+class ValidatedTextInput extends React.Component<ValidatedTextInputProps, ValidatedTextInputState> {
     static defaultProps = {
         untouched: false,
         style: [],
@@ -94,3 +94,5 @@ export class ValidatedTextInput extends React.Component<ValidatedTextInputProps,
         );
     }
 }
+
+export default ValidatedTextInput;
