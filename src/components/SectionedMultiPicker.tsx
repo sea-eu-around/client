@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, ViewProps, TouchableOpacity, Text, StyleSheet} from "react-native";
+import {View, ViewProps, TouchableOpacity, Text, StyleSheet, Platform, LayoutChangeEvent} from "react-native";
 import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
@@ -47,6 +47,7 @@ export type SectionedMultiPickerState = {
     items: Map<SupportedLocale, PickerItemSection[]>;
     open: boolean;
     tempSelected: string[];
+    width: number;
 };
 
 class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, SectionedMultiPickerState> {
@@ -65,6 +66,7 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             items: new Map(),
             open: false,
             tempSelected: props.selected || [],
+            width: 0,
         };
     }
 
@@ -124,14 +126,75 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             onChange,
             ...viewProps
         } = this.props;
+        const {tempSelected, width} = this.state;
         const styles = pickerStyles(theme);
         const multiSelectStyles = sectionedMultiSelectStyles(theme);
         const miscStyles = themedStyles(theme);
 
         const selectedItems = selected || [];
 
+        const select = this.state.items.get(locale) ? (
+            <SectionedMultiSelect
+                ref={this.selectRef}
+                items={this.state.items.get(locale)}
+                onSelectedItemsChange={(items) =>
+                    this.setState({...this.state, tempSelected: (items as unknown) as string[]})
+                }
+                selectedItems={tempSelected}
+                uniqueKey="id"
+                displayKey="label"
+                subKey="children"
+                // Listeners
+                onCancel={() => this.close(false)}
+                onConfirm={() => this.close(true)}
+                // Dirty work-arounds to get the typing to work. This is due to a mistake in react-native-sectioned-multi-select
+                IconRenderer={(MaterialIcons as unknown) as JSX.Element}
+                icons={undefined as never}
+                // Customization
+                showDropDowns={true}
+                readOnlyHeadings={true}
+                showChips={false}
+                showCancelButton={true}
+                selectedIconOnLeft={true}
+                animateDropDowns={false}
+                hideSelect={true}
+                noResultsComponent={<Text style={miscStyles.noResultsText}>{i18n.t("noResultsFound")}</Text>}
+                searchIconComponent={<MaterialIcons name="search" style={miscStyles.searchIcon} />}
+                // Localization
+                confirmText={i18n.t("apply")}
+                searchPlaceholderText={searchablePlaceholder}
+                // Styling
+                colors={{
+                    primary: theme.accent,
+                    cancel: theme.error,
+                    success: theme.okay,
+                    text: theme.text,
+                    subText: theme.textLight,
+                    searchPlaceholderTextColor: theme.textLight,
+                    selectToggleTextColor: theme.error,
+                    itemBackground: theme.cardBackground,
+                    subItemBackground: theme.cardBackground,
+                }}
+                styles={{
+                    ...multiSelectStyles,
+                    ...(Platform.OS === "web"
+                        ? {
+                              modalWrapper: {width},
+                              container: [multiSelectStyles.container, {width}],
+                          }
+                        : {}),
+                }}
+            />
+        ) : (
+            <></>
+        );
+
         return (
-            <View {...viewProps}>
+            <View
+                {...viewProps}
+                style={{position: "relative"}}
+                onLayout={(e: LayoutChangeEvent) => this.setState({...this.state, width: e.nativeEvent.layout.width})}
+            >
                 <View>
                     <TouchableOpacity onPress={() => this.open()} style={styles.openButton}>
                         <Text style={styles.openButtonText}>
@@ -149,55 +212,8 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                             ))}
                     </View>
                 </View>
-                <View /*style={{height: 0, overflow: "hidden"}}*/>
-                    {this.state.items.get(locale) && (
-                        <SectionedMultiSelect
-                            ref={this.selectRef}
-                            items={this.state.items.get(locale)}
-                            onSelectedItemsChange={(items) =>
-                                this.setState({...this.state, tempSelected: (items as unknown) as string[]})
-                            }
-                            selectedItems={this.state.tempSelected}
-                            // Listeners
-                            onCancel={() => this.close(false)}
-                            onConfirm={() => this.close(true)}
-                            // Technical
-                            // Dirty work-around to get the typing to work. This is due to a mistake in react-native-sectioned-multi-select
-                            IconRenderer={(MaterialIcons as unknown) as JSX.Element}
-                            uniqueKey="id"
-                            displayKey="label"
-                            subKey="children"
-                            // Customization
-                            showDropDowns={true}
-                            readOnlyHeadings={true}
-                            showChips={false}
-                            showCancelButton={true}
-                            selectedIconOnLeft={true}
-                            animateDropDowns={false}
-                            hideSelect={true}
-                            noResultsComponent={
-                                <Text style={miscStyles.noResultsText}>{i18n.t("noResultsFound")}</Text>
-                            }
-                            searchIconComponent={<MaterialIcons name="search" style={miscStyles.searchIcon} />}
-                            // Localization
-                            confirmText={i18n.t("apply")}
-                            searchPlaceholderText={searchablePlaceholder}
-                            // Styling
-                            colors={{
-                                primary: theme.accent,
-                                cancel: theme.error,
-                                success: theme.okay,
-                                text: theme.text,
-                                subText: theme.textLight,
-                                searchPlaceholderTextColor: theme.textLight,
-                                selectToggleTextColor: theme.error,
-                                itemBackground: theme.cardBackground,
-                                subItemBackground: theme.cardBackground,
-                            }}
-                            styles={multiSelectStyles}
-                        />
-                    )}
-                </View>
+                {(Platform.OS === "android" || Platform.OS === "ios") && <View>{select}</View>}
+                {Platform.OS === "web" && this.state.open && select}
             </View>
         );
     }
@@ -219,10 +235,26 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
+const fontFamilyWeb = Platform.OS === "web" ? {fontFamily: "sans-serif"} : {};
+
 const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {backgroundColor: theme.cardBackground},
-        scrollView: {paddingVertical: 10},
+        container: {
+            backgroundColor: theme.cardBackground,
+            ...(Platform.OS === "web"
+                ? {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      position: "fixed" as any,
+                      top: 50,
+                      bottom: 50,
+                      alignSelf: "center",
+                      borderWidth: 1,
+                      maxWidth: 700,
+                      borderColor: theme.componentBorder,
+                  }
+                : {}),
+        },
+        scrollView: {paddingVertical: 10, overflowY: "auto"},
         searchBar: {backgroundColor: theme.background},
         searchTextInput: {color: theme.text},
         toggleIcon: {backgroundColor: theme.cardBackground},
@@ -237,6 +269,14 @@ const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             lineHeight: 18,
             textTransform: "uppercase",
+            ...fontFamilyWeb,
+        },
+        subItemText: {
+            ...fontFamilyWeb,
+            marginLeft: 5,
+        },
+        confirmText: {
+            ...fontFamilyWeb,
         },
         separator: {marginVertical: 8},
     });
