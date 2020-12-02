@@ -1,8 +1,7 @@
 import React from "react";
-import {Modal, TouchableOpacity, View, ViewStyle, StyleSheet} from "react-native";
+import {ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
-import {preTheme} from "../../styles/utils";
-import {Theme, ThemeProps} from "../../types";
+import {ThemeProps} from "../../types";
 
 export type CustomModalProps = ThemeProps & {
     onHide?: () => void;
@@ -28,51 +27,48 @@ class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
     render(): JSX.Element {
         const {theme, modalViewStyle} = this.props;
         const {modalVisible} = this.state;
-        const styles = themedStyles(theme);
-
         return (
-            <Modal animationType="fade" transparent={true} visible={modalVisible}>
-                <TouchableOpacity
-                    style={styles.centeredView}
-                    activeOpacity={1.0}
-                    onPress={() => this.setModalVisible(false)}
-                >
-                    <View style={[styles.modalView, modalViewStyle]}>
-                        {this.props.renderContent(() => this.setModalVisible(false))}
-                    </View>
-                </TouchableOpacity>
-            </Modal>
+            <>
+                {modalVisible && (
+                    <>
+                        <div
+                            onClick={() => this.setModalVisible(false)}
+                            style={{
+                                position: "fixed",
+                                width: "100%",
+                                height: "100%",
+                                left: 0,
+                                top: 0,
+                                backgroundColor: "rgba(0,0,0,0.05)",
+                                cursor: "pointer",
+                            }}
+                        ></div>
+                        <div
+                            style={{
+                                // Centering
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                margin: "auto",
+                                // Actual styling
+                                width: "50%",
+                                maxWidth: 300,
+                                borderRadius: 3,
+                                padding: "20px 30px",
+                                alignItems: "center",
+                                boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
+                                backgroundColor: theme.background,
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                ...(modalViewStyle as any), // (circumvent typing)
+                            }}
+                        >
+                            {this.props.renderContent(() => this.setModalVisible(false))}
+                        </div>
+                    </>
+                )}
+            </>
         );
     }
 }
-
-export const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        centeredView: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.05)",
-        },
-        modalView: {
-            width: "80%",
-            maxWidth: 300,
-            margin: 20,
-            borderRadius: 3,
-            paddingVertical: 20,
-            paddingHorizontal: 30,
-            alignItems: "center",
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-            backgroundColor: theme.background,
-        },
-    });
-});
 
 export default withTheme(CustomModal);
