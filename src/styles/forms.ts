@@ -61,6 +61,7 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             borderRadius: 5,
             borderWidth: 0,
             backgroundColor: theme.accentSlight,
+            color: theme.textBlack,
         },
         textInputError: {
             borderBottomWidth: 2,

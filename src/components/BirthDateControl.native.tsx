@@ -59,6 +59,7 @@ class BirthDateControl extends React.Component<BirthDateControlProps, BirthDateC
                         minimumDate={minDate}
                         maximumDate={maxDate}
                         value={date || maxDate}
+                        textColor={theme.text}
                         display="default"
                         onChange={(e: Event, date: Date | undefined) => {
                             this.hideModal();
