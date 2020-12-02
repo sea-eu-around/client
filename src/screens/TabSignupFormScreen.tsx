@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View} from "react-native";
+import {KeyboardAvoidingView, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import SignupForm from "../components/forms/SignupForm";
 import {loginTabsStyles} from "../styles/forms";
@@ -14,10 +14,15 @@ class SignupTabComponent extends React.Component<SignupFormProps> {
         const styles = loginTabsStyles(theme);
 
         return (
-            <ScrollView contentContainerStyle={{paddingVertical: 50, backgroundColor: theme.background}}>
+            <ScrollView
+                contentContainerStyle={{paddingVertical: 50, backgroundColor: theme.background}}
+                keyboardShouldPersistTaps={"always"}
+            >
                 <View style={styles.container}>
                     <View style={styles.formWrapper}>
-                        <SignupForm />
+                        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={100}>
+                            <SignupForm />
+                        </KeyboardAvoidingView>
                     </View>
                 </View>
             </ScrollView>
