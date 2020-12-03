@@ -114,6 +114,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                         const msg = convertDtoToChatMessage(user, message);
                         room.messages = [msg].concat(room.messages);
                         room.lastMessage = msg;
+                        room.writing[message.senderId] = false;
                     }
                 }
                 return updateRoom(state, room);

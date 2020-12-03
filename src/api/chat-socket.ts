@@ -4,7 +4,7 @@ import {ChatRoom} from "../model/chat-room";
 import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto} from "./dto";
 
 const SOCKET_LOCATION = `${BACKEND_URL}/chat`;
-const WRITING_STATE_DELAY = 2000;
+const WRITING_STATE_DELAY = 1000;
 
 export type ChatSocketEventListeners = {
     onMessageReceived: (m: ResponseChatMessageDto) => void;
