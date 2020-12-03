@@ -10,7 +10,6 @@ export type ChatRoomMessage = {
     createdAt: Date;
     user: ChatRoomUser;
     sent: boolean;
-    pending: boolean;
 };
 
 export type ChatRoom = {
@@ -18,4 +17,5 @@ export type ChatRoom = {
     users: ChatRoomUser[];
     messages: ChatRoomMessage[];
     lastMessage: ChatRoomMessage | null;
+    writing: {[key: string]: boolean};
 };

@@ -1,6 +1,6 @@
 import chatSocket from "../../api/chat-socket";
 import {convertDtoToRoom} from "../../api/converters";
-import {PaginatedRequestResponse, ResponseChatMessageDto, ResponseRoomDto} from "../../api/dto";
+import {PaginatedRequestResponse, ResponseChatMessageDto, ResponseChatWritingDto, ResponseRoomDto} from "../../api/dto";
 import {requestBackend} from "../../api/utils";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
@@ -23,6 +23,7 @@ export enum MESSAGING_ACTION_TYPES {
     SEND_MESSAGE_FAILURE = "MESSAGING/SEND_MESSAGE_FAILURE",
     SEND_MESSAGE_SUCCESS = "MESSAGING/SEND_MESSAGE_SUCCESS",
     RECEIVE_MESSAGE = "MESSAGING/RECEIVE_MESSAGE",
+    RECEIVE_WRITING_STATE = "MESSAGING/RECEIVE_WRITING_STATE",
 }
 
 export type FetchMatchRoomsBeginAction = {type: string};
@@ -48,6 +49,7 @@ export type DisconnectFromChatAction = {type: string};
 export type SendMessageFailureAction = {type: string};
 export type SendMessageSuccessAction = {type: string; message: ChatRoomMessage};
 export type ReceiveChatMessageAction = {type: string; message: ResponseChatMessageDto};
+export type ReceiveChatWritingAction = {type: string; payload: ResponseChatWritingDto};
 
 export type MessagingAction =
     | FetchMatchRoomsFailureAction
@@ -132,6 +134,7 @@ export const connectToChat = (): AppThunk => async (dispatch, getState) => {
                 authToken,
                 {
                     onMessageReceived: (m) => dispatch(receiveChatMessage(m)),
+                    onWritingStateChange: (m) => dispatch(receiveChatWriting(m)),
                 },
                 () => {
                     dispatch(connectToChatSuccess());
@@ -203,14 +206,18 @@ export const sendChatMessage = (id: string, text: string, createdAt: Date): AppT
             user: localChatUser,
             text,
             sent: false,
-            pending: true,
         };
         dispatch(sendChatMessageSuccess(message));
         chatSocket.sendMessage(activeRoom.id, id, text);
     } else dispatch(sendChatMessageFailure());
 };
 
-export const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
+const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
     type: MESSAGING_ACTION_TYPES.RECEIVE_MESSAGE,
     message,
+});
+
+const receiveChatWriting = (payload: ResponseChatWritingDto): ReceiveChatWritingAction => ({
+    type: MESSAGING_ACTION_TYPES.RECEIVE_WRITING_STATE,
+    payload,
 });

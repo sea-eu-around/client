@@ -5,11 +5,13 @@ import {StyleSheet, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send, SendProps} from "react-native-gifted-chat";
 import {connect, ConnectedProps} from "react-redux";
+import chatSocket from "../../api/chat-socket";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {leaveChatRoom, sendChatMessage} from "../../state/messaging/actions";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
+import {TypingAnimation} from "react-native-typing-animation";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -38,6 +40,8 @@ class ChatScreen extends React.Component<ChatScreenProps> {
 
         let chatComponent = <></>;
         if (activeRoom && localChatUser) {
+            const isSomeoneWriting = Object.values(activeRoom.writing).some((v: boolean) => v === true);
+
             chatComponent = (
                 <GiftedChat
                     messages={activeRoom.messages}
@@ -54,6 +58,34 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                             primaryStyle={styles.inputToolbarPrimary}
                         />
                     )}
+                    renderFooter={() =>
+                        isSomeoneWriting ? (
+                            <View
+                                style={{
+                                    height: 50,
+                                    paddingTop: 10,
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <TypingAnimation
+                                    dotColor={theme.textLight}
+                                    dotAmplitude={3}
+                                    dotSpeed={0.2}
+                                    dotMargin={8}
+                                    dotRadius={4}
+                                    dotX={0}
+                                    dotY={0}
+                                    style={{width: 12}} // for centering
+                                />
+                            </View>
+                        ) : (
+                            <></>
+                        )
+                    }
+                    onInputTextChanged={(t) => {
+                        if (t.length > 0) chatSocket.setWriting(activeRoom);
+                    }}
                     timeFormat={"HH:mm"}
                     onSend={(messages) => {
                         messages.forEach((m) =>

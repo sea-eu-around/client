@@ -10,6 +10,7 @@ import {
     MessagingAction,
     MESSAGING_ACTION_TYPES,
     ReceiveChatMessageAction,
+    ReceiveChatWritingAction,
     SendMessageSuccessAction,
 } from "./actions";
 
@@ -116,6 +117,21 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                     }
                 }
                 return updateRoom(state, room);
+            }
+            return state;
+        }
+        case MESSAGING_ACTION_TYPES.RECEIVE_WRITING_STATE: {
+            const {payload} = action as ReceiveChatWritingAction;
+
+            // Just ignore if this is about our own writing state
+            if (state.localChatUser && state.localChatUser._id === payload.profileId) return state;
+
+            const room = state.matchRooms.find((r: ChatRoom) => r.id === payload.roomId);
+            if (room) {
+                return updateRoom(state, {
+                    ...room,
+                    writing: {...room.writing, [payload.profileId]: payload.state},
+                });
             }
             return state;
         }

@@ -1,21 +1,27 @@
 import io from "socket.io-client";
 import {BACKEND_URL} from "../constants/config";
 import {ChatRoom} from "../model/chat-room";
-import {ResponseChatMessageDto, TokenDto} from "./dto";
+import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto} from "./dto";
 
 const SOCKET_LOCATION = `${BACKEND_URL}/chat`;
+const WRITING_STATE_DELAY = 2000;
 
 export type ChatSocketEventListeners = {
     onMessageReceived: (m: ResponseChatMessageDto) => void;
+    onWritingStateChange: (m: ResponseChatWritingDto) => void;
 };
 
 class ChatSocket {
     private socket: SocketIOClient.Socket | null;
     private connectCallbacks: (() => void)[];
+    private writingTimeout: NodeJS.Timeout | null;
+    private lastSentWritingState: boolean;
 
     constructor() {
         this.socket = null;
         this.connectCallbacks = [];
+        this.writingTimeout = null;
+        this.lastSentWritingState = false;
     }
 
     private registerListeners(listeners: ChatSocketEventListeners) {
@@ -64,6 +70,7 @@ class ChatSocket {
         });
 
         this.socket.on("receiveMessage", (m: ResponseChatMessageDto) => listeners.onMessageReceived(m));
+        this.socket.on("isWriting", (m: ResponseChatWritingDto) => listeners.onWritingStateChange(m));
     }
 
     connect(authToken: TokenDto, listeners: ChatSocketEventListeners, callback?: () => void) {
@@ -93,6 +100,29 @@ class ChatSocket {
 
     leaveRoom(room: ChatRoom) {
         this.emit("leaveRoom", {roomId: room.id});
+    }
+
+    private sendWritingState(room: ChatRoom, state: boolean) {
+        this.lastSentWritingState = state;
+        this.emit("isWriting", {roomId: room.id, state});
+    }
+
+    private refreshWritingTimeout(room: ChatRoom) {
+        if (this.writingTimeout !== null) {
+            clearTimeout(this.writingTimeout);
+            this.writingTimeout = null;
+        }
+        this.writingTimeout = setTimeout(() => {
+            this.sendWritingState(room, false);
+        }, WRITING_STATE_DELAY);
+    }
+
+    setWriting(room: ChatRoom) {
+        // Refesh the timeout - in a fixed amount of time, this will tell the server we are no longer writing
+        this.refreshWritingTimeout(room);
+
+        // If we are beginning to write, inform the server now
+        if (this.lastSentWritingState === false) this.sendWritingState(room, true);
     }
 
     disconnect() {

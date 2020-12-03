@@ -81,6 +81,7 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         users,
         messages: [],
         lastMessage,
+        writing: {},
     };
 }
 
@@ -89,7 +90,6 @@ export function convertDtoToChatMessage(user: ChatRoomUser, dto: ResponseChatMes
         ...dto,
         _id: dto.id,
         createdAt: new Date(dto.updatedAt),
-        pending: false,
         user,
     };
 }

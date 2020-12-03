@@ -166,3 +166,9 @@ export type ResponseChatMessageDto = {
     text: string;
     updatedAt: string;
 };
+
+export type ResponseChatWritingDto = {
+    roomId: string;
+    profileId: string;
+    state: boolean;
+};
