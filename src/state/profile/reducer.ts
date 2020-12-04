@@ -3,6 +3,7 @@ import {OfferDto} from "../../api/dto";
 import {AuthAction, AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {ProfileState} from "../types";
 import {
+    CreateProfileSuccessAction,
     FetchUserSuccessAction,
     LoadProfileInterestsSuccessAction,
     LoadProfileOffersSuccessAction,
@@ -30,7 +31,7 @@ export const profileReducer = (
         }
         case PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_SUCCESS: {
             if (state.user) {
-                const {fields} = <SetProfileFieldsSuccessAction>action;
+                const {fields} = action as SetProfileFieldsSuccessAction;
                 if (fields.profileOffers) fields.profileOffers = stripSuperfluousOffers(fields.profileOffers);
                 return {
                     ...state,
@@ -38,23 +39,27 @@ export const profileReducer = (
                 };
             } else return {...state};
         }
+        case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
+            const {profile} = action as CreateProfileSuccessAction;
+            return state.user ? {...state, user: {...state.user, profile}} : state;
+        }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
-            const {offers} = <LoadProfileOffersSuccessAction>action;
+            const {offers} = action as LoadProfileOffersSuccessAction;
             const offerIdToCategory = new Map(offers.map((o: OfferDto) => [o.id, o.category]));
             return {...state, offers, offerIdToCategory};
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_INTERESTS_SUCCESS: {
-            const {interests} = <LoadProfileInterestsSuccessAction>action;
+            const {interests} = action as LoadProfileInterestsSuccessAction;
             // Sort alphabetically
             interests.sort((a, b) => (a.id > b.id ? 1 : -1));
             return {...state, interests};
         }
         case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
-            const {user} = <FetchUserSuccessAction>action;
+            const {user} = action as FetchUserSuccessAction;
             return {...state, user};
         }
         case PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS: {
-            const {avatarUrl} = <SetAvatarSuccessAction>action;
+            const {avatarUrl} = action as SetAvatarSuccessAction;
             if (state.user === null) return {...state};
             else {
                 return {

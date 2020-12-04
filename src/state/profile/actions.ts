@@ -5,6 +5,7 @@ import {
     InterestDto,
     OfferDto,
     RequestResponse,
+    ResponseProfileDto,
     ResponseUserDto,
     SignedUrlResponseDto,
     SuccessfulRequestResponse,
@@ -12,7 +13,7 @@ import {
 import {UserProfile} from "../../model/user-profile";
 import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
-import {convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
+import {convertDtoToProfile, convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {readCachedStaticData} from "../persistent-storage/static";
@@ -54,6 +55,7 @@ export type CreateProfileAction = {
 
 export type CreateProfileSuccessAction = {
     type: string;
+    profile: UserProfile;
 };
 
 export type LoadProfileOffersAction = {
@@ -118,14 +120,19 @@ export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => asyn
     }
 };
 
-const createProfileSuccess = (): CreateProfileSuccessAction => ({
+const createProfileSuccess = (profile: UserProfile): CreateProfileSuccessAction => ({
     type: PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS,
+    profile,
 });
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
     const response = await requestBackend("profiles", "POST", {}, profile, token, true);
-    if (response.status === HttpStatusCode.CREATED) dispatch(createProfileSuccess());
+    if (response.status === HttpStatusCode.CREATED) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const profile = convertDtoToProfile(payload as ResponseProfileDto);
+        dispatch(createProfileSuccess(profile));
+    }
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
