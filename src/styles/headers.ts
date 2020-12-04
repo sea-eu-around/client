@@ -36,9 +36,15 @@ export const headerStyles = preTheme((theme: Theme) => {
         backButtonIcon: {
             fontSize: 28,
         },
+        avatarContainer: {
+            backgroundColor: theme.accent,
+        },
         avatar: {
-            borderWidth: 1,
-            borderColor: theme.accentSlight,
+            borderWidth: 2,
+            borderColor: theme.componentBorder,
+        },
+        avatarTitle: {
+            color: theme.textWhite,
         },
         title: {
             flex: 1,
