@@ -1,5 +1,4 @@
-import {FontAwesome} from "@expo/vector-icons";
-import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {
     ActivityIndicator,
@@ -10,7 +9,6 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from "react-native";
 import {withTheme} from "react-native-elements";
@@ -196,25 +194,5 @@ const themedStyles = preTheme((theme: Theme) => {
         },
     });
 });
-
-type MatchingHeaderRightProps = {
-    navigation: StackNavigationProp<TabMatchingRoot, "TabMatchingScreen">;
-} & ThemeProps;
-
-export const MatchingHeaderRight = withTheme(
-    ({navigation, theme}: MatchingHeaderRightProps): JSX.Element => {
-        const styles = themedStyles(theme);
-        return (
-            <View style={styles.headerContainer}>
-                {/*<TouchableOpacity onPress={() => store.dispatch(refreshFetchedProfiles())}>
-                <MaterialIcons name="refresh" size={32} />
-            </TouchableOpacity>*/}
-                <TouchableOpacity onPress={() => navigation.navigate("MatchFilteringScreen")}>
-                    <FontAwesome name="sliders" style={styles.filtersIcon} />
-                </TouchableOpacity>
-            </View>
-        );
-    },
-);
 
 export default reduxConnector(withTheme(TabMatchingScreen));

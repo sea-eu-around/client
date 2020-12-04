@@ -4,7 +4,7 @@ import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {OfferCategory, OfferDto} from "../api/dto";
 import MultiUniversityPicker from "../components/MultiUniversityPicker";
-import {refreshFetchedProfiles, setMatchingFilters} from "../state/matching/actions";
+import {setMatchingFilters} from "../state/matching/actions";
 import {AppState, MatchingFiltersState} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
@@ -13,11 +13,8 @@ import DegreeToggleMulti from "../components/DegreeToggleMulti";
 import MultiLanguagePicker from "../components/MultiLanguagePicker";
 import {Degree, Role} from "../constants/profile-constants";
 import {MaterialIcons} from "@expo/vector-icons";
-import store from "../state/store";
 import RoleToggleMulti from "../components/RoleToggleMulti";
-import {StackHeaderLeftButtonProps} from "@react-navigation/stack";
 import {defaultMatchingFilters} from "../state/matching/reducer";
-import {rootNavigate} from "../navigation/utils";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -37,7 +34,7 @@ export const Separator = withTheme(({theme}: ThemeProps) => {
     return <View style={themedStyles(theme).separator}></View>;
 });
 
-const filteringScreenRef = React.createRef<MatchFilteringScreen>();
+export const filteringScreenRef = React.createRef<MatchFilteringScreen>();
 
 class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, MatchFilteringScreenState> {
     haveFiltersChanged: boolean;
@@ -221,45 +218,6 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-const headerStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        headerButtonIcon: {
-            fontSize: 32,
-            paddingRight: 10,
-            color: theme.text,
-        },
-    });
-});
-
-export const FilteringHeaderLeft = withTheme(
-    (props: StackHeaderLeftButtonProps & ThemeProps): JSX.Element => {
-        const styles = headerStyles(props.theme);
-        return (
-            <TouchableOpacity style={{padding: 10}} onPress={props.onPress}>
-                <MaterialIcons name="close" style={styles.headerButtonIcon} />
-            </TouchableOpacity>
-        );
-    },
-);
-
-export const FilteringHeaderRight = withTheme(
-    ({theme}: ThemeProps): JSX.Element => {
-        const styles = headerStyles(theme);
-        return (
-            <TouchableOpacity
-                style={{paddingVertical: 10}}
-                onPress={() => {
-                    if (filteringScreenRef.current) filteringScreenRef.current.applyFilters();
-                    rootNavigate("TabMatchingScreen");
-                    store.dispatch(refreshFetchedProfiles());
-                }}
-            >
-                <MaterialIcons name="check" style={styles.headerButtonIcon} />
-            </TouchableOpacity>
-        );
-    },
-);
-
 export const ClearFilterButton = withTheme(
     ({theme, onPress}: ThemeProps & {onPress: () => void}): JSX.Element => (
         <TouchableOpacity onPress={onPress}>
@@ -267,13 +225,6 @@ export const ClearFilterButton = withTheme(
         </TouchableOpacity>
     ),
 );
-
-//return <MaterialIcons name="refresh" size={32} style={{paddingRight: 10}} />;
-/*
-<TouchableOpacity style={{marginRight: 16, padding: 10}} onPress={() => store.dispatch(resetMatchingFilters())}>
-    <Text>reset</Text>
-</TouchableOpacity>
-*/
 
 const wrapper = (props: MatchFilteringScreenProps) => <MatchFilteringScreen ref={filteringScreenRef} {...props} />;
 export default reduxConnector(withTheme(wrapper));
