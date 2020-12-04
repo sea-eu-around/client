@@ -17,7 +17,7 @@ import {preTheme} from "../../styles/utils";
 import i18n from "i18n-js";
 import {connectToChat, fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
 import {MaterialTopTabScreenProps} from "@react-navigation/material-top-tabs";
-import {TabMessagingRoot} from "../../navigation/types";
+import {TabMessagingTabs} from "../../navigation/types";
 import {ChatRoom} from "../../model/chat-room";
 import ChatRoomCard from "../../components/messaging/ChatRoomCard";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
@@ -30,7 +30,7 @@ const reduxConnector = connect((state: AppState) => ({
 
 type IndividualMessagingTabProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    MaterialTopTabScreenProps<TabMessagingRoot>;
+    MaterialTopTabScreenProps<TabMessagingTabs>;
 
 const SCROLL_DISTANCE_TO_LOAD = 50;
 
