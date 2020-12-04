@@ -1,43 +1,29 @@
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {TokenDto} from "../../api/dto";
-
-export type CredentialsStorageObject = {
-    email: string;
-    token: TokenDto;
-};
+import {CredentialsStorageObject} from "../../types";
 
 /**
- * Override auth information in secure storage. Data will be stored if expo-secure-store is available on the device.
+ * Override auth information in secure.
  * @param email - The user's email.
  * @param token - The user's authentication token.
  */
 export function storeAuthInformation(email: string, token: TokenDto): void {
-    // Use expo-secure-store to securely store sensitive data
-    SecureStore.isAvailableAsync().then((available: boolean) => {
-        if (available) {
-            const toStore: CredentialsStorageObject = {email, token};
-            SecureStore.setItemAsync("auth", JSON.stringify(toStore));
-        }
-    });
+    const toStore: CredentialsStorageObject = {email, token};
+    AsyncStorage.setItem("auth", JSON.stringify(toStore));
 }
 
 /**
- * Remove the user's auth information from the secure storage.
+ * Remove the user's auth information from storage.
  */
 export function discardAuthInformation(): void {
-    SecureStore.isAvailableAsync().then((available: boolean) => {
-        if (available) SecureStore.deleteItemAsync("auth");
-    });
+    AsyncStorage.removeItem("auth");
 }
 
 /**
- * Read auth information from secure storage, if available on the device.
+ * Read auth information from storage.
  * @return an object containing the email and auth token, or false if SecureStore is unavailable or no data was stored.
  */
 export async function readCachedCredentials(): Promise<false | CredentialsStorageObject> {
-    const available = await SecureStore.isAvailableAsync();
-    if (available) {
-        const raw = await SecureStore.getItemAsync("auth");
-        return raw ? JSON.parse(raw) : false;
-    } else return false;
+    const raw = await AsyncStorage.getItem("auth");
+    return raw ? JSON.parse(raw) : false;
 }
