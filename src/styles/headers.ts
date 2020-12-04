@@ -6,15 +6,15 @@ export const headerStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
             backgroundColor: theme.background,
+            paddingHorizontal: 5,
             shadowColor: "#000",
             shadowOffset: {
                 width: 0,
-                height: 6,
+                height: 1,
             },
-            shadowOpacity: 0.37,
-            shadowRadius: 7.49,
-            elevation: 3,
-            paddingHorizontal: 5,
+            shadowOpacity: 0.2,
+            shadowRadius: 1.41,
+            elevation: 2,
         },
         wrapperNoShadow: {
             shadowColor: "transparent",
@@ -38,8 +38,6 @@ export const headerStyles = preTheme((theme: Theme) => {
         },
         avatarContainer: {
             backgroundColor: theme.accent,
-        },
-        avatar: {
             borderWidth: 2,
             borderColor: theme.componentBorder,
         },

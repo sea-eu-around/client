@@ -48,7 +48,8 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                         profile={user?.profile}
                         rounded
                         size={40}
-                        avatarStyle={styles.avatar}
+                        containerStyle={styles.avatarContainer}
+                        titleStyle={styles.avatarTitle}
                         activeOpacity={0.75}
                         onPress={() => this.pressAvatar()}
                     />
