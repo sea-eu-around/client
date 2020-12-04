@@ -169,11 +169,10 @@ export const joinChatRoom = (room: ChatRoom): AppThunk => async (dispatch, getSt
         activeRoom,
     } = getState().messaging;
 
-    if ((activeRoom && activeRoom.id != room.id) || !connected) dispatch(joinChatRoomFailure());
+    if (activeRoom || !connected) dispatch(joinChatRoomFailure());
     else {
         dispatch(joinChatRoomBegin(room));
         chatSocket.joinRoom(room);
-        // TODO Careful if we're already in a room
         dispatch(joinChatRoomSuccess(room));
     }
 };
