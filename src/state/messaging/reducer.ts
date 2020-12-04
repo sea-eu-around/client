@@ -137,8 +137,13 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             return state;
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
-            // TODO disconnect from chat
-            return {...state, activeRoom: null, matchRooms: [], matchRoomsPagination: initialPaginatedState()};
+            return {
+                ...state,
+                activeRoom: null,
+                matchRooms: [],
+                matchRoomsPagination: initialPaginatedState(),
+                localChatUser: null,
+            };
         }
         default:
             return state;
