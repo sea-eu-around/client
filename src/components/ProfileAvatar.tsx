@@ -11,7 +11,7 @@ class ProfileAvatar extends React.Component<ProfileAvatarProps> {
 
         const avatarTitle = profile ? (profile.firstName[0] + profile.lastName[0]).toUpperCase() : "";
         const avatarSource = profile && profile.avatarUrl ? {uri: profile.avatarUrl} : undefined;
-        console.log("title = ", avatarTitle);
+
         return (
             <Avatar
                 {...avatarProps}
