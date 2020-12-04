@@ -38,11 +38,6 @@ const config: LinkingOptions = {
                             GroupMessagingTab: "messaging/group",
                         },
                     },
-                    TabProfile: {
-                        screens: {
-                            TabProfileScreen: "profile",
-                        },
-                    },
                     TabNotifications: {
                         screens: {
                             TabNotificationsScreen: "notifications",
@@ -54,6 +49,7 @@ const config: LinkingOptions = {
             ValidateEmailScreen: "validate/:token",
             ResetPasswordScreen: "reset-password/:token",
             ResetPasswordSuccessScreen: "password-reset",
+            MyProfileScreen: "profile",
             ChatScreen: "chat",
             OnboardingScreen: {
                 screens: {

@@ -28,3 +28,7 @@ export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute
 export function screenTitle(route: NavigatorRoute): string {
     return i18n.t(`screenTitles.${route}`) + i18n.t("screenTitles.suffix");
 }
+
+export function headerTitle(route: NavigatorRoute): string {
+    return i18n.t(`screenTitles.${route}`);
+}

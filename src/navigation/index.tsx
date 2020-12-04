@@ -1,5 +1,5 @@
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
-import {CardStyleInterpolators, createStackNavigator} from "@react-navigation/stack";
+import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
@@ -19,7 +19,9 @@ import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 import ChatScreen from "../screens/messaging/ChatScreen";
-import ChatScreenHeader from "../components/ChatScreenHeader";
+import ChatScreenHeader from "../components/headers/ChatScreenHeader";
+import MyProfileScreen from "../screens/MyProfileScreen";
+import SimpleScreenHeader from "../components/headers/SimpleScreenHeader";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -65,6 +67,23 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     name="ChatScreen"
                     component={ChatScreen}
                     options={{header: ChatScreenHeader, headerShown: true}}
+                />
+                <Stack.Screen
+                    name="MyProfileScreen"
+                    component={MyProfileScreen}
+                    options={{
+                        headerShown: true,
+                        title: screenTitle("MyProfileScreen"),
+                        // eslint-disable-next-line react/display-name
+                        header: (props: StackHeaderProps) => (
+                            <SimpleScreenHeader
+                                {...props}
+                                noShadow={true}
+                                wrapperStyle={{backgroundColor: theme.accent}}
+                                color={theme.textWhite}
+                            />
+                        ),
+                    }}
                 />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen

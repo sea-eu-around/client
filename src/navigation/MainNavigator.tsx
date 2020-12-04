@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import {MaterialIcons} from "@expo/vector-icons";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {createStackNavigator, StackHeaderLeftButtonProps, StackScreenProps} from "@react-navigation/stack";
+import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {
@@ -10,12 +10,10 @@ import {
     TabHomeRoot,
     TabMatchingRoot,
     TabNotificationsRoot,
-    TabProfileRoot,
 } from "../navigation/types";
-import TabProfileScreen from "../screens/TabProfileScreen";
 import i18n from "i18n-js";
-import TabMatchingScreen, {MatchingHeaderRight} from "../screens/TabMatchingScreen";
-import MatchFilteringScreen, {FilteringHeaderLeft, FilteringHeaderRight} from "../screens/MatchFilteringScreen";
+import TabMatchingScreen from "../screens/TabMatchingScreen";
+import MatchFilteringScreen from "../screens/MatchFilteringScreen";
 import {withTheme} from "react-native-elements";
 import MessagingNavigator from "./MessagingNavigator";
 import {Text} from "react-native";
@@ -24,6 +22,9 @@ import {ThemeProps} from "../types";
 import TabHomeScreen from "../screens/TabHomeScreen";
 import {screenTitle} from "./utils";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import MainHeader from "../components/headers/MainHeader";
+import MatchScreenHeader from "../components/headers/MatchScreenHeader";
+import FilteringScreenHeader from "../components/headers/FilteringScreenHeader";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -69,14 +70,6 @@ function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
                 }}
             />
             <TabNavigator.Screen
-                name="TabProfile"
-                component={TabProfileNavigator}
-                options={{
-                    tabBarLabel: (props: TabBarLabelProps) => <TabBarLabel text={i18n.t("tabs.profile")} {...props} />,
-                    tabBarIcon: (props: TabBarIconProps) => <TabBarIcon name="person" {...props} />,
-                }}
-            />
-            <TabNavigator.Screen
                 name="TabNotifications"
                 component={TabNotificationsNavigator}
                 options={{
@@ -113,75 +106,50 @@ function TabBarLabel({text, color}: {text: string} & TabBarLabelProps): JSX.Elem
 const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
 const TabHomeNavigator = (): JSX.Element => (
-    <TabHomeStack.Navigator>
+    <TabHomeStack.Navigator screenOptions={{header: MainHeader}}>
         <TabHomeStack.Screen
             name="TabHomeScreen"
             component={TabHomeScreen}
-            options={{headerShown: false, title: screenTitle("TabHomeScreen")}}
+            options={{title: screenTitle("TabHomeScreen")}}
         />
     </TabHomeStack.Navigator>
 );
 
 const TabMatchingStack = createStackNavigator<TabMatchingRoot>();
 
-const TabMatchingNavigator = withTheme(
-    (): JSX.Element => (
-        <TabMatchingStack.Navigator>
-            <TabMatchingStack.Screen
-                name="TabMatchingScreen"
-                component={TabMatchingScreen}
-                options={({navigation}) => ({
-                    headerShown: true,
-                    headerLeftContainerStyle: {display: "none"},
-                    headerTitle: "Matching",
-                    headerTitleStyle: {
-                        letterSpacing: 0.5,
-                        paddingLeft: 10,
-                    },
-                    headerTitleAlign: "left",
-                    // eslint-disable-next-line react/display-name
-                    headerRight: () => <MatchingHeaderRight navigation={navigation} />,
-                    title: screenTitle("TabMatchingScreen"),
-                })}
-            />
-            <TabMatchingStack.Screen
-                name="MatchFilteringScreen"
-                component={MatchFilteringScreen}
-                options={{
-                    headerShown: true,
-                    headerTitle: "Filters",
-                    headerTitleAlign: "center",
-                    headerLeft: (props: StackHeaderLeftButtonProps) => <FilteringHeaderLeft {...props} />,
-                    headerRight: () => <FilteringHeaderRight />,
-                    title: screenTitle("MatchFilteringScreen"),
-                }}
-            />
-        </TabMatchingStack.Navigator>
-    ),
+const TabMatchingNavigator = (): JSX.Element => (
+    <TabMatchingStack.Navigator>
+        <TabMatchingStack.Screen
+            name="TabMatchingScreen"
+            component={TabMatchingScreen}
+            options={() => ({
+                headerShown: true,
+                title: screenTitle("TabMatchingScreen"),
+                header: MatchScreenHeader,
+            })}
+        />
+        <TabMatchingStack.Screen
+            name="MatchFilteringScreen"
+            component={MatchFilteringScreen}
+            options={{
+                headerShown: true,
+                title: screenTitle("MatchFilteringScreen"),
+                header: FilteringScreenHeader,
+            }}
+        />
+    </TabMatchingStack.Navigator>
 );
 
 const TabNotificationsStack = createStackNavigator<TabNotificationsRoot>();
 
 const TabNotificationsNavigator = (): JSX.Element => (
-    <TabNotificationsStack.Navigator>
+    <TabNotificationsStack.Navigator screenOptions={{header: MainHeader}}>
         <TabNotificationsStack.Screen
             name="TabNotificationsScreen"
             component={TabNotImplementedScreen}
-            options={{headerShown: false, title: screenTitle("TabNotificationsScreen")}}
+            options={{title: screenTitle("TabNotificationsScreen")}}
         />
     </TabNotificationsStack.Navigator>
-);
-
-const TabProfileStack = createStackNavigator<TabProfileRoot>();
-
-const TabProfileNavigator = (): JSX.Element => (
-    <TabProfileStack.Navigator>
-        <TabProfileStack.Screen
-            name="TabProfileScreen"
-            component={TabProfileScreen}
-            options={{headerShown: false, title: screenTitle("TabProfileScreen")}}
-        />
-    </TabProfileStack.Navigator>
 );
 
 export default withTheme(MainNavigatorComponent);

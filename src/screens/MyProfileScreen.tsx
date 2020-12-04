@@ -3,7 +3,7 @@ import * as React from "react";
 import {StyleSheet, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../state/types";
-import {MainNavigatorTabs} from "../navigation/types";
+import {RootNavigatorScreens} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
@@ -14,11 +14,11 @@ const reduxConnector = connect((state: AppState) => ({
     user: state.profile.user,
 }));
 
-type TabProfileScreenProps = ConnectedProps<typeof reduxConnector> &
+type MyProfileScreenProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    StackScreenProps<MainNavigatorTabs, "TabProfile">;
+    StackScreenProps<RootNavigatorScreens, "MyProfileScreen">;
 
-class TabProfileScreen extends React.Component<TabProfileScreenProps> {
+class MyProfileScreen extends React.Component<MyProfileScreenProps> {
     componentDidMount() {
         this.props.navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
@@ -58,4 +58,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(TabProfileScreen));
+export default reduxConnector(withTheme(MyProfileScreen));
