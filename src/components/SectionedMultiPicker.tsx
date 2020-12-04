@@ -252,6 +252,7 @@ const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
                       alignSelf: "center",
                       borderWidth: 0,
                       maxWidth: 700,
+                      maxHeight: 600,
                       boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.1)",
                   }
                 : {}),

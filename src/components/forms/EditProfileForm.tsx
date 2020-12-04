@@ -262,8 +262,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         profile={user?.profile}
                         size={140}
                         rounded
-                        containerStyle={{backgroundColor: theme.accentSecondary}}
-                        avatarStyle={styles.avatar}
+                        containerStyle={styles.avatarContainer}
                         activeOpacity={0.8}
                     >
                         {user && (
@@ -376,11 +375,12 @@ export const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
         },
         topView: {
-            width: "160%",
-            height: 280,
+            /*width: "160%",
             borderBottomLeftRadius: 200,
-            borderBottomRightRadius: 200,
-            paddingVertical: 50,
+            borderBottomRightRadius: 200,*/
+            width: "100%",
+            paddingTop: 10,
+            paddingBottom: 20,
             alignItems: "center",
             alignSelf: "center",
             backgroundColor: theme.accent,
@@ -401,7 +401,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         name: {
             fontSize: 30,
             color: theme.textWhite,
-            marginTop: 10,
+            marginTop: 15,
         },
         university: {
             fontSize: 14,
@@ -410,9 +410,10 @@ export const themedStyles = preTheme((theme: Theme) => {
         universityContainer: {
             marginVertical: 5,
         },
-        avatar: {
+        avatarContainer: {
             borderColor: theme.cardBackground,
             borderWidth: 2,
+            backgroundColor: theme.accentSecondary,
         },
         avatarAccessory: {
             width: 40,

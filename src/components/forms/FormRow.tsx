@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} from "react-native";
+import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet, Platform} from "react-native";
 import {formStyles} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import {ArraySchema, Schema, ValidationError} from "yup";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {ThemeConsumer} from "react-native-elements";
+import CustomModal from "../modals/CustomModal";
 
 // Component props
 type FormRowProps<T> = {
@@ -165,11 +166,18 @@ class FormRow<T> extends React.Component<FormRowProps<T>, FormRowState<T>> {
                                     {overrideModal !== undefined &&
                                         modalOpen &&
                                         overrideModal(() => this.setModal(false))}
-                                    {overrideModal === undefined && modalOpen && (
-                                        <Modal transparent={true} visible={modalOpen} animationType="slide">
-                                            {this.renderModalContent()}
-                                        </Modal>
-                                    )}
+                                    {overrideModal === undefined &&
+                                        modalOpen &&
+                                        (Platform.OS === "web" ? (
+                                            <CustomModal
+                                                visible={modalOpen}
+                                                renderContent={() => this.renderModalContent()}
+                                            />
+                                        ) : (
+                                            <Modal transparent={true} visible={modalOpen} animationType="slide">
+                                                {this.renderModalContent()}
+                                            </Modal>
+                                        ))}
                                 </>
                             )}
                         </>
