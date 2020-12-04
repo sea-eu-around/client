@@ -53,9 +53,6 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         const {theme, user} = this.props;
         const styles = themedStyles(theme);
 
-        const avatarTitle =
-            user && user.profile ? (user.profile.firstName[0] + user.profile.lastName[0]).toUpperCase() : "";
-        const avatarSource = user && user.profile && user.profile.avatarUrl ? {uri: user.profile.avatarUrl} : undefined;
         const fullName = user && user.profile ? user.profile.firstName + " " + user.profile.lastName : "";
 
         /*const textInputStyleProps = {
@@ -262,12 +259,11 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
             <View style={styles.screenWrapper}>
                 <View style={styles.topView}>
                     <EnlargeableAvatar
+                        profile={user?.profile}
                         size={140}
                         rounded
-                        title={avatarTitle}
                         containerStyle={{backgroundColor: theme.accentSecondary}}
                         avatarStyle={styles.avatar}
-                        source={avatarSource}
                         activeOpacity={0.8}
                     >
                         {user && (

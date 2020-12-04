@@ -1,11 +1,13 @@
 import * as React from "react";
-import {Avatar, AvatarProps, Overlay, withTheme} from "react-native-elements";
+import {AvatarProps, Overlay, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
 import {StyleSheet} from "react-native";
+import {UserProfile} from "../model/user-profile";
+import ProfileAvatar from "./ProfileAvatar";
 
 // Component props
-export type EnlargeableAvatarProps = AvatarProps & ThemeProps;
+export type EnlargeableAvatarProps = {profile?: UserProfile} & AvatarProps & ThemeProps;
 
 // Component state
 export type EnlargeableAvatarState = {
@@ -23,7 +25,7 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
     }
 
     render(): JSX.Element {
-        const {theme, children, ...avatarProps} = this.props;
+        const {theme, children, profile, ...avatarProps} = this.props;
         const {enlarged} = this.state;
         const styles = themedStyles(theme);
 
@@ -34,20 +36,24 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
 
         return (
             <>
-                <Avatar {...avatarProps} {...(avatarProps.source ? {onPress} : {})}>
+                <ProfileAvatar
+                    profile={profile}
+                    {...avatarProps}
+                    {...(avatarProps.source || profile?.avatarUrl ? {onPress} : {})}
+                >
                     {children}
-                </Avatar>
+                </ProfileAvatar>
                 <Overlay
                     isVisible={enlarged}
                     onBackdropPress={() => this.toggleEnlarged()}
                     overlayStyle={styles.overlay}
                     backdropStyle={styles.overlayBackdrop}
                 >
-                    <Avatar
-                        rounded
+                    <ProfileAvatar
+                        profile={profile}
+                        source={avatarProps.source}
                         containerStyle={styles.enlargedAvatarContainer}
                         avatarStyle={styles.enlargedAvatar}
-                        source={avatarProps.source}
                         activeOpacity={0.8}
                         onPress={() => this.toggleEnlarged()}
                     />

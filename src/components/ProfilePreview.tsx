@@ -10,7 +10,7 @@ import {
     StyleSheet,
 } from "react-native";
 import i18n from "i18n-js";
-import {Avatar, withTheme} from "react-native-elements";
+import {withTheme} from "react-native-elements";
 import {UserProfile} from "../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable from "react-native-gesture-handler/Swipeable";
@@ -25,6 +25,7 @@ import FormattedUniversity from "./FormattedUniversity";
 import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
 import {styleTextLight, styleTextThin} from "../styles/general";
+import ProfileAvatar from "./ProfileAvatar";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
@@ -157,17 +158,12 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                     >
                         <View style={styles.collapsedContent}>
                             <View style={styles.avatarContainer}>
-                                <Avatar
+                                <ProfileAvatar
+                                    profile={profile}
                                     size={120}
                                     rounded
-                                    title={(profile.firstName[0] + profile.lastName[0]).toUpperCase()}
                                     containerStyle={styles.avatar}
-                                    source={
-                                        profile.avatarUrl && profile.avatarUrl !== ""
-                                            ? {uri: profile.avatarUrl}
-                                            : undefined
-                                    }
-                                ></Avatar>
+                                ></ProfileAvatar>
                             </View>
                             <View style={styles.infoContainer}>
                                 <Text style={styles.name}>{fullName}</Text>
