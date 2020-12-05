@@ -29,6 +29,7 @@ export type MultiPickerProps = ConnectedProps<typeof reduxConnector> & {
     multipleText?: string;
     searchablePlaceholder?: string;
     showSelected?: boolean;
+    single?: boolean;
 } & ViewProps &
     ThemeProps;
 
@@ -106,6 +107,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             multipleText,
             searchablePlaceholder,
             showSelected,
+            single,
             ...viewProps
         } = this.props;
         const styles = pickerStyles(theme);
@@ -148,7 +150,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                             >
                                 <DropDownPicker
                                     items={items}
-                                    multiple={true}
+                                    multiple={!single}
                                     searchable={true}
                                     defaultValue={selected}
                                     onChangeItem={(values: string[]) => {
@@ -157,7 +159,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                                     placeholder={placeholder}
                                     multipleText={multipleText}
                                     searchablePlaceholder={searchablePlaceholder}
-                                    scrollViewProps={{keyboardShouldPersistTaps: "always"}} // ensures items are clickable even when the keyboard is open
+                                    scrollViewProps={{keyboardShouldPersistTaps: "handled"}} // ensures items are clickable even when the keyboard is open
                                     isVisible={true}
                                     showArrow={false}
                                     dropDownMaxHeight={this.state.dropdownWrapperHeight - 10}

@@ -8,6 +8,7 @@ export type CustomModalProps = ThemeProps & {
     onHide?: () => void;
     renderContent: (hide: () => void) => JSX.Element;
     modalViewStyle?: ViewStyle;
+    visible?: boolean;
 };
 
 type CustomModalState = {
@@ -17,7 +18,12 @@ type CustomModalState = {
 class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
     constructor(props: CustomModalProps) {
         super(props);
-        this.state = {modalVisible: true};
+        this.state = {modalVisible: props.visible || false};
+    }
+
+    componentDidUpdate(oldProps: CustomModalProps): void {
+        if (oldProps.visible && !this.props.visible) this.setModalVisible(false);
+        if (!oldProps.visible && this.props.visible) this.setModalVisible(true);
     }
 
     setModalVisible(b: boolean): void {

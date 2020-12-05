@@ -36,12 +36,6 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
         this.state = {hasErrors: false};
     }
 
-    shouldComponentUpdate(nextProps: Readonly<OnboardingLanguageScreenProps>) {
-        const prev = this.props.onboardingState;
-        const next = nextProps.onboardingState;
-        return prev.languages != next.languages;
-    }
-
     submit(values: OnboardingLanguageFormState) {
         if (!this.state.hasErrors) {
             this.props.dispatch(setOnboardingValues({languages: values.languages}));
@@ -51,7 +45,7 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
 
     render(): JSX.Element {
         const {onboardingState} = this.props;
-
+        const {hasErrors} = this.state;
         return (
             <Formik
                 initialValues={onboardingState as OnboardingLanguageFormState}
@@ -61,7 +55,7 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
                 onSubmit={(values: OnboardingLanguageFormState) => this.submit(values)}
             >
                 {(formikProps: FormikProps<OnboardingLanguageFormState>) => {
-                    const {handleSubmit, values, errors, touched, setFieldValue} = formikProps;
+                    const {handleSubmit, values, touched, setFieldValue} = formikProps;
 
                     return (
                         <OnboardingSlide
@@ -76,8 +70,19 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
                                     setFieldValue("languages", languages);
                                     this.setState({...this.state, hasErrors});
                                 }}
-                            ></SpokenLanguagesInput>
-                            {touched.languages && <InputErrorText error={errors.languages}></InputErrorText>}
+                            />
+                            {touched.languages && hasErrors && (
+                                <InputErrorText
+                                    error={"validation.language.specifyLevel"}
+                                    style={{marginBottom: 0, marginTop: 10}}
+                                />
+                            )}
+                            {touched.languages && !hasErrors && values.languages.length == 0 && (
+                                <InputErrorText
+                                    error={"validation.language.atLeastOne"}
+                                    style={{marginBottom: 0, marginTop: 10}}
+                                />
+                            )}
                         </OnboardingSlide>
                     );
                 }}

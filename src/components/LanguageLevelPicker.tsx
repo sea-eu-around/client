@@ -1,100 +1,52 @@
 import * as React from "react";
-import DropDownPicker from "react-native-dropdown-picker";
 import i18n from "i18n-js";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
-import {View, ViewProps, StyleSheet} from "react-native";
+import {StyleProp, StyleSheet, ViewStyle} from "react-native";
 import {LanguageLevel, LANGUAGE_LEVELS} from "../constants/profile-constants";
-import {ThemeProps} from "../types";
+import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
-import {SupportedLocale} from "../localization";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    locale: state.settings.locale,
-}));
+import PopUpSelector from "./PopUpSelector";
 
 // Component props
 export type LanguageLevelPickerProps = {
-    level: LanguageLevel;
+    level?: LanguageLevel;
     onChange?: (level: LanguageLevel) => void;
-} & ViewProps &
-    ThemeProps &
-    ConnectedProps<typeof reduxConnector>;
-
-type PickerItem = {
-    value: LanguageLevel;
-    label: string;
-};
-
-const items: Map<SupportedLocale, PickerItem[]> = new Map();
-
-function updateItems(locale: SupportedLocale) {
-    if (!items.has(locale)) {
-        items.set(
-            locale,
-            LANGUAGE_LEVELS.map((code: LanguageLevel) => ({
-                label: i18n.t(`languageLevels.${code}`),
-                value: code,
-            })),
-        );
-    }
-}
+    buttonStyle?: StyleProp<ViewStyle>;
+} & ThemeProps;
 
 class LanguageLevelPicker extends React.Component<LanguageLevelPickerProps> {
-    constructor(props: LanguageLevelPickerProps) {
-        super(props);
-        updateItems(this.props.locale);
-    }
-
-    componentDidUpdate(oldProps: LanguageLevelPickerProps) {
-        const locale = this.props.locale;
-        if (oldProps.locale != locale) updateItems(locale);
-    }
-
     render(): JSX.Element {
-        const {onChange, locale, level, theme, ...viewProps} = this.props;
+        const {onChange, level, theme, buttonStyle} = this.props;
         const styles = themedStyles(theme);
 
         return (
-            <View {...viewProps}>
-                <DropDownPicker
-                    items={items.get(locale) || []}
-                    defaultValue={level}
-                    multiple={false}
-                    searchable={false}
-                    placeholder={i18n.t("languageLevelPicker.placeholder")}
-                    onChangeItem={(item: PickerItem) => {
-                        if (onChange) onChange(item.value);
-                    }}
-                    style={styles.picker}
-                    containerStyle={styles.pickerContainer}
-                    itemStyle={styles.pickerItem}
-                    labelStyle={styles.pickerLabel}
-                    dropDownMaxHeight={300}
-                    arrowSize={20}
-                ></DropDownPicker>
-            </View>
+            <PopUpSelector
+                values={LANGUAGE_LEVELS}
+                label={(l: string) => i18n.t(`languageLevels.${l}`)}
+                selected={level ? [level] : []}
+                valueStyle={styles.value}
+                buttonStyle={[styles.button, buttonStyle]}
+                onSelect={(values: string[]) => {
+                    if (values.length > 0 && onChange) onChange(values[0] as LanguageLevel);
+                }}
+            />
         );
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        picker: {
-            backgroundColor: "#fafafa",
-            // just setting borderRadius won't work.
-            // See https://github.com/hossein-zare/react-native-dropdown-picker#borderradius
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
+        button: {
+            width: 75,
+            height: 40,
+            alignItems: "center",
         },
-        pickerContainer: {maxWidth: 120, height: 50, borderRadius: 0},
-        pickerItem: {justifyContent: "flex-start"},
-        pickerLabel: {fontSize: 16},
+        value: {
+            letterSpacing: 0.5,
+            fontSize: 16,
+            color: theme.text,
+        },
     });
 });
 
-export default reduxConnector(withTheme(LanguageLevelPicker));
+export default withTheme(LanguageLevelPicker);

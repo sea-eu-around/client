@@ -1,8 +1,7 @@
 import * as React from "react";
-import {View, StyleSheet, ViewStyle} from "react-native";
+import {View, StyleSheet, ViewStyle, Text, Alert} from "react-native";
 import LanguagePicker from "./LanguagePicker";
 import LanguageLevelPicker from "./LanguageLevelPicker";
-import InputErrorText from "./InputErrorText";
 import {MaterialIcons} from "@expo/vector-icons";
 import {LanguageLevel} from "../constants/profile-constants";
 import {Theme, ThemeProps} from "../types";
@@ -10,6 +9,7 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {SpokenLanguageDto} from "../api/dto";
 import {MAX_SPOKEN_LANGUAGES} from "../constants/config";
+import i18n from "i18n-js";
 
 // Component props
 export type SpokenLanguagesInputProps = ThemeProps & {
@@ -21,29 +21,20 @@ export type SpokenLanguagesInputProps = ThemeProps & {
 // Component state
 export type SpokenLanguagesInputState = {
     languages: Partial<SpokenLanguageDto>[];
-    errors: (string | boolean)[];
 };
 
 class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, SpokenLanguagesInputState> {
     constructor(props: SpokenLanguagesInputProps) {
         super(props);
         const languages = props.languages || [];
-        this.state = {
-            languages,
-            errors: languages.map(() => false),
-        };
-    }
-
-    componentDidMount() {
-        if (this.state.languages.length == 0) this.addRow();
+        this.state = {languages};
     }
 
     onChange(languages: Partial<SpokenLanguageDto>[]) {
-        const errors = this.computeErrors(languages);
-        this.setState({...this.state, languages, errors});
+        this.setState({...this.state, languages});
+        const hasErrors = languages.filter((l) => !l.level).length > 0;
 
         if (this.props.onChange) {
-            const hasErrors = errors.filter((e: string | boolean) => e !== false).length > 0;
             this.props.onChange(
                 languages
                     .filter((l: Partial<SpokenLanguageDto>) => l.code && l.level)
@@ -53,38 +44,24 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
         }
     }
 
-    computeErrors(languages: Partial<SpokenLanguageDto>[]): (string | boolean)[] {
-        return languages.map((sl: Partial<SpokenLanguageDto>) => {
-            const multipleOccurrences =
-                languages.filter((l: Partial<SpokenLanguageDto>) => l.code && l.code == sl.code).length > 1;
-            return multipleOccurrences ? "validation.languages.multiple" : !sl.code || !sl.level;
+    removeRow(idx: number) {
+        if (idx >= 0 && idx < this.state.languages.length)
+            this.onChange(this.state.languages.filter((v, i) => i !== idx));
+    }
+
+    setLanguages(codes: string[]) {
+        const levelDict = new Map(this.state.languages.map((l) => [l.code, l.level]));
+        const languages = codes.map((code: string) => ({code, level: levelDict.get(code)}));
+        this.onChange(languages);
+
+        this.setState({
+            ...this.state,
+            languages,
         });
     }
 
-    addRow() {
-        if (this.state.languages.length < MAX_SPOKEN_LANGUAGES) {
-            const languages = this.state.languages.concat([{code: ""}]);
-            this.onChange(languages);
-        }
-    }
-
-    removeRow(idx: number) {
-        if (idx >= 0 && idx < this.state.languages.length) {
-            const languages = this.state.languages.slice(); // copy
-            languages.splice(idx, 1);
-            this.onChange(languages);
-        }
-    }
-
-    setLanguageCode(idx: number, code: string) {
-        const languages = this.state.languages.slice(); // copy
-        languages[idx].code = code;
-        this.onChange(languages);
-    }
-
     setLanguageLevel(idx: number, level: LanguageLevel) {
-        const languages = this.state.languages.slice(); // copy
-        languages[idx].level = level;
+        const languages = this.state.languages.map((l, i) => (i === idx ? {...l, level} : l));
         this.onChange(languages);
     }
 
@@ -94,43 +71,33 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
         const styles = themedStyles(theme);
 
         const rows = languages.map((sl: Partial<SpokenLanguageDto>, i: number) => {
-            const error = this.state.errors[i];
             return (
-                <View key={i} style={styles.rowContainer}>
-                    <View style={styles.inputRowContainer}>
-                        <LanguagePicker
-                            single={true}
-                            languages={[sl.code]}
-                            style={styles.languagePicker}
-                            pickerStyle={styles.inputs}
-                            onChange={(languageCodes: string[]) => this.setLanguageCode(i, languageCodes[0])}
-                        />
-                        <LanguageLevelPicker
-                            level={sl.level}
-                            style={styles.levelPicker}
-                            onChange={(level: LanguageLevel) => this.setLanguageLevel(i, level)}
-                        ></LanguageLevelPicker>
-                        <MaterialIcons onPress={() => this.removeRow(i)} style={styles.deleteIcon} name="delete" />
-                    </View>
-                    {typeof error === "string" && (
-                        <View style={styles.errorRowContainer}>
-                            <InputErrorText error={error} />
-                        </View>
-                    )}
+                <View key={`spoken-languages-input-${sl.code}`} style={styles.rowContainer}>
+                    <Text style={styles.languageLabel}>{i18n.t(`languageNames.${sl.code}`)}</Text>
+                    <LanguageLevelPicker
+                        level={sl.level}
+                        buttonStyle={styles.levelPicker}
+                        onChange={(level: LanguageLevel) => this.setLanguageLevel(i, level)}
+                    />
+                    <MaterialIcons onPress={() => this.removeRow(i)} style={styles.deleteIcon} name="delete" />
                 </View>
             );
         });
 
-        const canAddMore =
-            this.state.languages.length < MAX_SPOKEN_LANGUAGES &&
-            this.state.languages.filter((sl: Partial<SpokenLanguageDto>) => !sl.level || !sl.code).length == 0;
-
         return (
             <View style={style}>
+                <LanguagePicker
+                    multiple={true}
+                    languages={languages.map((l) => l.code || "")}
+                    style={styles.languagePicker}
+                    onChange={(languageCodes: string[]) => {
+                        if (languageCodes.length > MAX_SPOKEN_LANGUAGES)
+                            Alert.alert(`You cannot select more than ${MAX_SPOKEN_LANGUAGES} languages`);
+                        this.setLanguages(languageCodes.slice(0, MAX_SPOKEN_LANGUAGES));
+                    }}
+                    showSelected={false}
+                />
                 {rows}
-                <View style={styles.plusButtonWrapper}>
-                    {canAddMore && <MaterialIcons onPress={() => this.addRow()} style={styles.plusButton} name="add" />}
-                </View>
             </View>
         );
     }
@@ -139,43 +106,23 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         rowContainer: {
-            flexDirection: "column",
-            width: "100%",
-            marginBottom: 8,
-        },
-        inputRowContainer: {
             flexDirection: "row",
             alignItems: "center",
-        },
-        errorRowContainer: {
-            marginBottom: 8,
-        },
-        plusButtonWrapper: {
-            alignItems: "center",
-            marginTop: 10,
-        },
-        plusButton: {
-            width: 36,
-            height: 36,
-            fontSize: 36,
-            borderRadius: 18,
-            color: theme.background,
-            backgroundColor: theme.accent,
         },
         deleteIcon: {
             fontSize: 24,
             color: theme.error,
+            paddingHorizontal: 4,
+            height: "100%",
+            textAlignVertical: "center",
         },
-        inputs: {
-            borderRadius: 0,
-        },
-        languagePicker: {
-            flex: 1,
-            flexGrow: 3,
+        languagePicker: {},
+        languageLabel: {
+            fontSize: 16,
+            color: theme.text,
+            flexGrow: 1,
         },
         levelPicker: {
-            flex: 1,
-            flexGrow: 2,
             marginHorizontal: 5,
         },
     });
