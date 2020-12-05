@@ -46,7 +46,7 @@ function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDt
         birthdate: onboardingState.birthdate!.toJSON(),
         nationality: onboardingState.nationality!,
         languages: onboardingState.languages,
-        interests: onboardingState.interestIds,
+        interests: onboardingState.interestIds.map((id) => ({id})),
         profileOffers: Object.values(onboardingState.offerValues),
         educationFields: onboardingState.educationFields.map((id) => ({id})),
     };
