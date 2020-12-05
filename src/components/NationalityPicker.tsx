@@ -1,6 +1,12 @@
 import * as React from "react";
 import {StyleSheet} from "react-native";
-import CountryPicker, {Country, CountryCode, TranslationLanguageCode} from "react-native-country-picker-modal";
+import CountryPicker, {
+    Country,
+    CountryCode,
+    DARK_THEME,
+    DEFAULT_THEME,
+    TranslationLanguageCode,
+} from "react-native-country-picker-modal";
 import i18n from "i18n-js";
 import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
@@ -62,6 +68,7 @@ class NationalityPicker extends React.Component<NationalityPickerProps, National
                 translation={i18n.t("countryPickerLanguageCode") as TranslationLanguageCode}
                 visible={open}
                 containerButtonStyle={styles.pickerContainerButton}
+                theme={theme.id === "dark" ? DARK_THEME : DEFAULT_THEME}
             ></CountryPicker>
         );
     }
