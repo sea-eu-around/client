@@ -10,7 +10,7 @@ import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import DegreeToggleMulti from "../components/DegreeToggleMulti";
-import MultiLanguagePicker from "../components/MultiLanguagePicker";
+import LanguagePicker from "../components/LanguagePicker";
 import {Degree, Role} from "../constants/profile-constants";
 import {MaterialIcons} from "@expo/vector-icons";
 import RoleToggleMulti from "../components/RoleToggleMulti";
@@ -120,11 +120,12 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                     <View style={styles.entryContainer}>
                         <Text style={styles.entryLabel}>{i18n.t("spokenLanguages")}</Text>
                         <View style={styles.entryControls}>
-                            <MultiLanguagePicker
+                            <LanguagePicker
+                                multiple={true}
                                 languages={filters.languages}
                                 showSelected={false}
                                 onChange={(languages: string[]) => this.updateLocalFilters({languages})}
-                            ></MultiLanguagePicker>
+                            />
                             <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
                         </View>
                     </View>
