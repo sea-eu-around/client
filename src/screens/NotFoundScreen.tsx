@@ -38,11 +38,14 @@ const themedStyles = preTheme((theme: Theme) => {
         title: {
             fontSize: 64,
             fontWeight: "100",
+            textAlign: "center",
         },
         subtitle: {
+            width: "100%",
             fontSize: 20,
             fontWeight: "bold",
             marginTop: 50,
+            textAlign: "center",
         },
         link: {
             paddingVertical: 10,
