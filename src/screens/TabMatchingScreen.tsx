@@ -65,10 +65,12 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
     }
 
     componentDidUpdate(oldProps: TabMatchingScreenProps) {
-        const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
-        if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
-        // Reset the hidden profiles when the user purposedly refreshes
-        if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
+        if (this.props.navigation.isFocused()) {
+            const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
+            if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
+            // Reset the hidden profiles when the user purposedly refreshes
+            if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
+        }
     }
 
     render(): JSX.Element {
