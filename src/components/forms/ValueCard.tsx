@@ -10,7 +10,7 @@ import {ThemeConsumer} from "react-native-elements";
 import CustomModal from "../modals/CustomModal";
 
 // Component props
-type FormRowProps<T> = {
+type ValueCardProps<T> = {
     label: string;
     display?: JSX.Element;
     noModal?: boolean;
@@ -23,14 +23,14 @@ type FormRowProps<T> = {
 } & TouchableOpacityProps;
 
 // Component state
-type FormRowState<T> = {
+type ValueCardState<T> = {
     modalOpen: boolean;
     error: string | null;
     value: T;
 };
 
-class FormRow<T> extends React.Component<FormRowProps<T>, FormRowState<T>> {
-    constructor(props: FormRowProps<T>) {
+class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>> {
+    constructor(props: ValueCardProps<T>) {
         super(props);
         this.state = {
             modalOpen: false,
@@ -265,4 +265,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default FormRow;
+export default ValueCard;
