@@ -45,6 +45,19 @@ export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Par
                 height: 35,
                 marginLeft: 0,
                 marginRight: 0,
+                borderColor: theme.componentBorder,
+            },
+            innerBorderStyle: {
+                color: theme.componentBorder,
+            },
+            buttonStyle: {
+                backgroundColor: theme.cardBackground,
+            },
+            textStyle: {
+                color: theme.text,
+            },
+            selectedButtonStyle: {
+                backgroundColor: theme.accent,
             },
         };
     }

@@ -8,6 +8,8 @@ export const pickerStyles = preTheme((theme: Theme) => {
             width: "90%",
             maxHeight: "70%",
             overflow: "hidden",
+            paddingHorizontal: 0,
+            paddingVertical: 0,
         },
         dropdownWrapper: {
             flex: 1,
@@ -22,7 +24,6 @@ export const pickerStyles = preTheme((theme: Theme) => {
             height: 50,
             alignItems: "center",
             justifyContent: "center",
-            marginVertical: 5,
             paddingVertical: 20,
             borderRadius: 4,
             backgroundColor: theme.accent,
