@@ -22,20 +22,43 @@ import ChatScreen from "../screens/messaging/ChatScreen";
 import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import SimpleScreenHeader from "../components/headers/SimpleScreenHeader";
+import {CHAT_CONNECTED_ROUTES} from "../constants/config";
+import {MyThunkDispatch} from "../state/types";
+import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
+import store from "../state/store";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
+let consumedInitialRoute = false;
+let previousRoute: string | undefined = undefined;
+
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
+    // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
+    const initialRouteName = consumedInitialRoute ? undefined : initialRoute;
+    consumedInitialRoute = true;
+
     return (
         <NavigationContainer
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
             theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
+            onReady={() => (previousRoute = rootNavigationRef.current?.getCurrentRoute()?.name)}
+            onStateChange={() => {
+                if (rootNavigationRef.current) {
+                    const currentRoute = rootNavigationRef.current.getCurrentRoute()?.name;
+                    const fromChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
+                    const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === currentRoute);
+
+                    if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
+                    if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
+                    previousRoute = currentRoute;
+                }
+            }}
         >
-            <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRoute}>
+            <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRouteName}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} />
                 <Stack.Screen
                     name="ForgotPasswordEmailSentScreen"

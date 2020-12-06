@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Constants from "expo-constants";
+import {NavigatorRoute} from "../navigation/types";
 
 export enum Environment {
     Staging = "STAGING",
@@ -27,9 +28,16 @@ export const AVATAR_QUALITY = 0.75;
  */
 export const PROFILES_FETCH_LIMIT = 8; // Matching tab
 export const ROOMS_FETCH_LIMIT = 10; // Messaging tab
+export const MESSAGES_FETCH_LIMIT = 12; // Chat
 
 /**
  * The maximum number of spoken languages a user can select.
- * (limited for rendering reasons).
  */
 export const MAX_SPOKEN_LANGUAGES = 8;
+
+export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = [
+    "ChatScreen",
+    "IndividualMessagingTab",
+    "GroupMessagingTab",
+    "MessagingScreen",
+];
