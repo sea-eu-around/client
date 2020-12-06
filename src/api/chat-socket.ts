@@ -4,7 +4,11 @@ import {ChatRoom} from "../model/chat-room";
 import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto} from "./dto";
 
 const SOCKET_LOCATION = `${BACKEND_URL}/chat`;
+
 const WRITING_STATE_DELAY = 1000;
+const CONNECT_TIMEOUT = 6500;
+const RECONNECT_DELAY = 2000;
+const RECONNECT_ATTEMPTS = 3;
 
 export type ChatSocketEventListeners = {
     onMessageReceived: (m: ResponseChatMessageDto) => void;
@@ -13,15 +17,24 @@ export type ChatSocketEventListeners = {
 
 class ChatSocket {
     private socket: SocketIOClient.Socket | null;
-    private connectCallbacks: (() => void)[];
+    private connectCallbacks: ((connected: boolean) => void)[];
     private writingTimeout: NodeJS.Timeout | null;
     private lastSentWritingState: boolean;
+    private connecting: boolean;
+    private connected: boolean;
 
     constructor() {
         this.socket = null;
         this.connectCallbacks = [];
         this.writingTimeout = null;
         this.lastSentWritingState = false;
+        this.connecting = false;
+        this.connected = false;
+    }
+
+    private consumeConnectCallbacks(connectedState: boolean) {
+        this.connectCallbacks.forEach((f) => f(connectedState));
+        this.connectCallbacks = [];
     }
 
     private registerListeners(listeners: ChatSocketEventListeners) {
@@ -29,32 +42,22 @@ class ChatSocket {
 
         this.socket.on("connect", () => {
             console.log("[ChatSocket] connected");
-            this.connectCallbacks.forEach((f) => f());
-            this.connectCallbacks = [];
+            this.consumeConnectCallbacks(true);
+            this.connecting = false;
+            this.connected = true;
         });
 
+        this.socket.on("connect_failed", () => {
+            console.log("[ChatSocket] connect_failed");
+        });
         this.socket.on("connect_error", () => {
-            console.log("[ChatSocket]", "Connect error");
-        });
-
-        this.socket.on("connect_timeout", () => {
-            console.log("[ChatSocket]", "Connect timeout");
+            console.log("[ChatSocket] connect_error");
         });
 
         this.socket.on("close", () => {
+            this.connecting = false;
+            this.connected = false;
             console.log("[ChatSocket] close");
-        });
-
-        this.socket.on("connection", () => {
-            console.log("[ChatSocket] connection");
-        });
-
-        this.socket.on("reconnect_attempt", () => {
-            console.log("[ChatSocket] Reconnect attempt");
-        });
-
-        this.socket.on("reconnect_error", () => {
-            console.log("[ChatSocket] Reconnect error");
         });
 
         this.socket.on("error", () => {
@@ -66,6 +69,8 @@ class ChatSocket {
         });
 
         this.socket.on("disconnect", () => {
+            this.connecting = false;
+            this.connected = false;
             console.log("[ChatSocket] disconnected");
         });
 
@@ -73,16 +78,32 @@ class ChatSocket {
         this.socket.on("isWriting", (m: ResponseChatWritingDto) => listeners.onWritingStateChange(m));
     }
 
-    connect(authToken: TokenDto, listeners: ChatSocketEventListeners, callback?: () => void) {
+    connect(authToken: TokenDto, listeners: ChatSocketEventListeners, callback?: (connected: boolean) => void) {
         console.log("Connecting to", SOCKET_LOCATION);
 
         if (callback) this.connectCallbacks.push(callback);
+
+        // Check if we're already attempting to connect
+        if (this.connecting) return;
+        this.connecting = true;
+
         if (this.socket) this.socket.connect();
         else {
             console.log("[ChatSocket] ----> Authenticating - token =", authToken.accessToken);
-            this.socket = io(SOCKET_LOCATION, {query: {authorization: authToken.accessToken}, reconnectionDelay: 5000});
+            this.socket = io(SOCKET_LOCATION, {
+                query: {authorization: authToken.accessToken},
+                reconnectionDelay: RECONNECT_DELAY,
+                reconnectionAttempts: RECONNECT_ATTEMPTS,
+            });
             this.registerListeners(listeners);
         }
+
+        setTimeout(() => {
+            if (!this.connected) {
+                this.connecting = false;
+                this.consumeConnectCallbacks(false);
+            }
+        }, CONNECT_TIMEOUT);
     }
 
     private emit(msg: string, payload: unknown) {
