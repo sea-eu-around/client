@@ -6,14 +6,47 @@ import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
-import {fetchMyMatches} from "../state/matching/actions";
 import {MyThunkDispatch} from "../state/types";
 import store from "../state/store";
 import {styleTextThin} from "../styles/general";
+import {connectToChat, fetchMatchRoom, joinChatRoom} from "../state/messaging/actions";
+import {StackScreenProps} from "@react-navigation/stack";
+import {RootNavigatorScreens} from "../navigation/types";
+import AsyncButton from "../components/AsyncButton";
 
-export type TabNotImplementedScreenProps = ThemeProps;
+export type MatchSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
-class ReciprocalMatchScreen extends React.Component<TabNotImplementedScreenProps> {
+class MatchSuccessScreen extends React.Component<MatchSuccessScreenProps> {
+    getRoomId(): string | null {
+        const params = this.props.route.params;
+        if (params) {
+            const roomId = (params as {[key: string]: string}).roomId;
+            return roomId || null;
+        }
+        return null;
+    }
+
+    async chat(): Promise<void> {
+        const dispatch = store.dispatch as MyThunkDispatch;
+        const roomId = this.getRoomId();
+
+        if (roomId) {
+            const connectPromise = new Promise((resolve) =>
+                dispatch(connectToChat((connected: boolean) => resolve(connected))),
+            );
+
+            // Once we have fetched the room and we are connected to the chat
+            const [room, connected] = await Promise.all([dispatch(fetchMatchRoom(roomId)), connectPromise]);
+
+            if (room) {
+                if (connected) await dispatch(joinChatRoom(room));
+                return;
+            }
+        }
+        // If we haven't been able to join the chat
+        rootNavigate("TabMessaging");
+    }
+
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
@@ -22,20 +55,15 @@ class ReciprocalMatchScreen extends React.Component<TabNotImplementedScreenProps
             <View style={styles.container}>
                 <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
                 <View style={styles.separator} />
-                <TouchableOpacity
+                <AsyncButton
+                    text={i18n.t("matching.success.chat")}
+                    textStyle={styles.actionText}
                     style={styles.actionButton}
-                    onPress={() => rootNavigate("TabMessaging") /* TODO Redirect to chat tab directly instead */}
-                >
-                    <Text style={styles.actionText}>{i18n.t("matching.success.chat")}</Text>
-                </TouchableOpacity>
+                    onPress={async () => await this.chat()}
+                />
                 <TouchableOpacity
                     style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
-                    onPress={() => {
-                        rootNavigate("TabMatchingScreen");
-                        // Make sure the data is up to date
-                        // TODO this could be improved
-                        (store.dispatch as MyThunkDispatch)(fetchMyMatches());
-                    }}
+                    onPress={() => rootNavigate("TabMatchingScreen")}
                 >
                     <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
                 </TouchableOpacity>
@@ -85,4 +113,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(ReciprocalMatchScreen);
+export default withTheme(MatchSuccessScreen);

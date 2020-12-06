@@ -1,4 +1,5 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
+import {MatchActionStatus} from "../api/dto";
 import {rootNavigate} from "../navigation/utils";
 import {AUTH_ACTION_TYPES, LogInSuccessAction} from "./auth/actions";
 import {LikeProfileSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
@@ -40,11 +41,11 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             return;
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
-            const {matchStatus} = action as LikeProfileSuccessAction;
-            if (matchStatus == "matched") rootNavigate("MatchSuccessScreen");
+            const {matchStatus, roomId} = action as LikeProfileSuccessAction;
+            if (matchStatus == MatchActionStatus.Matched) rootNavigate("MatchSuccessScreen", {roomId});
             break;
         }
-        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
+        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_SUCCESS: {
             rootNavigate("ChatScreen");
             break;
         }

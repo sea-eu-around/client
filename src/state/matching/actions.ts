@@ -1,6 +1,7 @@
 import {convertDtoToProfile} from "../../api/converters";
 import {
-    LikeProfileResponseDto,
+    MatchActionResponseDto,
+    MatchActionStatus,
     PaginatedRequestResponse,
     ResponseProfileDto,
     SuccessfulRequestResponse,
@@ -44,7 +45,8 @@ export type SetMatchingFiltersAction = {
 export type LikeProfileSuccessAction = {
     type: string;
     profileId: string;
-    matchStatus: LikeProfileResponseDto;
+    matchStatus: MatchActionStatus;
+    roomId: string | null;
 };
 
 export type DislikeProfileSuccessAction = {
@@ -177,19 +179,24 @@ export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH,
 });
 
-const likeProfileSuccess = (profileId: string, matchStatus: LikeProfileResponseDto): LikeProfileSuccessAction => ({
+const likeProfileSuccess = (
+    profileId: string,
+    matchStatus: MatchActionStatus,
+    roomId: string | null,
+): LikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS,
     profileId,
     matchStatus,
+    roomId,
 });
 
 export const likeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, token);
+    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, token, true);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
-        const matchStatus = payload as LikeProfileResponseDto;
-        dispatch(likeProfileSuccess(profileId, matchStatus));
+        const {status, roomId} = payload as MatchActionResponseDto;
+        dispatch(likeProfileSuccess(profileId, status, roomId));
     }
 };
 
@@ -200,7 +207,7 @@ const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction =
 
 export const dislikeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, token);
+    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, token, true);
     if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
 };
 
@@ -211,7 +218,7 @@ const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({
 
 export const blockProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, token);
+    const response = await requestBackend("matching/block", "POST", {}, {toProfileId: profileId}, token, true);
     if (response.status === HttpStatusCode.OK) dispatch(blockProfileSuccess(profileId));
 };
 

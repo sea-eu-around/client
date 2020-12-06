@@ -142,8 +142,6 @@ export type AvatarSuccessfulUpdatedDto = {
     avatar: string;
 };
 
-export type LikeProfileResponseDto = "requested" | "matched";
-
 export type ChatRoomProfileDto = {
     id: string;
     firstName: string;
@@ -171,4 +169,16 @@ export type ResponseChatWritingDto = {
     roomId: string;
     profileId: string;
     state: boolean;
+};
+
+export enum MatchActionStatus {
+    Declined = "declined",
+    Blocked = "blocked",
+    Matched = "matched",
+    Requested = "requested",
+}
+
+export type MatchActionResponseDto = {
+    roomId: string | null;
+    status: MatchActionStatus;
 };
