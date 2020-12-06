@@ -8,8 +8,11 @@ import i18n from "i18n-js";
 // Store a ref to the root navigator
 export const rootNavigationRef = React.createRef<NavigationContainerRef>();
 
-export function rootNavigate(route: NavigatorRoute): void {
-    rootNavigationRef.current?.navigate(route as string);
+// eslint-disable-next-line @typescript-eslint/ban-types
+type RouteParams = Record<string, string | object | undefined | null>;
+
+export function rootNavigate(route: NavigatorRoute, params?: RouteParams): void {
+    rootNavigationRef.current?.navigate(route as string, params);
 }
 
 export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute): void {
