@@ -50,7 +50,8 @@ const config: LinkingOptions = {
             ResetPasswordScreen: "reset-password/:token",
             ResetPasswordSuccessScreen: "password-reset",
             MyProfileScreen: "profile",
-            ChatScreen: "chat",
+            ProfileScreen: "profile/:id",
+            ChatScreen: "chat/:roomId",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",

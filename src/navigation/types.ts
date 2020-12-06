@@ -9,6 +9,7 @@ export type RootNavigatorScreens = {
     ResetPasswordScreen: undefined;
     ResetPasswordSuccessScreen: undefined;
     MyProfileScreen: undefined;
+    ProfileScreen: undefined;
     ChatScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;

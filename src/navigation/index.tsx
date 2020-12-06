@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
 import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import * as React from "react";
@@ -21,11 +22,13 @@ import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 import ChatScreen from "../screens/messaging/ChatScreen";
 import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import MyProfileScreen from "../screens/MyProfileScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 import SimpleScreenHeader from "../components/headers/SimpleScreenHeader";
 import {CHAT_CONNECTED_ROUTES} from "../constants/config";
 import {MyThunkDispatch} from "../state/types";
 import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
 import store from "../state/store";
+import MainHeader from "../components/headers/MainHeader";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -51,7 +54,6 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     const currentRoute = rootNavigationRef.current.getCurrentRoute()?.name;
                     const fromChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
                     const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === currentRoute);
-
                     if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
                     if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
                     previousRoute = currentRoute;
@@ -89,7 +91,7 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                 <Stack.Screen
                     name="ChatScreen"
                     component={ChatScreen}
-                    options={{header: ChatScreenHeader, headerShown: true}}
+                    options={{header: ChatScreenHeader, headerShown: true, title: screenTitle("ChatScreen")}}
                 />
                 <Stack.Screen
                     name="MyProfileScreen"
@@ -97,7 +99,6 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{
                         headerShown: true,
                         title: screenTitle("MyProfileScreen"),
-                        // eslint-disable-next-line react/display-name
                         header: (props: StackHeaderProps) => (
                             <SimpleScreenHeader
                                 {...props}
@@ -106,6 +107,15 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                                 color={theme.textWhite}
                             />
                         ),
+                    }}
+                />
+                <Stack.Screen
+                    name="ProfileScreen"
+                    component={ProfileScreen}
+                    options={{
+                        headerShown: true,
+                        title: screenTitle("ProfileScreen"),
+                        header: (props: StackHeaderProps) => <MainHeader {...props} backButton={true} />,
                     }}
                 />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />

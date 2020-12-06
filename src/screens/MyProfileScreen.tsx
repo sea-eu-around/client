@@ -51,10 +51,6 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "flex-start",
             backgroundColor: theme.background,
         },
-        title: {
-            fontSize: 20,
-            fontWeight: "bold",
-        },
     });
 });
 
