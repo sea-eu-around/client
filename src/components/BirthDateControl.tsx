@@ -1,63 +1,114 @@
 import * as React from "react";
-import {View, StyleSheet} from "react-native";
-import {ThemeProps} from "../types";
+import {View, StyleSheet, Platform} from "react-native";
+import {TouchableOpacity} from "react-native-gesture-handler";
+import {FormattedDate} from "./FormattedDate";
+import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
-import {MIN_AGE} from "../constants/profile-constants";
+import BirthDatePicker from "./BirthDatePicker";
 import {webFontFamily} from "../styles/general";
 
 // Component props
 export type BirthDateControlProps = ThemeProps & {
     date?: Date;
     onSelect?: (date: Date) => void;
-    onHide?: () => void;
 };
 
-const minDate = new Date(1900, 0, 0);
-const maxDate = new Date(Date.now());
-maxDate.setFullYear(maxDate.getFullYear() - MIN_AGE);
+// Component state
+export type BirthDateControlState = {
+    open: boolean;
+};
 
-const formatDate = (d: Date) => d.toISOString().split("T")[0];
+class BirthDateControl extends React.Component<BirthDateControlProps, BirthDateControlState> {
+    constructor(props: BirthDateControlProps) {
+        super(props);
+        this.state = {open: false};
+    }
 
-class BirthDateControl extends React.Component<BirthDateControlProps> {
+    showModal(): void {
+        if (!this.state.open) this.setState({...this.state, open: true});
+    }
+
+    hideModal(): void {
+        if (this.state.open) this.setState({...this.state, open: false});
+    }
+
     render(): JSX.Element {
         const {date, onSelect, theme} = this.props;
+        const {open} = this.state;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.wrapper}>
-                <input
-                    type="date"
-                    min={formatDate(minDate)}
-                    max={formatDate(maxDate)}
-                    value={formatDate(date || maxDate)}
-                    onChange={(e) => {
-                        if (onSelect) onSelect(new Date(e.target.value));
-                    }}
-                    style={{
-                        width: "100%",
-                        height: 60,
-                        borderRadius: 0,
-                        borderWidth: 0,
-                        borderBottomWidth: 1,
-                        borderBottomColor: theme.accentTernary,
-                        backgroundColor: "transparent",
-                        justifyContent: "center",
-                        outline: 0,
-                        fontSize: 20,
-                        color: theme.text,
-                        ...webFontFamily,
-                    }}
-                />
+                {Platform.OS !== "web" ? (
+                    <>
+                        <TouchableOpacity
+                            style={[styles.button, date ? styles.buttonOk : {}]}
+                            onPress={() => this.showModal()}
+                        >
+                            {date && <FormattedDate style={styles.dateText} date={date} />}
+                            {/*!date && <Text>Click to change value</Text>*/}
+                        </TouchableOpacity>
+                        <BirthDatePicker
+                            date={date}
+                            open={open}
+                            onSelect={(date: Date) => {
+                                this.hideModal();
+                                if (onSelect) onSelect(date);
+                            }}
+                        />
+                    </>
+                ) : (
+                    <BirthDatePicker
+                        date={date}
+                        open={true}
+                        onSelect={(date) => {
+                            if (onSelect) onSelect(date);
+                        }}
+                        style={{
+                            width: "100%",
+                            height: 60,
+                            borderRadius: 0,
+                            borderWidth: 0,
+                            borderBottomWidth: 1,
+                            borderBottomColor: theme.accentTernary,
+                            backgroundColor: "transparent",
+                            justifyContent: "center",
+                            outline: 0,
+                            fontSize: 20,
+                            color: theme.text,
+                            ...webFontFamily,
+                            ...(date ? {borderBottomWidth: 2, borderBottomColor: theme.okay} : {}),
+                        }}
+                    />
+                )}
             </View>
         );
     }
 }
 
-const themedStyles = preTheme(() => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
             width: "100%",
+        },
+        button: {
+            width: "100%",
+            height: 60,
+            borderRadius: 0,
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.accentTernary,
+            backgroundColor: "transparent",
+            justifyContent: "center",
+        },
+        buttonOk: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.okay,
+        },
+        dateText: {
+            fontSize: 20,
+            color: theme.text,
         },
     });
 });

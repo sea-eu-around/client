@@ -6,6 +6,7 @@ export type BirthDatePickerProps = {
     date?: Date;
     open: boolean;
     onSelect?: (date: Date) => void;
+    style?: React.CSSProperties;
 };
 
 const minDate = new Date(1900, 0, 0);
@@ -20,7 +21,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps> {
     }
 
     render(): JSX.Element {
-        const {date} = this.props;
+        const {date, style} = this.props;
         return (
             <input
                 type="date"
@@ -28,7 +29,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps> {
                 max={formatDate(maxDate)}
                 value={formatDate(date || maxDate)}
                 onChange={(e) => this.onChange(new Date(e.target.value))}
-                style={{display: "none"}}
+                style={style}
             />
         );
     }
