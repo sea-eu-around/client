@@ -1,19 +1,20 @@
 import * as React from "react";
-import {ButtonGroup} from "react-native-elements";
+import {ButtonGroup, withTheme} from "react-native-elements";
 import i18n from "i18n-js";
 import {Degree, DEGREES} from "../constants/profile-constants";
-import {ViewStyle} from "react-native";
+import {ThemeProps} from "../types";
+import {getToggleStyleProps} from "../styles/toggles";
 
 export type DegreeToggleProps = {
     degree?: Degree;
     onUpdate?: (degree?: Degree) => void;
-    style?: ViewStyle;
-};
+} & ThemeProps;
 
 class DegreeToggle extends React.Component<DegreeToggleProps> {
     render(): JSX.Element {
         const buttonLabels = DEGREES.map((d: string) => i18n.t(`degrees.${d}`));
-        const {degree, style} = this.props;
+        const {degree, theme} = this.props;
+        const styleProps = getToggleStyleProps(false, theme);
 
         return (
             <ButtonGroup
@@ -22,10 +23,10 @@ class DegreeToggle extends React.Component<DegreeToggleProps> {
                 }}
                 selectedIndex={degree ? DEGREES.indexOf(degree) : -1}
                 buttons={buttonLabels}
-                containerStyle={[{height: 35, marginLeft: 0, marginRight: 0}, style]}
+                {...styleProps}
             />
         );
     }
 }
 
-export default DegreeToggle;
+export default withTheme(DegreeToggle);
