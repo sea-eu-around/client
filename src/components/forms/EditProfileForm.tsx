@@ -9,7 +9,7 @@ import {CountryCode} from "../../model/country-codes";
 import RoleToggle from "../RoleToggle";
 import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
 import StaffRoleToggle from "../StaffRoleToggle";
-import {GenderToggle} from "../GenderToggle";
+import GenderToggle from "../GenderToggle";
 import BirthDatePicker from "../BirthDatePicker.native";
 import AvatarEditButton from "../AvatarEditButton";
 import FormRow from "./FormRow";
