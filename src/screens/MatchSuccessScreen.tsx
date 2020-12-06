@@ -9,7 +9,7 @@ import i18n from "i18n-js";
 import {MyThunkDispatch} from "../state/types";
 import store from "../state/store";
 import {styleTextThin} from "../styles/general";
-import {connectToChat, fetchMatchRoom, joinChatRoom} from "../state/messaging/actions";
+import {connectToChat, fetchMatchRoom} from "../state/messaging/actions";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 import AsyncButton from "../components/AsyncButton";
@@ -39,7 +39,7 @@ class MatchSuccessScreen extends React.Component<MatchSuccessScreenProps> {
             const [room, connected] = await Promise.all([dispatch(fetchMatchRoom(roomId)), connectPromise]);
 
             if (room) {
-                if (connected) await dispatch(joinChatRoom(room));
+                if (connected) rootNavigate("ChatScreen", {roomId: room.id});
                 return;
             }
         }
