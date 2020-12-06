@@ -1,6 +1,6 @@
 import {FontAwesome} from "@expo/vector-icons";
 import * as React from "react";
-import {Text, View, TouchableOpacity, ScrollView, KeyboardAvoidingView} from "react-native";
+import {Text, View, TouchableOpacity, ScrollView, KeyboardAvoidingView, ViewStyle, StyleProp} from "react-native";
 import {withTheme} from "react-native-elements";
 import {onboardingStyle} from "../../styles/onboarding";
 import {ThemeProps} from "../../types";
@@ -20,12 +20,13 @@ export type OnboardingSlideProps = {
     subtitle?: string;
     handleSubmit?: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
     hideNavNext?: boolean;
+    containerStyle?: StyleProp<ViewStyle>;
 } & OnboardingScreenProps &
     ThemeProps;
 
 class OnboardingSlide extends React.Component<OnboardingSlideProps> {
     render(): JSX.Element {
-        const {title, subtitle, index, hideNavNext, hasNext, handleSubmit, next, theme} = this.props;
+        const {title, subtitle, index, hideNavNext, hasNext, handleSubmit, next, containerStyle, theme} = this.props;
         const styles = onboardingStyle(theme);
 
         const hasPrevious = index > 0;
@@ -37,7 +38,10 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
 
         return (
             <View style={styles.slideWrapper}>
-                <ScrollView style={styles.slideScrollView} contentContainerStyle={styles.slideContentWrapper}>
+                <ScrollView
+                    style={styles.slideScrollView}
+                    contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
+                >
                     <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={60}>
                         <View style={styles.header}>
                             {title && <Text style={styles.title}>{title}</Text>}
