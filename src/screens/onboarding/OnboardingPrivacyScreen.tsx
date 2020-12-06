@@ -56,7 +56,7 @@ class OnboardingPrivacyScreen extends React.Component<OnboardingPrivacyScreenPro
                 </View>
 
                 {this.state.declined && (
-                    <TOSDeclinedModal onHide={() => this.setState({...this.state, declined: false})}></TOSDeclinedModal>
+                    <TOSDeclinedModal visible={true} onHide={() => this.setState({...this.state, declined: false})} />
                 )}
             </OnboardingSlide>
         );

@@ -229,17 +229,14 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                 >
                                     <MaterialIcons style={styles.blockButtonIcon} name="block" />
                                 </TouchableOpacity>
-                                {blockModalOpen && (
-                                    <BlockProfileModal
-                                        profile={profile}
-                                        onHide={() => this.setState({...this.state, blockModalOpen: false})}
-                                        onBlock={() => {
-                                            this.hide(() =>
-                                                (store.dispatch as MyThunkDispatch)(blockProfile(profile.id)),
-                                            );
-                                        }}
-                                    />
-                                )}
+                                <BlockProfileModal
+                                    profile={profile}
+                                    visible={blockModalOpen}
+                                    onHide={() => this.setState({...this.state, blockModalOpen: false})}
+                                    onBlock={() => {
+                                        this.hide(() => (store.dispatch as MyThunkDispatch)(blockProfile(profile.id)));
+                                    }}
+                                />
                             </View>
                         )}
                     </TouchableOpacity>

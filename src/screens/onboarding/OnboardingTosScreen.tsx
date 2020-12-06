@@ -56,7 +56,7 @@ class OnboardingTosScreen extends React.Component<OnboardingTosScreenProps, Onbo
                 </View>
 
                 {this.state.declined && (
-                    <TOSDeclinedModal onHide={() => this.setState({...this.state, declined: false})}></TOSDeclinedModal>
+                    <TOSDeclinedModal visible={true} onHide={() => this.setState({...this.state, declined: false})} />
                 )}
             </OnboardingSlide>
         );
