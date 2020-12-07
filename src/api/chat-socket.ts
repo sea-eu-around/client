@@ -131,7 +131,7 @@ class ChatSocket {
     joinRoom(room: ChatRoom) {
         this.emit("joinRoom", {roomId: room.id});
         // Inform the server that we have read the last message of the room
-        if (room.lastMessage) this.readMessage(room.id, room.lastMessage.createdAt.toJSON());
+        if (room.lastMessage) this.readMessage(room.id, room.lastMessage._id, room.lastMessage.createdAt.toJSON());
     }
 
     leaveRoom(room: ChatRoom) {
@@ -142,8 +142,8 @@ class ChatSocket {
         this.emit("sendMessage", {roomId, id, text});
     }
 
-    readMessage(roomId: string, date: string) {
-        this.emit("readMessage", {roomId, date});
+    readMessage(roomId: string, messageId: string, createdAt: string) {
+        this.emit("readMessage", {roomId, messageId, createdAt});
     }
 
     setWriting(room: ChatRoom) {

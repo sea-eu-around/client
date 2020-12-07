@@ -67,6 +67,7 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         _id: p.id,
         name: `${p.firstName} ${p.lastName}`,
         avatar: p.avatar || "",
+        lastMessageSeenId: p.lastMessageSeenId,
         lastMessageSeenDate: p.lastMessageSeenDate ? new Date(p.lastMessageSeenDate) : null,
     }));
 

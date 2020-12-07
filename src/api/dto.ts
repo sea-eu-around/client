@@ -147,6 +147,7 @@ export type ChatRoomProfileDto = {
     firstName: string;
     lastName: string;
     avatar: string | null;
+    lastMessageSeenId: string | null;
     lastMessageSeenDate: string | null;
 };
 
@@ -168,6 +169,7 @@ export type ResponseChatMessageDto = {
 export type ResponseChatMessageReadDto = {
     roomId: string;
     date: string;
+    messageId: string;
     profileId: string;
 };
 

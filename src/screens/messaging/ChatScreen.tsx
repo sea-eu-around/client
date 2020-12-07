@@ -132,15 +132,19 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             const lastMessageDict: {[key: string]: ChatRoomUser[]} = {};
             if (room.messages.length > 0) {
                 room.users.forEach((u: ChatRoomUser) => {
-                    if (u._id != localChatUser._id && u.lastMessageSeenDate) {
-                        let i = 0;
-                        while (i < room.messages.length - 1 && room.messages[i].createdAt > u.lastMessageSeenDate) i++;
+                    if (u._id != localChatUser._id && u.lastMessageSeenId) {
+                        /*let i = 0;
+                        while (i < room.messages.length - 1 && room.messages[i].createdAt >= u.lastMessageSeenDate) i++;
 
                         const m = i < room.messages.length - 1 ? room.messages[i] : room.lastMessage;
+                        console.log("ROOM USERS:", room.users);
+                        console.log("MESSAGE:", m);
                         if (m) {
                             if (lastMessageDict[m._id]) lastMessageDict[m._id].push(u);
                             else lastMessageDict[m._id] = [u];
-                        }
+                        }*/
+                        if (lastMessageDict[u.lastMessageSeenId]) lastMessageDict[u.lastMessageSeenId].push(u);
+                        else lastMessageDict[u.lastMessageSeenId] = [u];
                     }
                 });
             }

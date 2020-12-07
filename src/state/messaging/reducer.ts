@@ -33,6 +33,7 @@ function toLocalChatUser(user: User): ChatRoomUser | null {
             name: `${user.profile.firstName} ${user.profile.lastName}`,
             avatar: user.profile.avatarUrl || "",
             lastMessageSeenDate: null,
+            lastMessageSeenId: null,
         };
     }
     return null;
@@ -155,6 +156,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                     localChatUser: {...state.localChatUser, lastMessageSeenDate: new Date(date)},
                 };
             }*/
+            console.log("READ MESSAGE", date, profileId);
 
             const room = state.matchRooms.find((r: ChatRoom) => r.id === roomId);
             if (room) {

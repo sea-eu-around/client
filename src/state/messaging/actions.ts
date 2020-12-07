@@ -167,7 +167,8 @@ export const connectToChat = (callback?: (connected: boolean) => void): AppThunk
                     onMessageReceived: (m) => {
                         const {activeRoom} = getState().messaging;
                         // Tell the server we've read the message if this is the active room
-                        if (activeRoom && m.roomId == activeRoom.id) chatSocket.readMessage(activeRoom.id, m.updatedAt);
+                        if (activeRoom && m.roomId == activeRoom.id)
+                            chatSocket.readMessage(activeRoom.id, m.id, m.updatedAt);
                         dispatch(receiveChatMessage(m));
                     },
                     onMessageRead: (p) => dispatch(readChatMessage(p)),

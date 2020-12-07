@@ -4,6 +4,7 @@ export type ChatRoomUser = {
     _id: string;
     name: string;
     avatar: string;
+    lastMessageSeenId: string | null;
     lastMessageSeenDate: Date | null;
 };
 
