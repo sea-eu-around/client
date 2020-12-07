@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleProp, Text, TextStyle, View, ViewStyle} from "react-native";
+import {StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {withTheme} from "react-native-elements";
 import {StackHeaderProps} from "@react-navigation/stack";
@@ -9,6 +9,7 @@ import ProfileAvatar from "../ProfileAvatar";
 import {headerTitle, rootNavigate} from "../../navigation/utils";
 import {NavigatorRoute} from "../../navigation/types";
 import {headerStyles} from "../../styles/headers";
+import {MaterialIcons} from "@expo/vector-icons";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -23,6 +24,7 @@ export type HeaderButtonProps = {
 type AdditionalProps = {
     wrapperStyle?: StyleProp<ViewStyle>;
     rightButtons?: ((props: HeaderButtonProps) => JSX.Element)[];
+    backButton?: boolean;
 };
 
 // Component props
@@ -31,12 +33,17 @@ export type MainHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps
 // Component state
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
+    back(): void {
+        const nav = this.props.navigation;
+        if (nav.canGoBack()) nav.goBack();
+    }
+
     pressAvatar(): void {
         rootNavigate("MyProfileScreen");
     }
 
     render(): JSX.Element {
-        const {theme, rightButtons, wrapperStyle, user, insets, scene} = this.props;
+        const {theme, backButton, rightButtons, wrapperStyle, user, insets, scene} = this.props;
         const styles = headerStyles(theme);
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
@@ -44,6 +51,11 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
         return (
             <View style={[{paddingTop: insets.top}, styles.wrapper, wrapperStyle]}>
                 <View style={styles.container}>
+                    {backButton && (
+                        <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
+                            <MaterialIcons style={[styles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
+                        </TouchableOpacity>
+                    )}
                     <ProfileAvatar
                         profile={user?.profile}
                         rounded

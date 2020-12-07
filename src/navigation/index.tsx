@@ -37,6 +37,17 @@ const Stack = createStackNavigator<RootNavigatorScreens>();
 let consumedInitialRoute = false;
 let previousRoute: string | undefined = undefined;
 
+function onStateChange() {
+    const route = rootNavigationRef.current?.getCurrentRoute();
+    if (route) {
+        const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === route.name);
+        const fromChat = previousRoute && CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
+        if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
+        if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
+        previousRoute = route.name;
+    }
+}
+
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
@@ -48,17 +59,8 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
             theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
-            onReady={() => (previousRoute = rootNavigationRef.current?.getCurrentRoute()?.name)}
-            onStateChange={() => {
-                if (rootNavigationRef.current) {
-                    const currentRoute = rootNavigationRef.current.getCurrentRoute()?.name;
-                    const fromChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
-                    const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === currentRoute);
-                    if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
-                    if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
-                    previousRoute = currentRoute;
-                }
-            }}
+            onReady={onStateChange}
+            onStateChange={onStateChange}
         >
             <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRouteName}>
                 <Stack.Screen name="LoginScreen" component={LoginNavigator} />
