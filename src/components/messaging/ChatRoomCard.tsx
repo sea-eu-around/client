@@ -77,7 +77,10 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps, ProfilePreviewStat
 
         if (room.lastMessage) {
             const date = room.lastMessage.createdAt;
-            const isRead = localUser && localUser.lastMessageSeenDate && localUser.lastMessageSeenDate >= date;
+            const isRead =
+                localUser &&
+                localUser.lastMessageSeenDate &&
+                (localUser.lastMessageSeenDate >= date || localUser.lastMessageSeenId == room.lastMessage._id);
             const pad = (num: number) => (num + "").padStart(2, "0");
             lastMessageComponent = (
                 <>
