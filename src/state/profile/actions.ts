@@ -28,6 +28,7 @@ export enum PROFILE_ACTION_TYPES {
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
     FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
+    FETCH_PROFILE_SUCCESS = "PROFILE/FETCH_PROFILE_SUCCESS",
     SET_AVATAR = "PROFILE/SET_AVATAR",
     SET_AVATAR_SUCCESS = "PROFILE/SET_AVATAR_SUCCESS",
     SET_AVATAR_FAILURE = "PROFILE/SET_AVATAR_FAILURE",
@@ -83,6 +84,11 @@ export type FetchUserSuccessAction = {
     user: User;
 };
 
+export type FetchProfileSuccessAction = {
+    type: string;
+    profile: UserProfile;
+};
+
 export type SetAvatarSuccessAction = {
     type: string;
     avatarUrl: string;
@@ -101,6 +107,7 @@ export type ProfileAction =
     | LoadProfileInterestsAction
     | LoadProfileInterestsSuccessAction
     | FetchUserSuccessAction
+    | FetchProfileSuccessAction
     | SetAvatarSuccessAction
     | SetAvatarFailureAction;
 
@@ -195,6 +202,23 @@ export const fetchUser = (): AppThunk => async (dispatch, getState) => {
 const fetchUserSuccess = (user: User): FetchUserSuccessAction => ({
     type: PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS,
     user,
+});
+
+export const fetchProfile = (id: string): AppThunk<Promise<UserProfile | null>> => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token);
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const profile = convertDtoToProfile(payload as ResponseProfileDto);
+        dispatch(fetchProfileSuccess(profile));
+        return profile;
+    }
+    return null;
+};
+
+const fetchProfileSuccess = (profile: UserProfile): FetchProfileSuccessAction => ({
+    type: PROFILE_ACTION_TYPES.FETCH_PROFILE_SUCCESS,
+    profile,
 });
 
 const setAvatarSuccess = (avatarUrl: string): SetAvatarSuccessAction => ({
