@@ -10,6 +10,7 @@ import {MaterialIcons} from "@expo/vector-icons";
 import {GiftedAvatar} from "react-native-gifted-chat";
 import {ChatRoomUser} from "../../model/chat-room";
 import {headerStyles} from "../../styles/headers";
+import {rootNavigate} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -22,8 +23,7 @@ export type ChatScreenHeaderProps = ConnectedProps<typeof reduxConnector> & Them
 
 class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
     back() {
-        const nav = this.props.navigation;
-        if (nav.canGoBack()) nav.goBack();
+        rootNavigate("TabMessaging");
     }
 
     render(): JSX.Element {
@@ -37,11 +37,15 @@ class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
                 <View style={[{paddingTop: insets.top}, hstyles.wrapper]}>
                     <View style={hstyles.container}>
                         <TouchableOpacity style={hstyles.backButton} onPress={() => this.back()}>
-                            <MaterialIcons style={hstyles.backButtonIcon} name="arrow-back"></MaterialIcons>
+                            <MaterialIcons style={[hstyles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
                         </TouchableOpacity>
-                        <GiftedAvatar avatarStyle={[hstyles.avatar, styles.avatar]} user={user} />
+                        <GiftedAvatar
+                            avatarStyle={[hstyles.avatarContainer, styles.avatar]}
+                            user={user}
+                            onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
+                        />
                         <Text style={styles.name} numberOfLines={1}>
-                            {user.name /* + " this is a very long username"*/}
+                            {user.name}
                         </Text>
                     </View>
                 </View>

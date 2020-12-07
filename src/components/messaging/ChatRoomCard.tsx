@@ -17,15 +17,14 @@ import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import {styleTextThin} from "../../styles/general";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
-import store from "../../state/store";
-import {AppState, MyThunkDispatch} from "../../state/types";
-import {joinChatRoom} from "../../state/messaging/actions";
+import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {GiftedAvatar} from "react-native-gifted-chat";
+import {rootNavigate} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    profileId: state.profile.user?.profile?.id,
+    localChatUser: state.messaging.localChatUser,
 }));
 
 // Component props
@@ -67,26 +66,34 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps, ProfilePreviewStat
     }
 
     render() {
-        const {theme, room, style, onPress, profileId} = this.props;
+        const {theme, room, style, onPress, localChatUser} = this.props;
         const {height} = this.state;
         const styles = themedStyles(theme);
 
-        const user = room.users.filter((p: ChatRoomUser) => p._id != profileId)[0];
+        const localUser = room.users.find((p: ChatRoomUser) => p._id === localChatUser?._id);
+        const user = room.users.filter((p: ChatRoomUser) => p._id !== localChatUser?._id)[0];
 
         let lastMessageComponent = <></>;
 
         if (room.lastMessage) {
-            const time = room.lastMessage.createdAt;
+            const date = room.lastMessage.createdAt;
+            const isRead = localUser && localUser.lastMessageSeenDate && localUser.lastMessageSeenDate >= date;
             const pad = (num: number) => (num + "").padStart(2, "0");
             lastMessageComponent = (
                 <>
-                    <Text style={styles.lastMessageText} numberOfLines={1}>
+                    <Text style={[styles.lastMessageText, isRead ? {} : styles.lastMessageTextNew]} numberOfLines={1}>
                         {room.lastMessage.user.name.split(" ")[0]}: {room.lastMessage.text}
                     </Text>
                     <Text style={styles.lastMessageTime}>
-                        {pad(time.getHours())}:{pad(time.getMinutes())}
+                        {pad(date.getHours())}:{pad(date.getMinutes())}
                     </Text>
                 </>
+            );
+        } else {
+            lastMessageComponent = (
+                <Text style={styles.noMessageText} numberOfLines={1}>
+                    {room.users.length === 2 ? `Say hi to ${user.name}!` : "Say hi"}
+                </Text>
             );
         }
 
@@ -118,7 +125,7 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps, ProfilePreviewStat
                     <TouchableOpacity
                         onPress={() => {
                             if (onPress) onPress();
-                            (store.dispatch as MyThunkDispatch)(joinChatRoom(room));
+                            rootNavigate("ChatScreen", {roomId: room.id});
                         }}
                         activeOpacity={0.75}
                         style={styles.touchable}
@@ -257,10 +264,18 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "space-between",
             overflow: "hidden",
         },
+        noMessageText: {
+            color: theme.textLight,
+            fontSize: 14,
+            flex: 1,
+        },
         lastMessageText: {
             color: theme.text,
             fontSize: 14,
             flex: 1,
+        },
+        lastMessageTextNew: {
+            fontWeight: "bold",
         },
         lastMessageTime: {
             color: theme.textLight,

@@ -5,10 +5,14 @@ import {AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
 import {MessagingState, initialPaginatedState} from "../types";
 import {
+    FetchEarlierMessagesBeginAction,
+    FetchEarlierMessagesFailureAction,
+    FetchEarlierMessagesSuccessAction,
     FetchMatchRoomsSuccessAction,
-    JoinChatRoomBeginAction,
+    JoinChatRoomSuccessAction,
     MessagingAction,
     MESSAGING_ACTION_TYPES,
+    ReadChatMessageAction,
     ReceiveChatMessageAction,
     ReceiveChatWritingAction,
     SendMessageSuccessAction,
@@ -28,10 +32,14 @@ function toLocalChatUser(user: User): ChatRoomUser | null {
             _id: user.id,
             name: `${user.profile.firstName} ${user.profile.lastName}`,
             avatar: user.profile.avatarUrl || "",
+            lastMessageSeenDate: null,
         };
     }
     return null;
 }
+
+// TODO change rooms to dict ?
+// TODO reset rooms when disconnecting from chat
 
 export const messagingReducer = (state: MessagingState = initialState, action: MessagingAction): MessagingState => {
     switch (action.type) {
@@ -80,8 +88,8 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
             return {...state, socketState: {connected: false, connecting: false}};
         }
-        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
-            const {room} = action as JoinChatRoomBeginAction;
+        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_SUCCESS: {
+            const {room} = action as JoinChatRoomSuccessAction;
             return {...state, activeRoom: room};
         }
         case MESSAGING_ACTION_TYPES.LEAVE_ROOM: {
@@ -90,9 +98,8 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.SEND_MESSAGE_SUCCESS: {
             const {message} = action as SendMessageSuccessAction;
             if (state.activeRoom) {
-                //return updateRoom(state, {...state.activeRoom, messages: [message].concat(state.activeRoom.messages)});
                 state.activeRoom.messages.unshift(message);
-                return updateRoom(state, {...state.activeRoom});
+                return updateRoom(state, true, {...state.activeRoom});
             }
             return state;
         }
@@ -117,24 +124,71 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                         room.writing[message.senderId] = false;
                     }
                 }
-                return updateRoom(state, room);
+                return updateRoom(state, true, room);
             }
             return state;
         }
         case MESSAGING_ACTION_TYPES.RECEIVE_WRITING_STATE: {
-            const {payload} = action as ReceiveChatWritingAction;
+            const payload = (action as ReceiveChatWritingAction).payload;
+            const {profileId, roomId} = payload;
 
             // Just ignore if this is about our own writing state
-            if (state.localChatUser && state.localChatUser._id === payload.profileId) return state;
+            if (state.localChatUser && state.localChatUser._id === profileId) return state;
 
-            const room = state.matchRooms.find((r: ChatRoom) => r.id === payload.roomId);
+            const room = state.matchRooms.find((r: ChatRoom) => r.id === roomId);
             if (room) {
-                return updateRoom(state, {
+                return updateRoom(state, false, {
                     ...room,
-                    writing: {...room.writing, [payload.profileId]: payload.state},
+                    writing: {...room.writing, [profileId]: payload.state},
                 });
             }
             return state;
+        }
+        case MESSAGING_ACTION_TYPES.READ_MESSAGE: {
+            const {roomId, date, profileId} = (action as ReadChatMessageAction).payload;
+
+            // Just ignore if this is about ourselves
+            // (we don't care about knowing that we have read the message)
+            /*if (state.localChatUser && state.localChatUser._id === profileId) {
+                return {
+                    ...state,
+                    localChatUser: {...state.localChatUser, lastMessageSeenDate: new Date(date)},
+                };
+            }*/
+
+            const room = state.matchRooms.find((r: ChatRoom) => r.id === roomId);
+            if (room) {
+                return updateRoom(state, false, {
+                    ...room,
+                    users: room.users.map((u: ChatRoomUser) =>
+                        u._id == profileId ? {...u, lastMessageSeenDate: new Date(date)} : u,
+                    ),
+                });
+            }
+            return state;
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_BEGIN: {
+            const {room} = action as FetchEarlierMessagesBeginAction;
+            return updateRoom(state, false, {
+                ...room,
+                messagePagination: {...room.messagePagination, fetching: true},
+            });
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_FAILURE: {
+            const {room} = action as FetchEarlierMessagesFailureAction;
+            return updateRoom(state, false, {
+                ...room,
+                messagePagination: {...room.messagePagination, fetching: false, canFetchMore: false},
+            });
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_SUCCESS: {
+            const {room, messages, canFetchMore} = action as FetchEarlierMessagesSuccessAction;
+            const pagination = room.messagePagination;
+            return updateRoom(state, false, {
+                ...room,
+                messages: room.messages.concat(messages),
+                messagePagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            });
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
@@ -150,11 +204,21 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
     }
 };
 
-function updateRoom(state: MessagingState, room: ChatRoom): MessagingState {
-    const otherRooms = state.matchRooms.filter((r: ChatRoom) => r.id !== room.id);
-    return {
-        ...state,
-        matchRooms: [room].concat(otherRooms),
-        activeRoom: state.activeRoom && state.activeRoom.id == room.id ? room : state.activeRoom,
-    };
+function updateRoom(state: MessagingState, setAsFirst: boolean, room: ChatRoom): MessagingState {
+    const activeRoom = state.activeRoom && state.activeRoom.id == room.id ? room : state.activeRoom;
+
+    if (setAsFirst) {
+        const otherRooms = state.matchRooms.filter((r: ChatRoom) => r.id !== room.id);
+        return {
+            ...state,
+            matchRooms: [room].concat(otherRooms),
+            activeRoom,
+        };
+    } else {
+        return {
+            ...state,
+            matchRooms: state.matchRooms.map((r: ChatRoom) => (r.id === room.id ? room : r)),
+            activeRoom,
+        };
+    }
 }

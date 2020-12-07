@@ -1,7 +1,10 @@
+import {PaginatedState} from "../state/types";
+
 export type ChatRoomUser = {
     _id: string;
     name: string;
     avatar: string;
+    lastMessageSeenDate: Date | null;
 };
 
 export type ChatRoomMessage = {
@@ -18,4 +21,5 @@ export type ChatRoom = {
     messages: ChatRoomMessage[];
     lastMessage: ChatRoomMessage | null;
     writing: {[key: string]: boolean};
+    messagePagination: PaginatedState;
 };

@@ -12,6 +12,7 @@ import {
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
 import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
+import {initialPaginatedState} from "../state/types";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -62,10 +63,11 @@ export function convertDtoToUser(dto: ResponseUserDto): User {
 }
 
 export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
-    const users = dto.profiles.map((p: ChatRoomProfileDto) => ({
+    const users: ChatRoomUser[] = dto.profiles.map((p: ChatRoomProfileDto) => ({
         _id: p.id,
         name: `${p.firstName} ${p.lastName}`,
         avatar: p.avatar || "",
+        lastMessageSeenDate: p.lastMessageSeenDate ? new Date(p.lastMessageSeenDate) : null,
     }));
 
     // Try to find the sender of the last message in the list of users that are in the room
@@ -82,6 +84,7 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         messages: [],
         lastMessage,
         writing: {},
+        messagePagination: initialPaginatedState(),
     };
 }
 

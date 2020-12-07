@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import {BACKEND_URL} from "../constants/config";
 import {ChatRoom} from "../model/chat-room";
-import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto} from "./dto";
+import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto, ResponseChatMessageReadDto} from "./dto";
 
 const SOCKET_LOCATION = `${BACKEND_URL}/chat`;
 
@@ -13,6 +13,7 @@ const RECONNECT_ATTEMPTS = 3;
 export type ChatSocketEventListeners = {
     onMessageReceived: (m: ResponseChatMessageDto) => void;
     onWritingStateChange: (m: ResponseChatWritingDto) => void;
+    onMessageRead: (m: ResponseChatMessageReadDto) => void;
 };
 
 class ChatSocket {
@@ -75,7 +76,28 @@ class ChatSocket {
         });
 
         this.socket.on("receiveMessage", (m: ResponseChatMessageDto) => listeners.onMessageReceived(m));
+        this.socket.on("readMessage", (m: ResponseChatMessageReadDto) => listeners.onMessageRead(m));
         this.socket.on("isWriting", (m: ResponseChatWritingDto) => listeners.onWritingStateChange(m));
+    }
+
+    private emit(msg: string, payload: unknown) {
+        console.log(`[ChatSocket] ----> '${msg}' - payload: ${JSON.stringify(payload)}`);
+        this.socket?.emit(msg, payload);
+    }
+
+    private sendWritingState(room: ChatRoom, state: boolean) {
+        this.lastSentWritingState = state;
+        this.emit("isWriting", {roomId: room.id, state});
+    }
+
+    private refreshWritingTimeout(room: ChatRoom) {
+        if (this.writingTimeout !== null) {
+            clearTimeout(this.writingTimeout);
+            this.writingTimeout = null;
+        }
+        this.writingTimeout = setTimeout(() => {
+            this.sendWritingState(room, false);
+        }, WRITING_STATE_DELAY);
     }
 
     connect(authToken: TokenDto, listeners: ChatSocketEventListeners, callback?: (connected: boolean) => void) {
@@ -106,36 +128,22 @@ class ChatSocket {
         }, CONNECT_TIMEOUT);
     }
 
-    private emit(msg: string, payload: unknown) {
-        console.log(`[ChatSocket] ----> '${msg}' - payload: ${JSON.stringify(payload)}`);
-        this.socket?.emit(msg, payload);
-    }
-
-    sendMessage(roomId: string, id: string, text: string) {
-        this.emit("sendMessage", {roomId, id, text});
-    }
-
     joinRoom(room: ChatRoom) {
         this.emit("joinRoom", {roomId: room.id});
+        // Inform the server that we have read the last message of the room
+        if (room.lastMessage) this.readMessage(room.id, room.lastMessage.createdAt.toJSON());
     }
 
     leaveRoom(room: ChatRoom) {
         this.emit("leaveRoom", {roomId: room.id});
     }
 
-    private sendWritingState(room: ChatRoom, state: boolean) {
-        this.lastSentWritingState = state;
-        this.emit("isWriting", {roomId: room.id, state});
+    sendMessage(roomId: string, id: string, text: string) {
+        this.emit("sendMessage", {roomId, id, text});
     }
 
-    private refreshWritingTimeout(room: ChatRoom) {
-        if (this.writingTimeout !== null) {
-            clearTimeout(this.writingTimeout);
-            this.writingTimeout = null;
-        }
-        this.writingTimeout = setTimeout(() => {
-            this.sendWritingState(room, false);
-        }, WRITING_STATE_DELAY);
+    readMessage(roomId: string, date: string) {
+        this.emit("readMessage", {roomId, date});
     }
 
     setWriting(room: ChatRoom) {
