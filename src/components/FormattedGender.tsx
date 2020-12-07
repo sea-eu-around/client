@@ -10,7 +10,7 @@ import {withTheme} from "react-native-elements";
 export type FormattedGenderProps = {
     gender: Gender;
     containerStyle?: StyleProp<ViewStyle>;
-    iconStyle: StyleProp<TextStyle>;
+    iconStyle?: StyleProp<TextStyle>;
 } & TextProps &
     ThemeProps;
 

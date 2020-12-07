@@ -3,6 +3,8 @@ import {View} from "react-native";
 import i18n from "i18n-js";
 import {StaffRole, STAFF_ROLES} from "../constants/profile-constants";
 import {Picker} from "react-native";
+import {ThemeProps} from "../types";
+import {withTheme} from "react-native-elements";
 
 // Component props
 export type StaffRoleToggleProps = {
@@ -10,7 +12,7 @@ export type StaffRoleToggleProps = {
     onSelect?: (staffRole: StaffRole) => void;
 };
 
-export default function StaffRoleToggle(props: StaffRoleToggleProps): JSX.Element {
+function StaffRoleToggle(props: StaffRoleToggleProps & ThemeProps): JSX.Element {
     const {staffRole} = props;
 
     const onSelect = (value: string) => {
@@ -27,3 +29,5 @@ export default function StaffRoleToggle(props: StaffRoleToggleProps): JSX.Elemen
         </View>
     );
 }
+
+export default withTheme(StaffRoleToggle);
