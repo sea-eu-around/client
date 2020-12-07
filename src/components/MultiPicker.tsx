@@ -8,6 +8,7 @@ import {Overlay, withTheme} from "react-native-elements";
 import {pickerStyles} from "../styles/picker";
 import {ThemeProps} from "../types";
 import {SupportedLocale} from "../localization";
+import Chips from "./Chips";
 
 type PickerItem = {
     value: string;
@@ -28,7 +29,7 @@ export type MultiPickerProps = ConnectedProps<typeof reduxConnector> & {
     placeholder?: string;
     multipleText?: string;
     searchablePlaceholder?: string;
-    showSelected?: boolean;
+    showChips?: boolean;
     single?: boolean;
 } & ViewProps &
     ThemeProps;
@@ -90,9 +91,11 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
 
     close() {
         this.setState({...this.state, open: false});
-        if (this.props.onChange) {
-            this.props.onChange(this.tempSelected);
-        }
+        this.apply();
+    }
+
+    apply() {
+        if (this.props.onChange) this.props.onChange(this.tempSelected);
     }
 
     render(): JSX.Element {
@@ -106,7 +109,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             placeholder,
             multipleText,
             searchablePlaceholder,
-            showSelected,
+            showChips,
             single,
             ...viewProps
         } = this.props;
@@ -123,15 +126,27 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                             {i18n.t("picker.callToAction").replace("%d", selectedItems.length.toString())}
                         </Text>
                     </TouchableOpacity>
+                    {showChips && (
+                        <Chips
+                            items={selectedItems}
+                            label={(v) => (genLabel ? i18n.t(genLabel(v)) : v)}
+                            containerStyle={styles.chipContainer}
+                            removable={true}
+                            onRemove={(item: string) => {
+                                this.tempSelected = this.tempSelected.filter((v) => v !== item);
+                                this.apply();
+                            }}
+                        />
+                    )}
                     <View>
-                        {showSelected &&
+                        {/*showChips &&
                             selectedItems.map((val: string, i: number) => (
                                 <View key={i} style={styles.selectedItemView}>
                                     <Text style={styles.selectedItemText} numberOfLines={1}>
                                         {genLabel ? i18n.t(genLabel(val)) : val}
                                     </Text>
                                 </View>
-                            ))}
+                            ))*/}
                     </View>
                 </View>
                 {this.state.open && (

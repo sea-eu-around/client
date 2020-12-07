@@ -11,6 +11,7 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import {styleTextLight, webFontFamily} from "../styles/general";
+import Chips from "./Chips";
 
 type PickerItem = {
     id: string;
@@ -38,7 +39,7 @@ export type SectionedMultiPickerProps = ConnectedProps<typeof reduxConnector> & 
     onChange?: (values: string[]) => void;
     selected?: string[];
     searchablePlaceholder?: string;
-    showSelected?: boolean;
+    showChips?: boolean;
 } & ViewProps &
     ThemeProps;
 
@@ -105,13 +106,17 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
     }
 
     close(apply: boolean) {
+        if (this.state.open && this.selectRef.current) this.selectRef.current._toggleSelector();
         this.setState({
             ...this.state,
             open: false,
             tempSelected: apply ? this.state.tempSelected : this.props.selected || [],
         });
-        if (this.selectRef.current) this.selectRef.current._toggleSelector();
-        if (apply && this.props.onChange) this.props.onChange(this.state.tempSelected);
+        if (apply) this.apply(this.state.tempSelected);
+    }
+
+    apply(items: string[]) {
+        if (this.props.onChange) this.props.onChange(items);
     }
 
     render(): JSX.Element {
@@ -121,7 +126,7 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             selected,
             genLabel,
             searchablePlaceholder,
-            showSelected,
+            showChips,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onChange,
             ...viewProps
@@ -205,16 +210,19 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                             {i18n.t("picker.callToAction").replace("%d", selectedItems.length.toString())}
                         </Text>
                     </TouchableOpacity>
-                    <View>
-                        {showSelected &&
-                            selectedItems.map((val: string, i: number) => (
-                                <View key={i} style={styles.selectedItemView}>
-                                    <Text style={styles.selectedItemText} numberOfLines={1}>
-                                        {genLabel ? i18n.t(genLabel(val)) : val}
-                                    </Text>
-                                </View>
-                            ))}
-                    </View>
+                    {showChips && (
+                        <Chips
+                            items={selectedItems}
+                            label={(v) => (genLabel ? i18n.t(genLabel(v)) : v)}
+                            containerStyle={styles.chipContainer}
+                            removable={true}
+                            onRemove={(item: string) => {
+                                const selected = this.state.tempSelected.filter((v) => v !== item);
+                                this.setState({...this.state, tempSelected: selected});
+                                this.apply(selected);
+                            }}
+                        />
+                    )}
                 </View>
                 {(Platform.OS === "android" || Platform.OS === "ios") && <View>{select}</View>}
                 {Platform.OS === "web" && this.state.open && select}

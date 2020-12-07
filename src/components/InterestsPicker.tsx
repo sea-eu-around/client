@@ -3,7 +3,7 @@ import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {InterestDto} from "../api/dto";
-import MultiPicker from "./MultiPicker";
+import MultiPicker, {MultiPickerProps} from "./MultiPicker";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -16,7 +16,7 @@ let values: string[] = [];
 export type InterestsPickerProps = ConnectedProps<typeof reduxConnector> & {
     interests: string[];
     onChange?: (interests: string[]) => void;
-};
+} & Partial<MultiPickerProps>;
 
 class InterestsPicker extends React.Component<InterestsPickerProps> {
     componentDidMount() {
@@ -35,7 +35,7 @@ class InterestsPicker extends React.Component<InterestsPickerProps> {
     }
 
     render(): JSX.Element {
-        const {interests, onChange} = this.props;
+        const {interests, onChange, ...otherProps} = this.props;
 
         return (
             <MultiPicker
@@ -48,6 +48,7 @@ class InterestsPicker extends React.Component<InterestsPickerProps> {
                 placeholder={i18n.t("interestsPicker.placeholder")}
                 multipleText={i18n.t("interestsPicker.multiple")}
                 searchablePlaceholder={i18n.t("interestsPicker.searchPlaceholder")}
+                {...otherProps}
             />
         );
     }
