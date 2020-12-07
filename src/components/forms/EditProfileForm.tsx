@@ -12,7 +12,7 @@ import StaffRoleToggle from "../StaffRoleToggle";
 import GenderToggle from "../GenderToggle";
 import BirthDatePicker from "../BirthDatePicker.native";
 import AvatarEditButton from "../AvatarEditButton";
-import FormRow from "./FormRow";
+import ValueCard from "./ValueCard";
 import {FormattedDate} from "../FormattedDate";
 import NationalityPicker from "../NationalityPicker";
 import FormattedNationality from "../FormattedNationality";
@@ -33,6 +33,7 @@ import {setAvatar} from "../../state/profile/actions";
 import EnlargeableAvatar from "../EnlargeableAvatar";
 import OfferControl from "../OfferControl";
 import {connect, ConnectedProps} from "react-redux";
+import Chips from "../Chips";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -83,7 +84,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 
             profileFieldComponents = (
                 <>
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("emailAddress")}
                         initialValue={user.email}
                         display={<Text style={styles.cardText}>{user.email}</Text>}
@@ -106,7 +107,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         locked={true}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("dateOfBirth")}
                         initialValue={profile.birthdate}
                         display={<FormattedDate style={styles.cardText} date={profile.birthdate} />}
@@ -122,7 +123,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         )}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("nationality")}
                         initialValue={profile.nationality}
                         display={<FormattedNationality style={styles.cardText} countryCode={profile.nationality} />}
@@ -135,7 +136,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         )}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("gender")}
                         initialValue={profile.gender}
                         display={
@@ -147,7 +148,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         noModal={true}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("profileType")}
                         initialValue={profile.type}
                         display={
@@ -174,62 +175,55 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         noModal={true}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("fieldsOfEducation")}
                         initialValue={profile.educationFields}
                         display={
                             <EducationFieldPicker
                                 fields={profile.educationFields}
                                 onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
-                            ></EducationFieldPicker>
+                                showChips={true}
+                            />
                         }
                         noModal={true}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("interests")}
                         initialValue={profile.interests}
                         display={
                             <InterestsPicker
                                 interests={profile.interests}
                                 onChange={(interests: string[]) => this.onFieldChanged({interests})}
-                            ></InterestsPicker>
+                                showChips={true}
+                            />
                         }
                         noModal={true}
                     />
                     <FormFieldSpacer />
-                    <FormRow
+                    <ValueCard
                         label={i18n.t("spokenLanguages")}
                         initialValue={profile.languages}
                         validator={VALIDATOR_ONBOARDING_LANGUAGES}
                         display={
-                            <>
-                                {profile.languages.map((l: SpokenLanguageDto, i: number) => (
-                                    <View key={i}>
-                                        <Text>
-                                            {i18n.t(`languageNames.${l.code}`)} ({i18n.t(`languageLevels.${l.level}`)})
-                                        </Text>
-                                    </View>
-                                ))}
-                            </>
+                            <Chips
+                                items={profile.languages}
+                                label={(item: SpokenLanguageDto) =>
+                                    `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
+                                        `languageLevels.${item.level}`,
+                                    )})`
+                                }
+                            />
                         }
                         renderInput={(
                             value: SpokenLanguageDto[],
                             error: string | null,
                             onChange: (value: SpokenLanguageDto[]) => void,
                         ) => (
-                            <>
-                                <SpokenLanguagesInput
-                                    languages={value}
-                                    onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
-                                />
-                                <FormFieldSpacer />
-                                <FormFieldSpacer />
-                                <FormFieldSpacer />
-                                <FormFieldSpacer />
-                                <FormFieldSpacer />
-                                <FormFieldSpacer />
-                            </>
+                            <SpokenLanguagesInput
+                                languages={value}
+                                onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
+                            />
                         )}
                         apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
                     />
@@ -238,19 +232,19 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         category={OfferCategory.Discover}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    ></OfferCategoryRow>
+                    />
                     <FormFieldSpacer />
                     <OfferCategoryRow
                         category={OfferCategory.Collaborate}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    ></OfferCategoryRow>
+                    />
                     <FormFieldSpacer />
                     <OfferCategoryRow
                         category={OfferCategory.Meet}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    ></OfferCategoryRow>
+                    />
                 </>
             );
         }
@@ -310,19 +304,21 @@ type OfferCategoryRowProps = {
 
 const OfferCategoryRow = reduxConnector(
     ({category, profileOffers, onApply, offers, offerIdToCategory}: OfferCategoryRowProps): JSX.Element => {
-        let display: JSX.Element | JSX.Element[] = profileOffers
-            .filter((o) => offerIdToCategory.get(o.offerId) == category)
-            .map((value: OfferValueDto) => (
-                <Text key={`profile-${value.offerId}-display`}>{i18n.t(`allOffers.${value.offerId}.name`)}</Text>
-            ));
-
-        if (display.length == 0) display = <Text>{i18n.t("profile.noOffersSelected")}</Text>;
-
+        const items = profileOffers.filter((o) => offerIdToCategory.get(o.offerId) == category);
         return (
-            <FormRow
+            <ValueCard
                 label={i18n.t(`offerCategories.${category}`)}
                 initialValue={profileOffers}
-                display={<>{display}</>}
+                display={
+                    items.length > 0 ? (
+                        <Chips
+                            items={items}
+                            label={(item: OfferValueDto) => i18n.t(`allOffers.${item.offerId}.name`)}
+                        />
+                    ) : (
+                        <Text>{i18n.t("profile.noOffersSelected")}</Text>
+                    )
+                }
                 renderInput={(
                     value: OfferValueDto[],
                     error: string | null,
