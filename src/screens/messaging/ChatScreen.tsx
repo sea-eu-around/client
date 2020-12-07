@@ -143,6 +143,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                             if (lastMessageDict[m._id]) lastMessageDict[m._id].push(u);
                             else lastMessageDict[m._id] = [u];
                         }*/
+                        console.log(u.lastMessageSeenId);
                         if (lastMessageDict[u.lastMessageSeenId]) lastMessageDict[u.lastMessageSeenId].push(u);
                         else lastMessageDict[u.lastMessageSeenId] = [u];
                     }

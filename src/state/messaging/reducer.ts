@@ -146,7 +146,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             return state;
         }
         case MESSAGING_ACTION_TYPES.READ_MESSAGE: {
-            const {roomId, date, profileId} = (action as ReadChatMessageAction).payload;
+            const {roomId, date, messageId, profileId} = (action as ReadChatMessageAction).payload;
 
             // Just ignore if this is about ourselves
             // (we don't care about knowing that we have read the message)
@@ -163,7 +163,9 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 return updateRoom(state, false, {
                     ...room,
                     users: room.users.map((u: ChatRoomUser) =>
-                        u._id == profileId ? {...u, lastMessageSeenDate: new Date(date)} : u,
+                        u._id == profileId
+                            ? {...u, lastMessageSeenDate: new Date(date), lastMessageSeenId: messageId}
+                            : u,
                     ),
                 });
             }
