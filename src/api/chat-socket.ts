@@ -143,7 +143,7 @@ class ChatSocket {
     }
 
     readMessage(roomId: string, messageId: string, createdAt: string) {
-        this.emit("readMessage", {roomId, messageId, createdAt});
+        this.emit("readMessage", {roomId, messageId, date: createdAt});
     }
 
     setWriting(room: ChatRoom) {
