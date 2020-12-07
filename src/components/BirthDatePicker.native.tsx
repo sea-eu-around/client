@@ -38,7 +38,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps> {
             />
         );
 
-        if (Platform.OS === "ios") return <CustomModal renderContent={() => picker} />;
+        if (Platform.OS === "ios") return <CustomModal visible={open} renderContent={() => picker} />;
         // Wrap with an ErrorBoundary to prevent crashes on Android which we can't do much about
         else if (open) return <ErrorBoundary>{picker}</ErrorBoundary>;
         else return <></>;
