@@ -59,8 +59,9 @@ export default {
                 noSymbol: "Your password must contain at least one symbol (#@$!%*?&).",
                 repeatWrong: "These passwords don't match.",
             },
-            languages: {
-                multiple: "You cannot add two entries for the same language.",
+            language: {
+                atLeastOne: "Please select at least one language.",
+                specifyLevel: "Please specify a level for your languages.",
             },
         },
         error: {
@@ -322,7 +323,7 @@ export default {
             b2: "B2",
             c1: "C1",
             c2: "C2",
-            native: "native",
+            native: "Native",
         },
         languageNames: {
             aa: "Afar",
@@ -723,6 +724,7 @@ export default {
             MatchFilteringScreen: "Filters",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
+            ProfileScreen: "Profile",
             ValidationEmailSentScreen: "Validate your account",
             ValidateEmailScreen: "Validate your account",
             ResetPasswordScreen: "Reset your password",

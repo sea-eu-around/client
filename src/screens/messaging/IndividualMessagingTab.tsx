@@ -15,7 +15,7 @@ import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import i18n from "i18n-js";
-import {connectToChat, fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
+import {fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
 import {MaterialTopTabScreenProps} from "@react-navigation/material-top-tabs";
 import {TabMessagingTabs} from "../../navigation/types";
 import {ChatRoom} from "../../model/chat-room";
@@ -42,18 +42,11 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
 
     componentDidMount() {
         this.props.navigation.addListener("focus", () => this.onFocus());
-        this.props.navigation.addListener("blur", () => this.onBlur());
         this.onFocus();
     }
 
     onFocus() {
-        (this.props.dispatch as MyThunkDispatch)(connectToChat());
         if (this.props.rooms.length < ROOMS_FETCH_LIMIT) this.fetchMore();
-    }
-
-    onBlur() {
-        //console.log(this.props.navigation.dangerouslyGetState());
-        //(this.props.dispatch as MyThunkDispatch)(disconnectFromChat());
     }
 
     componentDidUpdate() {
@@ -69,7 +62,8 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
             <View style={styles.wrapper}>
                 <KeyboardAvoidingView style={{flex: 1, width: "100%"}}>
                     <ScrollView
-                        style={styles.matchesContainer}
+                        style={styles.scroll}
+                        contentContainerStyle={styles.scrollContent}
                         refreshControl={
                             <RefreshControl
                                 refreshing={fetchingRooms}
@@ -105,12 +99,13 @@ export const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "column",
             alignItems: "center",
             backgroundColor: theme.background,
-            //height: 250,
         },
-        matchesContainer: {
-            width: "100%",
-            height: "100%",
-            paddingVertical: 20,
+        scroll: {
+            flex: 1,
+        },
+        scrollContent: {
+            paddingTop: 20,
+            paddingBottom: 40,
         },
         noMatchesContainer: {
             width: "80%",

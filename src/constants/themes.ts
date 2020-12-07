@@ -28,6 +28,7 @@ export default {
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorLight,
         componentBorder: "#eee",
+        chatBubble: "#ededed",
     },
     dark: {
         id: "dark" as ThemeKey,
@@ -50,5 +51,6 @@ export default {
         tabIconDefault: "#ccc",
         tabIconSelected: tintColorDark,
         componentBorder: "#555",
+        chatBubble: "#333",
     },
 };
