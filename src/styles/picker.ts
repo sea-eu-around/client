@@ -49,15 +49,8 @@ export const pickerStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             color: theme.text,
         },
-        selectedItemView: {
-            width: "100%",
-            height: 20,
-            marginTop: 5,
-            fontSize: 12,
-            overflow: "hidden",
-        },
-        selectedItemText: {
-            color: theme.text,
+        chipContainer: {
+            marginTop: 10,
         },
     });
 });
