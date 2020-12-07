@@ -8,7 +8,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
 import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
-import {Degree, StaffRole, STAFF_ROLES} from "../../constants/profile-constants";
+import {Degree, StaffRole, STAFF_ROLES, STAFF_ROLE_ICONS} from "../../constants/profile-constants";
 import DegreeToggle from "../../components/DegreeToggle";
 import {TouchableOpacity, Text, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -77,11 +77,9 @@ class OnboardingRoleSpecificScreen extends React.Component<OnboardingRoleSpecifi
         const {theme} = this.props;
         const styles = staffThemedStyles(theme);
 
-        const icons = ["school", "library-books", "help", "account-balance", "build", "verified-user"];
-
         const buttons = STAFF_ROLES.map((sr: string, i: number) => (
             <TouchableOpacity key={i} style={styles.button} onPress={() => this.submit({staffRole: sr as StaffRole})}>
-                <MaterialIcons name={icons[i]} style={styles.buttonIcon}></MaterialIcons>
+                <MaterialIcons name={STAFF_ROLE_ICONS[i]} style={styles.buttonIcon}></MaterialIcons>
                 <Text style={styles.buttonText}>{i18n.t(`staffRoles.${sr}`)}</Text>
             </TouchableOpacity>
         ));

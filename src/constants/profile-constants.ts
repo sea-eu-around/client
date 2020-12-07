@@ -25,6 +25,17 @@ export const STAFF_ROLES: StaffRole[] = [
     "other",
 ];
 
+// MaterialIcons
+export const STAFF_ROLE_ICONS = [
+    "school",
+    "library-books",
+    "help",
+    "account-balance",
+    "build",
+    "verified-user",
+    "help",
+];
+
 export type Gender = "male" | "female" | "other";
 export const GENDERS: Gender[] = ["male", "female", "other"];
 
