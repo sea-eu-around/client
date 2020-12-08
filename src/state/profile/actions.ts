@@ -25,6 +25,7 @@ export enum PROFILE_ACTION_TYPES {
     LOAD_PROFILE_INTERESTS = "LOAD_PROFILE_INTERESTS",
     LOAD_PROFILE_INTERESTS_SUCCESS = "LOAD_PROFILE_INTERESTS_SUCCESS",
     PROFILE_SET_FIELDS_SUCCESS = "PROFILE/SET_FIELDS_SUCCESS",
+    PROFILE_SET_FIELDS_FAILURE = "PROFILE/SET_FIELDS_FAILURE",
     PROFILE_CREATE = "PROFILE/CREATE",
     PROFILE_CREATE_SUCCESS = "PROFILE/CREATE_SUCCESS",
     FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
@@ -42,6 +43,10 @@ export type LoadUserProfileAction = {
 export type SetProfileFieldsAction = {
     type: string;
     fields: Partial<UserProfile>;
+};
+
+export type SetProfileFieldsFailureAction = {
+    type: string;
 };
 
 export type SetProfileFieldsSuccessAction = {
@@ -100,6 +105,8 @@ export type SetAvatarFailureAction = {
 
 export type ProfileAction =
     | SetProfileFieldsAction
+    | SetProfileFieldsFailureAction
+    | SetProfileFieldsSuccessAction
     | CreateProfileAction
     | CreateProfileSuccessAction
     | LoadProfileOffersAction
@@ -116,15 +123,18 @@ const setProfileFieldsSuccess = (fields: Partial<UserProfile>): SetProfileFields
     fields,
 });
 
+const setProfileFieldsFailure = (): SetProfileFieldsFailureAction => ({
+    type: PROFILE_ACTION_TYPES.PROFILE_SET_FIELDS_FAILURE,
+});
+
 export const setProfileFields = (fields: Partial<UserProfile>): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields);
+    const type = getState().profile.user?.profile?.type;
+
+    const dto: Partial<CreateProfileDto> = convertPartialProfileToCreateDto(fields, type);
     const response = await requestBackend("profiles", "PATCH", {}, dto, token);
-    if (response.status === HttpStatusCode.OK) {
-        dispatch(setProfileFieldsSuccess(fields));
-    } else {
-        console.log("error in setProfileFields");
-    }
+    if (response.status === HttpStatusCode.OK) dispatch(setProfileFieldsSuccess(fields));
+    else dispatch(setProfileFieldsFailure());
 };
 
 const createProfileSuccess = (profile: UserProfile): CreateProfileSuccessAction => ({
