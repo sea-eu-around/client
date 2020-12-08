@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TextInput, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -109,6 +109,10 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     isPassword={true}
                                     {...textInputProps}
                                 />
+
+                                {/* TEMP This is a workaround for a bug on some iOS versions.
+                                    See https://github.com/facebook/react-native/issues/21572 */}
+                                <TextInput style={{width: 1, height: 1}} />
 
                                 <FormTextInput
                                     field="passwordRepeat"
