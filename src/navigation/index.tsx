@@ -121,6 +121,7 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                             <MainHeader
                                 {...props}
                                 backButton={true}
+                                noShadow={true}
                                 wrapperStyle={{backgroundColor: theme.accent}}
                                 color={theme.textWhite}
                             />

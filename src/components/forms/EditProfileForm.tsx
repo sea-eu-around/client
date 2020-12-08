@@ -342,7 +342,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             borderBottomRightRadius: 200,*/
             width: "100%",
             paddingTop: 10,
-            paddingBottom: 20,
+            paddingBottom: 10,
             alignItems: "center",
             alignSelf: "center",
             backgroundColor: theme.accent,

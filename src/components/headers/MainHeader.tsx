@@ -26,6 +26,7 @@ type AdditionalProps = {
     rightButtons?: ((props: HeaderButtonProps) => JSX.Element)[];
     backButton?: boolean;
     color?: string;
+    noShadow?: boolean;
 };
 
 // Component props
@@ -42,13 +43,15 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
     }
 
     render(): JSX.Element {
-        const {theme, backButton, rightButtons, wrapperStyle, color, user, insets, scene} = this.props;
+        const {theme, backButton, rightButtons, wrapperStyle, color, noShadow, user, insets, scene} = this.props;
         const styles = headerStyles(theme);
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
 
         return (
-            <View style={[{paddingTop: insets.top}, styles.wrapper, wrapperStyle]}>
+            <View
+                style={[{paddingTop: insets.top}, styles.wrapper, noShadow ? styles.wrapperNoShadow : {}, wrapperStyle]}
+            >
                 <View style={styles.container}>
                     {backButton && (
                         <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
