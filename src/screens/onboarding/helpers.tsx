@@ -39,7 +39,7 @@ function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDt
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
     const base: CreateProfileDtoCommon = {
-        type: onboardingState.role!,
+        type: onboardingState.type!,
         firstName: onboardingState.firstname!,
         lastName: onboardingState.lastname!,
         gender: onboardingState.gender!,
@@ -51,15 +51,17 @@ function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDt
         educationFields: onboardingState.educationFields.map((id) => ({id})),
     };
 
-    if (onboardingState.role == "student") {
+    if (onboardingState.type == "student") {
         return {
             ...base,
             degree: onboardingState.degree,
         } as CreateProfileDtoStudent;
-    } else if (onboardingState.role == "staff") {
+    } else if (onboardingState.type == "staff") {
         return {
             ...base,
-            staffRole: onboardingState.staffRole,
+            staffRoles: Object.keys(onboardingState.staffRoles)
+                .filter((k) => onboardingState.staffRoles[k])
+                .map((id: string) => ({id})),
         } as CreateProfileDtoStaff;
     }
     return null;

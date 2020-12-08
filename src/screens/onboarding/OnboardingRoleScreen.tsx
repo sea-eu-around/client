@@ -15,7 +15,7 @@ import {styleTextThin} from "../../styles/general";
 type OnboardingRoleScreenProps = ThemeProps & OnboardingScreenProps;
 
 type OnboardingRoleFormState = {
-    role: Role;
+    type: Role;
 };
 
 class OnboardingRoleScreen extends React.Component<OnboardingRoleScreenProps> {
@@ -30,11 +30,11 @@ class OnboardingRoleScreen extends React.Component<OnboardingRoleScreenProps> {
 
         return (
             <OnboardingSlide title={i18n.t("onboarding.role.title")} hideNavNext={true} {...this.props}>
-                <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({role: "student"})}>
+                <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({type: "student"})}>
                     <MaterialIcons name={"school"} style={styles.roleButtonIconStudent}></MaterialIcons>
                     <Text style={styles.roleButtonTextStudent}>{i18n.t("allRoles.student")}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({role: "staff"})}>
+                <TouchableOpacity style={styles.roleButton} onPress={() => this.submit({type: "staff"})}>
                     <MaterialIcons name={"group"} style={styles.roleButtonIconStaff}></MaterialIcons>
                     <Text style={styles.roleButtonTextStaff}>{i18n.t("allRoles.staff")}</Text>
                 </TouchableOpacity>
