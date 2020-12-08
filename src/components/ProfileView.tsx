@@ -6,17 +6,14 @@ import {ScrollView} from "react-native";
 import {FormattedDate} from "./FormattedDate";
 import FormattedNationality from "./FormattedNationality";
 import FormattedUniversity from "./FormattedUniversity";
-import {UserProfile} from "../model/user-profile";
+import {UserProfile, UserProfileStaff, UserProfileStudent} from "../model/user-profile";
 import {PARTNER_UNIVERSITIES} from "../constants/universities";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
-import {Degree, StaffRole} from "../constants/profile-constants";
+import {StaffRole} from "../constants/profile-constants";
 import ValueCard from "./forms/ValueCard";
 import EnlargeableAvatar from "./EnlargeableAvatar";
-import DegreeToggle from "./DegreeToggle";
-import StaffRoleToggle from "./StaffRoleToggle";
 import {OfferCategory, OfferValueDto, SpokenLanguageDto} from "../api/dto";
-import RoleToggle from "./RoleToggle";
 import FormattedGender from "./FormattedGender";
 import Chips from "./Chips";
 import {connect, ConnectedProps} from "react-redux";
@@ -32,15 +29,12 @@ function Spacer(): JSX.Element {
 }
 
 class ProfileView extends React.Component<ProfileViewProps> {
-    onFieldChanged(temp: any) {
-        //
-    }
-
     render() {
         const {theme, profile} = this.props;
         const styles = themedStyles(theme);
 
         const fullName = profile ? profile.firstName + " " + profile.lastName : "";
+        const university = profile ? PARTNER_UNIVERSITIES.find((u) => u.key === profile.university) : undefined;
 
         let profileFieldComponents = <></>;
 
@@ -72,22 +66,16 @@ class ProfileView extends React.Component<ProfileViewProps> {
                         label={i18n.t("profileType")}
                         display={
                             <>
-                                <RoleToggle
-                                    role={profile.type}
-                                    /*onSelect={(role: Role) => onFieldChanged({role})}*/
-                                    disabled={true}
-                                />
+                                <Text>{i18n.t(`allRoles.${profile.type}`)}</Text>
                                 {profile.type == "staff" && (
-                                    <StaffRoleToggle
-                                        staffRole={profile.staffRole || null}
-                                        onSelect={(staffRole: StaffRole) => this.onFieldChanged({staffRole})}
-                                    />
+                                    <>
+                                        {(profile as UserProfileStaff).staffRoles.map((sr: StaffRole) => (
+                                            <Text key={`profile-staff-role-${sr}`}>{i18n.t(`staffRoles.${sr}`)}</Text>
+                                        ))}
+                                    </>
                                 )}
                                 {profile.type == "student" && (
-                                    <DegreeToggle
-                                        degree={profile.degree}
-                                        onUpdate={(degree?: Degree) => this.onFieldChanged({degree})}
-                                    />
+                                    <Text>{i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}</Text>
                                 )}
                             </>
                         }
@@ -155,11 +143,11 @@ class ProfileView extends React.Component<ProfileViewProps> {
                         activeOpacity={0.8}
                     />
                     <Text style={styles.name}>{fullName}</Text>
-                    {profile && (
+                    {university && (
                         <FormattedUniversity
                             containerStyle={styles.universityContainer}
                             style={styles.university}
-                            university={PARTNER_UNIVERSITIES.find((u) => u.key === profile.university)!}
+                            university={university}
                         />
                     )}
                 </View>
@@ -238,7 +226,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             borderBottomRightRadius: 200,*/
             width: "100%",
             paddingTop: 10,
-            paddingBottom: 20,
+            paddingBottom: 10,
             alignItems: "center",
             alignSelf: "center",
             backgroundColor: theme.accent,
