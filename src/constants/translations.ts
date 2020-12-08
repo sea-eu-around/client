@@ -20,6 +20,7 @@ export default {
         forgotPasswordExplanation:
             "Enter the email address associated with your account below. Instructions for choosing a new password will be sent shortly.",
         cancel: "Cancel",
+        ok: "OK",
         signupWelcome: "We can't wait for you to join our community!\n\nJust one more step.",
         firstname: "First name",
         lastname: "Last name",
@@ -67,6 +68,7 @@ export default {
         error: {
             error_user_not_verified: "This account's email address has not been verified yet.",
             user_not_found: "User not found.",
+            email_or_password_incorrect: "Incorrect email or password.",
             reset_password_no_token: "Could not fulfill this request.",
             unique: {
                 user: {
@@ -210,9 +212,8 @@ export default {
         },
         staffRoles: {
             teaching: "Teaching",
-            researcher: "Researcher",
-            supporting: "Supporting",
-            administrative: "Administrative",
+            research: "Research",
+            administration: "Administration",
             technical: "Technical",
             ambassador: "SEA-EU Ambassador",
             other: "Other",
@@ -277,7 +278,7 @@ export default {
                     title: "Student information",
                 },
                 staff: {
-                    title: "Staff position",
+                    title: "Staff roles",
                 },
             },
             offersMeet: {
