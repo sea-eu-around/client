@@ -129,26 +129,18 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             const isWritingId = Object.keys(room.writing).find((id: string) => room.writing[id] === true);
             const userWriting = isWritingId ? room.users.find((u) => u._id == isWritingId) : undefined;
 
+            // Store in a messageId -> user map whether each message is the last seen message of a user
             const lastMessageDict: {[key: string]: ChatRoomUser[]} = {};
             if (room.messages.length > 0) {
                 room.users.forEach((u: ChatRoomUser) => {
                     if (u._id != localChatUser._id && u.lastMessageSeenId) {
-                        /*let i = 0;
-                        while (i < room.messages.length - 1 && room.messages[i].createdAt >= u.lastMessageSeenDate) i++;
-
-                        const m = i < room.messages.length - 1 ? room.messages[i] : room.lastMessage;
-                        console.log("ROOM USERS:", room.users);
-                        console.log("MESSAGE:", m);
-                        if (m) {
-                            if (lastMessageDict[m._id]) lastMessageDict[m._id].push(u);
-                            else lastMessageDict[m._id] = [u];
-                        }*/
-                        console.log(u.lastMessageSeenId);
                         if (lastMessageDict[u.lastMessageSeenId]) lastMessageDict[u.lastMessageSeenId].push(u);
                         else lastMessageDict[u.lastMessageSeenId] = [u];
                     }
                 });
             }
+
+            console.log("not sent", room.messages.filter((m) => !m.sent).length);
 
             chatComponent = (
                 <GiftedChat
@@ -163,6 +155,14 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                     renderBubble={(props: BubbleProps<IMessage>) => (
                         <Bubble
                             {...props}
+                            renderTicks={(currentMessage: IMessage) => (
+                                <View style={styles.messageTicksContainer}>
+                                    {currentMessage.received && (
+                                        <MaterialIcons name="check" style={styles.messageTick} />
+                                    )}
+                                    {currentMessage.sent && <MaterialIcons name="check" style={styles.messageTick} />}
+                                </View>
+                            )}
                             textStyle={{left: styles.bubbleTextLeft, right: styles.bubbleTextRight}}
                             wrapperStyle={{left: styles.bubbleWrapperLeft, right: styles.bubbleWrapperRight}}
                         />
@@ -376,6 +376,14 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         messageReadAvatarText: {
             fontSize: 12,
+        },
+        messageTicksContainer: {
+            marginRight: 4,
+            minWidth: 15,
+        },
+        messageTick: {
+            fontSize: 14,
+            color: theme.textWhite,
         },
     });
 });

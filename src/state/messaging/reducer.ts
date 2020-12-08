@@ -105,8 +105,11 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.SEND_MESSAGE_SUCCESS: {
             const {message} = action as SendMessageSuccessAction;
             if (state.activeRoom) {
-                state.activeRoom.messages.unshift(message);
-                return updateRoom(state, true, {...state.activeRoom});
+                return updateRoom(state, true, {
+                    ...state.activeRoom,
+                    messages: [message].concat(state.activeRoom.messages),
+                    lastMessage: message,
+                });
             }
             return state;
         }
@@ -119,9 +122,13 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 // Start by checking if this is an existing message (e.g. our own message)
                 const existingMessage = room.messages.find((m: ChatRoomMessage) => m._id === message.id);
                 if (existingMessage) {
-                    existingMessage.sent = true;
-                    existingMessage.text = message.text;
-                    room.lastMessage = existingMessage;
+                    const msg = {...existingMessage, sent: true, text: message.text};
+
+                    // Update the message in the list
+                    room.messages = room.messages.map((m: ChatRoomMessage) => (m._id === message.id ? msg : m));
+
+                    // Also update the last message
+                    if (!room.lastMessage || msg.createdAt >= room.lastMessage.createdAt) room.lastMessage = msg;
                 } else {
                     const user = room.users.find((u: ChatRoomUser) => u._id == message.senderId);
                     if (user) {
