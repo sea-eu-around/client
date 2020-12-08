@@ -117,7 +117,14 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{
                         headerShown: true,
                         title: screenTitle("ProfileScreen"),
-                        header: (props: StackHeaderProps) => <MainHeader {...props} backButton={true} />,
+                        header: (props: StackHeaderProps) => (
+                            <MainHeader
+                                {...props}
+                                backButton={true}
+                                wrapperStyle={{backgroundColor: theme.accent}}
+                                color={theme.textWhite}
+                            />
+                        ),
                     }}
                 />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />

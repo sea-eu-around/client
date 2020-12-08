@@ -25,12 +25,11 @@ type AdditionalProps = {
     wrapperStyle?: StyleProp<ViewStyle>;
     rightButtons?: ((props: HeaderButtonProps) => JSX.Element)[];
     backButton?: boolean;
+    color?: string;
 };
 
 // Component props
 export type MainHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackHeaderProps & AdditionalProps;
-
-// Component state
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
@@ -43,7 +42,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
     }
 
     render(): JSX.Element {
-        const {theme, backButton, rightButtons, wrapperStyle, user, insets, scene} = this.props;
+        const {theme, backButton, rightButtons, wrapperStyle, color, user, insets, scene} = this.props;
         const styles = headerStyles(theme);
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
@@ -53,7 +52,10 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                 <View style={styles.container}>
                     {backButton && (
                         <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
-                            <MaterialIcons style={[styles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
+                            <MaterialIcons
+                                style={[styles.backButtonIcon, {color: color || theme.text}]}
+                                name="arrow-back"
+                            />
                         </TouchableOpacity>
                     )}
                     <ProfileAvatar
@@ -65,7 +67,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                         activeOpacity={0.75}
                         onPress={() => this.pressAvatar()}
                     />
-                    <Text style={[styles.title, {marginLeft: 12}]} numberOfLines={1}>
+                    <Text style={[styles.title, {marginLeft: 12, color}]} numberOfLines={1}>
                         {title}
                     </Text>
                     {rightButtons?.map((ButtonComponent, i) => (
