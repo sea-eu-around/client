@@ -38,7 +38,7 @@ export const headerStyles = preTheme((theme: Theme) => {
         },
         avatarContainer: {
             backgroundColor: theme.accent,
-            borderWidth: 2,
+            borderWidth: 1,
             borderColor: theme.componentBorder,
         },
         avatarTitle: {
@@ -49,9 +49,6 @@ export const headerStyles = preTheme((theme: Theme) => {
             color: theme.text,
             fontWeight: "normal",
             fontSize: 20,
-            //fontWeight: "bold",
-            //...styleTextLight,
-            //letterSpacing: 0,
         },
         rightButton: {
             marginLeft: 10,
