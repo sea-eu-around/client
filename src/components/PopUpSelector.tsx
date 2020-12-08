@@ -5,14 +5,17 @@ import {preTheme} from "../styles/utils";
 import {CheckBox, withTheme} from "react-native-elements";
 import CustomModal, {CustomModalClass} from "./modals/CustomModal";
 import {pickerStyles} from "../styles/picker";
+import i18n from "i18n-js";
 
 // Component props
 export type PopUpSelectorProps = ThemeProps & {
     values: string[];
     selected: string[];
-    label: (value: string) => string;
+    label: (value: string, i: number) => string;
+    icon?: (value: string, i: number) => JSX.Element;
     onSelect?: (selected: string[]) => void;
     multiple?: boolean;
+    atLeastOne?: boolean;
     buttonStyle?: StyleProp<ViewStyle>;
     valueStyle?: StyleProp<TextStyle>;
 };
@@ -30,13 +33,21 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
         this.state = {valueDict: {}};
     }
 
+    private fromSelectedProp() {
+        const valueDict: {[key: string]: boolean} = {};
+        this.props.selected.forEach((v) => (valueDict[v] = true));
+        this.setState({...this.state, valueDict});
+    }
+
     show(): void {
+        this.fromSelectedProp();
         if (this.modalRef.current) this.modalRef.current.setModalVisible(true);
     }
 
     hide(apply: boolean): void {
         if (this.modalRef.current) this.modalRef.current.setModalVisible(false);
         if (apply) this.apply();
+        else this.fromSelectedProp();
     }
 
     toggleValue(v: string) {
@@ -62,7 +73,7 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
     }
 
     render(): JSX.Element {
-        const {values, selected, label, multiple, buttonStyle, valueStyle, theme} = this.props;
+        const {values, selected, label, icon, multiple, atLeastOne, buttonStyle, valueStyle, theme} = this.props;
         const {valueDict} = this.state;
         const styles = themedStyles(theme);
         const pstyles = pickerStyles(theme);
@@ -73,7 +84,9 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
                     style={[styles.button, selected.length > 0 ? styles.buttonOk : {}, buttonStyle]}
                     onPress={() => this.show()}
                 >
-                    <Text style={[styles.value, valueStyle]}>{selected.map(label).join(", ")}</Text>
+                    <Text style={[styles.value, valueStyle]} numberOfLines={2}>
+                        {selected.map(label).join(", ")}
+                    </Text>
                 </TouchableOpacity>
                 <CustomModal
                     ref={this.modalRef}
@@ -81,18 +94,20 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
                     renderContent={() => (
                         <>
                             <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-                                {values.map((v: string) => (
+                                {values.map((v: string, index: number) => (
                                     <TouchableOpacity
                                         key={`popup-selector-row-${v}`}
                                         style={styles.rowContainer}
                                         onPress={() => this.toggleValue(v)}
                                         activeOpacity={0.5}
                                     >
-                                        <Text style={styles.label}>{label(v)}</Text>
+                                        {icon && icon(v, index)}
+                                        <Text style={styles.label}>{label(v, index)}</Text>
                                         <CheckBox
                                             checked={valueDict[v]}
                                             containerStyle={styles.checkboxContainer}
                                             wrapperStyle={styles.checkboxWrapper}
+                                            onPress={() => this.toggleValue(v)}
                                             size={26}
                                             {...(multiple
                                                 ? {}
@@ -101,13 +116,12 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
-                            {multiple && (
-                                // TODO this does not work properly
+                            {multiple && (!atLeastOne || Object.values(valueDict).some((v) => v === true)) && (
                                 <TouchableOpacity
                                     onPress={() => this.hide(true)}
                                     style={[pstyles.okButton, {width: "100%"}]}
                                 >
-                                    <Text style={pstyles.okButtonText}>OK</Text>
+                                    <Text style={pstyles.okButtonText}>{i18n.t("ok")}</Text>
                                 </TouchableOpacity>
                             )}
                         </>
@@ -153,6 +167,7 @@ const themedStyles = preTheme((theme: Theme) => {
         label: {
             color: theme.text,
             fontSize: 16,
+            flexGrow: 1,
         },
         checkboxContainer: {
             padding: 0,
