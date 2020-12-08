@@ -25,7 +25,7 @@ export type ProfileViewProps = ThemeProps & {
 };
 
 function Spacer(): JSX.Element {
-    return <View style={{height: 30}}></View>;
+    return <View style={{height: 25}}></View>;
 }
 
 class ProfileView extends React.Component<ProfileViewProps> {

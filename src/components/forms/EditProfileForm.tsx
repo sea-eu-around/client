@@ -41,8 +41,8 @@ export type EditProfileFormProps = ThemeProps & {
     onChange?: (fields: Partial<UserProfile>) => void;
 };
 
-function FormFieldSpacer(): JSX.Element {
-    return <View style={{height: 30}}></View>;
+function Spacer(): JSX.Element {
+    return <View style={{height: 25}}></View>;
 }
 
 class EditProfileForm extends React.Component<EditProfileFormProps> {
@@ -69,7 +69,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         display={<Text style={styles.cardText}>{user.email}</Text>}
                         locked={true}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("dateOfBirth")}
                         initialValue={profile.birthdate}
@@ -85,7 +85,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             />
                         )}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("nationality")}
                         initialValue={profile.nationality}
@@ -98,7 +98,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             />
                         )}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("gender")}
                         initialValue={profile.gender}
@@ -110,7 +110,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         }
                         noModal={true}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("profileType")}
                         initialValue={profile.type}
@@ -140,7 +140,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         }
                         noModal={true}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("fieldsOfEducation")}
                         initialValue={profile.educationFields}
@@ -153,7 +153,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         }
                         noModal={true}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("interests")}
                         initialValue={profile.interests}
@@ -166,7 +166,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         }
                         noModal={true}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <ValueCard
                         label={i18n.t("spokenLanguages")}
                         initialValue={profile.languages}
@@ -193,19 +193,19 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         )}
                         apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <OfferCategoryRow
                         category={OfferCategory.Discover}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <OfferCategoryRow
                         category={OfferCategory.Collaborate}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
                     />
-                    <FormFieldSpacer />
+                    <Spacer />
                     <OfferCategoryRow
                         category={OfferCategory.Meet}
                         profileOffers={profile.profileOffers}
