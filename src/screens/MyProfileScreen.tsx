@@ -37,7 +37,7 @@ class MyProfileScreen extends React.Component<MyProfileScreenProps> {
                 <EditProfileForm
                     user={user}
                     onChange={(fields) => (dispatch as MyThunkDispatch)(setProfileFields(fields))}
-                ></EditProfileForm>
+                />
             </View>
         );
     }

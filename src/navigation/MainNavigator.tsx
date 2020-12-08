@@ -94,7 +94,6 @@ type TabBarLabelProps = {
     position: LabelPosition;
 };
 
-// TODO move
 function TabBarIcon({name, color}: {name: string} & TabBarIconProps): JSX.Element {
     return <MaterialIcons size={26} name={name} color={color} />;
 }

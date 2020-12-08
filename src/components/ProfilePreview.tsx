@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
-import {UserProfile} from "../model/user-profile";
+import {UserProfile, UserProfileStudent} from "../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import {Theme, ThemeProps} from "../types";
@@ -109,7 +109,6 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
 
         const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
-        //const fullName = profile.firstName.length % 2 == 0 ? profile.firstName + " " + profile.lastName : "Jimmy Jim McLongname";
 
         return (
             <ReAnimated.View
@@ -171,11 +170,10 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                 <Text style={styles.infoText}>
                                     {i18n.t(`genders.${profile.gender}`)}
                                     {", "}
-                                    {i18n.t(`allRoles.${profile.type}`)} (
-                                    {profile.type == "staff"
-                                        ? i18n.t(`staffRoles.${profile.staffRole}`)
-                                        : i18n.t(`degrees.${profile.degree}`)}
-                                    )
+                                    {i18n.t(`allRoles.${profile.type}`)}
+                                    {profile.type == "student"
+                                        ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
+                                        : ""}
                                 </Text>
                                 {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
                             </View>
@@ -245,6 +243,8 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         );
     }
 }
+
+// TODO use chips component and add staff role
 
 const chipStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -390,15 +390,9 @@ const themedStyles = preTheme((theme: Theme) => {
         },
 
         chipsContainer: {
-            // TODO clean-up
-            /*flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            marginTop: 4,*/
             flexDirection: "row",
             flexWrap: "wrap",
             justifyContent: "space-between",
-            //maxHeight: 58,
             overflow: "hidden",
         },
         expandedSectionTitle: {
