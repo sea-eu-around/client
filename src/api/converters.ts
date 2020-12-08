@@ -6,13 +6,16 @@ import {
     OfferValueDto,
     ResponseChatMessageDto,
     ResponseProfileDto,
+    ResponseProfileDtoStaff,
+    ResponseProfileDtoStudent,
     ResponseRoomDto,
     ResponseUserDto,
 } from "./dto";
-import {UserProfile} from "../model/user-profile";
+import {UserProfile, UserProfileCommon, UserProfileStaff, UserProfileStudent} from "../model/user-profile";
 import {User} from "../model/user";
 import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 import {initialPaginatedState} from "../state/types";
+import {Role, StaffRole} from "../constants/profile-constants";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -21,7 +24,7 @@ export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[]
 }
 
 export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
-    return {
+    const common: UserProfileCommon = {
         ...dto,
         avatarUrl: dto.avatar,
         birthdate: new Date(dto.birthdate),
@@ -30,10 +33,20 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         interests: (dto.interests || []).map((i) => i.id),
         languages: dto.languages || [],
     };
+
+    let complete: UserProfile;
+    if (dto.type === "staff") {
+        const staffDto = dto as ResponseProfileDtoStaff;
+        complete = {...common, staffRoles: (staffDto.staffRoles || []).map((r) => r.id as StaffRole)};
+    } else {
+        const studentDto = dto as ResponseProfileDtoStudent;
+        complete = {...common, degree: studentDto.degree};
+    }
+
+    return complete;
 }
 
 export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDto {
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const common: CreateProfileDtoCommon = {
         ...profile,
         birthdate: profile.birthdate.toJSON(),
@@ -42,17 +55,40 @@ export function convertProfileToCreateDto(profile: UserProfile): CreateProfileDt
         profileOffers: stripSuperfluousOffers(profile.profileOffers),
     };
 
-    return {...common, ...(profile.type == "staff" ? {staffRole: profile.staffRole!} : {degree: profile.degree!})};
+    let complete: CreateProfileDto;
+    if (profile.type === "staff") {
+        const staff = profile as UserProfileStaff;
+        complete = {...common, staffRoles: staff.staffRoles.map((id: string) => ({id}))};
+    } else {
+        const student = profile as UserProfileStudent;
+        complete = {...common, degree: student.degree};
+    }
+
+    return complete;
 }
 
-export function convertPartialProfileToCreateDto(profile: Partial<UserProfile>): Partial<CreateProfileDto> {
-    return {
+export function convertPartialProfileToCreateDto(
+    profile: Partial<UserProfile>,
+    type?: Role,
+): Partial<CreateProfileDto> {
+    const common: Partial<CreateProfileDtoCommon> = {
         ...profile,
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
-        profileOffers: profile.profileOffers ? stripSuperfluousOffers(profile.profileOffers) : undefined,
         interests: profile.interests?.map((id: string) => ({id})),
+        profileOffers: profile.profileOffers ? stripSuperfluousOffers(profile.profileOffers) : undefined,
     };
+
+    let complete: Partial<CreateProfileDto>;
+    if (type === "staff") {
+        const staff = profile as Partial<UserProfileStaff>;
+        complete = {...common, staffRoles: (staff.staffRoles || []).map((id: string) => ({id}))};
+    } else {
+        const student = profile as Partial<UserProfileStudent>;
+        complete = {...common, degree: student.degree};
+    }
+
+    return complete;
 }
 
 export function convertDtoToUser(dto: ResponseUserDto): User {

@@ -3,7 +3,7 @@ import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "./country-codes";
 import {SpokenLanguageDto, OfferValueDto} from "../api/dto";
 
-export type UserProfile = {
+export type UserProfileCommon = {
     id: string;
     type: Role;
     firstName: string;
@@ -15,8 +15,16 @@ export type UserProfile = {
     avatarUrl: string;
     languages: SpokenLanguageDto[];
     educationFields: string[];
-    staffRole?: StaffRole;
-    degree?: Degree;
     university: UniversityKey;
     profileOffers: OfferValueDto[];
 };
+
+export type UserProfileStudent = UserProfileCommon & {
+    degree: Degree;
+};
+
+export type UserProfileStaff = UserProfileCommon & {
+    staffRoles: StaffRole[];
+};
+
+export type UserProfile = UserProfileStudent | UserProfileStaff;

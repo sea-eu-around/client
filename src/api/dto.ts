@@ -1,4 +1,4 @@
-import {Degree, Gender, LanguageLevel, Role, StaffRole} from "../constants/profile-constants";
+import {Degree, Gender, LanguageLevel, Role} from "../constants/profile-constants";
 import {UniversityKey} from "../constants/universities";
 import {CountryCode} from "../model/country-codes";
 
@@ -76,18 +76,19 @@ export type CreateProfileDtoCommon = {
 export type CreateProfileDtoStudent = CreateProfileDtoCommon & {
     degree: Degree;
 };
-
 export type CreateProfileDtoStaff = CreateProfileDtoCommon & {
-    staffRole: StaffRole;
+    staffRoles: StaffRoleDto[];
 };
-
 export type CreateProfileDto = CreateProfileDtoStudent | CreateProfileDtoStaff;
 
-export type ResponseProfileDto = CreateProfileDto & {
+export type ResponseProfileDtoCommon = CreateProfileDtoCommon & {
     id: string;
     university: UniversityKey;
     avatar: string;
 };
+export type ResponseProfileDtoStudent = ResponseProfileDtoCommon & CreateProfileDtoStudent;
+export type ResponseProfileDtoStaff = ResponseProfileDtoCommon & CreateProfileDtoStaff;
+export type ResponseProfileDto = ResponseProfileDtoStudent | ResponseProfileDtoStaff;
 
 export enum OfferCategory {
     Discover = "discover",
@@ -96,6 +97,10 @@ export enum OfferCategory {
 }
 
 export type EducationFieldDto = {
+    id: string;
+};
+
+export type StaffRoleDto = {
     id: string;
 };
 

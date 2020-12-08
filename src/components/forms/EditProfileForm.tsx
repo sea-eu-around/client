@@ -8,7 +8,7 @@ import DegreeToggle from "../DegreeToggle";
 import {CountryCode} from "../../model/country-codes";
 import RoleToggle from "../RoleToggle";
 import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
-import StaffRoleToggle from "../StaffRoleToggle";
+import StaffRolePicker from "../StaffRolePicker";
 import GenderToggle from "../GenderToggle";
 import BirthDatePicker from "../BirthDatePicker.native";
 import AvatarEditButton from "../AvatarEditButton";
@@ -20,7 +20,7 @@ import {getUniversityFromEmail} from "../../model/utils";
 import FormattedUniversity from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
 import {initOfferValue, OfferCategory, OfferDto, OfferValueDto, SpokenLanguageDto} from "../../api/dto";
-import {UserProfile} from "../../model/user-profile";
+import {UserProfile, UserProfileStaff, UserProfileStudent} from "../../model/user-profile";
 import {User} from "../../model/user";
 import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
 import SpokenLanguagesInput from "../SpokenLanguagesInput";
@@ -56,27 +56,6 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 
         const fullName = user && user.profile ? user.profile.firstName + " " + user.profile.lastName : "";
 
-        /*const textInputStyleProps = {
-            placeholderTextColor: "#222",
-            style: {
-                width: "100%",
-                height: 50,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                borderWidth: 0,
-                backgroundColor: theme.accentSlight,
-            },
-            errorStyle: {
-                borderBottomWidth: 2,
-                borderBottomColor: theme.error,
-            },
-            validStyle: {
-                borderBottomWidth: 2,
-                borderBottomColor: theme.okay,
-            },
-            focusedStyle: Platform.OS === "web" ? ({outlineColor: "transparent"} as TextStyle) : null,
-        };*/
-
         let profileFieldComponents = <></>;
 
         if (user && user.profile) {
@@ -88,22 +67,6 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         label={i18n.t("emailAddress")}
                         initialValue={user.email}
                         display={<Text style={styles.cardText}>{user.email}</Text>}
-                        /*
-                        validator={VALIDATOR_EMAIL}
-                        renderInput={(value: string, error: string | null, onChange: (value: string) => void) => (
-                            <ValidatedTextInput
-                                placeholder={i18n.t("emailAddress")}
-                                value={value}
-                                error={error || undefined}
-                                onChangeText={(val) => onChange(val)}
-                                keyboardType="email-address"
-                                autoCompleteType="email"
-                                autoFocus
-                                {...textInputStyleProps}
-                            />
-                        )}
-                        apply={(email: string) => onFieldChanged({email})}
-                        */
                         locked={true}
                     />
                     <FormFieldSpacer />
@@ -159,14 +122,17 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                                     disabled={true}
                                 />
                                 {profile.type == "staff" && (
-                                    <StaffRoleToggle
-                                        staffRole={profile.staffRole || null}
-                                        onSelect={(staffRole: StaffRole) => this.onFieldChanged({staffRole})}
+                                    <StaffRolePicker
+                                        staffRoles={(profile as UserProfileStaff).staffRoles}
+                                        onChange={(staffRoles: StaffRole[]) => this.onFieldChanged({staffRoles})}
+                                        multiple={true}
+                                        atLeastOne={true}
+                                        buttonStyle={styles.staffRoleButton}
                                     />
                                 )}
                                 {profile.type == "student" && (
                                     <DegreeToggle
-                                        degree={profile.degree}
+                                        degree={(profile as UserProfileStudent).degree}
                                         onUpdate={(degree?: Degree) => this.onFieldChanged({degree})}
                                     />
                                 )}
@@ -423,6 +389,9 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         cardText: {
             color: theme.text,
+        },
+        staffRoleButton: {
+            marginTop: 10,
         },
     });
 });

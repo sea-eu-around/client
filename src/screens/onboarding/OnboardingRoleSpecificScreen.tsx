@@ -10,7 +10,7 @@ import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import {Degree, StaffRole, STAFF_ROLES, STAFF_ROLE_ICONS} from "../../constants/profile-constants";
 import DegreeToggle from "../../components/DegreeToggle";
-import {TouchableOpacity, Text, StyleSheet} from "react-native";
+import {TouchableOpacity, Text, StyleSheet, Switch} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {VALIDATOR_ONBOARDING_DEGREE} from "../../validators";
 import {Theme, ThemeProps} from "../../types";
@@ -30,7 +30,6 @@ type OnboardingRoleSpecificScreenProps = ConnectedProps<typeof reduxConnector> &
 
 type OnboardingRoleSpecificScreenFormState = {
     degree: Degree;
-    staffRole: StaffRole | null;
 };
 
 class OnboardingRoleSpecificScreen extends React.Component<OnboardingRoleSpecificScreenProps> {
@@ -74,40 +73,49 @@ class OnboardingRoleSpecificScreen extends React.Component<OnboardingRoleSpecifi
     }
 
     staffRender(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, onboardingState, dispatch} = this.props;
         const styles = staffThemedStyles(theme);
+        const staffRoles = onboardingState.staffRoles;
+        const atLeastOne = Object.values(staffRoles).some((v) => v === true);
 
-        const buttons = STAFF_ROLES.map((sr: string, i: number) => (
-            <TouchableOpacity key={i} style={styles.button} onPress={() => this.submit({staffRole: sr as StaffRole})}>
-                <MaterialIcons name={STAFF_ROLE_ICONS[i]} style={styles.buttonIcon}></MaterialIcons>
+        const setValue = (sr: StaffRole, b: boolean) =>
+            dispatch(setOnboardingValues({staffRoles: {...staffRoles, [sr]: b}}));
+
+        const buttons = STAFF_ROLES.map((sr: StaffRole, i: number) => (
+            <TouchableOpacity
+                key={i}
+                style={styles.button}
+                activeOpacity={0.6}
+                onPress={() => setValue(sr, !staffRoles[sr])}
+            >
+                <MaterialIcons name={STAFF_ROLE_ICONS[i]} style={styles.buttonIcon} />
                 <Text style={styles.buttonText}>{i18n.t(`staffRoles.${sr}`)}</Text>
+                <Switch
+                    value={staffRoles[sr]}
+                    thumbColor={theme.accent}
+                    trackColor={{true: theme.accentTernary, false: theme.accentSlight}}
+                    onValueChange={(b: boolean) => setValue(sr, b)}
+                />
             </TouchableOpacity>
         ));
 
         return (
-            <OnboardingSlide title={i18n.t("onboarding.roleSpecific1.staff.title")} hideNavNext={true} {...this.props}>
+            <OnboardingSlide
+                title={i18n.t("onboarding.roleSpecific1.staff.title")}
+                hideNavNext={!atLeastOne}
+                {...this.props}
+            >
                 {buttons}
             </OnboardingSlide>
         );
     }
-    /*
-
-        <InputLabel style={{marginTop: spacing}}>{i18n.t("staffPosition")}</InputLabel>
-        <StaffRoleToggle
-            staffRole={values.staffRole}
-            onSelect={(staffRole: StaffRole) => setFieldValue("staffRole", staffRole)}
-        />
-        {touched.staffRole && <InputErrorText error={errors.staffRole}></InputErrorText>}
-    */
 
     render(): JSX.Element {
         const {onboardingState} = this.props;
-        const isStudent = onboardingState.role == "student";
-
         return (
             <>
-                {isStudent && this.studentRender()}
-                {!isStudent && this.staffRender()}
+                {onboardingState.type === "student" && this.studentRender()}
+                {onboardingState.type === "staff" && this.staffRender()}
             </>
         );
     }
@@ -133,6 +141,7 @@ export const staffThemedStyles = preTheme((theme: Theme) => {
             fontSize: 25,
             letterSpacing: 1.25,
             color: theme.text,
+            flexGrow: 1,
         },
         buttonIcon: {
             fontSize: 30,

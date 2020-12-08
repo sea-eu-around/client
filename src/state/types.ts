@@ -12,7 +12,7 @@ import {
 } from "../api/dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
-import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
+import {Degree, Gender, Role} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {SupportedLocale} from "../localization";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
@@ -31,9 +31,9 @@ export type OnboardingState = {
     birthdate: Date | null;
     gender: Gender | null;
     nationality: CountryCode | null;
-    role: Role | null;
+    type: Role | null;
     degree: Degree | null;
-    staffRole: StaffRole | null;
+    staffRoles: {[key: string]: boolean};
     languages: SpokenLanguageDto[];
     interestIds: string[];
     offerValues: {[key: string]: OfferValueDto};
@@ -83,7 +83,8 @@ export type MatchingState = {
 
 export type MessagingState = {
     socketState: {connecting: boolean; connected: boolean};
-    matchRooms: ChatRoom[];
+    matchRooms: {[key: string]: ChatRoom}; // store by id for faster access
+    matchRoomsOrdered: string[];
     matchRoomsPagination: PaginatedState;
     activeRoom: ChatRoom | null;
     localChatUser: ChatRoomUser | null;
