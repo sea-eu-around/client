@@ -18,13 +18,13 @@ import i18n from "i18n-js";
 import {fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
 import {MaterialTopTabScreenProps} from "@react-navigation/material-top-tabs";
 import {TabMessagingTabs} from "../../navigation/types";
-import {ChatRoom} from "../../model/chat-room";
 import ChatRoomCard from "../../components/messaging/ChatRoomCard";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
     rooms: state.messaging.matchRooms,
+    roomIds: state.messaging.matchRoomsOrdered,
     fetchingRooms: state.messaging.matchRoomsPagination.fetching,
 }));
 
@@ -46,16 +46,16 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
     }
 
     onFocus() {
-        if (this.props.rooms.length < ROOMS_FETCH_LIMIT) this.fetchMore();
+        if (this.props.roomIds.length < ROOMS_FETCH_LIMIT) this.fetchMore();
     }
 
     componentDidUpdate() {
-        const {rooms, navigation} = this.props;
-        if (navigation.isFocused() && rooms.length < ROOMS_FETCH_LIMIT) this.fetchMore();
+        const {roomIds, navigation} = this.props;
+        if (navigation.isFocused() && roomIds.length < ROOMS_FETCH_LIMIT) this.fetchMore();
     }
 
     render(): JSX.Element {
-        const {theme, rooms, fetchingRooms, dispatch} = this.props;
+        const {theme, rooms, roomIds, fetchingRooms, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -76,10 +76,10 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
                             if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                         }}
                     >
-                        {rooms.map((cr: ChatRoom) => (
-                            <ChatRoomCard key={cr.id} room={cr} />
+                        {roomIds.map((id: string) => (
+                            <ChatRoomCard key={id} room={rooms[id]} />
                         ))}
-                        {!fetchingRooms && rooms.length == 0 && (
+                        {!fetchingRooms && roomIds.length == 0 && (
                             <View style={styles.noMatchesContainer}>
                                 <Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>
                             </View>

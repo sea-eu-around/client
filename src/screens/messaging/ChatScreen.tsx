@@ -69,7 +69,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
 
             // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
             if (roomId) {
-                const room = store.getState().messaging.matchRooms.find((r) => r.id === roomId);
+                const room = store.getState().messaging.matchRooms[roomId];
                 if (room) dispatch(joinChatRoom(room));
                 else {
                     dispatch(fetchMatchRoom(roomId)).then((r) => {
