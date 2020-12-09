@@ -1,5 +1,14 @@
 import * as React from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    KeyboardAvoidingView,
+    ScrollView,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewStyle,
+} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -38,7 +47,9 @@ const reduxConnector = connect((state: AppState) => ({
 // Component props
 type LoginFormProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    FormProps<FormState> & {navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">};
+    FormProps<FormState> & {
+        navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">;
+    };
 
 type LoginFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
@@ -102,6 +113,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
 
                     return (
                         <>
+                            <View style={{backgroundColor: "rgb(60, 140, 180)", height: 0}}></View>
                             <FormTextInput
                                 field="email"
                                 placeholder={i18n.t("emailAddress")}
@@ -144,6 +156,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                             >
                                 <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
                             </TouchableOpacity>
+
+                            <View style={{backgroundColor: "rgb(60, 140, 180)", height: 0}}></View>
                         </>
                     );
                 }}
@@ -168,6 +182,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             letterSpacing: 0.5,
             color: theme.textLight,
+            textAlign: "center",
         },
     });
 });

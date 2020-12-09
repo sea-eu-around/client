@@ -102,20 +102,10 @@ export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxPr
 
 export const loginTabsStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "center",
-            padding: 0,
-            backgroundColor: theme.background,
-        },
-        formWrapper: {
-            flex: 1,
+        formContainer: {
             width: "70%",
             maxWidth: 400,
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
         },
         versionInfoContainer: {
             position: "absolute",
@@ -132,6 +122,7 @@ export const loginTabsStyles = preTheme((theme: Theme) => {
         debugContainer: {
             flexDirection: "row",
             alignItems: "center",
+            marginVertical: 10,
         },
         debugTitle: {
             fontWeight: "bold",
@@ -161,6 +152,10 @@ export const loginTabsStyles = preTheme((theme: Theme) => {
         toggleThemeIcon: {
             fontSize: 26,
             color: theme.textLight,
+        },
+        erasmusLogo: {
+            height: 40,
+            marginTop: 40,
         },
     });
 });

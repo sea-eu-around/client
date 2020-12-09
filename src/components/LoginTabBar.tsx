@@ -1,17 +1,56 @@
 import React from "react";
 import {MaterialTopTabBarProps} from "@react-navigation/material-top-tabs";
-import {View, Text, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, Dimensions, Keyboard} from "react-native";
 import i18n from "i18n-js";
-import Animated from "react-native-reanimated";
+import ReAnimated, {Easing} from "react-native-reanimated";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
+import {withSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
+import Animated from "react-native-reanimated";
 
 // Component props
-type LoginTabBarProps = ThemeProps & MaterialTopTabBarProps;
+type LoginTabBarProps = ThemeProps & MaterialTopTabBarProps & {insets: EdgeInsets};
 
-class TabBarComponent extends React.Component<LoginTabBarProps> {
+// Component state
+type LoginTabBarState = {height: ReAnimated.Value<number>};
+
+class TabBarComponent extends React.Component<LoginTabBarProps, LoginTabBarState> {
+    constructor(props: LoginTabBarProps) {
+        super(props);
+        this.state = {
+            height: new ReAnimated.Value(this.getFullHeight()),
+        };
+    }
+
+    getCollapsedHeight(): number {
+        return 50 + this.props.insets.top;
+    }
+
+    getFullHeight(): number {
+        return Dimensions.get("window").height * 0.25 + this.props.insets.top;
+    }
+
+    componentDidMount() {
+        Keyboard.addListener("keyboardDidShow", () => {
+            //this.setState({...this.state, keyboardShown: true});
+            ReAnimated.timing(this.state.height, {
+                toValue: this.getCollapsedHeight(),
+                duration: 100,
+                easing: Easing.ease,
+            }).start();
+        });
+        Keyboard.addListener("keyboardDidHide", () => {
+            //this.setState({...this.state, keyboardShown: false});
+            ReAnimated.timing(this.state.height, {
+                toValue: this.getFullHeight(),
+                duration: 100,
+                easing: Easing.ease,
+            }).start();
+        });
+    }
+
     onPress(route: {name: string; key: string}, index: number): void {
         const {navigation} = this.props;
         const isFocused = index == this.props.state.index;
@@ -37,11 +76,12 @@ class TabBarComponent extends React.Component<LoginTabBarProps> {
 
     render(): JSX.Element {
         const {state, descriptors, position, theme} = this.props;
+        const {height} = this.state;
         const styles = themedStyles(theme);
 
         // <Image source={waveImage} resizeMode="contain" style={styles.waveImageStyle} />
         return (
-            <View style={styles.tabBarWrapper}>
+            <ReAnimated.View style={[styles.tabBarWrapper, {height}]}>
                 {/*<Text style={styles.appTitle}>SEA-EU Around</Text>*/}
                 <View style={styles.tabBar}>
                     {state.routes.map((route, index) => {
@@ -73,7 +113,7 @@ class TabBarComponent extends React.Component<LoginTabBarProps> {
                         );
                     })}
                 </View>
-            </View>
+            </ReAnimated.View>
         );
     }
 }
@@ -81,7 +121,6 @@ class TabBarComponent extends React.Component<LoginTabBarProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         tabBarWrapper: {
-            height: "30%",
             backgroundColor: theme.accent,
             alignItems: "center",
             justifyContent: "flex-end",
@@ -139,4 +178,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(TabBarComponent);
+export default withSafeAreaInsets(withTheme(TabBarComponent));

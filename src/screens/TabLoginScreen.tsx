@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, KeyboardAvoidingView, Text} from "react-native";
+import {View, Text} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {MyThunkDispatch} from "../state/types";
 import LoginForm from "../components/forms/LoginForm";
@@ -15,7 +15,10 @@ import {APP_VERSION, DEBUG_MODE} from "../constants/config";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {toggleTheme} from "../state/settings/actions";
 import {TabLoginSigninScreens} from "../navigation/types";
-
+import LocalImage from "../components/LocalImage";
+import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
+import ScreenWrapper from "./ScreenWrapper";
+ 
 type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginForm">;
 
 class LoginTabComponent extends React.Component<TabLoginScreenProps> {
@@ -24,9 +27,14 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
         const styles = loginTabsStyles(theme);
 
         return (
-            <KeyboardAvoidingView behavior="height" style={styles.container}>
-                <View style={styles.formWrapper}>
-                    <LoginForm navigation={navigation}></LoginForm>
+            <ScreenWrapper>
+                <ScrollFormWrapper>
+                    <View style={styles.formContainer}>
+                        <LoginForm navigation={navigation} />
+                    </View>
+
+                    <LocalImage resizeMode={"contain"} style={styles.erasmusLogo} imageKey={"logos.erasmusLeft"} />
+
                     {DEBUG_MODE && (
                         <View style={styles.debugContainer}>
                             <Text style={styles.debugTitle}>[DEBUG]</Text>
@@ -51,7 +59,7 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
                             </TouchableOpacity>
                         </View>
                     )}
-                </View>
+                </ScrollFormWrapper>
                 <View style={styles.versionInfoContainer}>
                     <Text style={styles.versionText}>
                         <Text style={{fontWeight: "bold"}}>Version:</Text>
@@ -67,7 +75,7 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
                         <MaterialCommunityIcons style={styles.toggleThemeIcon} name="theme-light-dark" color="black" />
                     </TouchableOpacity>
                 </View>
-            </KeyboardAvoidingView>
+            </ScreenWrapper>
         );
     }
 }
