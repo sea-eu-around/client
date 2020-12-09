@@ -9,9 +9,6 @@ import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvide
 import store from "./state/store";
 import ThemedStatusBar from "./components/ThemedStatusBar";
 
-// Example for disabling a warning :
-// YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
-
 function App() {
     const {isLoadingComplete, initialRoute} = useCachedResources();
     configureLocalization();
