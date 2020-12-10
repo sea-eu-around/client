@@ -144,7 +144,7 @@ const createProfileSuccess = (profile: UserProfile): CreateProfileSuccessAction 
 
 export const createProfile = (profile: CreateProfileDto): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("profiles", "POST", {}, profile, token, true);
+    const response = await requestBackend("profiles", "POST", {}, profile, token);
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data;
         const profile = convertDtoToProfile(payload as ResponseProfileDto);
