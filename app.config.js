@@ -53,6 +53,10 @@ export default {
             backgroundColor: "#ffffff",
         },
         assetBundlePatterns: ["**/*"],
+        packagerOpts: {
+            config: "metro.config.js",
+            sourceExts: ["expo.ts", "expo.tsx", "expo.js", "expo.jsx", "ts", "tsx", "js", "jsx", "json", "wasm", "svg"],
+        },
         ios: {
             supportsTablet: true,
             bundleIdentifier: "com.sea-eu.around",
