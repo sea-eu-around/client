@@ -73,6 +73,7 @@ export function convertPartialProfileToCreateDto(
 ): Partial<CreateProfileDto> {
     const common: Partial<CreateProfileDtoCommon> = {
         ...profile,
+        type,
         birthdate: profile.birthdate?.toJSON(),
         educationFields: profile.educationFields?.map((id: string) => ({id})),
         interests: profile.interests?.map((id: string) => ({id})),
