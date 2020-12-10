@@ -18,7 +18,7 @@ import {TabLoginSigninScreens} from "../navigation/types";
 import LocalImage from "../components/LocalImage";
 import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
 import ScreenWrapper from "./ScreenWrapper";
- 
+
 type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginForm">;
 
 class LoginTabComponent extends React.Component<TabLoginScreenProps> {
@@ -88,11 +88,13 @@ class ForgotPasswordTabComponent extends React.Component<TabForgotPasswordProps>
         const styles = loginTabsStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <View style={styles.formWrapper}>
-                    <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
-                </View>
-            </View>
+            <ScreenWrapper>
+                <ScrollFormWrapper>
+                    <View style={styles.formContainer}>
+                        <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
+                    </View>
+                </ScrollFormWrapper>
+            </ScreenWrapper>
         );
     }
 }
