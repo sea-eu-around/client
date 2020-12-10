@@ -154,6 +154,7 @@ export const loginTabsStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
         },
         erasmusLogo: {
+            width: "100%",
             height: 40,
             marginTop: 40,
         },
