@@ -5,6 +5,10 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {createOfferControls} from "./helpers";
 import {OfferCategory} from "../../api/dto";
+import {onboardingOffersStyle} from "../../styles/onboarding";
+import {withTheme} from "react-native-elements";
+import {ThemeProps} from "../../types";
+import FormattedOfferCategory from "../../components/FormattedOfferCategory";
 
 // State-linked props
 const reduxConnector = connect((state: AppState) => ({
@@ -13,7 +17,7 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type OnboardingOfferScreen3Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
+type OnboardingOfferScreen3Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps & ThemeProps;
 
 class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props> {
     shouldComponentUpdate(nextProps: Readonly<OnboardingOfferScreen3Props>) {
@@ -23,18 +27,20 @@ class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props
     }
 
     render(): JSX.Element {
-        const {onboardingState, offers, dispatch} = this.props;
+        const {onboardingState, offers, dispatch, theme} = this.props;
+        const styles = onboardingOffersStyle(theme);
+        const category = OfferCategory.Meet;
 
         return (
             <OnboardingSlide
-                title={i18n.t("onboarding.offersMeet.title")}
+                title={<FormattedOfferCategory category={category} textStyle={styles.categoryTitleText} />}
                 subtitle={i18n.t("onboarding.offersMeet.subtitle")}
                 {...this.props}
             >
-                {createOfferControls(offers, OfferCategory.Meet, onboardingState, dispatch)}
+                {createOfferControls(offers, category, onboardingState, dispatch)}
             </OnboardingSlide>
         );
     }
 }
 
-export default reduxConnector(OnboardingOfferScreen3);
+export default reduxConnector(withTheme(OnboardingOfferScreen3));

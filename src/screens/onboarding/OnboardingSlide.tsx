@@ -7,6 +7,7 @@ import {ThemeProps} from "../../types";
 import {finishOnboarding} from "./helpers";
 import i18n from "i18n-js";
 import store from "../../state/store";
+import ScreenWrapper from "../ScreenWrapper";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -16,7 +17,7 @@ export type OnboardingScreenProps = {
 };
 
 export type OnboardingSlideProps = {
-    title?: string;
+    title?: string | JSX.Element;
     subtitle?: string;
     handleSubmit?: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
     hideNavNext?: boolean;
@@ -37,14 +38,15 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
         };
 
         return (
-            <View style={styles.slideWrapper}>
+            <ScreenWrapper>
                 <ScrollView
                     style={styles.slideScrollView}
                     contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
                 >
                     <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={60}>
                         <View style={styles.header}>
-                            {title && <Text style={styles.title}>{title}</Text>}
+                            {title && typeof title === "string" && <Text style={styles.title}>{title}</Text>}
+                            {title && typeof title !== "string" && title}
                             {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
                         </View>
                         {this.props.children}
@@ -75,7 +77,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                         </TouchableOpacity>
                     )}
                 </View>
-            </View>
+            </ScreenWrapper>
         );
     }
 }

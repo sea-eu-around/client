@@ -5,6 +5,10 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {createOfferControls} from "./helpers";
 import {OfferCategory} from "../../api/dto";
+import FormattedOfferCategory from "../../components/FormattedOfferCategory";
+import {ThemeProps} from "../../types";
+import {withTheme} from "react-native-elements";
+import {onboardingOffersStyle} from "../../styles/onboarding";
 
 // State-linked props
 const reduxConnector = connect((state: AppState) => ({
@@ -13,7 +17,7 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type OnboardingOfferScreen1Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
+type OnboardingOfferScreen1Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps & ThemeProps;
 
 class OnboardingOfferScreen1 extends React.Component<OnboardingOfferScreen1Props> {
     shouldComponentUpdate(nextProps: Readonly<OnboardingOfferScreen1Props>) {
@@ -23,18 +27,20 @@ class OnboardingOfferScreen1 extends React.Component<OnboardingOfferScreen1Props
     }
 
     render(): JSX.Element {
-        const {onboardingState, offers, dispatch} = this.props;
+        const {onboardingState, offers, dispatch, theme} = this.props;
+        const styles = onboardingOffersStyle(theme);
+        const category = OfferCategory.Discover;
 
         return (
             <OnboardingSlide
-                title={i18n.t("onboarding.offersDiscover.title")}
+                title={<FormattedOfferCategory category={category} textStyle={styles.categoryTitleText} />}
                 subtitle={i18n.t("onboarding.offersDiscover.subtitle")}
                 {...this.props}
             >
-                {createOfferControls(offers, OfferCategory.Discover, onboardingState, dispatch)}
+                {createOfferControls(offers, category, onboardingState, dispatch)}
             </OnboardingSlide>
         );
     }
 }
 
-export default reduxConnector(OnboardingOfferScreen1);
+export default reduxConnector(withTheme(OnboardingOfferScreen1));

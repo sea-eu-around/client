@@ -5,11 +5,6 @@ import {styleTextThin} from "./general";
 
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        slideWrapper: {
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.background,
-        },
         header: {
             marginBottom: 20,
         },
@@ -92,5 +87,11 @@ export const tosSlideStyle = preTheme((theme: Theme) => {
             letterSpacing: 0.4,
             color: theme.textLight,
         },
+    });
+});
+
+export const onboardingOffersStyle = preTheme(() => {
+    return StyleSheet.create({
+        categoryTitleText: {},
     });
 });

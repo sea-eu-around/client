@@ -31,6 +31,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 // Load fonts
                 await Font.loadAsync({
                     ...FontAwesome.font,
+                    raleway: require("@assets/fonts/Raleway-VariableFont_wght.ttf"),
                     //"space-mono": require("../../assets/fonts/SpaceMono-Regular.ttf"),
                 });
 
