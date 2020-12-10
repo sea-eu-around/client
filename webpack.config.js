@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const createExpoWebpackConfigAsync = require("@expo/webpack-config");
 
-module.exports = (async function (env, argv) {
+module.exports = async function (env, argv) {
     const config = await createExpoWebpackConfigAsync(env, argv);
 
     // Remove existing rules about SVG and inject our own
@@ -34,4 +35,4 @@ module.exports = (async function (env, argv) {
     });
 
     return config;
-});
+};
