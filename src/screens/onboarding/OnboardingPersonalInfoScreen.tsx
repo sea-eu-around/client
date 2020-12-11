@@ -112,8 +112,8 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                             <EducationFieldPicker
                                 fields={values.educationFields}
                                 onChange={(fields: string[]) => setFieldValue("educationFields", fields)}
-                                showSelected={false}
-                            ></EducationFieldPicker>
+                                showChips={false}
+                            />
                         </OnboardingSlide>
                     );
                 }}

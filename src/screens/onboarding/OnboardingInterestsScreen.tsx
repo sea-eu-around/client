@@ -63,8 +63,9 @@ class OnboardingInterestsScreen extends React.Component<OnboardingInterestsScree
                                 onChange={(interestIds: string[]) => {
                                     setFieldValue("interestIds", interestIds);
                                 }}
-                            ></InterestsPicker>
-                            {touched.interestIds && <InputErrorText error={errors.interestIds}></InputErrorText>}
+                                showChips={true}
+                            />
+                            {touched.interestIds && <InputErrorText error={errors.interestIds} />}
                         </OnboardingSlide>
                     );
                 }}
