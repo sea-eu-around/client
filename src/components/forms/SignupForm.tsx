@@ -43,6 +43,8 @@ type SignupFormProps = FormProps<FormState> & ThemeProps;
 type SignupFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
 class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
+    pwdField1Ref = React.createRef<FormTextInput>();
+    pwdField2Ref = React.createRef<FormTextInput>();
     setFieldError?: (field: string, message: string) => void;
 
     constructor(props: SignupFormProps) {
@@ -96,7 +98,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                         this.setFieldError = setFieldError;
 
                         return (
-                            <React.Fragment>
+                            <>
                                 <FormTextInput
                                     field="email"
                                     placeholder={i18n.t("emailAddress")}
@@ -105,10 +107,14 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     value={values.email}
                                     touched={touched.email}
                                     isEmail={true}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => this.pwdField1Ref.current?.focus()}
                                     {...textInputProps}
                                 />
 
                                 <FormTextInput
+                                    ref={this.pwdField1Ref}
                                     field="password"
                                     placeholder={i18n.t("password")}
                                     accessibilityLabel={i18n.t("password")}
@@ -116,6 +122,9 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     value={values.password}
                                     touched={touched.password}
                                     isPassword={true}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => this.pwdField2Ref.current?.focus()}
                                     {...textInputProps}
                                 />
 
@@ -124,6 +133,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                 <TextInput style={{width: 1, height: 1}} />
 
                                 <FormTextInput
+                                    ref={this.pwdField2Ref}
                                     field="passwordRepeat"
                                     placeholder={i18n.t("passwordRepeat")}
                                     accessibilityLabel={i18n.t("passwordRepeat")}
@@ -131,6 +141,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     value={values.passwordRepeat}
                                     touched={touched.passwordRepeat}
                                     isPassword={true}
+                                    returnKeyType="done"
                                     {...textInputProps}
                                 />
 
@@ -145,7 +156,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                         submitting={submitting}
                                     />
                                 </View>
-                            </React.Fragment>
+                            </>
                         );
                     }}
                 </Formik>

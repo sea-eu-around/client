@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-    KeyboardAvoidingView,
-    ScrollView,
-    StyleProp,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewStyle,
-} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -27,6 +18,7 @@ import {TabLoginSigninScreens} from "../../navigation/types";
 import {generalError, localizeError} from "../../api/errors";
 import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 type FormState = {
     email: string;
@@ -54,6 +46,7 @@ type LoginFormProps = ConnectedProps<typeof reduxConnector> &
 type LoginFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
 class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
+    pwdInputRef = React.createRef<FormTextInput>();
     setFieldError?: (field: string, message: string) => void;
     setFieldValue: null | ((field: string, value: string, shouldValidate?: boolean | undefined) => void) = null;
 
@@ -113,7 +106,6 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
 
                     return (
                         <>
-                            <View style={{backgroundColor: "rgb(60, 140, 180)", height: 0}}></View>
                             <FormTextInput
                                 field="email"
                                 placeholder={i18n.t("emailAddress")}
@@ -122,10 +114,14 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                 value={values.email}
                                 touched={touched.email}
                                 isEmail={true}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => this.pwdInputRef.current?.focus()}
                                 {...textInputProps}
                             />
 
                             <FormTextInput
+                                ref={this.pwdInputRef}
                                 field="password"
                                 placeholder={i18n.t("password")}
                                 accessibilityLabel={i18n.t("password")}
@@ -133,6 +129,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                 value={values.password}
                                 touched={touched.password}
                                 isPassword={true}
+                                returnKeyType="done"
                                 {...textInputProps}
                             />
 
@@ -144,6 +141,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                     style={[fstyles.buttonMajor, styles.loginButton]}
                                     textStyle={fstyles.buttonMajorText}
                                     text={i18n.t("login")}
+                                    icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
                                     submitting={submitting}
                                 />
                             </View>
@@ -156,8 +154,6 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                             >
                                 <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
                             </TouchableOpacity>
-
-                            <View style={{backgroundColor: "rgb(60, 140, 180)", height: 0}}></View>
                         </>
                     );
                 }}
@@ -171,6 +167,11 @@ const themedStyles = preTheme((theme: Theme) => {
         loginButton: {
             width: "60%",
             backgroundColor: theme.accent,
+        },
+        loginButtonIcon: {
+            color: theme.textWhite,
+            fontSize: 20,
+            marginLeft: 5,
         },
         forgotPwdLink: {
             height: 48,
