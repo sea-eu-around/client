@@ -95,7 +95,7 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
                             Alert.alert(`You cannot select more than ${MAX_SPOKEN_LANGUAGES} languages`);
                         this.setLanguages(languageCodes.slice(0, MAX_SPOKEN_LANGUAGES));
                     }}
-                    showSelected={false}
+                    showChips={false}
                 />
                 {rows}
             </View>
