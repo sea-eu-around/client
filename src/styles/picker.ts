@@ -24,7 +24,6 @@ export const pickerStyles = preTheme((theme: Theme) => {
             height: 50,
             alignItems: "center",
             justifyContent: "center",
-            paddingVertical: 20,
             borderRadius: 4,
             backgroundColor: theme.accent,
         },
