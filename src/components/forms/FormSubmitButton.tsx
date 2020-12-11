@@ -11,21 +11,27 @@ type FormSubmitButtonProps = {
     textStyle?: StyleProp<TextStyle>;
     loadingIndicatorStyle?: StyleProp<ViewStyle>;
     text: string;
+    icon?: JSX.Element;
 } & ThemeProps;
 
 class FormSubmitButton extends React.Component<FormSubmitButtonProps> {
     render(): JSX.Element {
-        const {submitting, onPress, text, style, textStyle, loadingIndicatorStyle, theme} = this.props;
+        const {submitting, onPress, text, icon, style, textStyle, loadingIndicatorStyle, theme} = this.props;
 
         return (
             <TouchableOpacity
                 accessibilityRole="button"
                 accessibilityLabel={text}
                 {...{onPress: submitting ? undefined : onPress}}
-                style={style}
+                style={[{flexDirection: "row", alignItems: "center"}, style]}
             >
                 {submitting && <ActivityIndicator color={theme.accentTernary} style={loadingIndicatorStyle} />}
-                {!submitting && <Text style={textStyle}>{text}</Text>}
+                {!submitting && (
+                    <>
+                        <Text style={textStyle}>{text}</Text>
+                        {icon}
+                    </>
+                )}
             </TouchableOpacity>
         );
     }
