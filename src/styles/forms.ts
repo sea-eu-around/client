@@ -71,6 +71,9 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             borderBottomWidth: 2,
             borderBottomColor: theme.okay,
         },
+        label: {
+            marginBottom: 4,
+        },
     });
 
     return {
@@ -79,6 +82,7 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
         style: commonStyle.textInput,
         errorStyle: commonStyle.textInputError,
         validStyle: commonStyle.textInputValid,
+        labelStyle: commonStyle.label,
         focusedStyle: focusedStyle,
     };
 }
