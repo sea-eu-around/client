@@ -1,6 +1,5 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInputProps} from "react-native";
-import {TextInput} from "react-native-gesture-handler";
+import {TextStyle, StyleProp, View, TextInputProps, TextInput} from "react-native";
 import InputLabel from "./InputLabel";
 import InputErrorText from "./InputErrorText";
 
@@ -27,6 +26,8 @@ type ValidatedTextInputState = {
  * An improved TextInput that supports better styling (including specific focused style) and displays validation errors.
  */
 class ValidatedTextInput extends React.Component<ValidatedTextInputProps, ValidatedTextInputState> {
+    inputRef = React.createRef<TextInput>();
+
     static defaultProps = {
         untouched: false,
         style: [],
@@ -41,6 +42,10 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
     constructor(props: ValidatedTextInputProps) {
         super(props);
         this.state = {focused: false} as ValidatedTextInputState;
+    }
+
+    focus(): void {
+        this.inputRef.current?.focus();
     }
 
     render(): JSX.Element {
@@ -73,6 +78,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
             >
                 {label && <InputLabel style={labelStyle}>{label}</InputLabel>}
                 <TextInput
+                    ref={this.inputRef}
                     style={[
                         style,
                         this.state.focused ? focusedStyle : {},

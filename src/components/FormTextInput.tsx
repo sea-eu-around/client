@@ -34,6 +34,8 @@ const passwordProps: Partial<TextInputProps> = {
  * An improved TextInput for less verbose Formik usage.
  */
 export class FormTextInput extends React.Component<FormTextInputProps> {
+    inputRef = React.createRef<ValidatedTextInput>();
+
     static defaultProps = {
         showErrorText: true,
         /* eslint-disable @typescript-eslint/no-empty-function */
@@ -41,6 +43,10 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
         handleBlur: (): void => {},
         /* eslint-ensable @typescript-eslint/no-empty-function */
     };
+
+    focus(): void {
+        this.inputRef.current?.focus();
+    }
 
     render(): JSX.Element {
         const {
@@ -58,6 +64,7 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
 
         return (
             <ValidatedTextInput
+                ref={this.inputRef}
                 error={touched ? error : undefined}
                 untouched={!touched}
                 onChangeText={(value: string) => {
