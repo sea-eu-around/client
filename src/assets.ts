@@ -1,11 +1,14 @@
-import i18n from "i18n-js";
 import {SvgProps} from "react-native-svg";
 import SvgPlaceholder from "./components/SvgPlaceholder";
 import {SupportedLocale} from "./localization";
+import store from "./state/store";
+import {ThemeKey} from "./types";
 
-const loaded: {[key: string]: number} = {};
+let loaded: {[key: string]: number} = {};
+let locale: SupportedLocale | null = null;
+let theme: ThemeKey | null = null;
 
-async function assetDictCommon(key: string): Promise<unknown> {
+async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
     switch (key) {
         case "offers.categories.discover":
             return import("@assets/images/offers/discover.svg");
@@ -13,12 +16,18 @@ async function assetDictCommon(key: string): Promise<unknown> {
             return import("@assets/images/offers/meet.svg");
         case "offers.categories.collaborate":
             return import("@assets/images/offers/collaborate.svg");
+        case "logos.junior-atlantique":
+            return theme === "light"
+                ? import("@assets/images/logos/junior-atlantique-light.png")
+                : import("@assets/images/logos/junior-atlantique-dark.png");
+        case "logos.sea-eu-around.small":
+            return import("@assets/images/logos/sea-eu-around.small.png");
         default:
             return import("@assets/images/placeholder.png");
     }
 }
 
-async function assetDictEn(key: string): Promise<unknown> {
+async function assetDictEn(theme: ThemeKey, key: string): Promise<unknown> {
     switch (key) {
         case "logos.erasmusLeft":
             return import("@assets/images/logos/logosbeneficaireserasmusleft_en_0.png");
@@ -27,7 +36,7 @@ async function assetDictEn(key: string): Promise<unknown> {
     }
 }
 
-async function assetDictFr(key: string): Promise<unknown> {
+async function assetDictFr(theme: ThemeKey, key: string): Promise<unknown> {
     switch (key) {
         case "logos.erasmusLeft":
             return import("@assets/images/logos/logosbeneficaireserasmusleft_fr_0.png");
@@ -36,9 +45,12 @@ async function assetDictFr(key: string): Promise<unknown> {
     }
 }
 
-// TODO refresh on locale change
-
 export function getLocalImage(key: string, onLoad: () => void): number {
+    const settings = store.getState().settings.userSettings;
+    if (locale != settings.locale || theme != settings.theme) loaded = {};
+    locale = settings.locale;
+    theme = settings.theme;
+
     if (loaded[key]) return loaded[key];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,12 +59,12 @@ export function getLocalImage(key: string, onLoad: () => void): number {
         onLoad();
     };
 
-    const locale = i18n.currentLocale() as SupportedLocale;
     const localizedDict = locale === "en" ? assetDictEn : assetDictFr;
 
-    localizedDict(key).then((v) => {
+    localizedDict(theme, key).then((v) => {
         // Fallback to the common dict if needed
-        if (v === null) assetDictCommon(key).then((v) => finish(v));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (v === null) assetDictCommon(theme!, key).then((v) => finish(v));
         else finish(v);
     });
 
