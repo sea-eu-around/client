@@ -34,6 +34,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps> {
                 display="default"
                 mode="date"
                 textColor={theme.text}
+                {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
                 onChange={(e: Event, date: Date | undefined) => this.onChange(date)}
             />
         );
