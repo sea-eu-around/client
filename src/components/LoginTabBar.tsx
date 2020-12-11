@@ -12,16 +12,8 @@ import Animated from "react-native-reanimated";
 // Component props
 type LoginTabBarProps = ThemeProps & MaterialTopTabBarProps & {insets: EdgeInsets};
 
-// Component state
-type LoginTabBarState = {height: ReAnimated.Value<number>};
-
-class TabBarComponent extends React.Component<LoginTabBarProps, LoginTabBarState> {
-    constructor(props: LoginTabBarProps) {
-        super(props);
-        this.state = {
-            height: new ReAnimated.Value(this.getFullHeight()),
-        };
-    }
+class TabBarComponent extends React.Component<LoginTabBarProps> {
+    height = new ReAnimated.Value<number>(0);
 
     getCollapsedHeight(): number {
         return 50 + this.props.insets.top;
@@ -32,20 +24,18 @@ class TabBarComponent extends React.Component<LoginTabBarProps, LoginTabBarState
     }
 
     componentDidMount() {
+        this.height.setValue(this.getFullHeight());
         Keyboard.addListener("keyboardDidShow", () => {
-            // TODO clean-up
-            //this.setState({...this.state, keyboardShown: true});
-            ReAnimated.timing(this.state.height, {
+            ReAnimated.timing(this.height, {
                 toValue: this.getCollapsedHeight(),
-                duration: 100,
+                duration: 50,
                 easing: Easing.ease,
             }).start();
         });
         Keyboard.addListener("keyboardDidHide", () => {
-            //this.setState({...this.state, keyboardShown: false});
-            ReAnimated.timing(this.state.height, {
+            ReAnimated.timing(this.height, {
                 toValue: this.getFullHeight(),
-                duration: 100,
+                duration: 0,
                 easing: Easing.ease,
             }).start();
         });
@@ -76,12 +66,10 @@ class TabBarComponent extends React.Component<LoginTabBarProps, LoginTabBarState
 
     render(): JSX.Element {
         const {state, descriptors, position, theme} = this.props;
-        const {height} = this.state;
         const styles = themedStyles(theme);
 
-        // <Image source={waveImage} resizeMode="contain" style={styles.waveImageStyle} />
         return (
-            <ReAnimated.View style={[styles.tabBarWrapper, {height}]}>
+            <ReAnimated.View style={[styles.tabBarWrapper, {height: this.height}]}>
                 {/*<Text style={styles.appTitle}>SEA-EU Around</Text>*/}
                 <View style={styles.tabBar}>
                     {state.routes.map((route, index) => {
