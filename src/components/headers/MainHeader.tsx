@@ -6,7 +6,7 @@ import {StackHeaderProps} from "@react-navigation/stack";
 import {AppState} from "../../state/types";
 import {ThemeProps} from "../../types";
 import ProfileAvatar from "../ProfileAvatar";
-import {headerTitle, rootNavigate} from "../../navigation/utils";
+import {headerTitle, navigateBack, rootNavigate} from "../../navigation/utils";
 import {NavigatorRoute} from "../../navigation/types";
 import {headerStyles} from "../../styles/headers";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -25,6 +25,8 @@ type AdditionalProps = {
     wrapperStyle?: StyleProp<ViewStyle>;
     rightButtons?: ((props: HeaderButtonProps) => JSX.Element)[];
     backButton?: boolean;
+    noSettingsButton?: boolean;
+    noAvatar?: boolean;
     color?: string;
     noShadow?: boolean;
 };
@@ -34,8 +36,7 @@ export type MainHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
-        const nav = this.props.navigation;
-        if (nav.canGoBack()) nav.goBack();
+        navigateBack();
     }
 
     pressAvatar(): void {
@@ -43,7 +44,19 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
     }
 
     render(): JSX.Element {
-        const {theme, backButton, rightButtons, wrapperStyle, color, noShadow, user, insets, scene} = this.props;
+        const {
+            theme,
+            backButton,
+            rightButtons,
+            wrapperStyle,
+            color,
+            noShadow,
+            noSettingsButton,
+            noAvatar,
+            user,
+            insets,
+            scene,
+        } = this.props;
         const styles = headerStyles(theme);
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
@@ -61,16 +74,18 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                             />
                         </TouchableOpacity>
                     )}
-                    <ProfileAvatar
-                        profile={user?.profile}
-                        rounded
-                        size={40}
-                        containerStyle={styles.avatarContainer}
-                        titleStyle={styles.avatarTitle}
-                        activeOpacity={0.75}
-                        onPress={() => this.pressAvatar()}
-                    />
-                    <Text style={[styles.title, {marginLeft: 12, color}]} numberOfLines={1}>
+                    {!noAvatar && (
+                        <ProfileAvatar
+                            profile={user?.profile}
+                            rounded
+                            size={40}
+                            containerStyle={styles.avatarContainer}
+                            titleStyle={styles.avatarTitle}
+                            activeOpacity={0.75}
+                            onPress={() => this.pressAvatar()}
+                        />
+                    )}
+                    <Text style={[styles.title, {marginLeft: 12, color: color || theme.text}]} numberOfLines={1}>
                         {title}
                     </Text>
                     {rightButtons?.map((ButtonComponent, i) => (
@@ -80,6 +95,11 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                             iconStyle={styles.rightIcon}
                         />
                     ))}
+                    {!noSettingsButton && (
+                        <TouchableOpacity style={styles.rightButton} onPress={() => rootNavigate("SettingsScreen")}>
+                            <MaterialIcons name="settings" style={styles.rightIcon} color={color || theme.text} />
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         );
