@@ -12,21 +12,24 @@ import CustomModal from "../modals/CustomModal";
 // Component props
 type ValueCardProps<T> = {
     label: string;
+    icon?: JSX.Element;
     display?: JSX.Element;
     noModal?: boolean;
     overrideModal?: (hide: () => void) => JSX.Element;
     renderInput?: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
     validator?: Schema<unknown> | ArraySchema<unknown>;
-    initialValue: T;
+    initialValue?: T;
     apply?: (value: T) => void;
     locked?: boolean;
+    oneLine?: boolean;
+    onPress?: () => void;
 } & TouchableOpacityProps;
 
 // Component state
 type ValueCardState<T> = {
     modalOpen: boolean;
     error: string | null;
-    value: T;
+    value: T | undefined;
 };
 
 class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>> {
@@ -70,19 +73,19 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
     apply(): void {
         if (this.validate()) {
             this.setModal(false);
-            if (this.props.apply) this.props.apply(this.state.value);
+            if (this.props.apply && this.state.value) this.props.apply(this.state.value);
         }
     }
 
     renderModalContent = (): JSX.Element => {
-        const {label, renderInput} = this.props;
+        const {label, renderInput, oneLine} = this.props;
         const {value, error} = this.state;
 
         return (
             // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
             <ThemeConsumer>
                 {({theme}: ThemeProps) => {
-                    const styles = themedStyles(theme);
+                    const styles = themedStyles(oneLine)(theme);
                     const fstyles = formStyles(theme);
                     return (
                         <TouchableOpacity
@@ -92,7 +95,11 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                         >
                             <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
                                 <Text style={styles.modalLabel}>{label}</Text>
-                                {renderInput ? renderInput(value, error, (value: T) => this.onChange(value)) : <></>}
+                                {renderInput && value ? (
+                                    renderInput(value, error, (value: T) => this.onChange(value))
+                                ) : (
+                                    <></>
+                                )}
                                 <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
                                 <View style={[fstyles.actionRow, styles.modalActions]}>
                                     <TouchableOpacity
@@ -125,27 +132,44 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
     };
 
     render(): JSX.Element {
-        const {label, display, overrideModal, noModal, style, locked, ...otherProps} = this.props;
+        const {
+            label,
+            icon,
+            display,
+            overrideModal,
+            noModal,
+            style,
+            locked,
+            oneLine,
+            onPress,
+            ...otherProps
+        } = this.props;
         const {modalOpen} = this.state;
 
         return (
             // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
             <ThemeConsumer>
                 {({theme}: ThemeProps) => {
-                    const styles = themedStyles(theme);
+                    const styles = themedStyles(oneLine)(theme);
                     return (
                         <>
                             <TouchableOpacity
                                 style={[styles.cardWrapper, style]}
                                 activeOpacity={0.9}
-                                disabled={noModal}
+                                disabled={noModal && !onPress}
                                 onPress={() => {
-                                    if (!locked) this.setModal(true);
+                                    console.log(noModal);
+                                    if (!noModal) {
+                                        if (!locked) this.setModal(true);
+                                    } else if (onPress) onPress();
                                 }}
                                 {...otherProps}
                             >
                                 <View style={styles.cardContent}>
-                                    <Text style={styles.cardLabel}>{label}</Text>
+                                    <View style={styles.cardLabelContainer}>
+                                        {icon}
+                                        <Text style={styles.cardLabel}>{label}</Text>
+                                    </View>
                                     <View>
                                         {display !== undefined && display}
                                         {display === undefined && this.props.children}
@@ -188,81 +212,86 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        modalTouchable: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-        },
-        modalWrapper: {
-            width: "80%",
-            maxWidth: 500,
-            backgroundColor: theme.cardBackground,
-            paddingHorizontal: 10,
-            paddingVertical: 20,
-            borderRadius: 4,
-            borderColor: "#ccc",
-            borderWidth: 0.5,
-            borderStyle: "solid",
-        },
-        modalErrorText: {
-            fontSize: 12,
-            color: theme.error,
-        },
-        modalLabel: {
-            color: theme.textLight,
-            textTransform: "uppercase",
-            letterSpacing: 1.5,
-            fontSize: 13,
-            marginBottom: 12,
-        },
-        modalActions: {
-            height: 50,
-            marginTop: 20,
-        },
-        modalCancel: {
-            flex: 1,
-            backgroundColor: theme.actionNeutral,
-            marginRight: 6,
-            height: 50,
-        },
-        modalOk: {
-            flex: 1,
-            backgroundColor: theme.accent,
-            marginLeft: 6,
-            height: 50,
-        },
-        modalActionText: {
-            lineHeight: 50,
-        },
-        cardWrapper: {
-            width: "100%",
-            flexDirection: "row",
-            backgroundColor: theme.cardBackground,
-            paddingHorizontal: 10,
-            elevation: 1,
-            justifyContent: "space-evenly",
-            paddingVertical: 15,
-            minHeight: 80,
-        },
-        cardContent: {
-            flex: 1,
-            flexDirection: "column",
-            //justifyContent: "space-evenly",
-            justifyContent: "space-between",
-        },
-        cardLabel: {
-            color: theme.textLight,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            fontSize: 11,
-            marginBottom: 10,
-        },
-        rightIconContainer: {justifyContent: "center"},
-        rightIcon: {color: theme.textLight},
+const themedStyles = (oneLine?: boolean) =>
+    preTheme((theme: Theme) => {
+        return StyleSheet.create({
+            modalTouchable: {
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0,0,0,0.5)",
+            },
+            modalWrapper: {
+                width: "80%",
+                maxWidth: 500,
+                backgroundColor: theme.cardBackground,
+                paddingHorizontal: 10,
+                paddingVertical: 20,
+                borderRadius: 4,
+                borderColor: "#ccc",
+                borderWidth: 0.5,
+                borderStyle: "solid",
+            },
+            modalErrorText: {
+                fontSize: 12,
+                color: theme.error,
+            },
+            modalLabel: {
+                color: theme.textLight,
+                textTransform: "uppercase",
+                letterSpacing: 1.5,
+                fontSize: 13,
+                marginBottom: 12,
+            },
+            modalActions: {
+                height: 50,
+                marginTop: 20,
+            },
+            modalCancel: {
+                flex: 1,
+                backgroundColor: theme.actionNeutral,
+                marginRight: 6,
+                height: 50,
+            },
+            modalOk: {
+                flex: 1,
+                backgroundColor: theme.accent,
+                marginLeft: 6,
+                height: 50,
+            },
+            modalActionText: {
+                lineHeight: 50,
+            },
+            cardWrapper: {
+                width: "100%",
+                flexDirection: "row",
+                backgroundColor: theme.cardBackground,
+                paddingHorizontal: 10,
+                elevation: 1,
+                justifyContent: "space-evenly",
+                paddingVertical: 15,
+                minHeight: oneLine ? 0 : 80,
+            },
+            cardContent: {
+                flex: 1,
+                flexDirection: oneLine ? "row" : "column",
+                //justifyContent: "space-evenly",
+                justifyContent: "space-between",
+            },
+            cardLabelContainer: {
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: oneLine ? 0 : 10,
+            },
+            cardLabel: {
+                color: theme.textLight,
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                fontSize: 11,
+            },
+            rightIconContainer: {justifyContent: "center"},
+            rightIcon: {color: theme.textLight},
+        });
     });
-});
 
 export default ValueCard;
