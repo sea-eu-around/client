@@ -1,8 +1,8 @@
 import {convertDtoToChatMessage} from "../../api/converters";
 import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../../model/chat-room";
-import {User} from "../../model/user";
+import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
-import {FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
+import {CreateProfileSuccessAction, FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
 import {MessagingState, initialPaginatedState} from "../types";
 import {
     FetchEarlierMessagesBeginAction,
@@ -27,17 +27,14 @@ export const initialState: MessagingState = {
     localChatUser: null,
 };
 
-function toLocalChatUser(user: User): ChatRoomUser | null {
-    if (user.profile) {
-        return {
-            _id: user.id,
-            name: `${user.profile.firstName} ${user.profile.lastName}`,
-            avatar: user.profile.avatarUrl || "",
-            lastMessageSeenDate: null,
-            lastMessageSeenId: null,
-        };
-    }
-    return null;
+function toLocalChatUser(profile: UserProfile): ChatRoomUser | null {
+    return {
+        _id: profile.id,
+        name: `${profile.firstName} ${profile.lastName}`,
+        avatar: profile.avatarUrl || "",
+        lastMessageSeenDate: null,
+        lastMessageSeenId: null,
+    };
 }
 
 // TODO reset rooms when disconnecting from chat?
@@ -46,11 +43,15 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
     switch (action.type) {
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {user} = action as LogInSuccessAction;
-            return {...state, localChatUser: toLocalChatUser(user)};
+            return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
         }
         case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
             const {user} = action as FetchUserSuccessAction;
-            return {...state, localChatUser: toLocalChatUser(user)};
+            return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
+        }
+        case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
+            const {profile} = action as CreateProfileSuccessAction;
+            return {...state, localChatUser: toLocalChatUser(profile)};
         }
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN: {
             return {...state, matchRoomsPagination: {...state.matchRoomsPagination, fetching: true}};
