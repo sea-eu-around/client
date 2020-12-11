@@ -1,11 +1,10 @@
 import * as React from "react";
-import {View, Text} from "react-native";
+import {View, Text, TouchableOpacity} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {MyThunkDispatch} from "../state/types";
 import LoginForm from "../components/forms/LoginForm";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import {loginTabsStyles} from "../styles/forms";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {debugConnect} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import {ThemeProps} from "../types";

@@ -1,7 +1,6 @@
 import * as React from "react";
-import {Text, ViewStyle, StyleSheet} from "react-native";
+import {Text, ViewStyle, StyleSheet, TouchableOpacity} from "react-native";
 import {setOnboardingValues} from "../../state/auth/actions";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {Role} from "../../constants/profile-constants";
 import i18n from "i18n-js";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";

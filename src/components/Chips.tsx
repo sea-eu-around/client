@@ -1,8 +1,7 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import * as React from "react";
-import {StyleProp, Text, View, ViewStyle, StyleSheet, TextStyle} from "react-native";
+import {StyleProp, Text, View, ViewStyle, StyleSheet, TextStyle, TouchableOpacity} from "react-native";
 import {ThemeConsumer, withTheme} from "react-native-elements";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 

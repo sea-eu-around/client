@@ -1,6 +1,5 @@
 import * as React from "react";
-import {View, StyleSheet, Platform} from "react-native";
-import {TouchableOpacity} from "react-native-gesture-handler";
+import {View, StyleSheet, Platform, TouchableOpacity} from "react-native";
 import {FormattedDate} from "./FormattedDate";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";

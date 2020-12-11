@@ -1,9 +1,8 @@
 import React from "react";
 import {MaterialTopTabBarProps} from "@react-navigation/material-top-tabs";
-import {View, Text, StyleSheet, Dimensions, Keyboard} from "react-native";
+import {View, Text, StyleSheet, Dimensions, Keyboard, TouchableOpacity} from "react-native";
 import i18n from "i18n-js";
 import ReAnimated, {Easing} from "react-native-reanimated";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
@@ -34,6 +33,7 @@ class TabBarComponent extends React.Component<LoginTabBarProps, LoginTabBarState
 
     componentDidMount() {
         Keyboard.addListener("keyboardDidShow", () => {
+            // TODO clean-up
             //this.setState({...this.state, keyboardShown: true});
             ReAnimated.timing(this.state.height, {
                 toValue: this.getCollapsedHeight(),

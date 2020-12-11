@@ -1,7 +1,6 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
