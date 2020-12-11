@@ -70,6 +70,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                         <TouchableOpacity
                             style={styles.navButton}
                             onPress={() => {
+                                if (handleSubmit) handleSubmit();
                                 finishOnboarding(store.getState().auth.onboarding);
                             }}
                         >
