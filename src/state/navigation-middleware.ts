@@ -22,6 +22,10 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             rootNavigate(user.onboarded ? "MainScreen" : "OnboardingScreen");
             break;
         }
+        case AUTH_ACTION_TYPES.LOG_OUT: {
+            rootNavigate("LoginScreen");
+            break;
+        }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             rootNavigate("ValidationEmailSentScreen");
             break;

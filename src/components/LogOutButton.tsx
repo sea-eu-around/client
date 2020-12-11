@@ -12,7 +12,7 @@ const reduxConnector = connect();
 
 // Component props
 export type LogOutButtonProps = {
-    onLogOut: () => void;
+    onLogOut?: () => void;
     style: TextStyle;
 } & ConnectedProps<typeof reduxConnector> &
     ThemeProps;

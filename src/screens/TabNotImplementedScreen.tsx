@@ -3,7 +3,6 @@ import * as React from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import LogOutButton from "../components/LogOutButton";
-import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 
@@ -19,7 +18,7 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
                 <FontAwesome5 style={styles.constructionIcon} name="hard-hat"></FontAwesome5>
                 <Text style={styles.title}>Under construction</Text>
                 <View style={styles.separator} />
-                <LogOutButton style={styles.logoutButton} onLogOut={() => rootNavigate("LoginScreen")} />
+                <LogOutButton style={styles.logoutButton} />
             </View>
         );
     }

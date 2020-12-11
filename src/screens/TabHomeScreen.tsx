@@ -3,7 +3,6 @@ import * as React from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import LogOutButton from "../components/LogOutButton";
-import {rootNavigate} from "../navigation/utils";
 import {styleTextLight} from "../styles/general";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
@@ -26,7 +25,7 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
                 <Text style={styles.alphaText}>
                     Get in touch with us on Slack and we would be happy to discuss it with you!
                 </Text>
-                <LogOutButton style={styles.logoutButton} onLogOut={() => rootNavigate("LoginScreen")} />
+                <LogOutButton style={styles.logoutButton} />
             </View>
         );
     }
