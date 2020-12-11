@@ -140,8 +140,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                 });
             }
 
-            console.log("not sent", room.messages.filter((m) => !m.sent).length);
-
             chatComponent = (
                 <GiftedChat
                     ref={this.ref}
@@ -215,7 +213,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                         onEndReached: () => this.fetchEarlier(),
                         //onEndReachedThreshold: 1,
                     }}
-                    textInputProps={{autoFocus: false, style: styles.textInput}}
+                    textInputProps={{autoFocus: false, style: styles.textInput, multiline: true}}
                     minInputToolbarHeight={MIN_INPUT_HEIGHT + INPUT_VERTICAL_MARGIN * 2}
                 />
             );
@@ -333,6 +331,7 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
             alignItems: "center",
             alignSelf: "flex-end",
+            textAlignVertical: "center",
             color: theme.text,
         },
         send: {
