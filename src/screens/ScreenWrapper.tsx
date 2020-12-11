@@ -11,7 +11,11 @@ class ScreenWrapper extends React.Component<ScreenWrapperProps> {
         const {theme} = this.props;
         const styles = themedStyles(theme);
 
-        return <View style={styles.wrapper}>{this.props.children}</View>;
+        return (
+            <View style={styles.wrapper}>
+                <View style={styles.container}>{this.props.children}</View>
+            </View>
+        );
     }
 }
 
@@ -19,8 +23,13 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
             flex: 1,
+            alignItems: "center",
             backgroundColor: theme.background,
-            ...(Platform.OS === "web" ? {maxWidth: 500} : {}),
+        },
+        container: {
+            flex: 1,
+            width: "100%",
+            ...(Platform.OS === "web" ? {maxWidth: 1000} : {}),
         },
     });
 });
