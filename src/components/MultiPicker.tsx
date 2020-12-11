@@ -17,7 +17,7 @@ type PickerItem = {
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    locale: state.settings.locale,
+    locale: state.settings.userSettings.locale,
 }));
 
 // Component props

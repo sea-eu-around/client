@@ -6,7 +6,7 @@ import {ThemeProvider} from "react-native-elements";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    currentTheme: state.settings.theme,
+    currentTheme: state.settings.userSettings.theme,
 }));
 
 export type ConnectedThemeProviderProps = React.PropsWithChildren<ConnectedProps<typeof reduxConnector>>;

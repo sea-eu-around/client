@@ -5,8 +5,8 @@ import {SetLocaleAction, SetThemeAction, SettingsAction, SETTINGS_ACTION_TYPES} 
 import {SettingsState} from "../types";
 
 function getLocalizedLanguageItems(locale: SupportedLocale) {
-    const trans = (translations as {[key: string]: {[key: string]: unknown}})[locale];
-    const languageNames = trans.languageNames as {[key: string]: string};
+    const dict = translations as {[key: string]: {[key: string]: unknown}};
+    const languageNames = (dict[locale].languageNames || dict["en"].languageNames) as {[key: string]: string};
     return LANGUAGES_CODES.map((code: string) => ({
         label: languageNames[code] || `Missing translation (${code})`, //i18n.t(`languageNameM${code}`${code})s, // Cannot rely on i18n as it is not initialized yet
         value: code,
@@ -14,23 +14,30 @@ function getLocalizedLanguageItems(locale: SupportedLocale) {
 }
 
 export const initialState: SettingsState = {
-    theme: "light",
-    locale: getDefaultLocale(),
+    userSettings: {
+        theme: "light",
+        locale: getDefaultLocale(),
+    },
     localizedLanguageItems: getLocalizedLanguageItems(getDefaultLocale()),
 };
 
 export const settingsReducer = (state: SettingsState = initialState, action: SettingsAction): SettingsState => {
     switch (action.type) {
         case SETTINGS_ACTION_TYPES.SET_THEME: {
-            const {theme} = <SetThemeAction>action;
-            return {...state, theme};
+            const {theme} = action as SetThemeAction;
+            return {...state, userSettings: {...state.userSettings, theme}};
         }
         case SETTINGS_ACTION_TYPES.TOGGLE_THEME: {
-            return {...state, theme: state.theme == "light" ? "dark" : "light"};
+            const theme = state.userSettings.theme == "light" ? "dark" : "light";
+            return {...state, userSettings: {...state.userSettings, theme}};
         }
         case SETTINGS_ACTION_TYPES.SET_LOCALE: {
-            const {locale} = <SetLocaleAction>action;
-            return {...state, locale, localizedLanguageItems: getLocalizedLanguageItems(locale)};
+            const {locale} = action as SetLocaleAction;
+            return {
+                ...state,
+                localizedLanguageItems: getLocalizedLanguageItems(locale),
+                userSettings: {...state.userSettings, locale},
+            };
         }
         default:
             return state;

@@ -1,6 +1,5 @@
 import {ThunkAction, ThunkDispatch} from "redux-thunk";
 import {Action, AnyAction} from "redux";
-import {ThemeKey} from "../types";
 import {
     InterestDto,
     OfferCategory,
@@ -14,8 +13,8 @@ import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
 import {Degree, Gender, Role} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
-import {SupportedLocale} from "../localization";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
+import {UserSettings} from "../model/user-settings";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
@@ -53,8 +52,7 @@ export type AuthState = {
 };
 
 export type SettingsState = {
-    theme: ThemeKey;
-    locale: SupportedLocale;
+    userSettings: UserSettings;
     localizedLanguageItems: {value: string; label: string}[];
 };
 

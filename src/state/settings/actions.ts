@@ -31,5 +31,5 @@ export const toggleTheme = (): ToggleThemeAction => ({type: SETTINGS_ACTION_TYPE
 
 export const setLocale = (locale: SupportedLocale): SetLocaleAction => {
     i18n.locale = locale;
-    return {type: SETTINGS_ACTION_TYPES.SET_THEME, locale} as SetLocaleAction;
+    return {type: SETTINGS_ACTION_TYPES.SET_LOCALE, locale} as SetLocaleAction;
 };
