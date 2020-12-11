@@ -23,6 +23,7 @@ export enum AUTH_ACTION_TYPES {
     FORGOT_PASSWORD_FAILURE = "AUTH/FORGOT_PASSWORD_FAILURE",
     FORGOT_PASSWORD_SUCCESS = "AUTH/FORGOT_PASSWORD_SUCCESS",
     RESET_PASSWORD_SUCCESS = "AUTH/RESET_PASSWORD_SUCCESS",
+    DELETE_ACCOUNT_SUCCESS = "AUTH/DELETE_ACCOUNT_SUCCESS",
 }
 
 export type RegisterBeginAction = {
@@ -73,6 +74,8 @@ export type ForgotPasswordSuccessAction = {
 
 export type ResetPasswordSuccessAction = {type: string};
 
+export type DeleteAccountSuccessAction = {type: string};
+
 export type AuthAction =
     | RegisterBeginAction
     | RegisterSuccessAction
@@ -86,7 +89,8 @@ export type AuthAction =
     | SetOnboardingOfferValueAction
     | ForgotPasswordFailureAction
     | ForgotPasswordSuccessAction
-    | ResetPasswordSuccessAction;
+    | ResetPasswordSuccessAction
+    | DeleteAccountSuccessAction;
 
 // Register actions
 
@@ -102,7 +106,7 @@ export const requestRegister = (email: string, password: string): ValidatedThunk
     getState,
 ) => {
     dispatch(registerBegin(email, password));
-    const locale = getState().settings.locale;
+    const locale = getState().settings.userSettings.locale;
 
     const response = await requestBackend("auth/register", "POST", {}, {email, password, locale});
 
@@ -235,6 +239,22 @@ const resetPasswordSuccess = (): ResetPasswordSuccessAction => ({
     type: AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS,
 });
 
+export const deleteAccount = (password: string): ValidatedThunkAction => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend("users", "DELETE", {}, {password}, token, true);
+
+    if (response.status == HttpStatusCode.OK) {
+        dispatch(deleteAccountSuccess());
+        return {success: true};
+    } else {
+        return {success: false, errors: gatherValidationErrors(response)};
+    }
+};
+
+const deleteAccountSuccess = (): DeleteAccountSuccessAction => ({
+    type: AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS,
+});
+
 // Onboarding actions
 
 export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboardingValuesAction => ({
@@ -261,7 +281,7 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
         await dispatch(requestLogin(email, password));
         await dispatch(
             createProfile({
-                type: "student",
+                type: "staff",
                 birthdate: "2002-11-12T07:21:22.110Z",
                 firstName: "Kevin" + n,
                 lastName: "Test",
@@ -271,7 +291,7 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
                     {code: "en", level: "c1"},
                 ],
                 nationality: "FR",
-                interests: [],
+                interests: [{id: "baking"}, {id: "art"}, {id: "brunch"}],
                 profileOffers: [
                     {
                         offerId: "provide-a-couch",
@@ -299,7 +319,8 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
                     },
                 ],
                 educationFields: [],
-                degree: "m2",
+                //degree: "m2",
+                staffRoles: [{id: "research"}, {id: "teaching"}],
             }),
         );
     }

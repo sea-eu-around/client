@@ -51,6 +51,9 @@ const config: LinkingOptions = {
             ResetPasswordSuccessScreen: "password-reset",
             MyProfileScreen: "profile",
             ProfileScreen: "profile/:id",
+            SettingsScreen: "settings",
+            DeleteAccountScreen: "delete-account",
+            DeleteAccountSuccessScreen: "account-deleted",
             ChatScreen: "chat/:roomId",
             OnboardingScreen: {
                 screens: {

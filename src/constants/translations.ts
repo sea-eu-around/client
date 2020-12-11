@@ -2,12 +2,15 @@ import {MIN_PASSWORD_LENGTH} from "../validators";
 
 export default {
     en: {
+        locales: {
+            en: "English",
+            fr: "French",
+        },
         welcome: "Welcome",
         // Component-related
         picker: {
             callToAction: "Select (%d selected)",
         },
-
         login: "Log in",
         tabsignin: "Log in",
         tabsignup: "Sign up",
@@ -671,6 +674,14 @@ export default {
             button: "Send",
             success: ["Your password has been updated! You may now ", "log in"],
         },
+        // Delete account
+        deleteAccount: {
+            title: "Delete your account",
+            warning:
+                "Please be aware that this action is irreversible. Your account and all associated data will be deleted within six months.",
+            button: "Delete",
+            success: ["Your password has been updated! You may now ", "log in"],
+        },
         // Messaging tab
         messaging: {
             tabIndividual: "Matches",
@@ -723,6 +734,9 @@ export default {
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
             ProfileScreen: "Profile",
+            SettingsScreen: "Settings",
+            DeleteAccountScreen: "Delete Account",
+            DeleteAccountSuccessScreen: "Account Deleted",
             ValidationEmailSentScreen: "Validate your account",
             ValidateEmailScreen: "Validate your account",
             ResetPasswordScreen: "Reset your password",
@@ -732,8 +746,29 @@ export default {
             MatchSuccessScreen: "Match!",
             ForgotPasswordEmailSentScreen: "Forgot password",
         },
+        // Settings screen
+        settings: {
+            sections: {
+                general: "General",
+                danger: "Danger zone",
+                about: "About",
+            },
+            language: "Language",
+            darkTheme: "Dark theme",
+            deleteAccount: "Delete Account",
+            deleteMyAccount: "Delete my account",
+            version: "Version",
+            termsOfService: "Terms of Service",
+            reportABug: "Report a Bug",
+            logOut: "Log out",
+            developedBy: "Developed by",
+        },
     },
     fr: {
+        locales: {
+            en: "Anglais",
+            fr: "Français",
+        },
         welcome: "Bienvenue",
         login: "Connexion",
         signup: "Inscription",

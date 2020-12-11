@@ -23,12 +23,14 @@ import ChatScreen from "../screens/messaging/ChatScreen";
 import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import SimpleScreenHeader from "../components/headers/SimpleScreenHeader";
 import {CHAT_CONNECTED_ROUTES} from "../constants/config";
 import {MyThunkDispatch} from "../state/types";
 import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
 import store from "../state/store";
 import MainHeader from "../components/headers/MainHeader";
+import SettingsScreen from "../screens/SettingsScreen";
+import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
+import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -51,7 +53,7 @@ function onStateChange() {
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
-    const initialRouteName = consumedInitialRoute ? undefined : initialRoute;
+    const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
     consumedInitialRoute = true;
 
     return (
@@ -102,8 +104,10 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                         headerShown: true,
                         title: screenTitle("MyProfileScreen"),
                         header: (props: StackHeaderProps) => (
-                            <SimpleScreenHeader
+                            <MainHeader
                                 {...props}
+                                backButton={true}
+                                noAvatar={true}
                                 noShadow={true}
                                 wrapperStyle={{backgroundColor: theme.accent}}
                                 color={theme.textWhite}
@@ -127,6 +131,31 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                             />
                         ),
                     }}
+                />
+                <Stack.Screen
+                    name="SettingsScreen"
+                    component={SettingsScreen}
+                    options={{
+                        headerShown: true,
+                        title: screenTitle("SettingsScreen"),
+                        header: (props: StackHeaderProps) => (
+                            <MainHeader {...props} backButton={true} noSettingsButton={true} />
+                        ),
+                    }}
+                />
+                <Stack.Screen
+                    name="DeleteAccountScreen"
+                    component={DeleteAccountScreen}
+                    options={{
+                        headerShown: true,
+                        title: screenTitle("DeleteAccountScreen"),
+                        header: (props: StackHeaderProps) => <MainHeader {...props} backButton={true} />,
+                    }}
+                />
+                <Stack.Screen
+                    name="DeleteAccountSuccessScreen"
+                    component={DeleteAccountSuccessScreen}
+                    options={{title: screenTitle("DeleteAccountSuccessScreen")}}
                 />
                 <Stack.Screen name="OnboardingScreen" component={OnboardingNavigator} />
                 <Stack.Screen
