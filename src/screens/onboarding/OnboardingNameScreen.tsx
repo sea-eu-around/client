@@ -30,6 +30,8 @@ const VALIDATION_SCHEMA = Yup.object().shape({
 type OnboardingNameScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
+    lastNameInputRef = React.createRef<FormTextInput>();
+
     shouldComponentUpdate(nextProps: Readonly<OnboardingNameScreenProps>) {
         const prev = this.props.onboardingState;
         const next = nextProps.onboardingState;
@@ -76,12 +78,20 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
                                 {...textInputProps("firstname")}
                                 label={i18n.t("firstname")}
                                 autoCompleteType="name"
+                                enablesReturnKeyAutomatically={true}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => this.lastNameInputRef.current?.focus()}
                             />
 
                             <FormTextInput
                                 {...textInputProps("lastname")}
+                                ref={this.lastNameInputRef}
                                 label={i18n.t("lastname")}
                                 autoCompleteType="name"
+                                enablesReturnKeyAutomatically={true}
+                                returnKeyType="done"
+                                onSubmitEditing={() => this.props.next()}
                             />
                         </OnboardingSlide>
                     );
