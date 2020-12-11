@@ -1,19 +1,14 @@
 import {StatusBar} from "expo-status-bar";
 import * as React from "react";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../state/types";
-
-// Map props from store
-const reduxConnector = connect((state: AppState) => ({
-    theme: state.settings.theme,
-}));
+import {withTheme} from "react-native-elements";
+import {ThemeProps} from "../types";
 
 // Component props
-export type ThemedStatusBarProps = ConnectedProps<typeof reduxConnector>;
+export type ThemedStatusBarProps = ThemeProps;
 
 function ThemedStatusBar(props: ThemedStatusBarProps): JSX.Element {
     const {theme} = props;
-    return <StatusBar style={theme == "dark" ? "light" : "dark"} />;
+    return <StatusBar style={theme.id == "dark" ? "light" : "dark"} />;
 }
 
-export default reduxConnector(ThemedStatusBar);
+export default withTheme(ThemedStatusBar);
