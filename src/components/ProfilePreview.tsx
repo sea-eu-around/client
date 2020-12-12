@@ -8,6 +8,7 @@ import {
     ViewStyle,
     Animated,
     StyleSheet,
+    Platform,
 } from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
@@ -26,6 +27,7 @@ import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
 import {styleTextLight, styleTextThin} from "../styles/general";
 import ProfileAvatar from "./ProfileAvatar";
+import Chips from "./Chips";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
@@ -110,6 +112,8 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
 
+        const chipStyleProps = {chipStyle: styles.chip};
+
         return (
             <ReAnimated.View
                 style={[styles.wrapper, style, {height}]}
@@ -120,18 +124,15 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                 <Swipeable
                     containerStyle={styles.swipeableContainer}
                     childrenContainerStyle={styles.swipeable}
+                    useNativeAnimations={Platform.OS !== "web"}
+                    friction={1}
                     onSwipeableRightWillOpen={() => {
-                        // if (this.props.onSwipeLeft) this.props.onSwipeLeft();
-                        // TODO decide
-                        this.hide(() => {
-                            if (this.props.onSwipeLeft) this.props.onSwipeLeft();
-                        });
+                        this.hide();
+                        if (this.props.onSwipeLeft) this.props.onSwipeLeft();
                     }}
                     onSwipeableLeftWillOpen={() => {
-                        // if (this.props.onSwipeRight) this.props.onSwipeRight();
-                        this.hide(() => {
-                            if (this.props.onSwipeRight) this.props.onSwipeRight();
-                        });
+                        this.hide();
+                        if (this.props.onSwipeRight) this.props.onSwipeRight();
                     }}
                     leftThreshold={100}
                     rightThreshold={100}
@@ -157,12 +158,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                     >
                         <View style={styles.collapsedContent}>
                             <View style={styles.avatarContainer}>
-                                <ProfileAvatar
-                                    profile={profile}
-                                    size={120}
-                                    rounded
-                                    containerStyle={styles.avatar}
-                                ></ProfileAvatar>
+                                <ProfileAvatar profile={profile} size={120} rounded containerStyle={styles.avatar} />
                             </View>
                             <View style={styles.infoContainer}>
                                 <Text style={styles.name}>{fullName}</Text>
@@ -181,25 +177,22 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                         {(expanded || animating) && (
                             <View style={styles.expandedContent}>
                                 <Text style={styles.expandedSectionTitle}>{i18n.t("spokenLanguages")}</Text>
-                                <View style={styles.chipsContainer}>
-                                    {profile.languages.map((l: SpokenLanguageDto) => (
-                                        <ItemChip
-                                            key={`${profile.id}-${l.code}`}
-                                            text={`${i18n.t(`languageNames.${l.code}`)}${
-                                                l.level != "native" ? ` (${l.level.toUpperCase()})` : ""
-                                            }`}
-                                        />
-                                    ))}
-                                </View>
+                                <Chips
+                                    items={profile.languages}
+                                    label={(v: SpokenLanguageDto) =>
+                                        `${i18n.t(`languageNames.${v.code}`)}${
+                                            v.level != "native" ? ` (${v.level.toUpperCase()})` : ""
+                                        }`
+                                    }
+                                    {...chipStyleProps}
+                                />
                                 <Text style={styles.expandedSectionTitle}>{i18n.t("offers")}</Text>
-                                <View style={styles.chipsContainer}>
-                                    {profile.profileOffers.map((offer: OfferValueDto) => (
-                                        <ItemChip
-                                            key={`${profile.id}-${offer.offerId}`}
-                                            text={i18n.t(`allOffers.${offer.offerId}.name`)}
-                                        />
-                                    ))}
-                                </View>
+                                <Chips
+                                    items={profile.profileOffers}
+                                    label={(o: OfferValueDto) => i18n.t(`allOffers.${o.offerId}.name`)}
+                                    {...chipStyleProps}
+                                />
+
                                 {/*<Text style={styles.expandedSectionTitle}>{i18n.t("fieldsOfEducation")}</Text>
                                 <View style={styles.chipsContainer}>
                                     {profile.educationFields.map((fieldId: string) => (
@@ -243,39 +236,6 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         );
     }
 }
-
-// TODO use chips component and add staff role
-
-const chipStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        chip: {
-            backgroundColor: theme.accentSlight,
-            borderRadius: 6,
-            //paddingHorizontal: 7,
-            paddingHorizontal: 4,
-            paddingVertical: 2,
-            marginHorizontal: 2,
-            marginVertical: 2,
-            flexGrow: 1,
-            alignItems: "center",
-        },
-        chipText: {
-            fontSize: 14,
-            color: theme.textBlack,
-        },
-    });
-});
-
-const ItemChip = withTheme(
-    ({text, theme}: {text: string} & ThemeProps): JSX.Element => {
-        const styles = chipStyles(theme);
-        return (
-            <View style={styles.chip}>
-                <Text style={styles.chipText}>{text}</Text>
-            </View>
-        );
-    },
-);
 
 export const Separator = withTheme(({theme}: ThemeProps) => {
     return <View style={themedStyles(theme).separator}></View>;
@@ -389,12 +349,14 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
         },
 
-        chipsContainer: {
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            overflow: "hidden",
+        chip: {
+            //borderRadius: 6,
+            paddingHorizontal: 5,
+            paddingVertical: 2,
+            flexGrow: 1,
+            justifyContent: "center",
         },
+
         expandedSectionTitle: {
             ...styleTextLight,
             fontSize: 14,
