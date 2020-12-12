@@ -29,12 +29,11 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
     render(): JSX.Element {
         //const {theme} = this.props;
         const {height} = this.state;
-        //const styles = loginTabsStyles(theme);
 
         return (
             <ScrollView
                 keyboardShouldPersistTaps="always"
-                style={{flex: 1}}
+                style={{flex: 1, width: "100%"}}
                 contentContainerStyle={{
                     justifyContent: "center",
                     alignItems: "center",
@@ -46,35 +45,19 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
             >
                 <KeyboardAvoidingView
                     behavior="padding"
-                    style={{flex: 1, justifyContent: "center", alignItems: "center", width: "100%"}}
+                    style={{
+                        flex: 1,
+                        width: "75%",
+                        maxWidth: 300,
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
                 >
                     {this.props.children}
                 </KeyboardAvoidingView>
             </ScrollView>
         );
-        /*return (
-            <ScrollView
-                style={{backgroundColor: "red"}}
-                contentContainerStyle={{
-                    paddingTop: 50,
-                    //justifyContent: "center",
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-            >
-                    {this.props.children}
-            </ScrollView>
-        );*/
     }
 }
-
-/*
-<KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "height" : "position"}
-    style={{flex: 1, backgroundColor: "green", paddingBottom: 0, marginBottom: 0}}
-    contentContainerStyle={{flex: 1, height: "100%", backgroundColor: "red", paddingBottom: 0, marginBottom: 0}}
-    //keyboardVerticalOffset={100}
->
-*/
 
 export default withTheme(ScrollFormWrapper);
