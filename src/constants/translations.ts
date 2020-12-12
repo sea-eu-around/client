@@ -683,6 +683,7 @@ export default {
             success1: "Your request has been received and will be processed shortly.",
             success2: "We are sorry to see you go.",
             leave: "Leave",
+            inputLabel: "Enter password to confirm",
         },
         // Messaging tab
         messaging: {
