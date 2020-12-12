@@ -1,12 +1,12 @@
 // ISO 639-1 Language codes
 export const LANGUAGES_CODES: string[] = [
-    "de",
-    "en",
     "hr",
-    "es",
+    "en",
     "fr",
+    "de",
     "mt",
     "pl",
+    "es",
     "aa",
     "ab",
     "ae",
