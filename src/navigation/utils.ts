@@ -15,9 +15,12 @@ export function rootNavigate(route: NavigatorRoute, params?: RouteParams): void 
     rootNavigationRef.current?.navigate(route as string, params);
 }
 
-export function navigateBack(): void {
+export function navigateBack(fallback?: NavigatorRoute): void {
     const nav = rootNavigationRef.current;
-    if (nav && nav.canGoBack()) nav.goBack();
+    if (nav) {
+        if (nav.canGoBack()) nav.goBack();
+        else if (fallback) nav.navigate(fallback);
+    }
 }
 
 export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute): void {
