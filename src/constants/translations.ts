@@ -672,7 +672,7 @@ export default {
             instructions: "To choose a new password, click the link in the email we just sent you.",
             title: "Please choose a new password",
             button: "Send",
-            success: ["Your password has been updated! You may now ", "log in"],
+            success: "Your password has been updated.",
         },
         // Delete account
         deleteAccount: {
@@ -680,7 +680,9 @@ export default {
             warning:
                 "Please be aware that this action is irreversible. Your account and all associated data will be deleted within six months.",
             button: "Delete",
-            success: ["Your password has been updated! You may now ", "log in"],
+            success1: "Your request has been received and will be processed shortly.",
+            success2: "We are sorry to see you go.",
+            leave: "Leave",
         },
         // Messaging tab
         messaging: {
