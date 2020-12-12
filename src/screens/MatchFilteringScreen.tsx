@@ -15,6 +15,7 @@ import {Degree, Role} from "../constants/profile-constants";
 import {MaterialIcons} from "@expo/vector-icons";
 import RoleToggleMulti from "../components/RoleToggleMulti";
 import {defaultMatchingFilters} from "../state/matching/reducer";
+import FormattedOfferCategory from "../components/FormattedOfferCategory";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -81,10 +82,11 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
 
         const categories = Object.values(OfferCategory);
 
+        // <Text style={styles.sectionTitle}>{i18n.t(`offerCategories.${category}`)}</Text>
         const offerSections = categories.map((category: OfferCategory) => (
             <View key={category} style={styles.sectionContainer}>
-                <Separator></Separator>
-                <Text style={styles.sectionTitle}>{i18n.t(`offerCategories.${category}`)}</Text>
+                <Separator />
+                <FormattedOfferCategory category={category} iconSize={60} />
                 {offers
                     .filter((o: OfferDto) => o.category == category)
                     .map((o: OfferDto) => (
@@ -93,7 +95,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             <Switch
                                 value={filters.offers[o.id] || false}
                                 onValueChange={(value: boolean) => this.updateLocalOfferFilters(o.id, value)}
-                            ></Switch>
+                            />
                         </View>
                     ))}
             </View>
@@ -111,9 +113,9 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                         <View style={styles.entryControls}>
                             <MultiUniversityPicker
                                 universities={filters.universities}
-                                showSelected={false}
+                                showChips={false}
                                 onChange={(universities: string[]) => this.updateLocalFilters({universities})}
-                            ></MultiUniversityPicker>
+                            />
                             <ClearFilterButton onPress={() => this.updateLocalFilters({universities: []})} />
                         </View>
                     </View>
@@ -123,7 +125,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             <LanguagePicker
                                 multiple={true}
                                 languages={filters.languages}
-                                showSelected={false}
+                                showChips={false}
                                 onChange={(languages: string[]) => this.updateLocalFilters({languages})}
                             />
                             <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
@@ -135,7 +137,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             roles={filters.types}
                             onSelect={(types: Role[]) => this.updateLocalFilters({types})}
                             noButtonVariant={true}
-                        ></RoleToggleMulti>
+                        />
                     </View>
                     {filters.types.indexOf("student") != -1 && (
                         <View style={styles.twoLineEntryContainer}>
@@ -145,7 +147,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                                 onSelect={(degrees: Degree[]) => this.updateLocalFilters({degrees})}
                                 style={{width: "100%"}}
                                 noButtonVariant={true}
-                            ></DegreeToggleMulti>
+                            />
                         </View>
                     )}
                 </View>
@@ -198,7 +200,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             backgroundColor: "rgba(0, 0, 0, 0.1)",
             alignSelf: "center",
-            marginVertical: 20,
+            marginVertical: 15,
         },
         resetButton: {
             width: "100%",
