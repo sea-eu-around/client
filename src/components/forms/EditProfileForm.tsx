@@ -198,18 +198,21 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         category={OfferCategory.Discover}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
                     />
                     <Spacer />
                     <OfferCategoryRow
                         category={OfferCategory.Collaborate}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
                     />
                     <Spacer />
                     <OfferCategoryRow
                         category={OfferCategory.Meet}
                         profileOffers={profile.profileOffers}
                         onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
                     />
                 </>
             );
@@ -266,10 +269,11 @@ type OfferCategoryRowProps = {
     category: OfferCategory;
     profileOffers: OfferValueDto[];
     onApply: (offerValues: OfferValueDto[]) => void;
+    theme: Theme;
 } & ConnectedProps<typeof reduxConnector>;
 
 const OfferCategoryRow = reduxConnector(
-    ({category, profileOffers, onApply, offers, offerIdToCategory}: OfferCategoryRowProps): JSX.Element => {
+    ({category, profileOffers, onApply, offers, offerIdToCategory, theme}: OfferCategoryRowProps): JSX.Element => {
         const items = profileOffers.filter((o) => offerIdToCategory.get(o.offerId) == category);
         return (
             <ValueCard
@@ -282,7 +286,7 @@ const OfferCategoryRow = reduxConnector(
                             label={(item: OfferValueDto) => i18n.t(`allOffers.${item.offerId}.name`)}
                         />
                     ) : (
-                        <Text>{i18n.t("profile.noOffersSelected")}</Text>
+                        <Text style={{color: theme.textLight}}>{i18n.t("profile.noOffersSelected")}</Text>
                     )
                 }
                 renderInput={(
