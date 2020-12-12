@@ -97,7 +97,7 @@ class DeleteAccountForm extends React.Component<DeleteAccountFormProps, DeleteAc
                                     error={errors.password}
                                     value={values.password}
                                     touched={touched.password}
-                                    label="Enter password to confirm"
+                                    label={i18n.t("deleteAccount.inputLabel")}
                                     isPassword={true}
                                     {...textInputProps}
                                 />
