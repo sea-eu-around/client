@@ -23,6 +23,7 @@ import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import {TabMatchingRoot} from "../navigation/types";
 import {PROFILES_FETCH_LIMIT} from "../constants/config";
+import ScreenWrapper from "./ScreenWrapper";
 
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
@@ -95,7 +96,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
             ));
 
         return (
-            <View style={styles.container}>
+            <ScreenWrapper>
                 <ScrollView
                     ref={this.scrollViewRef}
                     style={styles.scroller}
@@ -126,22 +127,13 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps, TabMatch
                         )}
                     </View>
                 </ScrollView>
-            </View>
+            </ScreenWrapper>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.background,
-        },
         topBar: {
             flexBasis: 90,
             paddingTop: 40,

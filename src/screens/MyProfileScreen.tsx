@@ -1,14 +1,13 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {RootNavigatorScreens} from "../navigation/types";
 import EditProfileForm from "../components/forms/EditProfileForm";
-import {preTheme} from "../styles/utils";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {fetchUser, setProfileFields} from "../state/profile/actions";
+import ScreenWrapper from "./ScreenWrapper";
 
 const reduxConnector = connect((state: AppState) => ({
     user: state.profile.user,
@@ -29,29 +28,17 @@ class MyProfileScreen extends React.Component<MyProfileScreenProps> {
     }
 
     render(): JSX.Element {
-        const {theme, user, dispatch} = this.props;
-        const styles = themedStyles(theme);
+        const {user, dispatch} = this.props;
 
         return (
-            <View style={styles.container}>
+            <ScreenWrapper>
                 <EditProfileForm
                     user={user}
                     onChange={(fields) => (dispatch as MyThunkDispatch)(setProfileFields(fields))}
                 />
-            </View>
+            </ScreenWrapper>
         );
     }
 }
-
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "flex-start",
-            backgroundColor: theme.background,
-        },
-    });
-});
 
 export default reduxConnector(withTheme(MyProfileScreen));

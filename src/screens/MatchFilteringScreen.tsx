@@ -16,6 +16,7 @@ import {MaterialIcons} from "@expo/vector-icons";
 import RoleToggleMulti from "../components/RoleToggleMulti";
 import {defaultMatchingFilters} from "../state/matching/reducer";
 import FormattedOfferCategory from "../components/FormattedOfferCategory";
+import ScreenWrapper from "./ScreenWrapper";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -102,67 +103,66 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
         ));
 
         return (
-            <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-                <TouchableOpacity style={styles.resetButton} onPress={() => this.resetLocalFilters()}>
-                    <Text style={styles.resetButtonText}>{i18n.t("matching.filtering.buttonReset")}</Text>
-                </TouchableOpacity>
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>{i18n.t("matching.filtering.sectionGeneral")}</Text>
-                    <View style={styles.entryContainer}>
-                        <Text style={styles.entryLabel}>{i18n.t("university")}</Text>
-                        <View style={styles.entryControls}>
-                            <MultiUniversityPicker
-                                universities={filters.universities}
-                                showChips={false}
-                                onChange={(universities: string[]) => this.updateLocalFilters({universities})}
-                            />
-                            <ClearFilterButton onPress={() => this.updateLocalFilters({universities: []})} />
+            <ScreenWrapper>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <TouchableOpacity style={styles.resetButton} onPress={() => this.resetLocalFilters()}>
+                        <Text style={styles.resetButtonText}>{i18n.t("matching.filtering.buttonReset")}</Text>
+                        <MaterialIcons name="refresh" style={styles.resetButtonIcon} />
+                    </TouchableOpacity>
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>{i18n.t("matching.filtering.sectionGeneral")}</Text>
+                        <View style={styles.entryContainer}>
+                            <Text style={styles.entryLabel}>{i18n.t("university")}</Text>
+                            <View style={styles.entryControls}>
+                                <MultiUniversityPicker
+                                    universities={filters.universities}
+                                    showChips={false}
+                                    onChange={(universities: string[]) => this.updateLocalFilters({universities})}
+                                />
+                                <ClearFilterButton onPress={() => this.updateLocalFilters({universities: []})} />
+                            </View>
                         </View>
-                    </View>
-                    <View style={styles.entryContainer}>
-                        <Text style={styles.entryLabel}>{i18n.t("spokenLanguages")}</Text>
-                        <View style={styles.entryControls}>
-                            <LanguagePicker
-                                multiple={true}
-                                languages={filters.languages}
-                                showChips={false}
-                                onChange={(languages: string[]) => this.updateLocalFilters({languages})}
-                            />
-                            <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
+                        <View style={styles.entryContainer}>
+                            <Text style={styles.entryLabel}>{i18n.t("spokenLanguages")}</Text>
+                            <View style={styles.entryControls}>
+                                <LanguagePicker
+                                    multiple={true}
+                                    languages={filters.languages}
+                                    showChips={false}
+                                    onChange={(languages: string[]) => this.updateLocalFilters({languages})}
+                                />
+                                <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
+                            </View>
                         </View>
-                    </View>
-                    <View style={styles.twoLineEntryContainer}>
-                        <Text style={styles.entryLabel}>{i18n.t("profileTypes")}</Text>
-                        <RoleToggleMulti
-                            roles={filters.types}
-                            onSelect={(types: Role[]) => this.updateLocalFilters({types})}
-                            noButtonVariant={true}
-                        />
-                    </View>
-                    {filters.types.indexOf("student") != -1 && (
                         <View style={styles.twoLineEntryContainer}>
-                            <Text style={styles.entryLabel}>{i18n.t("levelOfStudy")}</Text>
-                            <DegreeToggleMulti
-                                degrees={filters.degrees}
-                                onSelect={(degrees: Degree[]) => this.updateLocalFilters({degrees})}
-                                style={{width: "100%"}}
+                            <Text style={styles.entryLabel}>{i18n.t("profileTypes")}</Text>
+                            <RoleToggleMulti
+                                roles={filters.types}
+                                onSelect={(types: Role[]) => this.updateLocalFilters({types})}
                                 noButtonVariant={true}
                             />
                         </View>
-                    )}
-                </View>
-                {offerSections}
-            </ScrollView>
+                        {filters.types.indexOf("student") != -1 && (
+                            <View style={styles.twoLineEntryContainer}>
+                                <Text style={styles.entryLabel}>{i18n.t("levelOfStudy")}</Text>
+                                <DegreeToggleMulti
+                                    degrees={filters.degrees}
+                                    onSelect={(degrees: Degree[]) => this.updateLocalFilters({degrees})}
+                                    style={{width: "100%"}}
+                                    noButtonVariant={true}
+                                />
+                            </View>
+                        )}
+                    </View>
+                    {offerSections}
+                </ScrollView>
+            </ScreenWrapper>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        scroll: {
-            flex: 1,
-            backgroundColor: theme.background,
-        },
         scrollContainer: {
             flexDirection: "column",
             padding: 40,
@@ -208,6 +208,8 @@ const themedStyles = preTheme((theme: Theme) => {
             paddingVertical: 7,
             marginBottom: 20,
             backgroundColor: theme.accentSlight,
+            flexDirection: "row",
+            justifyContent: "center",
             alignItems: "center",
             alignSelf: "center",
             borderRadius: 4,
@@ -217,6 +219,12 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: 1,
+            color: theme.textBlack,
+        },
+        resetButtonIcon: {
+            fontSize: 16,
+            color: theme.textBlack,
+            marginLeft: 4,
         },
     });
 });

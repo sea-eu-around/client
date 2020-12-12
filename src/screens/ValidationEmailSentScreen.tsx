@@ -8,6 +8,7 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {FontAwesome} from "@expo/vector-icons";
 import {DEBUG_MODE} from "../constants/config";
+import ScreenWrapper from "./ScreenWrapper";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -22,8 +23,8 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <View style={styles.wrapper}>
+            <ScreenWrapper>
+                <View style={styles.container}>
                     <FontAwesome name="envelope-o" style={styles.mailIcon}></FontAwesome>
                     <Text style={styles.description}>
                         To validate your account, click the link in the email we just sent to
@@ -38,7 +39,7 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
                         </TouchableOpacity>
                     )}
                 </View>
-            </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -46,14 +47,9 @@ class ValidationEmailSentScreen extends React.Component<ValidationEmailSentScree
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
+            flex: 1,
+            width: "75%",
             justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.background,
-        },
-        wrapper: {
-            width: "70%",
             alignItems: "center",
         },
         description: {

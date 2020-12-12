@@ -1,15 +1,14 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {MyThunkDispatch} from "../state/types";
 import {RootNavigatorScreens} from "../navigation/types";
-import {preTheme} from "../styles/utils";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import ProfileView from "../components/ProfileView";
 import {UserProfile} from "../model/user-profile";
 import {fetchProfile} from "../state/profile/actions";
+import ScreenWrapper from "./ScreenWrapper";
 
 const reduxConnector = connect(() => ({}));
 
@@ -39,27 +38,14 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
         const {profile} = this.state;
-        const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
+            <ScreenWrapper>
                 <ProfileView profile={profile} />
-            </View>
+            </ScreenWrapper>
         );
     }
 }
-
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "flex-start",
-            backgroundColor: theme.background,
-        },
-    });
-});
 
 export default reduxConnector(withTheme(ProfileScreen));

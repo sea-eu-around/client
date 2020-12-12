@@ -9,6 +9,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 import ScreenWrapper from "./ScreenWrapper";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {formStyles} from "../styles/forms";
 
 type ResetPasswordSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -16,13 +17,17 @@ class ResetPasswordSuccessScreen extends React.Component<ResetPasswordSuccessScr
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
                     <Text style={styles.successText}>{i18n.t("resetPassword.success")}</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => rootNavigate("LoginScreen")}>
-                        <Text style={styles.buttonText}>{i18n.t("login")}</Text>
+                    <TouchableOpacity
+                        style={[fstyles.buttonMajor, styles.button]}
+                        onPress={() => rootNavigate("LoginScreen")}
+                    >
+                        <Text style={fstyles.buttonMajorText}>{i18n.t("login")}</Text>
                         <MaterialCommunityIcons name="login" style={styles.buttonIcon} />
                     </TouchableOpacity>
                 </View>
@@ -37,7 +42,6 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            alignSelf: "center",
             width: "75%",
         },
         successText: {
@@ -47,24 +51,11 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         button: {
-            height: 50,
             paddingHorizontal: 25,
-            borderRadius: 8,
-            marginTop: 40,
+            marginTop: 20,
             backgroundColor: theme.accent,
-            justifyContent: "center",
             alignItems: "center",
             flexDirection: "row",
-
-            shadowColor: "#000",
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.2,
-            shadowRadius: 1.41,
-            elevation: 2,
-        },
-        buttonText: {
-            fontSize: 18,
-            color: theme.textWhite,
         },
         buttonIcon: {
             fontSize: 20,

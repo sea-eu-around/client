@@ -1,11 +1,11 @@
 import * as React from "react";
-import {View, KeyboardAvoidingView} from "react-native";
-import {loginTabsStyles} from "../styles/forms";
 import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import ResetPasswordForm from "../components/forms/ResetPasswordForm";
 import {RootNavigatorScreens} from "../navigation/types";
 import {StackScreenProps} from "@react-navigation/stack";
+import ScreenWrapper from "./ScreenWrapper";
+import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
 
 type ResetPasswordScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 type ResetPasswordScreenState = {token?: string};
@@ -23,16 +23,14 @@ class ResetPasswordScreen extends React.Component<ResetPasswordScreenProps, Rese
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
         const {token} = this.state;
-        const styles = loginTabsStyles(theme);
 
         return (
-            <KeyboardAvoidingView behavior="height" style={styles.container}>
-                <View style={styles.formWrapper}>
+            <ScreenWrapper>
+                <ScrollFormWrapper>
                     <ResetPasswordForm token={token} />
-                </View>
-            </KeyboardAvoidingView>
+                </ScrollFormWrapper>
+            </ScreenWrapper>
         );
     }
 }

@@ -5,6 +5,7 @@ import {withTheme} from "react-native-elements";
 import LogOutButton from "../components/LogOutButton";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
+import ScreenWrapper from "./ScreenWrapper";
 
 export type TabNotImplementedScreenProps = ThemeProps;
 
@@ -14,12 +15,14 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <FontAwesome5 style={styles.constructionIcon} name="hard-hat"></FontAwesome5>
-                <Text style={styles.title}>Under construction</Text>
-                <View style={styles.separator} />
-                <LogOutButton style={styles.logoutButton} />
-            </View>
+            <ScreenWrapper>
+                <View style={styles.container}>
+                    <FontAwesome5 style={styles.constructionIcon} name="hard-hat"></FontAwesome5>
+                    <Text style={styles.title}>Under construction</Text>
+                    <View style={styles.separator} />
+                    <LogOutButton style={styles.logoutButton} />
+                </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -31,7 +34,6 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: theme.background,
         },
         title: {
             width: "100%",

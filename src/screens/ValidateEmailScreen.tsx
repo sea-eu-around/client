@@ -12,6 +12,7 @@ import {DEBUG_MODE, Environment, ENVIRONMENT} from "../constants/config";
 import store from "../state/store";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
+import ScreenWrapper from "./ScreenWrapper";
 
 const reduxConnector = connect((state: AppState) => ({
     validated: state.auth.validated,
@@ -42,8 +43,8 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <View style={styles.wrapper}>
+            <ScreenWrapper>
+                <View style={styles.container}>
                     {!validated && (
                         <>
                             <Text style={styles.title}>{i18n.t("emailValidation.validating")}</Text>
@@ -64,7 +65,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                         </>
                     )}
                 </View>
-            </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -72,14 +73,10 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
+            flex: 1,
+            width: "75%",
             justifyContent: "center",
             alignItems: "center",
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.background,
-        },
-        wrapper: {
-            width: "70%",
         },
         title: {
             fontSize: 20,

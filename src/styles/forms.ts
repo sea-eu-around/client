@@ -25,7 +25,7 @@ export const formStyles = preTheme(() => {
         buttonMajor: {
             justifyContent: "center",
             height: 55,
-            borderRadius: 5,
+            borderRadius: 8,
 
             shadowColor: "#000",
             shadowOffset: {
@@ -106,11 +106,6 @@ export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxPr
 
 export const loginTabsStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        formContainer: {
-            width: "70%",
-            maxWidth: 400,
-            flexDirection: "column",
-        },
         versionInfoContainer: {
             position: "absolute",
             flexDirection: "column",

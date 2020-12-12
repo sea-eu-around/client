@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Text,
     RefreshControl,
-    KeyboardAvoidingView,
     NativeScrollEvent,
     NativeSyntheticEvent,
 } from "react-native";
@@ -20,6 +19,7 @@ import {MaterialTopTabScreenProps} from "@react-navigation/material-top-tabs";
 import {TabMessagingTabs} from "../../navigation/types";
 import ChatRoomCard from "../../components/messaging/ChatRoomCard";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
+import ScreenWrapper from "../ScreenWrapper";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -59,49 +59,40 @@ class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.wrapper}>
-                <KeyboardAvoidingView style={{flex: 1, width: "100%"}}>
-                    <ScrollView
-                        style={styles.scroll}
-                        contentContainerStyle={styles.scrollContent}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={fetchingRooms}
-                                onRefresh={() => (dispatch as MyThunkDispatch)(refreshMatchRooms())}
-                            />
-                        }
-                        onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
-                            const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
-                            const distanceToBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
-                            if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
-                        }}
-                    >
-                        {roomIds.map((id: string) => (
-                            <ChatRoomCard key={id} room={rooms[id]} />
-                        ))}
-                        {!fetchingRooms && roomIds.length == 0 && (
-                            <View style={styles.noMatchesContainer}>
-                                <Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>
-                            </View>
-                        )}
-                    </ScrollView>
-                </KeyboardAvoidingView>
-            </View>
+            <ScreenWrapper>
+                <ScrollView
+                    style={styles.scroll}
+                    contentContainerStyle={styles.scrollContent}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={fetchingRooms}
+                            onRefresh={() => (dispatch as MyThunkDispatch)(refreshMatchRooms())}
+                        />
+                    }
+                    onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+                        const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
+                        const distanceToBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
+                        if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+                    }}
+                >
+                    {roomIds.map((id: string) => (
+                        <ChatRoomCard key={id} room={rooms[id]} />
+                    ))}
+                    {!fetchingRooms && roomIds.length == 0 && (
+                        <View style={styles.noMatchesContainer}>
+                            <Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>
+                        </View>
+                    )}
+                </ScrollView>
+            </ScreenWrapper>
         );
     }
 }
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        wrapper: {
-            flex: 1,
-            paddingHorizontal: 0,
-            flexDirection: "column",
-            alignItems: "center",
-            backgroundColor: theme.background,
-        },
         scroll: {
-            flex: 1,
+            width: "100%",
         },
         scrollContent: {
             paddingTop: 20,

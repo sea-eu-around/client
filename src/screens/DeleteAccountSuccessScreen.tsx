@@ -10,6 +10,7 @@ import store from "../state/store";
 import {logout} from "../state/auth/actions";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import ScreenWrapper from "./ScreenWrapper";
+import {formStyles} from "../styles/forms";
 
 type DeleteAccountSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -18,14 +19,18 @@ class DeleteAccountSuccessScreen extends React.Component<DeleteAccountSuccessScr
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
                     <Text style={styles.successText}>{i18n.t("deleteAccount.success1")}</Text>
                     <Text style={styles.successText}>{i18n.t("deleteAccount.success2")}</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => store.dispatch(logout())}>
-                        <Text style={styles.buttonText}>{i18n.t("deleteAccount.leave")}</Text>
+                    <TouchableOpacity
+                        style={[fstyles.buttonMajor, styles.button]}
+                        onPress={() => store.dispatch(logout())}
+                    >
+                        <Text style={fstyles.buttonMajorText}>{i18n.t("deleteAccount.leave")}</Text>
                         <MaterialCommunityIcons name="logout" style={styles.buttonIcon} />
                     </TouchableOpacity>
                 </View>
@@ -40,7 +45,6 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            alignSelf: "center",
             width: "75%",
         },
         successText: {
@@ -51,24 +55,11 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         button: {
-            height: 50,
             paddingHorizontal: 25,
-            borderRadius: 8,
             marginTop: 40,
             backgroundColor: theme.error,
-            justifyContent: "center",
             alignItems: "center",
             flexDirection: "row",
-
-            shadowColor: "#000",
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.2,
-            shadowRadius: 1.41,
-            elevation: 2,
-        },
-        buttonText: {
-            fontSize: 18,
-            color: theme.textWhite,
         },
         buttonIcon: {
             fontSize: 20,

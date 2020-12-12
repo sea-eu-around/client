@@ -12,6 +12,7 @@ import {connectToChat, fetchMatchRoom} from "../state/messaging/actions";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 import AsyncButton from "../components/AsyncButton";
+import ScreenWrapper from "./ScreenWrapper";
 
 export type MatchSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -51,22 +52,24 @@ class MatchSuccessScreen extends React.Component<MatchSuccessScreenProps> {
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
-                <View style={styles.separator} />
-                <AsyncButton
-                    text={i18n.t("matching.success.chat")}
-                    textStyle={styles.actionText}
-                    style={styles.actionButton}
-                    onPress={async () => await this.chat()}
-                />
-                <TouchableOpacity
-                    style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
-                    onPress={() => rootNavigate("TabMatchingScreen")}
-                >
-                    <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
-                </TouchableOpacity>
-            </View>
+            <ScreenWrapper>
+                <View style={styles.container}>
+                    <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
+                    <View style={styles.separator} />
+                    <AsyncButton
+                        text={i18n.t("matching.success.chat")}
+                        textStyle={styles.actionText}
+                        style={styles.actionButton}
+                        onPress={async () => await this.chat()}
+                    />
+                    <TouchableOpacity
+                        style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
+                        onPress={() => rootNavigate("TabMatchingScreen")}
+                    >
+                        <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScreenWrapper>
         );
     }
 }

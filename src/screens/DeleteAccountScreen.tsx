@@ -1,6 +1,4 @@
 import * as React from "react";
-import {View} from "react-native";
-import {loginTabsStyles} from "../styles/forms";
 import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {RootNavigatorScreens} from "../navigation/types";
@@ -13,15 +11,10 @@ type DeleteAccountScreenProps = ThemeProps & StackScreenProps<RootNavigatorScree
 
 class DeleteAccountScreen extends React.Component<DeleteAccountScreenProps> {
     render(): JSX.Element {
-        const {theme} = this.props;
-        const styles = loginTabsStyles(theme);
-
         return (
             <ScreenWrapper>
                 <ScrollFormWrapper>
-                    <View style={styles.formContainer}>
-                        <DeleteAccountForm />
-                    </View>
+                    <DeleteAccountForm />
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );

@@ -6,6 +6,8 @@ import {RootNavigatorScreens} from "../navigation/types";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import ScreenWrapper from "./ScreenWrapper";
+import {styleTextLight} from "../styles/general";
 
 export type NotFoundScreenProps = StackScreenProps<RootNavigatorScreens, "NotFoundScreen"> & ThemeProps;
 
@@ -15,13 +17,15 @@ class NotFoundScreen extends React.Component<NotFoundScreenProps> {
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <Text style={styles.title}>{i18n.t("pageNotFound")}</Text>
-                <Text style={styles.subtitle}>{i18n.t("pageDoesntExist")}</Text>
-                <TouchableOpacity onPress={() => navigation.replace("LoginScreen")} style={styles.link}>
-                    <Text style={styles.linkText}>{i18n.t("goHome")}</Text>
-                </TouchableOpacity>
-            </View>
+            <ScreenWrapper>
+                <View style={styles.container}>
+                    <Text style={styles.title}>{i18n.t("pageNotFound")}</Text>
+                    <Text style={styles.subtitle}>{i18n.t("pageDoesntExist")}</Text>
+                    <TouchableOpacity onPress={() => navigation.replace("LoginScreen")} style={styles.link}>
+                        <Text style={styles.linkText}>{i18n.t("goHome")}</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -30,28 +34,26 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            alignItems: "center",
             justifyContent: "center",
+            alignItems: "center",
             padding: 20,
-            backgroundColor: theme.background,
         },
         title: {
-            fontSize: 64,
-            fontWeight: "100",
+            fontSize: 48,
+            ...styleTextLight,
             textAlign: "center",
+            color: theme.text,
         },
         subtitle: {
-            width: "100%",
             fontSize: 20,
-            fontWeight: "bold",
             marginTop: 50,
-            textAlign: "center",
+            color: theme.text,
         },
         link: {
             paddingVertical: 10,
         },
         linkText: {
-            fontSize: 14,
+            fontSize: 16,
             color: "#2e78b7",
         },
     });

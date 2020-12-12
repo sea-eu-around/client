@@ -28,9 +28,7 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
         return (
             <ScreenWrapper>
                 <ScrollFormWrapper>
-                    <View style={styles.formContainer}>
-                        <LoginForm navigation={navigation} />
-                    </View>
+                    <LoginForm navigation={navigation} />
 
                     <LocalImage resizeMode={"contain"} style={styles.erasmusLogo} imageKey={"logos.erasmusLeft"} />
 
@@ -83,15 +81,12 @@ type TabForgotPasswordProps = ThemeProps & StackScreenProps<TabLoginSigninScreen
 
 class ForgotPasswordTabComponent extends React.Component<TabForgotPasswordProps> {
     render(): JSX.Element {
-        const {theme, navigation} = this.props;
-        const styles = loginTabsStyles(theme);
+        const {navigation} = this.props;
 
         return (
             <ScreenWrapper>
                 <ScrollFormWrapper>
-                    <View style={styles.formContainer}>
-                        <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
-                    </View>
+                    <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );

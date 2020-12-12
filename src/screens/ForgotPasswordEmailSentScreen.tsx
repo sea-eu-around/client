@@ -5,6 +5,7 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {FontAwesome} from "@expo/vector-icons";
 import i18n from "i18n-js";
+import ScreenWrapper from "./ScreenWrapper";
 
 type ForgotPasswordEmailSentScreenProps = ThemeProps;
 
@@ -14,12 +15,12 @@ class ForgotPasswordEmailSentScreen extends React.Component<ForgotPasswordEmailS
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <View style={styles.wrapper}>
+            <ScreenWrapper>
+                <View style={styles.container}>
                     <FontAwesome name="envelope-o" style={styles.mailIcon}></FontAwesome>
                     <Text style={styles.description}>{i18n.t("resetPassword.instructions")}</Text>
                 </View>
-            </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -27,15 +28,10 @@ class ForgotPasswordEmailSentScreen extends React.Component<ForgotPasswordEmailS
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
+            flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.background,
-        },
-        wrapper: {
-            width: "70%",
-            alignItems: "center",
+            width: "75%",
         },
         description: {
             fontSize: 16,

@@ -6,6 +6,7 @@ import LogOutButton from "../components/LogOutButton";
 import {styleTextLight} from "../styles/general";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
+import ScreenWrapper from "./ScreenWrapper";
 
 export type TabNotImplementedScreenProps = ThemeProps;
 
@@ -15,18 +16,20 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <FontAwesome style={styles.icon} name="heart" />
-                <Text style={styles.title}>Thank you for participating in the alpha program.</Text>
-                <View style={styles.separator} />
-                <Text style={[styles.alphaText, {fontWeight: "bold"}]}>
-                    Found a bug or have some feedback for us or ideas for the app?
-                </Text>
-                <Text style={styles.alphaText}>
-                    Get in touch with us on Slack and we would be happy to discuss it with you!
-                </Text>
-                <LogOutButton style={styles.logoutButton} />
-            </View>
+            <ScreenWrapper>
+                <View style={styles.container}>
+                    <FontAwesome style={styles.icon} name="heart" />
+                    <Text style={styles.title}>Thank you for participating in the alpha program.</Text>
+                    <View style={styles.separator} />
+                    <Text style={[styles.alphaText, {fontWeight: "bold"}]}>
+                        Found a bug or have some feedback for us or ideas for the app?
+                    </Text>
+                    <Text style={styles.alphaText}>
+                        Get in touch with us on Slack and we would be happy to discuss it with you!
+                    </Text>
+                    <LogOutButton style={styles.logoutButton} />
+                </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -39,7 +42,6 @@ const themedStyles = preTheme((theme: Theme) => {
             padding: 50,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: theme.background,
         },
         title: {
             width: "100%",
