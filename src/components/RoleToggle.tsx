@@ -5,6 +5,7 @@ import {Role, ROLES} from "../constants/profile-constants";
 import {ButtonGroup, ButtonGroupProps, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
+import {getToggleStyleProps} from "../styles/toggles";
 
 export type RoleToggleProps = {
     role: Role;
@@ -15,6 +16,7 @@ export type RoleToggleProps = {
 function RoleToggle(props: RoleToggleProps): JSX.Element {
     const {role, onSelect, theme, ...otherProps} = props;
     const styles = themedStyles(theme);
+    const styleProps = getToggleStyleProps(false, theme);
 
     const buttonLabels = ROLES.map((r: string) => i18n.t(`allRoles.${r}`));
 
@@ -26,6 +28,7 @@ function RoleToggle(props: RoleToggleProps): JSX.Element {
             selectedIndex={ROLES.indexOf(role)}
             buttons={buttonLabels}
             containerStyle={styles.container}
+            {...styleProps}
             {...otherProps}
         />
     );

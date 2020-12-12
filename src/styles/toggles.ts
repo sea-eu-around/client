@@ -59,6 +59,15 @@ export function getToggleStyleProps(nobuttonBariant: boolean, theme: Theme): Par
             selectedButtonStyle: {
                 backgroundColor: theme.accent,
             },
+            disabledStyle: {
+                backgroundColor: theme.cardBackground,
+            },
+            disabledSelectedStyle: {
+                backgroundColor: theme.background,
+            },
+            disabledSelectedTextStyle: {
+                fontWeight: "bold",
+            },
         };
     }
 }

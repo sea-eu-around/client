@@ -29,7 +29,7 @@ export const pickerStyles = preTheme((theme: Theme) => {
         },
         okButtonText: {
             fontSize: 20,
-            color: theme.textInverted,
+            color: theme.textWhite,
         },
         openButton: {
             width: "100%",

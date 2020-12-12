@@ -56,6 +56,15 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.accent,
             paddingHorizontal: 8,
             zIndex: 2,
+
+            // Make it more readable with the dark theme
+            ...(theme.id === "dark"
+                ? {
+                      textShadowColor: "rgba(0, 0, 0, 0.6)",
+                      textShadowOffset: {width: 0, height: 1},
+                      textShadowRadius: 1,
+                  }
+                : {}),
         },
         underline: {
             position: "absolute",

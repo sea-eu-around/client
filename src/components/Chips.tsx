@@ -95,14 +95,14 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         chipText: {
             fontSize: 14,
-            color: theme.text,
+            color: theme.textBlack,
         },
         chipRemoveButton: {
             padding: 2,
         },
         chipRemoveIcon: {
             fontSize: 22,
-            color: theme.text,
+            color: theme.textBlack,
         },
     });
 });

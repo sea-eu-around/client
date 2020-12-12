@@ -36,7 +36,7 @@ export type MainHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
-        navigateBack();
+        navigateBack("MainScreen");
     }
 
     pressAvatar(): void {
@@ -60,6 +60,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
         const styles = headerStyles(theme);
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
+        const textColor = color || theme.text;
 
         return (
             <View
@@ -68,10 +69,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                 <View style={styles.container}>
                     {backButton && (
                         <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
-                            <MaterialIcons
-                                style={[styles.backButtonIcon, {color: color || theme.text}]}
-                                name="arrow-back"
-                            />
+                            <MaterialIcons style={[styles.backButtonIcon, {color: textColor}]} name="arrow-back" />
                         </TouchableOpacity>
                     )}
                     {!noAvatar && (
@@ -85,19 +83,19 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                             onPress={() => this.pressAvatar()}
                         />
                     )}
-                    <Text style={[styles.title, {marginLeft: 12, color: color || theme.text}]} numberOfLines={1}>
+                    <Text style={[styles.title, {marginLeft: 12, color: textColor}]} numberOfLines={1}>
                         {title}
                     </Text>
                     {rightButtons?.map((ButtonComponent, i) => (
                         <ButtonComponent
                             key={`header-button-${scene.route.key}-${i}`}
                             buttonStyle={styles.rightButton}
-                            iconStyle={styles.rightIcon}
+                            iconStyle={[styles.rightIcon, {color: textColor}]}
                         />
                     ))}
                     {!noSettingsButton && (
                         <TouchableOpacity style={styles.rightButton} onPress={() => rootNavigate("SettingsScreen")}>
-                            <MaterialIcons name="settings" style={styles.rightIcon} color={color || theme.text} />
+                            <MaterialIcons name="settings" style={styles.rightIcon} color={textColor} />
                         </TouchableOpacity>
                     )}
                 </View>
