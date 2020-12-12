@@ -29,8 +29,6 @@ class InterestsPicker extends React.Component<InterestsPickerProps> {
 
     updateValues() {
         values = this.props.allInterests.map((interest: InterestDto) => interest.id);
-
-        console.log("Interests : " + this.props.allInterests.length);
         this.forceUpdate();
     }
 

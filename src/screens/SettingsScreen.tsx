@@ -33,7 +33,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
     render(): JSX.Element {
         const {theme, settings, dispatch} = this.props;
         const styles = themedStyles(theme);
-        console.log(theme);
+
         return (
             <ScreenWrapper>
                 <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>

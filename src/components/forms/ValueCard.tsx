@@ -158,7 +158,6 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                                 activeOpacity={0.9}
                                 disabled={noModal && !onPress}
                                 onPress={() => {
-                                    console.log(noModal);
                                     if (!noModal) {
                                         if (!locked) this.setModal(true);
                                     } else if (onPress) onPress();
