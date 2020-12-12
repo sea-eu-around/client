@@ -40,6 +40,7 @@ type ResetPasswordFormProps = {token?: string} & FormProps<FormState> & ThemePro
 type ResetPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
 class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPasswordFormState> {
+    pwdRepeatRef = React.createRef<FormTextInput>();
     setFieldError?: (field: string, message: string) => void;
 
     constructor(props: ResetPasswordFormProps) {
@@ -107,6 +108,9 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     value={values.password}
                                     touched={touched.password}
                                     isPassword={true}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => this.pwdRepeatRef.current?.focus()}
                                     {...textInputProps}
                                 />
 
@@ -115,12 +119,14 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                 <TextInput style={{width: 1, height: 1}} />
 
                                 <FormTextInput
+                                    ref={this.pwdRepeatRef}
                                     field="passwordRepeat"
                                     placeholder={i18n.t("passwordRepeat")}
                                     error={errors.passwordRepeat}
                                     value={values.passwordRepeat}
                                     touched={touched.passwordRepeat}
                                     isPassword={true}
+                                    returnKeyType="done"
                                     {...textInputProps}
                                 />
 
