@@ -14,17 +14,18 @@ export type FormattedOfferCategoryProps = {
     containerStyle?: StyleProp<ViewStyle>;
     iconProps?: Partial<SvgProps>;
     textStyle?: StyleProp<TextStyle>;
+    iconSize?: number;
 } & ThemeProps;
 
 class FormattedOfferCategory extends React.Component<FormattedOfferCategoryProps> {
     render(): JSX.Element {
-        const {containerStyle, category, theme, textStyle, iconProps} = this.props;
+        const {containerStyle, category, theme, textStyle, iconProps, iconSize} = this.props;
         const styles = themedStyles(theme);
 
         const translationKey = `onboarding.offers${category[0].toUpperCase() + category.slice(1)}.title`;
         const SvgIcon = getLocalSvg(`offers.categories.${category}`, () => this.forceUpdate());
 
-        const size = 75;
+        const size = iconSize || 75;
 
         return (
             <View style={[styles.container, containerStyle]}>
