@@ -267,10 +267,15 @@ const themedStyles = (oneLine?: boolean) =>
                 flexDirection: "row",
                 backgroundColor: theme.cardBackground,
                 paddingHorizontal: 10,
-                elevation: 1,
                 justifyContent: "space-evenly",
                 paddingVertical: 15,
                 minHeight: oneLine ? 0 : 80,
+
+                shadowColor: "#000",
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.18,
+                shadowRadius: 1.0,
+                elevation: 1,
             },
             cardContent: {
                 flex: 1,

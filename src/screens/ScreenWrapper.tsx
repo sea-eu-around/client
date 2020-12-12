@@ -24,6 +24,8 @@ const themedStyles = preTheme((theme: Theme) => {
         wrapper: {
             flex: 1,
             backgroundColor: theme.background,
+            justifyContent: "center",
+            flexDirection: "row",
         },
         container: {
             flex: 1,

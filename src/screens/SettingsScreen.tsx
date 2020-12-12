@@ -36,7 +36,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
         console.log(theme);
         return (
             <ScreenWrapper>
-                <ScrollView contentContainerStyle={styles.container}>
+                <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
                     <Section theme={theme} title={i18n.t("settings.sections.general")}>
                         <ValueCard
                             style={styles.card}
@@ -140,9 +140,11 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             style={styles.card}
                             label={i18n.t("settings.deleteAccount")}
                             display={
+                                // TODO enable Delete Account
                                 <TouchableHighlight
                                     style={styles.redActionButton}
-                                    onPress={() => rootNavigate("DeleteAccountScreen")}
+                                    //onPress={() => rootNavigate("DeleteAccountScreen")}
+                                    onPress={() => Alert.alert("Coming very soon")}
                                 >
                                     <Text style={styles.deleteAccountText}>{i18n.t("settings.deleteMyAccount")}</Text>
                                 </TouchableHighlight>
@@ -200,7 +202,14 @@ class Section extends React.Component<SectionProps> {
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        scroll: {
+            flex: 1,
+            width: "100%",
+        },
         container: {
+            width: "100%",
+            maxWidth: 700,
+            alignSelf: "center",
             paddingTop: 10,
             paddingBottom: 50,
             paddingHorizontal: 20,
