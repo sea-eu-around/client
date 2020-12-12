@@ -23,12 +23,11 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
             flex: 1,
-            alignItems: "center",
             backgroundColor: theme.background,
         },
         container: {
             flex: 1,
-            width: "100%",
+            alignItems: "center",
             ...(Platform.OS === "web" ? {maxWidth: 1000} : {}),
         },
     });
