@@ -14,7 +14,6 @@ import {AppState} from "../state/types";
 import {setLocale, toggleTheme} from "../state/settings/actions";
 import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
-import {rootNavigate} from "../navigation/utils";
 import {APP_VERSION} from "../constants/config";
 import LocalImage from "../components/LocalImage";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -162,13 +161,6 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             imageKey="logos.erasmusLeft"
                             resizeMode="contain"
                             style={[styles.logo, styles.logoErasmus]}
-                        />
-
-                        <Text style={styles.developedBy}>{i18n.t("settings.developedBy")}</Text>
-                        <LocalImage
-                            imageKey="logos.junior-atlantique"
-                            resizeMode="contain"
-                            style={[styles.logo, styles.logoJA]}
                         />
                     </View>
                 </ScrollView>
