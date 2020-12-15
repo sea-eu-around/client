@@ -243,7 +243,7 @@ export const deleteAccount = (password: string): ValidatedThunkAction => async (
     const token = getState().auth.token;
     const response = await requestBackend("users", "DELETE", {}, {password}, token, true);
 
-    if (response.status == HttpStatusCode.OK) {
+    if (response.status == HttpStatusCode.NO_CONTENT) {
         dispatch(deleteAccountSuccess());
         return {success: true};
     } else {
@@ -318,7 +318,7 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
                         allowStudent: true,
                     },
                 ],
-                educationFields: [],
+                educationFields: [{id: "education-science"}, {id: "music-performing-arts"}],
                 //degree: "m2",
                 staffRoles: [{id: "research"}, {id: "teaching"}],
             }),

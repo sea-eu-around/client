@@ -18,6 +18,7 @@ import {APP_VERSION} from "../constants/config";
 import LocalImage from "../components/LocalImage";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import {logout} from "../state/auth/actions";
+import {rootNavigate} from "../navigation/utils";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -139,11 +140,9 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             style={styles.card}
                             label={i18n.t("settings.deleteAccount")}
                             display={
-                                // TODO enable Delete Account
                                 <TouchableHighlight
                                     style={styles.redActionButton}
-                                    //onPress={() => rootNavigate("DeleteAccountScreen")}
-                                    onPress={() => Alert.alert("Coming very soon")}
+                                    onPress={() => rootNavigate("DeleteAccountScreen")}
                                 >
                                     <Text style={styles.deleteAccountText}>{i18n.t("settings.deleteMyAccount")}</Text>
                                 </TouchableHighlight>

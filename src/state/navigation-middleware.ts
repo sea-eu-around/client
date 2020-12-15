@@ -41,11 +41,15 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         }
         case AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS: {
             rootNavigate("ResetPasswordSuccessScreen");
-            return;
+            break;
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
             const {matchStatus, roomId} = action as LikeProfileSuccessAction;
             if (matchStatus == MatchActionStatus.Matched) rootNavigate("MatchSuccessScreen", {roomId});
+            break;
+        }
+        case AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS: {
+            rootNavigate("LoginScreen");
             break;
         }
     }
