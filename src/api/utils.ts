@@ -1,5 +1,6 @@
 import {Alert} from "react-native";
 import {BACKEND_URL} from "../constants/config";
+import {HttpStatusCode} from "../constants/http-status";
 import {RequestResponse, TokenDto} from "./dto";
 
 // Request-related types
@@ -73,7 +74,9 @@ export async function requestBackend(
             ...(method == "GET" ? {} : {body: JSON.stringify(body)}),
         });
 
-        const json = {...(await response.json()), status: response.status};
+        let json = {status: response.status, data: {}};
+        if (response.status !== HttpStatusCode.NO_CONTENT) json = {...json, ...(await response.json())};
+
         if (verbose) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
