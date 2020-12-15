@@ -9,6 +9,7 @@ import ProfileView from "../components/ProfileView";
 import {UserProfile} from "../model/user-profile";
 import {fetchProfile} from "../state/profile/actions";
 import ScreenWrapper from "./ScreenWrapper";
+import ProfileActionBar from "../components/ProfileActionBar";
 
 const reduxConnector = connect(() => ({}));
 
@@ -42,7 +43,7 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
 
         return (
             <ScreenWrapper>
-                <ProfileView profile={profile} />
+                <ProfileView profile={profile} actionBar={<ProfileActionBar profile={profile} />} />
             </ScreenWrapper>
         );
     }
