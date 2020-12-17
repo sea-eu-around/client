@@ -85,6 +85,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginHorizontal: 10,
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
         },
         buttonText: {
             fontSize: 12,
