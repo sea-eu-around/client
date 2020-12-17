@@ -19,6 +19,8 @@ import GenderToggle from "../../components/GenderToggle";
 import NationalityControl from "../../components/NationalityControl";
 import {CountryCode} from "../../model/country-codes";
 import EducationFieldPicker from "../../components/EducationFieldPicker";
+import {Platform, Text} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -93,6 +95,25 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                                 onSelect={(birthdate: Date) => setFieldValue("birthdate", birthdate)}
                             />
                             {touched.birthdate && <InputErrorText error={errors.birthdate}></InputErrorText>}
+
+                            <Text>test</Text>
+                            {Platform.OS === "ios" && (
+                                <>
+                                    <DateTimePicker
+                                        value={new Date()}
+                                        display="default"
+                                        mode="date"
+                                        {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
+                                    />
+                                    <DateTimePicker
+                                        value={new Date()}
+                                        display="default"
+                                        mode="date"
+                                        textColor={"red"}
+                                        {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
+                                    />
+                                </>
+                            )}
 
                             <InputLabel style={{marginTop: spacing}}>{i18n.t("nationality")}</InputLabel>
                             <NationalityControl
