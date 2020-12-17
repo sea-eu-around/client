@@ -109,6 +109,7 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                                 backButton={true}
                                 noAvatar={true}
                                 noShadow={true}
+                                buttonBackgroundColor={theme.accent}
                                 wrapperStyle={{backgroundColor: theme.accent}}
                                 color={theme.textWhite}
                             />
@@ -126,6 +127,7 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                                 {...props}
                                 backButton={true}
                                 noShadow={true}
+                                buttonBackgroundColor={theme.accent}
                                 wrapperStyle={{backgroundColor: theme.accent}}
                                 color={theme.textWhite}
                             />

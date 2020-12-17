@@ -55,7 +55,6 @@ export const headerStyles = preTheme((theme: Theme) => {
             height: 36,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: theme.almostBackground,
             borderRadius: 50,
             marginLeft: 8,
         },

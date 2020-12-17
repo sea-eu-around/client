@@ -28,6 +28,7 @@ type AdditionalProps = {
     noSettingsButton?: boolean;
     noAvatar?: boolean;
     color?: string;
+    buttonBackgroundColor?: string;
     noShadow?: boolean;
 };
 
@@ -61,6 +62,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
 
         const title = headerTitle(scene.route.name as NavigatorRoute);
         const textColor = color || theme.text;
+        const buttonBackgroundColor = this.props.buttonBackgroundColor || theme.almostBackground;
 
         return (
             <View
@@ -89,12 +91,15 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                     {rightButtons?.map((ButtonComponent, i) => (
                         <ButtonComponent
                             key={`header-button-${scene.route.key}-${i}`}
-                            buttonStyle={styles.rightButton}
+                            buttonStyle={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
                             iconStyle={[styles.rightIcon, {color: textColor}]}
                         />
                     ))}
                     {!noSettingsButton && (
-                        <TouchableOpacity style={styles.rightButton} onPress={() => rootNavigate("SettingsScreen")}>
+                        <TouchableOpacity
+                            style={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
+                            onPress={() => rootNavigate("SettingsScreen")}
+                        >
                             <MaterialIcons name="settings" style={styles.rightIcon} color={textColor} />
                         </TouchableOpacity>
                     )}
