@@ -31,7 +31,7 @@ class BirthDatePicker extends React.Component<BirthDatePickerProps> {
                 minimumDate={minDate}
                 maximumDate={maxDate}
                 value={date || maxDate}
-                display="default"
+                display={Platform.OS === "ios" ? "inline" : "default"}
                 mode="date"
                 textColor={theme.text}
                 {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
