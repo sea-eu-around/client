@@ -28,7 +28,7 @@ export default {
         firstname: "First name",
         lastname: "Last name",
         noResultsFound: "No results found",
-        tos: {
+        legal: {
             modal: {
                 disclaimer1:
                     "Please understand that you will not be able to use our services if you decide to decline the terms of service.",
@@ -36,7 +36,7 @@ export default {
             },
             decline: "Decline",
             accept: "Accept",
-            readMore: ["Read more about our terms of service ", "here", "."],
+            readMore: ["Read more about our terms & conditions ", "here", "."],
         },
         privacy: {
             readMore: ["Read more about our privacy policy ", "here", "."],
@@ -294,15 +294,20 @@ export default {
                 title: "Collaborate",
                 subtitle: "Find people to work on projects, academic or not.",
             },
-            tos: {
-                title: "Terms of service",
-                subtitle:
-                    "I am aware that I am entering a space of intercultural exchange and I am committed to caring and respectful exchanges with other members. My name and surname will be visible by other users.",
+            legal1: {
+                title: "Terms & Conditions",
+                text:
+                    "As explained in details in our Terms & Conditions, you agree to use «SEA-EU Around» and its services only to be put into contact, on a non-business and non-profit basis, with people wishing to meet, collaborate and interact online or in the frame of a mobility. You commit to carry out respectful exchanges with other members. Your name and surname will be visible by other members.",
             },
-            privacy: {
-                title: "Privacy policy",
-                subtitle:
-                    "I am entering a university community. I agree to provide some personal data, that will not be shared with anyone but the SEA-EU Around community.",
+            legal2: {
+                title: "Data Policy",
+                text:
+                    "In the context of your use of SEA-EU Around, you will provide some personal data to create your profile as further explained in our Terms & Conditions. This data is collected and processed by UBO through SEA-EU Around in order to enable matching among Members, according to needs/offers and interests defined by Members of SEA-EU Around. Your data will be visible only by  other Members.",
+            },
+            legal3: {
+                title: "Cookies",
+                text:
+                    "I acknowledge that cookies might be used. The information is kept only for application purposes and does not permit to identify the Member except for the cookie enabling UBO to re-authenticate the Member on its arrival on SEA-EU Around, saving the Member from having to re-enter their password at each connection.",
             },
             submit: "Submit",
             getStarted: "Get Started",
@@ -678,7 +683,7 @@ export default {
         deleteAccount: {
             title: "Delete your account",
             warning:
-                "Please be aware that this action is irreversible. Your account and all associated data will be deleted within six months.",
+                "Your account and all associated data will be deleted within a month. Please be aware that after this month, your account will be irreversibly deleted. If you sign in during this month however, the deletion will be cancelled.",
             button: "Delete",
             success1: "Your request has been received and will be processed shortly.",
             success2: "We are sorry to see you go.",
@@ -706,6 +711,13 @@ export default {
                 chat: "Start chatting",
                 continue: "Keep scrolling",
             },
+            history: {
+                filters: {
+                    like: "Liked",
+                    dislike: "Hidden",
+                    block: "Blocked",
+                },
+            },
         },
         // Profile tab
         profile: {
@@ -725,7 +737,7 @@ export default {
             OnboardingOffersScreen1: "Discover",
             OnboardingOffersScreen2: "Collaborate",
             OnboardingOffersScreen3: "Meet",
-            OnboardingTosScreen: "Terms of Service",
+            OnboardingLegalScreen1: "Terms & Conditions",
             OnboardingPrivacyScreen: "Privacy Policy",
             MessagingScreen: "Messages",
             IndividualMessagingTab: "Messages",
@@ -734,6 +746,7 @@ export default {
             TabHomeScreen: "Home",
             TabMatchingScreen: "Match",
             MatchFilteringScreen: "Filters",
+            MatchHistoryScreen: "History",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
             ProfileScreen: "Profile",
@@ -764,7 +777,6 @@ export default {
             termsOfService: "Terms of Service",
             reportABug: "Report a Bug",
             logOut: "Log out",
-            developedBy: "Developed by",
         },
     },
     fr: {

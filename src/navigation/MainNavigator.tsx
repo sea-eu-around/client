@@ -4,16 +4,8 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
-import {
-    MainNavigatorTabs,
-    RootNavigatorScreens,
-    TabHomeRoot,
-    TabMatchingRoot,
-    TabNotificationsRoot,
-} from "../navigation/types";
+import {MainNavigatorTabs, RootNavigatorScreens, TabHomeRoot, TabNotificationsRoot} from "../navigation/types";
 import i18n from "i18n-js";
-import TabMatchingScreen from "../screens/TabMatchingScreen";
-import MatchFilteringScreen from "../screens/MatchFilteringScreen";
 import {withTheme} from "react-native-elements";
 import MessagingNavigator from "./MessagingNavigator";
 import {Text} from "react-native";
@@ -23,8 +15,7 @@ import TabHomeScreen from "../screens/TabHomeScreen";
 import {screenTitle} from "./utils";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import MainHeader from "../components/headers/MainHeader";
-import MatchScreenHeader from "../components/headers/MatchScreenHeader";
-import FilteringScreenHeader from "../components/headers/FilteringScreenHeader";
+import {TabMatchingNavigator} from "./TabMatchingNavigator";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -112,31 +103,6 @@ const TabHomeNavigator = (): JSX.Element => (
             options={{title: screenTitle("TabHomeScreen")}}
         />
     </TabHomeStack.Navigator>
-);
-
-const TabMatchingStack = createStackNavigator<TabMatchingRoot>();
-
-const TabMatchingNavigator = (): JSX.Element => (
-    <TabMatchingStack.Navigator>
-        <TabMatchingStack.Screen
-            name="TabMatchingScreen"
-            component={TabMatchingScreen}
-            options={() => ({
-                headerShown: true,
-                title: screenTitle("TabMatchingScreen"),
-                header: MatchScreenHeader,
-            })}
-        />
-        <TabMatchingStack.Screen
-            name="MatchFilteringScreen"
-            component={MatchFilteringScreen}
-            options={{
-                headerShown: true,
-                title: screenTitle("MatchFilteringScreen"),
-                header: FilteringScreenHeader,
-            }}
-        />
-    </TabMatchingStack.Navigator>
 );
 
 const TabNotificationsStack = createStackNavigator<TabNotificationsRoot>();
