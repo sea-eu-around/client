@@ -8,17 +8,23 @@ import {University} from "../constants/universities";
 export type FormattedUniversityProps = {
     university: University | null;
     containerStyle?: ViewStyle;
+    flagSize?: number;
+    flagEmoji?: boolean;
 } & TextProps;
 
 export default class FormattedUniversity extends React.Component<FormattedUniversityProps> {
     render(): JSX.Element {
-        const {university, containerStyle, ...otherProps} = this.props;
+        const {university, containerStyle, flagSize, flagEmoji, ...otherProps} = this.props;
 
         return (
             <View style={[{flexDirection: "row"}, containerStyle]}>
                 {university && (
                     <>
-                        <Flag countryCode={university.country} flagSize={18} withEmoji={false}></Flag>
+                        <Flag
+                            countryCode={university.country}
+                            flagSize={flagSize || 18}
+                            withEmoji={flagEmoji || false}
+                        />
                         <Text {...otherProps} style={[{marginLeft: -5}, otherProps.style]}>
                             {i18n.t(`universities.${university.key}`)}
                         </Text>
