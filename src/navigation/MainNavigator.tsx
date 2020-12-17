@@ -28,7 +28,7 @@ function MainNavigatorComponent({theme}: MainNavigatorProps): JSX.Element {
         <TabNavigator.Navigator
             initialRouteName="TabHome"
             tabBarOptions={{
-                activeTintColor: theme.tint,
+                activeTintColor: theme.accent,
                 style: {height: 55 + bottom, paddingTop: 5, paddingBottom: 5},
                 tabStyle: {flexDirection: "column", paddingBottom: bottom},
                 iconStyle: {flex: 1},

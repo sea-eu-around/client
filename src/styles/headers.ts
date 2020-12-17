@@ -51,11 +51,16 @@ export const headerStyles = preTheme((theme: Theme) => {
             fontSize: 20,
         },
         rightButton: {
-            paddingHorizontal: 5,
-            paddingVertical: 5,
+            width: 36,
+            height: 36,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.almostBackground,
+            borderRadius: 50,
+            marginLeft: 8,
         },
         rightIcon: {
-            fontSize: 26,
+            fontSize: 22,
         },
     });
 });

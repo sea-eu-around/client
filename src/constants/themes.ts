@@ -1,8 +1,5 @@
 import {ThemeKey} from "../types";
 
-const tintColorLight = "#2f95dc";
-const tintColorDark = "#fff";
-
 const lightThemeText = "#000";
 const darkThemeText = "#fff";
 
@@ -16,17 +13,15 @@ export default {
         textInverted: "#fff",
         background: "#fafafa",
         cardBackground: "#ffffff", //"#f7f7f7",
+        almostBackground: "#edeff2",
         accent: "#003da5", // Pantone 293c
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c
         accentTernary: "#fbe122", // Pantone 207c
-        tint: tintColorLight,
         error: "#ff4a6a",
         actionNeutral: "#555555",
         okay: "#00b16a",
         warn: "#eecc00",
-        tabIconDefault: "#ccc",
-        tabIconSelected: tintColorLight,
         componentBorder: "#eee",
         chatBubble: "#ededed",
     },
@@ -39,17 +34,15 @@ export default {
         textInverted: "#111",
         background: "#333",
         cardBackground: "#3d3d3d",
+        almostBackground: "#393c40",
         accent: "#009ace", // Pantone 801c
         accentSlight: "#ccd8ea",
         accentSecondary: "#003da5", // Pantone 293c
         accentTernary: "#fbe122", // Pantone 207c
-        tint: tintColorDark,
         error: "#f9819d",
         actionNeutral: "#777",
         okay: "#00b16a",
         warn: "#eecc00",
-        tabIconDefault: "#ccc",
-        tabIconSelected: tintColorDark,
         componentBorder: "#555",
         chatBubble: "#333",
     },
