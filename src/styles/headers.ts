@@ -37,7 +37,7 @@ export const headerStyles = preTheme((theme: Theme) => {
             fontSize: 28,
         },
         avatarContainer: {
-            backgroundColor: theme.accent,
+            backgroundColor: theme.accentSecondary,
             borderWidth: 1,
             borderColor: theme.componentBorder,
         },
