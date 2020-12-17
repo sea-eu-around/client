@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, KeyboardAvoidingView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import {ScrollView} from "react-native";
@@ -22,6 +22,7 @@ import {AppState} from "../state/types";
 // Component props
 export type ProfileViewProps = ThemeProps & {
     profile: UserProfile | null;
+    actionBar?: JSX.Element;
 };
 
 function Spacer(): JSX.Element {
@@ -30,7 +31,7 @@ function Spacer(): JSX.Element {
 
 class ProfileView extends React.Component<ProfileViewProps> {
     render() {
-        const {theme, profile} = this.props;
+        const {theme, profile, actionBar} = this.props;
         const styles = themedStyles(theme);
 
         const fullName = profile ? profile.firstName + " " + profile.lastName : "";
@@ -133,11 +134,11 @@ class ProfileView extends React.Component<ProfileViewProps> {
         }
 
         return (
-            <View style={styles.screenWrapper}>
+            <>
                 <View style={styles.topView}>
                     <EnlargeableAvatar
                         profile={profile || undefined}
-                        size={140}
+                        size={120}
                         rounded
                         containerStyle={styles.avatarContainer}
                         activeOpacity={0.8}
@@ -150,17 +151,17 @@ class ProfileView extends React.Component<ProfileViewProps> {
                             university={university}
                         />
                     )}
+                    {actionBar}
                 </View>
-                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="always">
-                    <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={-100} style={styles.formWrapper}>
-                        {/*<View style={styles.titleWrapper}>
-                            <Text style={styles.title}>{i18n.t("myProfile")}</Text>
-                        </View>*/}
-                        {profileFieldComponents}
-                        {!profile && <ActivityIndicator size="large" color={theme.accent} />}
-                    </KeyboardAvoidingView>
+                <ScrollView
+                    style={styles.scrollWrapper}
+                    contentContainerStyle={styles.formWrapper}
+                    keyboardShouldPersistTaps="always"
+                >
+                    {profileFieldComponents}
+                    {!profile && <ActivityIndicator size="large" color={theme.accent} />}
                 </ScrollView>
-            </View>
+            </>
         );
     }
 }
@@ -216,16 +217,12 @@ export const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.accent,
             marginLeft: 6,
         },
-        screenWrapper: {
-            backgroundColor: theme.background,
-            width: "100%",
-        },
         topView: {
-            /*width: "160%",
+            /*width: "180%",
             borderBottomLeftRadius: 200,
             borderBottomRightRadius: 200,*/
             width: "100%",
-            paddingTop: 10,
+            paddingTop: 0,
             paddingBottom: 10,
             alignItems: "center",
             alignSelf: "center",
@@ -235,19 +232,17 @@ export const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
         },
         formWrapper: {
-            flex: 1,
             width: "90%",
             maxWidth: 600,
             flexDirection: "column",
-            alignItems: "center",
             alignSelf: "center",
-            paddingTop: 40,
-            marginBottom: 300,
+            paddingTop: 20,
+            paddingBottom: 20,
         },
         name: {
-            fontSize: 30,
+            fontSize: 24,
             color: theme.textWhite,
-            marginTop: 15,
+            marginTop: 5,
         },
         university: {
             fontSize: 14,
@@ -260,16 +255,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             borderColor: theme.cardBackground,
             borderWidth: 2,
             backgroundColor: theme.accentSecondary,
-        },
-        avatarAccessory: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            borderWidth: 0,
-            borderColor: "transparent",
-            shadowRadius: 0,
-            textShadowRadius: 0,
-            color: "#444",
         },
         cardText: {
             color: theme.text,
