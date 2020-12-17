@@ -53,43 +53,6 @@ export const onboardingStyle = preTheme((theme: Theme) => {
     });
 });
 
-export const tosSlideStyle = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        actionsWrapper: {
-            flexDirection: "row",
-            justifyContent: "space-around",
-        },
-        actionButton: {
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 20,
-        },
-        actionButtonTextDecline: {
-            fontSize: 16,
-            paddingHorizontal: 2,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            color: theme.error,
-        },
-        actionButtonTextAccept: {
-            fontSize: 16,
-            paddingHorizontal: 2,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            color: theme.okay,
-        },
-        readMoreText: {
-            fontSize: 16,
-            lineHeight: 20,
-            textAlign: "justify",
-            marginBottom: 40,
-            letterSpacing: 0.4,
-            color: theme.textLight,
-        },
-    });
-});
-
 export const onboardingOffersStyle = preTheme(() => {
     return StyleSheet.create({
         categoryTitleText: {},

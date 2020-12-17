@@ -8,8 +8,9 @@ import OnboardingOffersScreen1 from "./OnboardingOffersScreen1";
 import OnboardingOffersScreen2 from "./OnboardingOffersScreen2";
 import OnboardingOffersScreen3 from "./OnboardingOffersScreen3";
 import OnboardingRoleSpecificScreen from "./OnboardingRoleSpecificScreen";
-import OnboardingTosScreen from "./OnboardingTosScreen";
-import OnboardingPrivacyScreen from "./OnboardingPrivacyScreen";
+import OnboardingLegalScreen1 from "./OnboardingLegalScreen1";
+import OnboardingLegalScreen2 from "./OnboardingLegalScreen2";
+import OnboardingLegalScreen3 from "./OnboardingLegalScreen3";
 
 export const ONBOARDING_SCREENS = {
     OnboardingNameScreen,
@@ -21,14 +22,16 @@ export const ONBOARDING_SCREENS = {
     OnboardingOffersScreen1,
     OnboardingOffersScreen2,
     OnboardingOffersScreen3,
-    OnboardingTosScreen,
-    OnboardingPrivacyScreen,
+    OnboardingLegalScreen1,
+    OnboardingLegalScreen2,
+    OnboardingLegalScreen3,
 };
 
 export const ONBOARDING_ORDER: (keyof OnboardingScreens)[] = [
     "OnboardingNameScreen",
-    "OnboardingTosScreen",
-    "OnboardingPrivacyScreen",
+    "OnboardingLegalScreen1",
+    "OnboardingLegalScreen2",
+    "OnboardingLegalScreen3",
     "OnboardingPersonalInfoScreen",
     "OnboardingLanguageScreen",
     "OnboardingInterestsScreen",

@@ -20,9 +20,9 @@ class TOSDeclinedModal extends React.Component<TOSDeclinedModalProps> {
                 renderContent={(hide: () => void) => (
                     <>
                         <Text style={styles.text}>
-                            {i18n.t("tos.modal.disclaimer1")}
+                            {i18n.t("legal.modal.disclaimer1")}
                             {"\n\n"}
-                            {i18n.t("tos.modal.disclaimer2")}
+                            {i18n.t("legal.modal.disclaimer2")}
                         </Text>
                         <View style={styles.actionButtonsWrapper}>
                             <TouchableHighlight
@@ -38,7 +38,7 @@ class TOSDeclinedModal extends React.Component<TOSDeclinedModalProps> {
                                     rootNavigate("LoginScreen");
                                 }}
                             >
-                                <Text style={styles.actionText}>{i18n.t("tos.decline")}</Text>
+                                <Text style={styles.actionText}>{i18n.t("legal.decline")}</Text>
                             </TouchableHighlight>
                         </View>
                     </>
