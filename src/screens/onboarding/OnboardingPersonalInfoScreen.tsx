@@ -21,6 +21,8 @@ import {CountryCode} from "../../model/country-codes";
 import EducationFieldPicker from "../../components/EducationFieldPicker";
 import {Platform, Text} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import DateInput from "../../components/DateInput";
+import {FormattedDate} from "../../components/FormattedDate";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -90,30 +92,13 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                             {...this.props}
                         >
                             <InputLabel>{i18n.t("dateOfBirth")}</InputLabel>
-                            <BirthDateControl
+                            {/* TODO DateInput <BirthDateControl
                                 date={values.birthdate || undefined}
                                 onSelect={(birthdate: Date) => setFieldValue("birthdate", birthdate)}
-                            />
+                            />*/}
+                            <DateInput onChange={(date) => setFieldValue("birthdate", date)} />
+                            <FormattedDate /*style={styles.dateText}*/ date={values.birthdate || undefined} />
                             {touched.birthdate && <InputErrorText error={errors.birthdate}></InputErrorText>}
-
-                            <Text>test</Text>
-                            {Platform.OS === "ios" && (
-                                <>
-                                    <DateTimePicker
-                                        value={new Date()}
-                                        display="default"
-                                        mode="date"
-                                        {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
-                                    />
-                                    <DateTimePicker
-                                        value={new Date()}
-                                        display="default"
-                                        mode="date"
-                                        textColor={"red"}
-                                        {...(Platform.OS === "ios" ? {style: {width: "100%"}} : {})}
-                                    />
-                                </>
-                            )}
 
                             <InputLabel style={{marginTop: spacing}}>{i18n.t("nationality")}</InputLabel>
                             <NationalityControl
