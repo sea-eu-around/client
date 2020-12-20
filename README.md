@@ -11,6 +11,7 @@ Resources :
 - https://docs.expo.io/distribution/building-standalone-apps/
 - https://docs.expo.io/distribution/uploading-apps/
 - https://docs.expo.io/distribution/app-signing/
+- (https://docs.expo.io/bare/updating-your-app/)
 
 ## Android
 
