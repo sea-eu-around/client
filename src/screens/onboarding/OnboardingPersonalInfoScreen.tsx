@@ -102,10 +102,6 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                             {...this.props}
                         >
                             <InputLabel>{i18n.t("dateOfBirth")}</InputLabel>
-                            {/* TODO DateInput <BirthDateControl
-                                date={values.birthdate || undefined}
-                                onSelect={(birthdate: Date) => setFieldValue("birthdate", birthdate)}
-                            />*/}
                             <BirthDateInput
                                 inputStyle={styles.dateTextInput}
                                 inputStyleValid={styles.dateTextInputValid}
@@ -151,7 +147,7 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         dateTextInput: {
-            height: 40,
+            height: 44,
             borderRadius: 0,
             borderWidth: 0,
             borderBottomWidth: 1,
