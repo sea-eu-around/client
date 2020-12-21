@@ -12,17 +12,18 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
 import InputLabel from "../../components/InputLabel";
-import BirthDateControl from "../../components/BirthDateControl";
 import InputErrorText from "../../components/InputErrorText";
 import {Gender} from "../../constants/profile-constants";
 import GenderToggle from "../../components/GenderToggle";
 import NationalityControl from "../../components/NationalityControl";
 import {CountryCode} from "../../model/country-codes";
 import EducationFieldPicker from "../../components/EducationFieldPicker";
-import {Platform, Text} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import DateInput from "../../components/DateInput";
+import {StyleSheet} from "react-native";
 import {FormattedDate} from "../../components/FormattedDate";
+import BirthDateInput from "../../components/BirthDateInput";
+import {withTheme} from "react-native-elements";
+import {Theme, ThemeProps} from "../../types";
+import {preTheme} from "../../styles/utils";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -34,7 +35,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     nationality: VALIDATOR_ONBOARDING_NATIONALITY,
 });
 
-type OnboardingPersonalInfoScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
+type OnboardingPersonalInfoScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 type OnboardingPersonalInfoFormState = {
     birthdate: Date | null;
@@ -69,9 +70,10 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
     }
 
     render(): JSX.Element {
-        const {onboardingState} = this.props;
+        const {onboardingState, theme} = this.props;
 
         const spacing = 30;
+        const styles = themedStyles(theme);
 
         return (
             <Formik
@@ -82,7 +84,15 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                 onSubmit={(values: OnboardingPersonalInfoFormState) => this.submit(values)}
             >
                 {(formikProps: FormikProps<OnboardingPersonalInfoFormState>) => {
-                    const {handleSubmit, values, errors, touched, setFieldValue} = formikProps;
+                    const {
+                        handleSubmit,
+                        values,
+                        errors,
+                        touched,
+                        setFieldValue,
+                        setFieldError,
+                        setFieldTouched,
+                    } = formikProps;
 
                     return (
                         <OnboardingSlide
@@ -96,8 +106,18 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                                 date={values.birthdate || undefined}
                                 onSelect={(birthdate: Date) => setFieldValue("birthdate", birthdate)}
                             />*/}
-                            <DateInput onChange={(date) => setFieldValue("birthdate", date)} />
-                            <FormattedDate /*style={styles.dateText}*/ date={values.birthdate || undefined} />
+                            <BirthDateInput
+                                inputStyle={styles.dateTextInput}
+                                inputStyleValid={styles.dateTextInputValid}
+                                onChange={(date, error) => {
+                                    if (error) setFieldError("birthdate", error);
+                                    else setFieldValue("birthdate", date);
+                                    setFieldTouched("birthdate", true);
+                                }}
+                            />
+                            {values.birthdate && !errors.birthdate && (
+                                <FormattedDate style={styles.birthdateText} date={values.birthdate} />
+                            )}
                             {touched.birthdate && <InputErrorText error={errors.birthdate}></InputErrorText>}
 
                             <InputLabel style={{marginTop: spacing}}>{i18n.t("nationality")}</InputLabel>
@@ -128,4 +148,27 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
     }
 }
 
-export default reduxConnector(OnboardingPersonalInfoScreen);
+export const themedStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        dateTextInput: {
+            height: 40,
+            borderRadius: 0,
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.accentTernary,
+            backgroundColor: "transparent",
+            fontSize: 18,
+            color: theme.text,
+        },
+        dateTextInputValid: {
+            borderBottomColor: theme.okay,
+        },
+        birthdateText: {
+            textAlign: "right",
+            marginTop: 4,
+            fontSize: 12,
+        },
+    });
+});
+
+export default reduxConnector(withTheme(OnboardingPersonalInfoScreen));

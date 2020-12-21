@@ -13,8 +13,9 @@ export function FormattedDate(props: FormattedDateProps): JSX.Element {
 
     if (date) {
         const localizedMonth = i18n.t(`months.${date.getMonth()}`);
-        const paddedDay = ((date.getDate() + "").length == 1 ? "0" : "") + date.getDate();
-        const formattedDate = `${paddedDay} ${localizedMonth} ${date.getFullYear()}`;
+        //const day = ((date.getDate() + "").length == 1 ? "0" : "") + date.getDate();
+        const day = date.getDate() + "";
+        const formattedDate = `${day} ${localizedMonth} ${date.getFullYear()}`;
 
         return <Text {...otherProps}>{formattedDate}</Text>;
     } else return <></>;

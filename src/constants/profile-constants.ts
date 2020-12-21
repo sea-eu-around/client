@@ -17,4 +17,4 @@ export const STAFF_ROLE_ICONS = ["school", "library-books", "account-balance", "
 export type Gender = "male" | "female" | "other";
 export const GENDERS: Gender[] = ["male", "female", "other"];
 
-export const MIN_AGE = 18;
+export const MIN_AGE = 16;

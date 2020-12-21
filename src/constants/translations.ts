@@ -67,6 +67,10 @@ export default {
                 atLeastOne: "Please select at least one language.",
                 specifyLevel: "Please specify a level for your languages.",
             },
+            date: {
+                tooYoung: "You must be 16 or older to join this platform.",
+                invalid: "Please enter a valid date.",
+            },
         },
         error: {
             error_user_not_verified: "This account's email address has not been verified yet.",
