@@ -84,7 +84,6 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
         },
         buttonOk: {
-            borderBottomWidth: 2,
             borderBottomColor: theme.okay,
         },
         nationality: {
