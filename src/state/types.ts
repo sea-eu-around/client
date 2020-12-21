@@ -88,12 +88,16 @@ export type MessagingState = {
     localChatUser: ChatRoomUser | null;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type NotificationsState = {};
+
 export type AppState = {
     auth: AuthState;
     settings: SettingsState;
     profile: ProfileState;
     matching: MatchingState;
     messaging: MessagingState;
+    notifications: NotificationsState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)
