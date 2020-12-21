@@ -2,13 +2,14 @@ import {FontAwesome} from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
+import {User} from "../model/user";
 import {RootNavigatorScreens} from "../navigation/types";
 import {attemptLoginFromCache} from "../state/auth/actions";
 import {loadProfileInterests, loadProfileOffers} from "../state/profile/actions";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 
-let loggedInFromCache = false;
+let loggedInFromCache: User | undefined = undefined;
 
 export default function useCachedResources(): {isLoadingComplete: boolean; initialRoute?: keyof RootNavigatorScreens} {
     const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -29,7 +30,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 await dispatch(loadProfileInterests());
 
                 // Load fonts
-                await Font.loadAsync({
+                Font.loadAsync({
                     ...FontAwesome.font,
                     Raleway: require("@assets/fonts/Raleway-Regular.ttf"),
                     RalewayThin: require("@assets/fonts/Raleway-Thin.ttf"),
@@ -53,7 +54,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
     }, []);
 
     let initialRoute: undefined | keyof RootNavigatorScreens = undefined;
-    if (loggedInFromCache) initialRoute = "MainScreen";
+    if (loggedInFromCache) initialRoute = loggedInFromCache.onboarded ? "MainScreen" : "OnboardingScreen";
 
     return {isLoadingComplete, initialRoute};
 }
