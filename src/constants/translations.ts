@@ -693,7 +693,7 @@ export default {
         deleteAccount: {
             title: "Delete your account",
             warning:
-                "Your account and all associated data will be deleted within a month. Please be aware that after this month, your account will be irreversibly deleted. If you sign in during this month however, the deletion will be cancelled.",
+                "Your account and all associated data will be deleted within six months. Please be aware that after this time, your account will be irreversibly deleted. If you sign in during this month however, the deletion will be cancelled.",
             button: "Delete",
             success1: "Your request has been received and will be processed shortly.",
             success2: "We are sorry to see you go.",
