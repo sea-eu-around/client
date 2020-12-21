@@ -51,10 +51,9 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         text: {
             fontSize: 24,
-            fontFamily: "raleway",
-            fontWeight: "bold",
+            fontFamily: "RalewaySemiBold",
             color: theme.accent,
-            paddingHorizontal: 8,
+            paddingHorizontal: 6,
             zIndex: 2,
 
             // Make it more readable with the dark theme

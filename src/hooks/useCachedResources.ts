@@ -31,8 +31,11 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 // Load fonts
                 await Font.loadAsync({
                     ...FontAwesome.font,
-                    raleway: require("@assets/fonts/Raleway-VariableFont_wght.ttf"),
-                    //"space-mono": require("../../assets/fonts/SpaceMono-Regular.ttf"),
+                    Raleway: require("@assets/fonts/Raleway-Regular.ttf"),
+                    RalewayThin: require("@assets/fonts/Raleway-Thin.ttf"),
+                    RalewayLight: require("@assets/fonts/Raleway-Light.ttf"),
+                    RalewaySemiBold: require("@assets/fonts/Raleway-SemiBold.ttf"),
+                    RalewayBold: require("@assets/fonts/Raleway-Bold.ttf"),
                 });
 
                 // Attempt to authenticate using cached data
