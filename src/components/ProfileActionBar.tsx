@@ -56,7 +56,11 @@ function ActionButton({theme, text, icon, backgroundColor, color}: ActionButtonP
     const styles = themedStyles(theme);
     return (
         <TouchableOpacity style={styles.button} activeOpacity={0.75}>
-            {icon && <MaterialIcons name={icon} style={[styles.buttonIcon, {color, backgroundColor}]} />}
+            {icon && (
+                <View style={[styles.buttonTop, {backgroundColor}]}>
+                    <MaterialIcons name={icon} style={[styles.buttonTopIcon, {color}]} />
+                </View>
+            )}
             <Text style={styles.buttonText}>{text}</Text>
         </TouchableOpacity>
     );
@@ -94,14 +98,17 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textWhite,
             ...styleTextLight,
         },
-        buttonIcon: {
+        buttonTop: {
             fontSize: 24,
             width: 36,
             height: 36,
-            lineHeight: 36,
-            textAlign: "center",
+            justifyContent: "center",
+            alignItems: "center",
             borderRadius: 60,
             marginBottom: 5,
+        },
+        buttonTopIcon: {
+            fontSize: 24,
         },
     });
 });

@@ -2,7 +2,7 @@ import {MaterialIcons} from "@expo/vector-icons";
 import * as React from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import {Platform, StyleSheet} from "react-native";
+import {Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -55,22 +55,33 @@ class AvatarEditButton extends React.Component<AvatarEditButtonProps> {
         const {theme} = this.props;
         const styles = themedStyles(theme);
 
-        return <MaterialIcons onPress={() => this.showPicker()} style={styles.buttonStyle} name="edit" />;
+        return (
+            <TouchableOpacity style={styles.button} onPress={() => this.showPicker()}>
+                <MaterialIcons style={styles.buttonIcon} name="edit" />
+            </TouchableOpacity>
+        );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        buttonStyle: {
+        button: {
             position: "absolute",
             bottom: 0,
             right: 0,
             borderRadius: 20,
             padding: 4,
             backgroundColor: theme.cardBackground,
-            color: theme.text,
-            fontSize: 20,
+
+            shadowColor: "#000",
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.2,
+            shadowRadius: 1.41,
             elevation: 2,
+        },
+        buttonIcon: {
+            fontSize: 20,
+            color: theme.text,
         },
     });
 });
