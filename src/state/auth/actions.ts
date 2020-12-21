@@ -142,7 +142,9 @@ const loginFailure = (): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
 });
 
-export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (dispatch): Promise<boolean> => {
+export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => async (
+    dispatch,
+): Promise<User | undefined> => {
     const credentials = await readCachedCredentials();
 
     if (credentials) {
@@ -153,12 +155,13 @@ export const attemptLoginFromCache = (): AppThunk<Promise<boolean>> => async (di
 
         if (response.status == HttpStatusCode.OK) {
             const payload = (response as SuccessfulRequestResponse).data as ResponseUserDto;
-            dispatch(loginSuccess(token, convertDtoToUser(payload), true));
-            return true;
+            const user = convertDtoToUser(payload);
+            dispatch(loginSuccess(token, user, true));
+            return user;
         } else dispatch(loginFailure()); // e.g. token is invalid
     }
     // If no credentials are available in cache, the action does nothing.
-    return false;
+    return undefined;
 };
 
 export const requestLogin = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
