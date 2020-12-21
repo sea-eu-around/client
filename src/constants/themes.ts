@@ -11,9 +11,9 @@ export default {
         textBlack: lightThemeText,
         textLight: "#666",
         textInverted: "#fff",
-        background: "#fafafa",
-        cardBackground: "#ffffff", //"#f7f7f7",
-        almostBackground: "#edeff2",
+        background: "#fff",
+        cardBackground: "#f7f7f7", //"#f7f7f7",
+        almostBackground: "#f7f7f7",
         accent: "#003da5", // Pantone 293c
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c

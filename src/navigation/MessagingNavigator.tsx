@@ -21,7 +21,7 @@ const Header = (stackProps: StackHeaderProps) => (
             return (
                 <MainHeader
                     {...stackProps}
-                    wrapperStyle={[hstyles.wrapperNoShadow, {backgroundColor: theme.cardBackground}]}
+                    wrapperStyle={[hstyles.wrapperNoShadow, {backgroundColor: theme.background}]}
                 />
             );
         }}

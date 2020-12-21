@@ -216,7 +216,7 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
             alignItems: "center",
             alignSelf: "center",
-            borderRadius: 4,
+            borderRadius: 10,
             elevation: 1,
         },
         resetButtonText: {

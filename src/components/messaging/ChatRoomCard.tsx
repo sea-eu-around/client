@@ -201,7 +201,6 @@ const themedStyles = preTheme((theme: Theme) => {
             borderRadius: 4,
             elevation: 1,
             padding: 10,
-            backgroundColor: theme.cardBackground,
         },
         touchable: {
             width: "100%",

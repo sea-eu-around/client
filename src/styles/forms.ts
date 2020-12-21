@@ -25,7 +25,7 @@ export const formStyles = preTheme(() => {
         buttonMajor: {
             justifyContent: "center",
             height: 55,
-            borderRadius: 8,
+            borderRadius: 10,
 
             shadowColor: "#000",
             shadowOffset: {
@@ -58,7 +58,7 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             width: "100%",
             height: 60,
             paddingHorizontal: 20,
-            borderRadius: 5,
+            borderRadius: 10,
             borderWidth: 0,
             backgroundColor: theme.accentSlight,
             color: theme.textBlack,

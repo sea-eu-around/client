@@ -260,8 +260,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         swipeable: {
             width: "100%",
-            borderRadius: 10,
-            elevation: 1,
+            borderRadius: 20,
             padding: cardPadding,
             overflow: "hidden",
             backgroundColor: theme.cardBackground,
