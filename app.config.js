@@ -23,7 +23,7 @@ if (TARGET === "PRODUCTION") {
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_HOST,
-        SERVER_URL: `https://${SERVER_HOST}`,
+        SERVER_URL: `http://192.168.0.23:3000`,
         DEBUG: true,
     };
 }
