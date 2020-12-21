@@ -60,7 +60,9 @@ const Chip = withTheme(
         const styles = themedStyles(theme);
         return (
             <View style={[styles.chip, chipStyle]}>
-                <Text style={[styles.chipText, textStyle]}>{text}</Text>
+                <Text style={[styles.chipText, textStyle]} numberOfLines={1}>
+                    {text}
+                </Text>
                 {removable && (
                     <TouchableOpacity
                         style={styles.chipRemoveButton}
@@ -87,8 +89,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             backgroundColor: theme.accentSlight,
-            paddingVertical: 4,
-            paddingHorizontal: 10,
+            paddingVertical: 6,
+            paddingLeft: 10,
             borderRadius: 20,
             marginRight: 4,
             marginBottom: 4,
@@ -96,9 +98,15 @@ export const themedStyles = preTheme((theme: Theme) => {
         chipText: {
             fontSize: 14,
             color: theme.textBlack,
+            marginRight: 30, // depends on width of "remove" button
         },
         chipRemoveButton: {
-            padding: 2,
+            position: "absolute",
+            right: 0,
+            width: 32,
+            height: 32,
+            alignItems: "center",
+            justifyContent: "center",
         },
         chipRemoveIcon: {
             fontSize: 22,
