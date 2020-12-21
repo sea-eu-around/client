@@ -14,6 +14,7 @@ export type OnboardingScreenProps = {
     previous: () => void;
     next: () => void;
     hasNext: boolean;
+    noKeyboardAvoidance?: boolean;
 };
 
 export type OnboardingSlideProps = {
@@ -27,7 +28,18 @@ export type OnboardingSlideProps = {
 
 class OnboardingSlide extends React.Component<OnboardingSlideProps> {
     render(): JSX.Element {
-        const {title, subtitle, index, hideNavNext, hasNext, handleSubmit, next, containerStyle, theme} = this.props;
+        const {
+            title,
+            subtitle,
+            index,
+            hideNavNext,
+            hasNext,
+            handleSubmit,
+            next,
+            containerStyle,
+            noKeyboardAvoidance,
+            theme,
+        } = this.props;
         const styles = onboardingStyle(theme);
 
         const hasPrevious = index > 0;
@@ -43,7 +55,11 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                     style={styles.slideScrollView}
                     contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
                 >
-                    <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={60}>
+                    <KeyboardAvoidingView
+                        behavior="position"
+                        keyboardVerticalOffset={70}
+                        enabled={!noKeyboardAvoidance}
+                    >
                         <View style={styles.header}>
                             {title && typeof title === "string" && <Text style={styles.title}>{title}</Text>}
                             {title && typeof title !== "string" && title}
