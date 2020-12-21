@@ -97,8 +97,8 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                     return (
                         <OnboardingSlide
                             title={i18n.t("onboarding.personalInfo.title")}
-                            //subtitle={i18n.t("onboarding.personalInfo.subtitle")}
                             handleSubmit={handleSubmit}
+                            noKeyboardAvoidance={true}
                             {...this.props}
                         >
                             <InputLabel>{i18n.t("dateOfBirth")}</InputLabel>
@@ -134,7 +134,7 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
                             <EducationFieldPicker
                                 fields={values.educationFields}
                                 onChange={(fields: string[]) => setFieldValue("educationFields", fields)}
-                                showChips={false}
+                                showChips={true}
                             />
                         </OnboardingSlide>
                     );
