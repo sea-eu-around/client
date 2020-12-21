@@ -104,7 +104,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
 
         return (
             <ScreenWrapper>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
                     <TouchableOpacity style={styles.resetButton} onPress={() => this.resetLocalFilters()}>
                         <Text style={styles.resetButtonText}>{i18n.t("matching.filtering.buttonReset")}</Text>
                         <MaterialIcons name="refresh" style={styles.resetButtonIcon} />
@@ -163,9 +163,13 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        scroll: {
+            width: "100%",
+        },
         scrollContainer: {
             flexDirection: "column",
             padding: 40,
+            width: "100%",
         },
         sectionContainer: {
             width: "100%",
