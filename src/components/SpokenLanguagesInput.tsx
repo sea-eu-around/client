@@ -108,13 +108,12 @@ const themedStyles = preTheme((theme: Theme) => {
         rowContainer: {
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "center",
         },
         deleteIcon: {
             fontSize: 24,
             color: theme.error,
             paddingHorizontal: 4,
-            height: "100%",
-            textAlignVertical: "center",
         },
         languagePicker: {},
         languageLabel: {
