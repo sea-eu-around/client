@@ -91,7 +91,7 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
                                 autoCompleteType="name"
                                 enablesReturnKeyAutomatically={true}
                                 returnKeyType="done"
-                                onSubmitEditing={() => this.props.next()}
+                                onSubmitEditing={() => handleSubmit()}
                             />
                         </OnboardingSlide>
                     );
