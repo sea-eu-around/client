@@ -316,6 +316,12 @@ export default {
             submit: "Submit",
             getStarted: "Get Started",
             profileCreated: "Welcome! Your profile is now created.",
+            quit: {
+                title: "Quit on-boarding",
+                text: "Do you really wish to leave? You can resume later.",
+                cancel: "Cancel",
+                yes: "Yes",
+            },
         },
         spokenLanguages: "Spoken languages",
         languagePicker: {
