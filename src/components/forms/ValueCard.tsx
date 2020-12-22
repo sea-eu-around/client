@@ -16,13 +16,14 @@ type ValueCardProps<T> = {
     display?: JSX.Element;
     noModal?: boolean;
     overrideModal?: (hide: () => void) => JSX.Element;
-    renderInput?: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
+    renderInput?: (value: T, error: string | null, onChange: (value: T, error?: string | null) => void) => JSX.Element;
     validator?: Schema<unknown> | ArraySchema<unknown>;
     initialValue?: T;
     apply?: (value: T) => void;
     locked?: boolean;
     oneLine?: boolean;
     onPress?: () => void;
+    onModalShown?: () => void;
 } & TouchableOpacityProps;
 
 // Component state
@@ -43,18 +44,18 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
     }
 
     setModal(modalOpen: boolean): void {
+        const {initialValue} = this.props;
         // Reset to initial value when opening the modal
-        this.setState({...this.state, modalOpen, value: this.props.initialValue, error: null});
+        this.setState({...this.state, modalOpen, value: initialValue, error: null});
     }
 
     setError(error: string | null): void {
         this.setState({...this.state, error});
     }
 
-    onChange(value: T): void {
-        this.setState({...this.state, value}, () => {
-            this.validate();
-        });
+    onChange(value: T, error?: string | null): void {
+        if (error === undefined) error = this.state.error;
+        this.setState({...this.state, value, error}, () => this.validate());
     }
 
     validate(): boolean {
@@ -72,8 +73,8 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
 
     apply(): void {
         if (this.validate()) {
-            this.setModal(false);
             if (this.props.apply && this.state.value) this.props.apply(this.state.value);
+            this.setModal(false);
         }
     }
 
@@ -96,7 +97,9 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                             <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
                                 <Text style={styles.modalLabel}>{label}</Text>
                                 {renderInput && value ? (
-                                    renderInput(value, error, (value: T) => this.onChange(value))
+                                    renderInput(value, error, (value: T, error?: string | null) =>
+                                        this.onChange(value, error),
+                                    )
                                 ) : (
                                     <></>
                                 )}
@@ -142,9 +145,14 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
             locked,
             oneLine,
             onPress,
+            onModalShown,
             ...otherProps
         } = this.props;
         const {modalOpen} = this.state;
+
+        const onShow = () => {
+            if (onModalShown) onModalShown();
+        };
 
         return (
             // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
@@ -195,9 +203,15 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                                             <CustomModal
                                                 visible={modalOpen}
                                                 renderContent={() => this.renderModalContent()}
+                                                onShow={onShow}
                                             />
                                         ) : (
-                                            <Modal transparent={true} visible={modalOpen} animationType="slide">
+                                            <Modal
+                                                transparent={true}
+                                                visible={modalOpen}
+                                                onShow={onShow}
+                                                animationType="slide"
+                                            >
                                                 {this.renderModalContent()}
                                             </Modal>
                                         ))}

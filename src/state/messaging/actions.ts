@@ -120,7 +120,6 @@ export const fetchMatchRooms = (search?: string): AppThunk => async (dispatch, g
         {page: pagination.page, limit: ROOMS_FETCH_LIMIT, search},
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
@@ -158,8 +157,8 @@ export const connectToChat = (callback?: (connected: boolean) => void): AppThunk
 
     if (connected) {
         if (callback) callback(true);
-    } else if (!connecting) {
-        if (authToken) {
+    } else if (authToken) {
+        if (!connecting) {
             dispatch(connectToChatBegin());
             chatSocket.connect(
                 authToken,
@@ -181,8 +180,8 @@ export const connectToChat = (callback?: (connected: boolean) => void): AppThunk
                     } else fail();
                 },
             );
-        } else fail();
-    }
+        }
+    } else fail();
 };
 
 export const disconnectFromChat = (): DisconnectFromChatAction => {
@@ -312,7 +311,6 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
             {page: pagination.page, limit: MESSAGES_FETCH_LIMIT, beforeDate},
             {},
             token,
-            true,
         );
 
         const convertDto = (dto: ResponseChatMessageDto): ChatRoomMessage | undefined => {
@@ -337,7 +335,7 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
 export const fetchMatchRoom = (roomId: string): AppThunk<Promise<ChatRoom | null>> => async (dispatch, getState) => {
     const {token} = getState().auth;
 
-    const response = await requestBackend(`rooms/${roomId}`, "GET", {}, {}, token, true);
+    const response = await requestBackend(`rooms/${roomId}`, "GET", {}, {}, token);
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;

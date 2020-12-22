@@ -5,10 +5,7 @@ import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
-import {MyThunkDispatch} from "../state/types";
-import store from "../state/store";
 import {styleTextThin} from "../styles/general";
-import {connectToChat, fetchMatchRoom} from "../state/messaging/actions";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 import AsyncButton from "../components/AsyncButton";
@@ -27,24 +24,9 @@ class MatchSuccessScreen extends React.Component<MatchSuccessScreenProps> {
     }
 
     async chat(): Promise<void> {
-        const dispatch = store.dispatch as MyThunkDispatch;
         const roomId = this.getRoomId();
-
-        if (roomId) {
-            const connectPromise = new Promise((resolve) =>
-                dispatch(connectToChat((connected: boolean) => resolve(connected))),
-            );
-
-            // Once we have fetched the room and we are connected to the chat
-            const [room, connected] = await Promise.all([dispatch(fetchMatchRoom(roomId)), connectPromise]);
-
-            if (room) {
-                if (connected) rootNavigate("ChatScreen", {roomId: room.id});
-                return;
-            }
-        }
-        // If we haven't been able to join the chat
-        rootNavigate("TabMessaging");
+        if (roomId) rootNavigate("ChatScreen", {roomId});
+        else rootNavigate("TabMessaging");
     }
 
     render(): JSX.Element {

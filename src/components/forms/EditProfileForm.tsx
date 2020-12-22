@@ -10,7 +10,6 @@ import RoleToggle from "../RoleToggle";
 import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
 import StaffRolePicker from "../StaffRolePicker";
 import GenderToggle from "../GenderToggle";
-import BirthDatePicker from "../BirthDatePicker.native";
 import AvatarEditButton from "../AvatarEditButton";
 import ValueCard from "./ValueCard";
 import {FormattedDate} from "../FormattedDate";
@@ -35,6 +34,7 @@ import OfferControl from "../OfferControl";
 import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
+import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -47,6 +47,8 @@ function Spacer(): JSX.Element {
 }
 
 class EditProfileForm extends React.Component<EditProfileFormProps> {
+    birthDateInputRef = React.createRef<BirthDateInputClass>();
+
     onFieldChanged(fields: Partial<UserProfile>): void {
         if (this.props.onChange !== undefined) this.props.onChange(fields);
     }
@@ -75,16 +77,19 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         label={i18n.t("dateOfBirth")}
                         initialValue={profile.birthdate}
                         display={<FormattedDate style={styles.cardText} date={profile.birthdate} />}
-                        overrideModal={(hide: () => void) => (
-                            <BirthDatePicker
-                                date={profile.birthdate}
-                                open={true}
-                                onSelect={(birthdate: Date) => {
-                                    this.onFieldChanged({birthdate});
-                                    hide();
+                        renderInput={(value: Date, _error, onChange) => (
+                            <BirthDateInput
+                                ref={this.birthDateInputRef}
+                                date={value}
+                                containerStyle={styles.birthdateInputContainer}
+                                inputStyle={styles.birthdateInput}
+                                onChange={(birthdate?: Date, inputError?: string) => {
+                                    onChange(birthdate || value, inputError || null);
                                 }}
                             />
                         )}
+                        onModalShown={() => this.birthDateInputRef.current?.focus()}
+                        apply={(birthdate: Date) => this.onFieldChanged({birthdate})}
                     />
                     <Spacer />
                     <ValueCard
@@ -253,7 +258,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         ></FormattedUniversity>
                     )}
                 </View>
-                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="always">
+                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="handled">
                     <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={-100} style={styles.formWrapper}>
                         <View style={styles.titleWrapper}>
                             <Text style={styles.title}>{i18n.t("myProfile")}</Text>
@@ -297,11 +302,7 @@ const OfferCategoryRow = reduxConnector(
                         <Text style={{color: theme.textLight}}>{i18n.t("profile.noOffersSelected")}</Text>
                     )
                 }
-                renderInput={(
-                    value: OfferValueDto[],
-                    error: string | null,
-                    onChange: (value: OfferValueDto[]) => void,
-                ) => (
+                renderInput={(value: OfferValueDto[], error, onChange) => (
                     <>
                         {offers
                             .filter((o) => o.category == category)
@@ -407,6 +408,17 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         staffRoleButton: {
             marginTop: 10,
+        },
+        birthdateInputContainer: {
+            marginTop: 20,
+            marginBottom: 50,
+        },
+        birthdateInput: {
+            height: 50,
+            fontSize: 16,
+            borderRadius: 10,
+            backgroundColor: theme.cardBackground,
+            color: theme.text,
         },
     });
 });

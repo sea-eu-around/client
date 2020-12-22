@@ -3,7 +3,7 @@ import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
-import {FormTextInput} from "../FormTextInput";
+import {FormTextInput} from "../forms/FormTextInput";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";

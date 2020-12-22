@@ -8,10 +8,12 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvider";
 import store from "./state/store";
 import ThemedStatusBar from "./components/ThemedStatusBar";
+import {configureNotifications} from "./notifications";
 
 function App() {
     const {isLoadingComplete, initialRoute} = useCachedResources();
     configureLocalization();
+    configureNotifications();
 
     if (!isLoadingComplete) {
         return null;

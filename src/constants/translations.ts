@@ -648,29 +648,21 @@ export default {
                 name: "Provide a couch",
                 help: "I am open to letting someone sleep on my couch.",
             },
-            "do-a-campus-tour": {
-                name: "Do a campus tour",
+            "get-into-campus-life": {
+                name: "Get into campus life",
                 help: "I am open to helping someone visit my campus.",
             },
-            "help-on-a-project": {
-                name: "Help on a project",
-                help: "I am open to helping someone work on a project.",
-            },
-            "look-for-collaborators": {
-                name: "Look for collaborators",
+            "cowork-on-a-project": {
+                name: "Co-work on a project",
                 help: "I am looking for collaborators for a project.",
             },
-            "answer-questions": {
-                name: "Answer questions",
-                help: "I can give information about my university or answer to general questions.",
+            "answer-academic-questions": {
+                name: "Answer academic questions",
+                help: "I can give information about my university or answer to general academic questions.",
             },
-            "talk-a-bit": {
-                name: "Talk a bit",
-                help: "I would like to get to know new people.",
-            },
-            "chat-to-practice": {
-                name: "Chat to practice",
-                help: "I would not mind chatting with other users who would like to improve their language skills",
+            "share-interests": {
+                name: "Share interests",
+                help: "I would like to chat with other users about common interests.",
             },
             "language-tandem": {
                 name: "Language tandem",
@@ -693,7 +685,7 @@ export default {
         deleteAccount: {
             title: "Delete your account",
             warning:
-                "Your account and all associated data will be deleted within a month. Please be aware that after this month, your account will be irreversibly deleted. If you sign in during this month however, the deletion will be cancelled.",
+                "Your account and all associated data will be deleted within six months. Please be aware that after this time, your account will be irreversibly deleted. If you sign in during this month however, the deletion will be cancelled.",
             button: "Delete",
             success1: "Your request has been received and will be processed shortly.",
             success2: "We are sorry to see you go.",

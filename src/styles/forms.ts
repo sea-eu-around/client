@@ -1,7 +1,7 @@
 import {StyleSheet, Platform, TextStyle} from "react-native";
 import {Theme} from "../types";
-import {FormTextInputProps} from "../components/FormTextInput";
-import {FormCheckBoxProps} from "../components/FormCheckBox";
+import {FormTextInputProps} from "../components/forms/FormTextInput";
+import {FormCheckBoxProps} from "../components/forms/FormCheckBox";
 import {preTheme} from "./utils";
 
 export const formStyles = preTheme(() => {

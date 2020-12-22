@@ -1,17 +1,19 @@
 import * as React from "react";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
-import {TextInput, TextInputProps, View, StyleSheet, StyleProp, TextStyle} from "react-native";
+import {TextInput, TextInputProps, View, StyleSheet, StyleProp, TextStyle, ViewStyle} from "react-native";
 import {preTheme} from "../styles/utils";
 
 // Component props
 export type DateInputProps = {
     date?: Date;
     onChange?: (date?: Date, error?: string) => void;
+    containerStyle?: StyleProp<ViewStyle>;
     inputStyle?: StyleProp<TextStyle>;
     inputStyleValid?: StyleProp<TextStyle>;
     minimumDate?: Date;
     maximumDate?: Date;
+    autoFocus?: boolean;
 } & ThemeProps;
 
 // Component state
@@ -49,7 +51,7 @@ const dateInputProps = (
     },
 });
 
-class DateInput extends React.Component<DateInputProps, DateInputState> {
+export class DateInputClass extends React.Component<DateInputProps, DateInputState> {
     constructor(props: DateInputProps) {
         super(props);
         this.state = this.deriveStateFromDate(props.date);
@@ -65,6 +67,10 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
         }
     }
 
+    focus(): void {
+        this.input1Ref.current?.focus();
+    }
+
     private validDate(): {date?: Date; error?: string} {
         const {year, month, day} = this.state;
         const parsable = year.length >= 4 && month.length > 0 && day.length > 0;
@@ -75,7 +81,7 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
                 const pmonth = parseInt(month) - 1;
                 const pday = parseInt(day);
                 // Verify that all individual parts of the date are correct.
-                if (pyear > 0 && pmonth > 0 && pday > 0 && pmonth <= 12 && pday <= 31) {
+                if (pyear > 0 && pmonth >= 0 && pmonth < 12 && pday > 0 && pday <= 31) {
                     const date = new Date(pyear, pmonth, pday);
                     const error = this.getError(date);
                     if (error) return {error};
@@ -100,11 +106,12 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
     deriveStateFromDate(date?: Date): DateInputState {
         const year = date?.getFullYear();
         const month = date?.getMonth();
-        const day = date?.getDay();
+        const day = date?.getDate();
+
         return {
-            year: year ? year + "" : "",
-            month: month ? month + 1 + "" : "",
-            day: day ? day + "" : "",
+            year: year === undefined ? "" : year + "",
+            month: month === undefined ? "" : month + 1 + "",
+            day: day === undefined ? "" : day + "",
             touched: date !== undefined,
             error: date ? this.getError(date) : undefined,
         };
@@ -124,15 +131,14 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
     }
 
     render(): JSX.Element {
-        const {inputStyle, theme} = this.props;
+        const {inputStyle, containerStyle, autoFocus, theme} = this.props;
         const {year, month, day, touched, error} = this.state;
         const styles = themedStyles(theme);
-
         const valid = touched && !error;
         const inputStyleValid = valid ? this.props.inputStyleValid : {};
 
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, containerStyle]}>
                 <TextInput
                     {...dateInputProps(this.input1Ref, day, 2, this.input2Ref, (day) => this.set({day}))}
                     ref={this.input1Ref}
@@ -140,6 +146,7 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
                     blurOnSubmit={false}
                     returnKeyType="next"
                     placeholder={"Day"}
+                    autoFocus={autoFocus}
                 />
                 <TextInput
                     {...dateInputProps(this.input2Ref, month, 2, this.input3Ref, (month) => this.set({month}))}
@@ -180,4 +187,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(DateInput);
+export default withTheme(DateInputClass);
