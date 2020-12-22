@@ -23,6 +23,7 @@ type ValueCardProps<T> = {
     locked?: boolean;
     oneLine?: boolean;
     onPress?: () => void;
+    onModalShown?: () => void;
 } & TouchableOpacityProps;
 
 // Component state
@@ -43,8 +44,9 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
     }
 
     setModal(modalOpen: boolean): void {
+        const {initialValue} = this.props;
         // Reset to initial value when opening the modal
-        this.setState({...this.state, modalOpen, value: this.props.initialValue, error: null});
+        this.setState({...this.state, modalOpen, value: initialValue, error: null});
     }
 
     setError(error: string | null): void {
@@ -143,9 +145,14 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
             locked,
             oneLine,
             onPress,
+            onModalShown,
             ...otherProps
         } = this.props;
         const {modalOpen} = this.state;
+
+        const onShow = () => {
+            if (onModalShown) onModalShown();
+        };
 
         return (
             // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
@@ -196,9 +203,15 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                                             <CustomModal
                                                 visible={modalOpen}
                                                 renderContent={() => this.renderModalContent()}
+                                                onShow={onShow}
                                             />
                                         ) : (
-                                            <Modal transparent={true} visible={modalOpen} animationType="slide">
+                                            <Modal
+                                                transparent={true}
+                                                visible={modalOpen}
+                                                onShow={onShow}
+                                                animationType="slide"
+                                            >
                                                 {this.renderModalContent()}
                                             </Modal>
                                         ))}
