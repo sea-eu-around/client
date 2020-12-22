@@ -75,6 +75,7 @@ export type MatchingState = {
     filters: MatchingFiltersState;
     fetchedProfiles: UserProfile[];
     profilesPagination: PaginatedState;
+    historyPagination: PaginatedState;
     myMatches: UserProfile[];
     fetchingMyMatches: boolean;
 };

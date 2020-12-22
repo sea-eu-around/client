@@ -29,6 +29,7 @@ export const AVATAR_QUALITY = 0.75;
 export const PROFILES_FETCH_LIMIT = 8; // Matching tab
 export const ROOMS_FETCH_LIMIT = 10; // Messaging tab
 export const MESSAGES_FETCH_LIMIT = 12; // Chat
+export const HISTORY_FETCH_LIMIT = 12; // Match history tab
 
 /**
  * The maximum number of spoken languages a user can select.

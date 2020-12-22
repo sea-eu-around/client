@@ -11,6 +11,7 @@ import {
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
     FetchMyMatchesSuccessAction,
+    FetchHistorySuccessAction,
 } from "./actions";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
@@ -25,6 +26,7 @@ export const initialState: MatchingState = {
     filters: defaultMatchingFilters(),
     fetchedProfiles: [],
     profilesPagination: initialPaginatedState(),
+    historyPagination: initialPaginatedState(),
     myMatches: [],
     fetchingMyMatches: false,
 };
@@ -103,6 +105,29 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {
                 ...state,
                 fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_BEGIN: {
+            return {...state, historyPagination: {...state.historyPagination, fetching: true}};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE: {
+            return {...state, historyPagination: {...state.historyPagination, fetching: false, canFetchMore: false}};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS: {
+            const {canFetchMore} = <FetchHistorySuccessAction>action;
+            const pagination = state.historyPagination;
+            return {
+                ...state,
+                // TODO implement fetch match history reducer
+                //fetchedProfiles: state.fetchedProfiles.concat(profiles),
+                historyPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_REFRESH: {
+            return {
+                ...state,
+                fetchedProfiles: [],
+                profilesPagination: initialPaginatedState(),
             };
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
