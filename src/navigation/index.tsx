@@ -83,7 +83,6 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
             linking={LinkingConfiguration}
             theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
             onReady={() => {
-                console.log("onReady");
                 AppState.addEventListener("change", onAppStateChange);
                 onStateChange();
             }}
