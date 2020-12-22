@@ -16,6 +16,8 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
             return import("@assets/images/offers/meet.svg");
         case "offers.categories.collaborate":
             return import("@assets/images/offers/collaborate.svg");
+        case "background.onboarding":
+            return import("@assets/images/background.svg");
         case "logos.junior-atlantique":
             return theme === "light"
                 ? import("@assets/images/logos/junior-atlantique-light.png")
@@ -45,7 +47,7 @@ async function assetDictFr(theme: ThemeKey, key: string): Promise<unknown> {
     }
 }
 
-export function getLocalImage(key: string, onLoad: () => void): number {
+export function getLocalImage(key: string, onLoad?: () => void): number {
     const settings = store.getState().settings.userSettings;
     if (locale != settings.locale || theme != settings.theme) loaded = {};
     locale = settings.locale;
@@ -56,7 +58,7 @@ export function getLocalImage(key: string, onLoad: () => void): number {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const finish = (v: any) => {
         loaded[key] = v.default;
-        onLoad();
+        if (onLoad) onLoad();
     };
 
     const localizedDict = locale === "en" ? assetDictEn : assetDictFr;
@@ -71,7 +73,7 @@ export function getLocalImage(key: string, onLoad: () => void): number {
     return 0;
 }
 
-export function getLocalSvg(key: string, onLoad: () => void): React.FC<SvgProps> {
+export function getLocalSvg(key: string, onLoad?: () => void): React.FC<SvgProps> {
     const raw = getLocalImage(key, onLoad);
     if (raw === 0) return SvgPlaceholder;
     return (raw as unknown) as React.FC<SvgProps>;

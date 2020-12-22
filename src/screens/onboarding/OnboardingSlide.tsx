@@ -9,6 +9,7 @@ import {
     ViewStyle,
     StyleProp,
     Alert,
+    Dimensions,
 } from "react-native";
 import {withTheme} from "react-native-elements";
 import {onboardingStyle} from "../../styles/onboarding";
@@ -18,6 +19,7 @@ import i18n from "i18n-js";
 import store from "../../state/store";
 import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
+import {getLocalSvg} from "../../assets";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -59,8 +61,17 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             else if (hasNext) next();
         };
 
+        const Background = getLocalSvg("background.onboarding", () => this.forceUpdate());
+        const {width, height} = Dimensions.get("screen");
         return (
             <ScreenWrapper>
+                <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 0.8}}>
+                    <Background
+                        preserveAspectRatio={"true"}
+                        viewBox={`${50} ${50} ${width * 1.25} ${height * 1.25}`}
+                        style={{width, height}}
+                    />
+                </View>
                 <ScrollView
                     style={styles.slideScrollView}
                     contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
