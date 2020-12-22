@@ -1,16 +1,15 @@
 import * as React from "react";
-import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import {withTheme} from "react-native-elements";
-import {Theme, ThemeProps} from "../../types";
-import {StackHeaderProps} from "@react-navigation/stack";
+import {ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
-import {MaterialIcons} from "@expo/vector-icons";
 import {GiftedAvatar} from "react-native-gifted-chat";
 import {ChatRoomUser} from "../../model/chat-room";
 import {headerStyles} from "../../styles/headers";
 import {rootNavigate} from "../../navigation/utils";
+import MainHeader, {MainHeaderStackProps} from "./MainHeader";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -19,48 +18,39 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-export type ChatScreenHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackHeaderProps;
+export type ChatScreenHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps & MainHeaderStackProps;
 
 class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
-    back() {
-        rootNavigate("TabMessaging");
-    }
-
     render(): JSX.Element {
-        const {theme, activeRoom, profileId, insets} = this.props;
+        const {theme, activeRoom, profileId} = this.props;
         const styles = themedStyles(theme);
         const hstyles = headerStyles(theme);
 
         if (activeRoom) {
             const user = activeRoom.users.filter((p: ChatRoomUser) => p._id != profileId)[0];
             return (
-                <View style={[{paddingTop: insets.top}, hstyles.wrapper]}>
-                    <TouchableOpacity style={hstyles.backButton} onPress={() => this.back()}>
-                        <MaterialIcons style={[hstyles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
-                    </TouchableOpacity>
-                    <GiftedAvatar
-                        avatarStyle={[hstyles.avatarContainer, styles.avatar]}
-                        user={user}
-                        onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
-                    />
-                    <Text style={styles.name} numberOfLines={1}>
-                        {user.name}
-                    </Text>
-                </View>
+                <MainHeader
+                    backButton={true}
+                    blur={true}
+                    overrideAvatar={
+                        <GiftedAvatar
+                            avatarStyle={hstyles.avatarContainer}
+                            user={user}
+                            onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
+                        />
+                    }
+                    overrideTitle={user.name}
+                    titleStyle={styles.name}
+                />
             );
         } else return <></>;
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
+const themedStyles = preTheme(() => {
     return StyleSheet.create({
-        avatar: {
-            marginRight: 10,
-        },
         name: {
-            flex: 1,
             fontSize: 18,
-            color: theme.text,
             fontWeight: "600",
         },
     });
@@ -68,6 +58,6 @@ const themedStyles = preTheme((theme: Theme) => {
 
 const ChatScreenHeaderComp = reduxConnector(withTheme(ChatScreenHeaderClass));
 
-export default function ChatScreenHeader(props: StackHeaderProps): JSX.Element {
+export default function ChatScreenHeader(props: MainHeaderStackProps): JSX.Element {
     return <ChatScreenHeaderComp {...props} />;
 }
