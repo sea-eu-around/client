@@ -5,6 +5,7 @@ import {ThemeProps} from "../../types";
 
 export type CustomModalProps = ThemeProps & {
     onHide?: () => void;
+    onShow?: () => void;
     renderContent: (hide: () => void) => JSX.Element;
     modalViewStyle?: ViewStyle;
     visible?: boolean;
@@ -28,6 +29,7 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
     setModalVisible(b: boolean): void {
         this.setState({...this.state, modalVisible: b});
         if (!b && this.props.onHide) this.props.onHide();
+        if (b && this.props.onShow) this.props.onShow();
     }
 
     render(): JSX.Element {
