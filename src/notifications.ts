@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import {Platform} from "react-native";
+import {rootNavigate} from "./navigation/utils";
 
 export function configureNotifications(): void {
     Notifications.setNotificationHandler({
@@ -10,6 +11,21 @@ export function configureNotifications(): void {
             shouldPlaySound: true,
             shouldSetBadge: false,
         }),
+    });
+
+    Notifications.addNotificationReceivedListener((notification) => {
+        console.log("Notification received:");
+        console.log(notification.request.content);
+    });
+
+    Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log("Notification response received:");
+        const data = response.notification.request.content.data;
+
+        if (data.roomId) {
+            const roomId = data.roomId as string;
+            rootNavigate("ChatScreen", {roomId});
+        }
     });
 
     if (Platform.OS === "android") {

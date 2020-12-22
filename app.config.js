@@ -79,6 +79,7 @@ export default {
                     category: ["BROWSABLE", "DEFAULT"],
                 },
             ],
+            useNextNotificationsApi: true,
         },
         web: {
             favicon: "./assets/images/favicon.png",
