@@ -18,7 +18,7 @@ export default {
         accentSlight: "#ccd8ea",
         accentSecondary: "#009ace", // Pantone 801c
         accentTernary: "#fbe122", // Pantone 207c
-        error: "#ff4a6a",
+        error: "rgba(255,59,48,1)",
         actionNeutral: "#555555",
         okay: "#00b16a",
         warn: "#eecc00",
@@ -32,14 +32,14 @@ export default {
         textBlack: lightThemeText,
         textLight: "#ccc",
         textInverted: "#111",
-        background: "#333",
-        cardBackground: "#3d3d3d",
-        almostBackground: "#393c40",
-        accent: "#009ace", // Pantone 801c
+        background: "rgba(0,0,0,1)",
+        cardBackground: "rgba(28,28,30,1)",
+        almostBackground: "rgba(28,28,30,1)",
+        accent: "#003da5", // Pantone 801c
         accentSlight: "#ccd8ea",
         accentSecondary: "#003da5", // Pantone 293c
         accentTernary: "#fbe122", // Pantone 207c
-        error: "#f9819d",
+        error: "rgba(255,69,58,1)",
         actionNeutral: "#777",
         okay: "#00b16a",
         warn: "#eecc00",

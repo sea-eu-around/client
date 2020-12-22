@@ -30,24 +30,22 @@ class FilteringScreenHeaderClass extends React.Component<FilteringScreenHeaderPr
 
         return (
             <View style={[{paddingTop: insets.top}, hstyles.wrapper]}>
-                <View style={hstyles.container}>
-                    <TouchableOpacity style={{paddingVertical: 10}} onPress={() => this.back()}>
-                        <MaterialIcons name="close" style={styles.actionIcon} />
-                    </TouchableOpacity>
-                    <Text style={[hstyles.title, {textAlign: "center"}]} numberOfLines={1}>
-                        {title}
-                    </Text>
-                    <TouchableOpacity
-                        style={{paddingVertical: 10}}
-                        onPress={() => {
-                            if (filteringScreenRef.current) filteringScreenRef.current.applyFilters();
-                            navigation.navigate("TabMatchingScreen");
-                            store.dispatch(refreshFetchedProfiles());
-                        }}
-                    >
-                        <MaterialIcons name="check" style={styles.actionIcon} />
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={{paddingVertical: 10}} onPress={() => this.back()}>
+                    <MaterialIcons name="close" style={styles.actionIcon} />
+                </TouchableOpacity>
+                <Text style={[hstyles.title, {textAlign: "center"}]} numberOfLines={1}>
+                    {title}
+                </Text>
+                <TouchableOpacity
+                    style={{paddingVertical: 10}}
+                    onPress={() => {
+                        if (filteringScreenRef.current) filteringScreenRef.current.applyFilters();
+                        navigation.navigate("TabMatchingScreen");
+                        store.dispatch(refreshFetchedProfiles());
+                    }}
+                >
+                    <MaterialIcons name="check" style={styles.actionIcon} />
+                </TouchableOpacity>
             </View>
         );
     }

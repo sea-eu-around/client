@@ -35,19 +35,17 @@ class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
             const user = activeRoom.users.filter((p: ChatRoomUser) => p._id != profileId)[0];
             return (
                 <View style={[{paddingTop: insets.top}, hstyles.wrapper]}>
-                    <View style={hstyles.container}>
-                        <TouchableOpacity style={hstyles.backButton} onPress={() => this.back()}>
-                            <MaterialIcons style={[hstyles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
-                        </TouchableOpacity>
-                        <GiftedAvatar
-                            avatarStyle={[hstyles.avatarContainer, styles.avatar]}
-                            user={user}
-                            onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
-                        />
-                        <Text style={styles.name} numberOfLines={1}>
-                            {user.name}
-                        </Text>
-                    </View>
+                    <TouchableOpacity style={hstyles.backButton} onPress={() => this.back()}>
+                        <MaterialIcons style={[hstyles.backButtonIcon, {color: theme.text}]} name="arrow-back" />
+                    </TouchableOpacity>
+                    <GiftedAvatar
+                        avatarStyle={[hstyles.avatarContainer, styles.avatar]}
+                        user={user}
+                        onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
+                    />
+                    <Text style={styles.name} numberOfLines={1}>
+                        {user.name}
+                    </Text>
                 </View>
             );
         } else return <></>;
@@ -63,6 +61,7 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
             fontSize: 18,
             color: theme.text,
+            fontWeight: "600",
         },
     });
 });

@@ -154,9 +154,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         matchContainer: {
             flex: 1,
-            borderStyle: "solid",
-            borderColor: "red",
-            borderWidth: 0,
+            paddingTop: 100, // TODO
         },
         loadingIndicatorContainer: {
             marginVertical: 10,

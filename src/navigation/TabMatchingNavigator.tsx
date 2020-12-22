@@ -8,6 +8,7 @@ import MatchScreenHeader from "../components/headers/MatchScreenHeader";
 import MatchFilteringScreen from "../screens/MatchFilteringScreen";
 import FilteringScreenHeader from "../components/headers/FilteringScreenHeader";
 import MatchHistoryScreen from "../screens/MatchHistoryScreen";
+import MainHeader from "../components/headers/MainHeader";
 
 const TabMatchingStack = createStackNavigator<TabMatchingRoot>();
 
@@ -15,13 +16,24 @@ export const TabMatchingNavigator = (): JSX.Element => (
     <TabMatchingStack.Navigator>
         <TabMatchingStack.Screen
             name="TabMatchingScreen"
-            component={TabMatchingScreen}
+            /*component={TabMatchingScreen}
             options={() => ({
                 headerShown: true,
                 title: screenTitle("TabMatchingScreen"),
-                header: MatchScreenHeader,
+                header: (props: StackHeaderProps) => <MatchScreenHeader blur={true} {...props} />,
+            })}*/
+            options={() => ({
+                headerShown: false,
+                title: screenTitle("TabMatchingScreen"),
             })}
-        />
+        >
+            {(props) => (
+                <>
+                    <TabMatchingScreen {...props} />
+                    <MatchScreenHeader blur={true} {...props} />
+                </>
+            )}
+        </TabMatchingStack.Screen>
         <TabMatchingStack.Screen
             name="MatchFilteringScreen"
             component={MatchFilteringScreen}
@@ -37,7 +49,7 @@ export const TabMatchingNavigator = (): JSX.Element => (
             options={{
                 headerShown: true,
                 title: screenTitle("MatchHistoryScreen"),
-                header: (props: StackHeaderProps) => <MatchScreenHeader backButton={true} {...props} />,
+                header: (props: StackHeaderProps) => <MainHeader backButton={true} {...props} />,
             }}
         />
     </TabMatchingStack.Navigator>

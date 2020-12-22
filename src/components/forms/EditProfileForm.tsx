@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, KeyboardAvoidingView, Text, View} from "react-native";
+import {ActivityIndicator, Dimensions, KeyboardAvoidingView, Text, View} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
@@ -34,6 +34,7 @@ import EnlargeableAvatar from "../EnlargeableAvatar";
 import OfferControl from "../OfferControl";
 import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
+import WavyHeader from "../headers/WavyHeader";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -221,6 +222,13 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         return (
             <View style={styles.screenWrapper}>
                 <View style={styles.topView}>
+                    <WavyHeader
+                        customStyles={styles.svgCurve}
+                        customHeight={210}
+                        customTop={170}
+                        customBgColor={theme.accent}
+                        customWavePattern="M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+                    />
                     <EnlargeableAvatar
                         profile={user?.profile}
                         size={140}
@@ -321,6 +329,10 @@ const OfferCategoryRow = reduxConnector(
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        svgCurve: {
+            position: "absolute",
+            width: Dimensions.get("window").width,
+        },
         titleWrapper: {
             width: "100%",
             flexDirection: "column",
@@ -349,7 +361,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             paddingBottom: 10,
             alignItems: "center",
             alignSelf: "center",
-            backgroundColor: theme.accent,
         },
         scrollWrapper: {
             width: "100%",
@@ -361,7 +372,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "column",
             alignItems: "center",
             alignSelf: "center",
-            paddingTop: 40,
+            paddingTop: 60,
             marginBottom: 300,
         },
         name: {

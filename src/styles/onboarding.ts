@@ -1,10 +1,14 @@
-import {StyleSheet, TextStyle} from "react-native";
+import {Dimensions, StyleSheet, TextStyle} from "react-native";
 import {Theme} from "../types";
 import {preTheme} from "./utils";
 import {styleTextThin} from "./general";
 
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        svgCurve: {
+            position: "absolute",
+            width: Dimensions.get("window").width,
+        },
         header: {
             marginBottom: 20,
         },

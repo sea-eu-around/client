@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, Text, TouchableOpacity} from "react-native";
+import {View, Text, TouchableOpacity, Dimensions} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {MyThunkDispatch} from "../state/types";
 import LoginForm from "../components/forms/LoginForm";
@@ -17,6 +17,7 @@ import {TabLoginSigninScreens} from "../navigation/types";
 import LocalImage from "../components/LocalImage";
 import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
 import ScreenWrapper from "./ScreenWrapper";
+import {getLocalSvg} from "../assets";
 
 type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginForm">;
 

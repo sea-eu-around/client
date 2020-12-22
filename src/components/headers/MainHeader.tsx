@@ -10,6 +10,8 @@ import {headerTitle, navigateBack, rootNavigate} from "../../navigation/utils";
 import {NavigatorRoute} from "../../navigation/types";
 import {headerStyles} from "../../styles/headers";
 import {MaterialIcons} from "@expo/vector-icons";
+import {BlurProps, BlurView} from "expo-blur";
+import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -30,11 +32,15 @@ type AdditionalProps = {
     color?: string;
     buttonBackgroundColor?: string;
     noShadow?: boolean;
+    blur?: boolean;
 };
 
-// Component props
-export type MainHeaderProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackHeaderProps & AdditionalProps;
+export type MainHeaderStackProps = Partial<StackHeaderProps> & {route?: any};
 
+// Component props
+export type MainHeaderProps = ConnectedProps<typeof reduxConnector> &
+    ThemeProps &
+    MainHeaderStackProps & {insets: EdgeInsets} & AdditionalProps;
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
         navigateBack("MainScreen");
@@ -52,65 +58,80 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
             wrapperStyle,
             color,
             noShadow,
+            blur,
             noSettingsButton,
             noAvatar,
             user,
             insets,
-            scene,
         } = this.props;
         const styles = headerStyles(theme);
 
-        const title = headerTitle(scene.route.name as NavigatorRoute);
+        const route = this.props.route || this.props.scene?.route || {name: "undef", key: "undef"};
+        const title = headerTitle(route.name as NavigatorRoute);
         const textColor = color || theme.text;
         const buttonBackgroundColor = this.props.buttonBackgroundColor || theme.almostBackground;
 
+        const WrapperComponent = blur ? BlurView : View;
+        const blurProps: Partial<BlurProps> = blur
+            ? {
+                  tint: theme.id === "dark" ? "dark" : "default",
+                  intensity: 100,
+              }
+            : {};
+
         return (
-            <View
-                style={[{paddingTop: insets.top}, styles.wrapper, noShadow ? styles.wrapperNoShadow : {}, wrapperStyle]}
+            <WrapperComponent
+                style={[
+                    {paddingTop: insets.top},
+                    styles.wrapper,
+                    blur ? styles.wrapperBlur : {},
+                    noShadow ? styles.wrapperNoShadow : {},
+                    wrapperStyle,
+                ]}
+                {...blurProps}
             >
-                <View style={styles.container}>
-                    {backButton && (
-                        <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
-                            <MaterialIcons style={[styles.backButtonIcon, {color: textColor}]} name="arrow-back" />
-                        </TouchableOpacity>
-                    )}
-                    {!noAvatar && (
-                        <ProfileAvatar
-                            profile={user?.profile}
-                            rounded
-                            size={40}
-                            containerStyle={styles.avatarContainer}
-                            titleStyle={styles.avatarTitle}
-                            activeOpacity={0.75}
-                            onPress={() => this.pressAvatar()}
-                        />
-                    )}
-                    <Text style={[styles.title, {marginLeft: 12, color: textColor}]} numberOfLines={1}>
-                        {title}
-                    </Text>
-                    {rightButtons?.map((ButtonComponent, i) => (
-                        <ButtonComponent
-                            key={`header-button-${scene.route.key}-${i}`}
-                            buttonStyle={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
-                            iconStyle={[styles.rightIcon, {color: textColor}]}
-                        />
-                    ))}
-                    {!noSettingsButton && (
-                        <TouchableOpacity
-                            style={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
-                            onPress={() => rootNavigate("SettingsScreen")}
-                        >
-                            <MaterialIcons name="settings" style={styles.rightIcon} color={textColor} />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </View>
+                {backButton && (
+                    <TouchableOpacity style={styles.backButton} onPress={() => this.back()}>
+                        <MaterialIcons style={[styles.backButtonIcon, {color: textColor}]} name="arrow-back" />
+                    </TouchableOpacity>
+                )}
+                {!noAvatar && (
+                    <ProfileAvatar
+                        profile={user?.profile}
+                        rounded
+                        size={40}
+                        containerStyle={styles.avatarContainer}
+                        titleStyle={styles.avatarTitle}
+                        activeOpacity={0.75}
+                        onPress={() => this.pressAvatar()}
+                    />
+                )}
+                <Text style={[styles.title, {marginLeft: 12, color: textColor}]} numberOfLines={1}>
+                    {title}
+                </Text>
+                {rightButtons?.map((ButtonComponent, i) => (
+                    <ButtonComponent
+                        key={`header-button-${route.key}-${i}`}
+                        buttonStyle={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
+                        iconStyle={[styles.rightIcon, {color: textColor}]}
+                    />
+                ))}
+                {!noSettingsButton && (
+                    <TouchableOpacity
+                        style={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
+                        onPress={() => rootNavigate("SettingsScreen")}
+                    >
+                        <MaterialIcons name="settings" style={styles.rightIcon} color={textColor} />
+                    </TouchableOpacity>
+                )}
+            </WrapperComponent>
         );
     }
 }
 
 const MainHeaderComp = reduxConnector(withTheme(MainHeaderClass));
 
-export default function MainHeader(props: StackHeaderProps & AdditionalProps): JSX.Element {
-    return <MainHeaderComp {...props} />;
+export default function MainHeader(props: MainHeaderStackProps & AdditionalProps): JSX.Element {
+    const insets = useSafeAreaInsets();
+    return <MainHeaderComp insets={insets} {...props} />;
 }

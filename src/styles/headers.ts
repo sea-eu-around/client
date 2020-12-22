@@ -6,17 +6,23 @@ export const headerStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
             backgroundColor: theme.background,
-            paddingHorizontal: 5,
-        },
-        wrapperNoShadow: {
-            shadowColor: "transparent",
-            elevation: 0,
-        },
-        container: {
             flexDirection: "row",
             alignItems: "center",
-            height: 60,
-            paddingHorizontal: 10,
+            paddingHorizontal: 15,
+            paddingBottom: 10,
+            height: 100,
+        },
+        wrapperBlur: {
+            backgroundColor: "transparent",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+        },
+        // TODO check if useless and remove style
+        wrapperNoShadow: {
+            //shadowColor: "transparent",
+            //elevation: 0,
         },
         backButton: {
             width: 40,
