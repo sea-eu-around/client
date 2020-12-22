@@ -12,6 +12,8 @@ import {headerStyles} from "../../styles/headers";
 import {MaterialIcons} from "@expo/vector-icons";
 import {BlurProps, BlurView} from "expo-blur";
 import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
+import {Route} from "@react-navigation/native";
+import {BLUR_HEADER_INTENSITY} from "../../styles/general";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -24,50 +26,54 @@ export type HeaderButtonProps = {
 };
 
 type AdditionalProps = {
-    wrapperStyle?: StyleProp<ViewStyle>;
     rightButtons?: ((props: HeaderButtonProps) => JSX.Element)[];
     backButton?: boolean;
-    noSettingsButton?: boolean;
     noAvatar?: boolean;
+    noShadow?: boolean;
+    noSettingsButton?: boolean;
+    blur?: boolean;
+    overrideAvatar?: JSX.Element;
+    overrideTitle?: string;
+    wrapperStyle?: StyleProp<ViewStyle>;
+    titleStyle?: StyleProp<TextStyle>;
     color?: string;
     buttonBackgroundColor?: string;
-    noShadow?: boolean;
-    blur?: boolean;
 };
 
-export type MainHeaderStackProps = Partial<StackHeaderProps> & {route?: any};
+export type MainHeaderStackProps = Partial<StackHeaderProps> & {route?: Route<string, undefined>};
 
 // Component props
 export type MainHeaderProps = ConnectedProps<typeof reduxConnector> &
-    ThemeProps &
-    MainHeaderStackProps & {insets: EdgeInsets} & AdditionalProps;
+    ThemeProps & {insets: EdgeInsets} & MainHeaderStackProps &
+    AdditionalProps;
+
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
         navigateBack("MainScreen");
     }
 
-    pressAvatar(): void {
-        rootNavigate("MyProfileScreen");
-    }
-
     render(): JSX.Element {
         const {
             theme,
-            backButton,
-            rightButtons,
-            wrapperStyle,
-            color,
-            noShadow,
-            blur,
-            noSettingsButton,
-            noAvatar,
-            user,
             insets,
+            user,
+            rightButtons,
+            backButton,
+            noAvatar,
+            noShadow,
+            noSettingsButton,
+            blur,
+            overrideAvatar,
+            overrideTitle,
+            wrapperStyle,
+            titleStyle,
+            color,
         } = this.props;
+
         const styles = headerStyles(theme);
 
-        const route = this.props.route || this.props.scene?.route || {name: "undef", key: "undef"};
-        const title = headerTitle(route.name as NavigatorRoute);
+        const routeName = (this.props.route || this.props.scene?.route || {name: "undef"}).name;
+        const title = headerTitle(routeName as NavigatorRoute);
         const textColor = color || theme.text;
         const buttonBackgroundColor = this.props.buttonBackgroundColor || theme.almostBackground;
 
@@ -75,7 +81,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
         const blurProps: Partial<BlurProps> = blur
             ? {
                   tint: theme.id === "dark" ? "dark" : "default",
-                  intensity: 100,
+                  intensity: BLUR_HEADER_INTENSITY,
               }
             : {};
 
@@ -95,23 +101,24 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                         <MaterialIcons style={[styles.backButtonIcon, {color: textColor}]} name="arrow-back" />
                     </TouchableOpacity>
                 )}
-                {!noAvatar && (
-                    <ProfileAvatar
-                        profile={user?.profile}
-                        rounded
-                        size={40}
-                        containerStyle={styles.avatarContainer}
-                        titleStyle={styles.avatarTitle}
-                        activeOpacity={0.75}
-                        onPress={() => this.pressAvatar()}
-                    />
-                )}
-                <Text style={[styles.title, {marginLeft: 12, color: textColor}]} numberOfLines={1}>
-                    {title}
+                {!noAvatar &&
+                    (overrideAvatar || (
+                        <ProfileAvatar
+                            profile={user?.profile}
+                            rounded
+                            size={40}
+                            containerStyle={styles.avatarContainer}
+                            titleStyle={styles.avatarTitle}
+                            activeOpacity={0.75}
+                            onPress={() => rootNavigate("MyProfileScreen")}
+                        />
+                    ))}
+                <Text style={[styles.title, {marginLeft: 12, color: textColor}, titleStyle]} numberOfLines={1}>
+                    {overrideTitle || title}
                 </Text>
                 {rightButtons?.map((ButtonComponent, i) => (
                     <ButtonComponent
-                        key={`header-button-${route.key}-${i}`}
+                        key={`header-button-${routeName.toLowerCase()}-${i}`}
                         buttonStyle={[styles.rightButton, {backgroundColor: buttonBackgroundColor}]}
                         iconStyle={[styles.rightIcon, {color: textColor}]}
                     />
