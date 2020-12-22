@@ -156,7 +156,7 @@ class ProfileView extends React.Component<ProfileViewProps> {
                 <ScrollView
                     style={styles.scrollWrapper}
                     contentContainerStyle={styles.formWrapper}
-                    keyboardShouldPersistTaps="always"
+                    keyboardShouldPersistTaps="handled"
                 >
                     {profileFieldComponents}
                     {!profile && <ActivityIndicator size="large" color={theme.accent} />}

@@ -245,7 +245,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         ></FormattedUniversity>
                     )}
                 </View>
-                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="always">
+                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="handled">
                     <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={-100} style={styles.formWrapper}>
                         <View style={styles.titleWrapper}>
                             <Text style={styles.title}>{i18n.t("myProfile")}</Text>

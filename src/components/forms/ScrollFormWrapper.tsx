@@ -32,7 +32,7 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
 
         return (
             <ScrollView
-                keyboardShouldPersistTaps="always"
+                keyboardShouldPersistTaps="handled"
                 style={{flex: 1, width: "100%"}}
                 contentContainerStyle={{
                     justifyContent: "center",
