@@ -313,7 +313,7 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
                         allowStudent: true,
                     },
                     {
-                        offerId: "talk-a-bit",
+                        offerId: "answer-academic-questions",
                         allowMale: true,
                         allowFemale: true,
                         allowOther: true,
