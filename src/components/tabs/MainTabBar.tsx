@@ -8,6 +8,7 @@ import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
 import {LabelPosition} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
 import {MaterialIcons} from "@expo/vector-icons";
 import {preTheme} from "../../styles/utils";
+import {BLUR_TAB_INTENSITY} from "../../styles/general";
 
 // Component props
 export type MainTabBarProps = ThemeProps & BottomTabBarProps & {insets: EdgeInsets};
@@ -22,7 +23,11 @@ class MainTabBarClass extends React.Component<MainTabBarProps> {
         const styles = themedStyles(theme);
 
         return (
-            <BlurView style={styles.blurViewStyle} tint={theme.id === "dark" ? "dark" : "default"} intensity={100}>
+            <BlurView
+                style={styles.blurViewStyle}
+                tint={theme.id === "dark" ? "dark" : "default"}
+                intensity={BLUR_TAB_INTENSITY}
+            >
                 <BottomTabBar
                     {...tabBarProps}
                     activeTintColor={theme.accent}

@@ -8,3 +8,6 @@ export const styleTextLight: TextStyle =
 
 export const webFontFamily =
     Platform.OS == "web" ? {fontFamily: `"Segoe UI", Roboto, "Helvetica Neue", sans-serif`} : {};
+
+export const BLUR_HEADER_INTENSITY = Platform.OS === "ios" ? 100 : 320;
+export const BLUR_TAB_INTENSITY = Platform.OS === "ios" ? 100 : 320;
