@@ -15,7 +15,7 @@ import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
 import MatchSuccessScreen from "../screens/MatchSuccessScreen";
-import {Platform} from "react-native";
+import {AppState, AppStateStatus, Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
@@ -32,13 +32,14 @@ import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
+// The root stack navigator
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
 let consumedInitialRoute = false;
 let previousRoute: string | undefined = undefined;
+let previousAppStatus: AppStateStatus;
 
+// Handle route changes
 function onStateChange() {
     const route = rootNavigationRef.current?.getCurrentRoute();
     if (route) {
@@ -50,7 +51,27 @@ function onStateChange() {
     }
 }
 
-// "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
+// Handle app state changes (active / inactive)
+function onAppStateChange(status: AppStateStatus) {
+    const state = store.getState();
+    const dispatch = store.dispatch as MyThunkDispatch;
+    const connectedToChat = state.messaging.socketState.connected;
+
+    // If the app is now active
+    if (previousAppStatus !== "active" && status === "active") {
+        // Reconnect to chat if needed
+        const isChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
+        if (isChat && !connectedToChat) dispatch(connectToChat());
+    }
+
+    // If the app is no longer active
+    if (previousAppStatus === "active" && status !== "active") {
+        // Disconnect from the chat
+        if (connectedToChat) dispatch(disconnectFromChat());
+    }
+    previousAppStatus = status;
+}
+
 function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
     const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
@@ -61,7 +82,11 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
             theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
-            onReady={onStateChange}
+            onReady={() => {
+                console.log("onReady");
+                AppState.addEventListener("change", onAppStateChange);
+                onStateChange();
+            }}
             onStateChange={onStateChange}
         >
             <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRouteName}>
