@@ -51,7 +51,7 @@ const dateInputProps = (
     },
 });
 
-class DateInput extends React.Component<DateInputProps, DateInputState> {
+export class DateInputClass extends React.Component<DateInputProps, DateInputState> {
     constructor(props: DateInputProps) {
         super(props);
         this.state = this.deriveStateFromDate(props.date);
@@ -65,6 +65,10 @@ class DateInput extends React.Component<DateInputProps, DateInputState> {
         if (this.props.date != oldProps.date) {
             this.setState({...this.state, ...this.deriveStateFromDate(this.props.date)});
         }
+    }
+
+    focus(): void {
+        this.input1Ref.current?.focus();
     }
 
     private validDate(): {date?: Date; error?: string} {
@@ -183,4 +187,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(DateInput);
+export default withTheme(DateInputClass);
