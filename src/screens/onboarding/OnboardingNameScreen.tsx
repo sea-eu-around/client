@@ -1,7 +1,7 @@
 import {Formik, FormikProps} from "formik";
 import * as React from "react";
 import {Keyboard} from "react-native";
-import {FormTextInput} from "../../components/FormTextInput";
+import {FormTextInput} from "../../components/forms/FormTextInput";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";

@@ -3,7 +3,7 @@ import {StyleSheet, Text, TextInput, View} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
-import {FormTextInput} from "../FormTextInput";
+import {FormTextInput} from "../forms/FormTextInput";
 import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
