@@ -92,11 +92,14 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{title: screenTitle("ResetPasswordSuccessScreen")}}
                 />
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
-                <Stack.Screen
-                    name="ChatScreen"
-                    component={ChatScreen}
-                    options={{header: ChatScreenHeader, headerShown: true, title: screenTitle("ChatScreen")}}
-                />
+                <Stack.Screen name="ChatScreen" options={{headerShown: false, title: screenTitle("ChatScreen")}}>
+                    {(props) => (
+                        <>
+                            <ChatScreen {...props} />
+                            <ChatScreenHeader {...props} />
+                        </>
+                    )}
+                </Stack.Screen>
                 <Stack.Screen
                     name="MyProfileScreen"
                     component={MyProfileScreen}
