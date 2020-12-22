@@ -94,7 +94,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             return {...state, socketState: {connected: true, connecting: false}};
         }
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
-            return {...state, socketState: {connected: false, connecting: false}};
+            return {...state, socketState: {connected: false, connecting: false}, activeRoom: null};
         }
         case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_SUCCESS: {
             const {room} = action as JoinChatRoomSuccessAction;
