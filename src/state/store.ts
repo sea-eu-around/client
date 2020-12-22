@@ -9,6 +9,7 @@ import thunk from "redux-thunk";
 import {navigationMiddleware} from "./navigation-middleware";
 import {authStorageMiddleware} from "./auth-storage-middleware";
 import {staticStorageMiddleware} from "./static-storage-middleware";
+import {notificationsMiddleware} from "./notifications-middleware";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -19,6 +20,12 @@ const rootReducer = combineReducers({
     notifications: notificationsReducer,
 });
 
-const combinedMiddleware = applyMiddleware(thunk, authStorageMiddleware, staticStorageMiddleware, navigationMiddleware);
+const combinedMiddleware = applyMiddleware(
+    thunk,
+    authStorageMiddleware,
+    staticStorageMiddleware,
+    navigationMiddleware,
+    notificationsMiddleware,
+);
 
 export default createStore(rootReducer, combinedMiddleware);

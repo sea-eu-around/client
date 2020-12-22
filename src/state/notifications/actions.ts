@@ -12,10 +12,9 @@ export type NotificationsRegisterSuccessAction = {
 
 export type NotificationsAction = NotificationsRegisterSuccessAction;
 
-// TODO dispatch on login
-export const registerNotifications = (): AppThunk => async (dispatch, getState) => {
+export const registerNotifications = (pushToken: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("notifications/register", "POST", {}, {token: ""}, token, true);
+    const response = await requestBackend("notifications/register", "POST", {}, {token: pushToken}, token, true);
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(registerNotificationsSuccess());
     }
