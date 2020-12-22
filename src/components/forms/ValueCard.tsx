@@ -16,7 +16,7 @@ type ValueCardProps<T> = {
     display?: JSX.Element;
     noModal?: boolean;
     overrideModal?: (hide: () => void) => JSX.Element;
-    renderInput?: (value: T, error: string | null, onChange: (value: T) => void) => JSX.Element;
+    renderInput?: (value: T, error: string | null, onChange: (value: T, error?: string | null) => void) => JSX.Element;
     validator?: Schema<unknown> | ArraySchema<unknown>;
     initialValue?: T;
     apply?: (value: T) => void;
@@ -51,10 +51,9 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
         this.setState({...this.state, error});
     }
 
-    onChange(value: T): void {
-        this.setState({...this.state, value}, () => {
-            this.validate();
-        });
+    onChange(value: T, error?: string | null): void {
+        if (error === undefined) error = this.state.error;
+        this.setState({...this.state, value, error}, () => this.validate());
     }
 
     validate(): boolean {
@@ -72,8 +71,8 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
 
     apply(): void {
         if (this.validate()) {
-            this.setModal(false);
             if (this.props.apply && this.state.value) this.props.apply(this.state.value);
+            this.setModal(false);
         }
     }
 
@@ -96,7 +95,9 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                             <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
                                 <Text style={styles.modalLabel}>{label}</Text>
                                 {renderInput && value ? (
-                                    renderInput(value, error, (value: T) => this.onChange(value))
+                                    renderInput(value, error, (value: T, error?: string | null) =>
+                                        this.onChange(value, error),
+                                    )
                                 ) : (
                                     <></>
                                 )}
