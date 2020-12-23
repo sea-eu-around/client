@@ -4,21 +4,20 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
-import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {TabLoginSigninScreens} from "../../navigation/types";
 import {generalError, localizeError} from "../../api/errors";
 import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {rootNavigate} from "../../navigation/utils";
 
 type FormState = {
     email: string;
@@ -37,11 +36,7 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type LoginFormProps = ConnectedProps<typeof reduxConnector> &
-    ThemeProps &
-    FormProps<FormState> & {
-        navigation: StackNavigationProp<TabLoginSigninScreens, "LoginForm">;
-    };
+type LoginFormProps = ConnectedProps<typeof reduxConnector> & ThemeProps & FormProps<FormState>;
 
 type LoginFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
@@ -76,11 +71,11 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
     }
 
     render(): JSX.Element {
-        const {theme, navigation} = this.props;
+        const {theme} = this.props;
         const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
+        const lstyles = loginTabsStyles(theme);
 
         return (
             <Formik
@@ -117,6 +112,12 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                 returnKeyType="next"
                                 blurOnSubmit={false}
                                 onSubmitEditing={() => this.pwdInputRef.current?.focus()}
+                                icon={(focused) => (
+                                    <MaterialIcons
+                                        name="email"
+                                        style={[lstyles.inputFieldIcon, focused ? lstyles.inputFieldIconFocused : {}]}
+                                    />
+                                )}
                                 {...textInputProps}
                             />
 
@@ -130,30 +131,48 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                 touched={touched.password}
                                 isPassword={true}
                                 returnKeyType="done"
+                                icon={(focused) => (
+                                    <MaterialIcons
+                                        name="lock"
+                                        style={[lstyles.inputFieldIcon, focused ? lstyles.inputFieldIconFocused : {}]}
+                                    />
+                                )}
                                 {...textInputProps}
                             />
 
                             <FormError error={generalError(remoteErrors)} />
 
-                            <View style={fstyles.actionRow}>
-                                <FormSubmitButton
-                                    onPress={() => handleSubmit()}
-                                    style={[fstyles.buttonMajor, styles.loginButton]}
-                                    textStyle={fstyles.buttonMajorText}
-                                    text={i18n.t("login")}
-                                    icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
-                                    submitting={submitting}
-                                />
-                            </View>
-
                             <TouchableOpacity
                                 accessibilityRole="link"
                                 accessibilityLabel={i18n.t("forgotPassword")}
-                                onPress={() => navigation.navigate("ForgotPassword")}
+                                onPress={() => rootNavigate("ForgotPasswordScreen")}
                                 style={styles.forgotPwdLink}
                             >
                                 <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
                             </TouchableOpacity>
+
+                            <View style={styles.actionsContainer}>
+                                <FormSubmitButton
+                                    onPress={() => handleSubmit()}
+                                    style={[lstyles.actionButton, lstyles.actionButtonFilled]}
+                                    textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
+                                    text={i18n.t("loginForm.logIn")}
+                                    icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
+                                    submitting={submitting}
+                                />
+                                <View style={styles.separatorContainer}>
+                                    <View style={styles.separatorHbar} />
+                                    <Text style={styles.separatorText}>{i18n.t("loginForm.or")}</Text>
+                                    <View style={styles.separatorHbar} />
+                                </View>
+                                <FormSubmitButton
+                                    onPress={() => rootNavigate("SignupScreen")}
+                                    style={lstyles.actionButton}
+                                    textStyle={lstyles.actionText}
+                                    text={i18n.t("loginForm.signUp")}
+                                    submitting={submitting}
+                                />
+                            </View>
                         </>
                     );
                 }}
@@ -164,9 +183,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        loginButton: {
-            width: "60%",
-            backgroundColor: theme.accent,
+        actionsContainer: {
+            width: "100%",
         },
         loginButtonIcon: {
             color: theme.textWhite,
@@ -184,6 +202,22 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.5,
             color: theme.textLight,
             textAlign: "center",
+        },
+        separatorContainer: {
+            width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+        },
+        separatorHbar: {
+            flex: 1,
+            height: 1,
+            backgroundColor: theme.text,
+            opacity: 0.2,
+        },
+        separatorText: {
+            fontSize: 14,
+            color: theme.textLight,
+            paddingHorizontal: 10,
         },
     });
 });
