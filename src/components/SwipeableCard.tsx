@@ -190,6 +190,7 @@ export const SwipeActionButtons = withTheme(
                         // Add a small view to fill the empty area created by the card's border radius
                         const interiorFiller = isInteriorButton ? (
                             <View
+                                key={`swipe-actions-${id}-${side}-${i}-filler`}
                                 style={{
                                     width: borderRadius,
                                     backgroundColor: properties.backgroundColor,
