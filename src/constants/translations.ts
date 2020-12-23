@@ -717,6 +717,11 @@ export default {
                     declined: "Hidden",
                     blocked: "Blocked",
                 },
+                actions: {
+                    report: "Report",
+                    cancel: "Cancel",
+                    block: "Block",
+                },
                 noResults: "No results found",
                 noResultsAdvice: "Perhaps try removing some filters",
             },
