@@ -1,36 +1,29 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {
-    ActivityIndicator,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {Button, withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {UserProfile} from "../model/user-profile";
-import {fetchProfiles, refreshFetchedProfiles} from "../state/matching/actions";
-import store from "../state/store";
+import {fetchHistory, refreshFetchedHistory, setHistoryFilters} from "../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import {TabMatchingRoot} from "../navigation/types";
-import {PROFILES_FETCH_LIMIT} from "../constants/config";
+import {HISTORY_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
 import {styleTextLight} from "../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
 import HistoryProfileCard from "../components/HistoryProfileCard";
-import SearchableProfileList from "../components/SearchableProfileList";
+import InfiniteScroller from "../components/InfiniteScroller";
+import {MATCH_ACTION_HISTORY_STATUSES} from "../api/dto";
+import {MatchHistoryItem} from "../model/matching";
+import BufferedSearchBar from "../components/BufferedSearchBar";
 
 const reduxConnector = connect((state: AppState) => ({
-    profiles: state.matching.fetchedProfiles,
-    fetchingProfiles: state.matching.profilesPagination.fetching,
-    justRefreshed: state.matching.profilesPagination.page == 1,
+    historyItems: state.matching.historyItems,
+    fetchingHistory: state.matching.historyPagination.fetching,
+    currentPage: state.matching.historyPagination.page,
+    historyFilters: state.matching.historyFilters,
 }));
 
 // Component props
@@ -40,49 +33,21 @@ type MatchHistoryScreenProps = ConnectedProps<typeof reduxConnector> &
 
 // Component state
 type MatchHistoryScreenState = {
-    hiddenIds: {[key: string]: boolean};
-    filtersState: {[key: string]: boolean};
+    search: string;
 };
 
-const SCROLL_DISTANCE_TO_LOAD = 50;
-
 class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchHistoryScreenState> {
-    scrollViewRef: React.RefObject<ScrollView> = React.createRef<ScrollView>();
-
     constructor(props: MatchHistoryScreenProps) {
         super(props);
-        this.state = {hiddenIds: {}, filtersState: {like: true, dislike: true, block: true}};
-    }
-
-    fetchMore() {
-        const {fetchingProfiles, navigation, dispatch} = this.props;
-        if (!fetchingProfiles && navigation.isFocused()) (dispatch as MyThunkDispatch)(fetchProfiles());
-    }
-
-    hideProfile(p: UserProfile) {
-        this.setState({...this.state, hiddenIds: {...this.state.hiddenIds, [p.id]: true}});
-    }
-
-    componentDidMount() {
-        const shownProfiles = this.props.profiles.length - Object.keys(this.state.hiddenIds).length;
-        if (shownProfiles == 0) this.fetchMore();
-    }
-
-    componentDidUpdate(oldProps: MatchHistoryScreenProps) {
-        if (this.props.navigation.isFocused()) {
-            const shownProfiles = this.props.profiles.filter((p) => !this.state.hiddenIds[p.id]).length;
-            if (shownProfiles < PROFILES_FETCH_LIMIT) this.fetchMore();
-            // Reset the hidden profiles when the user purposedly refreshes
-            if (!oldProps.justRefreshed && this.props.justRefreshed) this.setState({...this.state, hiddenIds: {}});
-        }
+        this.state = {search: ""};
     }
 
     render(): JSX.Element {
-        const {profiles, theme, fetchingProfiles} = this.props;
-        const {hiddenIds, filtersState} = this.state;
+        const {historyItems, theme, historyFilters, fetchingHistory, currentPage, dispatch} = this.props;
+        const {search} = this.state;
         const styles = themedStyles(theme);
 
-        const filters = ["like", "dislike", "block"];
+        const filters = MATCH_ACTION_HISTORY_STATUSES;
 
         return (
             <ScreenWrapper>
@@ -92,66 +57,42 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                             theme={theme}
                             key={`match-history-filter-${key}`}
                             filterKey={key}
-                            selected={filtersState[key]}
-                            onPress={() =>
-                                this.setState({
-                                    ...this.state,
-                                    filtersState: {...this.state.filtersState, [key]: !this.state.filtersState[key]},
-                                })
-                            }
+                            selected={historyFilters[key]}
+                            onPress={() => {
+                                dispatch(setHistoryFilters({[key]: !historyFilters[key]}));
+                                dispatch(refreshFetchedHistory());
+                            }}
                         />
                     ))}
                 </View>
-                <SearchableProfileList
-                    profiles={profiles}
-                    searchBarProps={{
-                        containerStyle: styles.searchBarContainer,
-                        inputContainerStyle: styles.searchBarInputContainer,
-                        inputStyle: styles.searchBarInput,
-                    }}
-                >
-                    {(searchedProfiles: UserProfile[]) => (
-                        <ScrollView
-                            ref={this.scrollViewRef}
-                            style={styles.scroller}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={fetchingProfiles}
-                                    onRefresh={() => store.dispatch(refreshFetchedProfiles())}
-                                />
-                            }
-                            onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
-                                const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
-                                const distanceToBottom =
-                                    contentSize.height - contentOffset.y - layoutMeasurement.height;
-                                if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
-                            }}
-                        >
-                            <View style={styles.matchContainer}>
-                                {searchedProfiles
-                                    .filter((p) => !hiddenIds[p.id])
-                                    .map((profile: UserProfile) => (
-                                        <HistoryProfileCard
-                                            key={profile.id}
-                                            profile={profile}
-                                            onHidden={() => this.hideProfile(profile)}
-                                        />
-                                    ))}
-                                <View style={styles.loadingIndicatorContainer}>
-                                    {fetchingProfiles && profiles.length > 0 && (
-                                        <ActivityIndicator size="large" color={theme.accentSecondary} />
-                                    )}
-                                </View>
-                                {!fetchingProfiles && searchedProfiles.length == 0 && (
-                                    <View style={styles.noResultsContainer}>
-                                        <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                                        <Text style={styles.noResultsText2}>{i18n.t("matching.noResultsAdvice")}</Text>
-                                    </View>
-                                )}
-                            </View>
-                        </ScrollView>
+                <BufferedSearchBar
+                    onBufferedUpdate={() => dispatch(refreshFetchedHistory())}
+                    bufferDelay={SEARCH_BUFFER_DELAY}
+                    placeholder={i18n.t("search")}
+                    onChangeText={(search: string) => this.setState({...this.state, search})}
+                    value={search}
+                    containerStyle={styles.searchBarContainer}
+                    inputContainerStyle={styles.searchBarInputContainer}
+                    inputStyle={styles.searchBarInput}
+                />
+                <InfiniteScroller
+                    fetchLimit={HISTORY_FETCH_LIMIT}
+                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchHistory(search))}
+                    fetching={fetchingHistory}
+                    currentPage={currentPage}
+                    items={historyItems}
+                    id={(it: MatchHistoryItem): string => it.profile.id}
+                    noResultsComponent={
+                        <>
+                            <Text style={styles.noResultsText1}>{i18n.t("matching.history.noResults")}</Text>
+                            <Text style={styles.noResultsText2}>{i18n.t("matching.history.noResultsAdvice")}</Text>
+                        </>
+                    }
+                    refresh={() => dispatch(refreshFetchedHistory())}
+                    renderItem={(item: MatchHistoryItem, hide: () => void) => (
+                        <HistoryProfileCard key={`history-card-${item.profile.id}`} item={item} onHidden={hide} />
                     )}
-                </SearchableProfileList>
+                />
             </ScreenWrapper>
         );
     }
@@ -172,7 +113,7 @@ function Filter({
     return (
         <Button
             onPress={onPress}
-            title={i18n.t(`matching.history.filters.${filterKey}`)}
+            title={i18n.t(`matching.history.status.${filterKey}`)}
             containerStyle={styles.filterButtonContainer}
             buttonStyle={[styles.filterButton, selected ? styles.filterButtonSelected : {}]}
             titleStyle={[styles.filterLabel, selected ? styles.filterLabelSelected : {}]}
@@ -204,19 +145,6 @@ const themedStyles = preTheme((theme: Theme) => {
             height: 1,
             width: "100%",
         },
-        scroller: {
-            width: "100%",
-        },
-        matchContainer: {
-            flex: 1,
-            borderStyle: "solid",
-            borderColor: "red",
-            borderWidth: 0,
-        },
-        loadingIndicatorContainer: {
-            marginVertical: 10,
-            height: 50,
-        },
         filtersIcon: {
             paddingHorizontal: 5,
             fontSize: 26,
@@ -225,10 +153,6 @@ const themedStyles = preTheme((theme: Theme) => {
         headerContainer: {
             flexDirection: "row",
             paddingRight: 10,
-        },
-        noResultsContainer: {
-            flex: 1,
-            alignItems: "center",
         },
         noResultsText1: {
             fontSize: 20,
@@ -280,12 +204,17 @@ const themedStyles = preTheme((theme: Theme) => {
         searchBarContainer: {
             width: "100%",
             marginBottom: 5,
+            paddingVertical: 0,
             paddingHorizontal: 15,
+            backgroundColor: "transparent",
+            borderTopWidth: 0,
+            borderBottomWidth: 0,
         },
         searchBarInputContainer: {
             height: 40,
             backgroundColor: theme.cardBackground,
             elevation: 2,
+            borderRadius: 25,
         },
         searchBarInput: {
             fontSize: 14,
