@@ -6,9 +6,12 @@ import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {UserProfile} from "../../model/user-profile";
+import {MyThunkDispatch} from "../../state/types";
+import {blockProfile} from "../../state/matching/actions";
+import store from "../../state/store";
 
 export type BlockProfileModalProps = ThemeProps &
-    Partial<CustomModalProps> & {onBlock: () => void; profile: UserProfile};
+    Partial<CustomModalProps> & {onBlock?: () => void; profile: UserProfile};
 
 class BlockProfileModal extends React.Component<BlockProfileModalProps> {
     render() {
@@ -33,6 +36,7 @@ class BlockProfileModal extends React.Component<BlockProfileModalProps> {
                                 style={[styles.actionButton, styles.actionButtonDecline]}
                                 onPress={() => {
                                     hide();
+                                    (store.dispatch as MyThunkDispatch)(blockProfile(profile.id));
                                     if (onBlock) onBlock();
                                 }}
                             >
