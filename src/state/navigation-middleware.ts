@@ -32,7 +32,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
             // Let the user click
-            // attemptRedirectToApp("login", "TabSignin");
+            // attemptRedirectToApp("login", "SigninScreen");
             break;
         }
         case AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS: {
