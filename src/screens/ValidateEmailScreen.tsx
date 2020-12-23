@@ -56,7 +56,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                             <Text style={styles.successText}>
                                 {i18n.t("emailValidation.success")[0]}
                                 <Text
-                                    onPress={() => attemptRedirectToApp("login", "TabSignin")}
+                                    onPress={() => attemptRedirectToApp("login", "SigninScreen")}
                                     style={{color: theme.accent}}
                                 >
                                     {i18n.t("emailValidation.success")[1]}
