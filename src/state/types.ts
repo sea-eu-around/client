@@ -15,6 +15,7 @@ import {Degree, Gender, Role} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 import {UserSettings} from "../model/user-settings";
+import {MatchHistoryItem} from "../model/matching";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
@@ -76,6 +77,8 @@ export type MatchingState = {
     fetchedProfiles: UserProfile[];
     profilesPagination: PaginatedState;
     historyPagination: PaginatedState;
+    historyFilters: {[key: string]: boolean};
+    historyItems: MatchHistoryItem[];
     myMatches: UserProfile[];
     fetchingMyMatches: boolean;
 };

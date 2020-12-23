@@ -3,6 +3,7 @@ import {
     CreateProfileDto,
     CreateProfileDtoCommon,
     EducationFieldDto,
+    MatchHistoryItemDto,
     OfferValueDto,
     ResponseChatMessageDto,
     ResponseProfileDto,
@@ -16,6 +17,7 @@ import {User} from "../model/user";
 import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
+import {MatchHistoryItem} from "../model/matching";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -132,5 +134,13 @@ export function convertDtoToChatMessage(user: ChatRoomUser, dto: ResponseChatMes
         _id: dto.id,
         createdAt: new Date(dto.updatedAt),
         user,
+    };
+}
+
+export function convertDtoToHistoryItem(dto: MatchHistoryItemDto): MatchHistoryItem {
+    return {
+        profile: convertDtoToProfile(dto.profile),
+        status: dto.status,
+        date: new Date(dto.createdAt),
     };
 }

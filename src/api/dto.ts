@@ -190,8 +190,19 @@ export enum MatchActionStatus {
     Matched = "matched",
     Requested = "requested",
 }
+export const MATCH_ACTION_HISTORY_STATUSES: MatchActionStatus[] = [
+    MatchActionStatus.Declined,
+    MatchActionStatus.Blocked,
+    MatchActionStatus.Requested,
+];
 
 export type MatchActionResponseDto = {
     roomId: string | null;
     status: MatchActionStatus;
+};
+
+export type MatchHistoryItemDto = {
+    profile: ResponseProfileDto;
+    status: MatchActionStatus;
+    createdAt: string;
 };

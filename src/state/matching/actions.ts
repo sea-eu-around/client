@@ -1,7 +1,8 @@
-import {convertDtoToProfile} from "../../api/converters";
+import {convertDtoToHistoryItem, convertDtoToProfile} from "../../api/converters";
 import {
     MatchActionResponseDto,
     MatchActionStatus,
+    MatchHistoryItemDto,
     PaginatedRequestResponse,
     ResponseProfileDto,
     SuccessfulRequestResponse,
@@ -11,6 +12,7 @@ import {requestBackend} from "../../api/utils";
 import {MatchingFiltersState, AppThunk} from "../types";
 import {HISTORY_FETCH_LIMIT, PROFILES_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
+import {MatchHistoryItem} from "../../model/matching";
 
 export enum MATCHING_ACTION_TYPES {
     SET_FILTERS = "MATCHING/SET_FILTERS",
@@ -33,6 +35,8 @@ export enum MATCHING_ACTION_TYPES {
     FETCH_HISTORY_FAILURE = "MATCHING/FETCH_HISTORY_FAILURE",
     FETCH_HISTORY_SUCCESS = "MATCHING/FETCH_HISTORY_SUCCESS",
     FETCH_HISTORY_REFRESH = "MATCHING/FETCH_HISTORY_REFRESH",
+
+    SET_HISTORY_FILTERS = "MATCHING/SET_HISTORY_FILTERS",
 }
 
 export type SetOfferFilterAction = {
@@ -108,12 +112,17 @@ export type FetchHistoryFailureAction = {
 
 export type FetchHistorySuccessAction = {
     type: string;
-    profiles: UserProfile[];
+    items: MatchHistoryItem[];
     canFetchMore: boolean;
 };
 
 export type FetchHistoryRefreshAction = {
     type: string;
+};
+
+export type SetHistoryFiltersAction = {
+    type: string;
+    filters: {[key: string]: boolean};
 };
 
 export type MatchingAction =
@@ -129,7 +138,8 @@ export type MatchingAction =
     | BlockProfileSuccessAction
     | BeginFetchMyMatchesAction
     | FetchMyMatchesFailureAction
-    | FetchMyMatchesSuccessAction;
+    | FetchMyMatchesSuccessAction
+    | SetHistoryFiltersAction;
 
 export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterAction => ({
     type: MATCHING_ACTION_TYPES.SET_OFFER_FILTER,
@@ -287,9 +297,9 @@ const fetchHistoryFailure = (): FetchHistoryFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE,
 });
 
-const fetchHistorySuccess = (profiles: UserProfile[], canFetchMore: boolean): FetchHistorySuccessAction => ({
+const fetchHistorySuccess = (items: MatchHistoryItem[], canFetchMore: boolean): FetchHistorySuccessAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS,
-    profiles,
+    items,
     canFetchMore,
 });
 
@@ -297,10 +307,10 @@ export const refreshFetchedHistory = (): FetchHistoryRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_REFRESH,
 });
 
-export const fetchHistory = (): AppThunk => async (dispatch, getState) => {
+export const fetchHistory = (search?: string): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
-        matching: {historyPagination},
+        matching: {historyPagination, historyFilters},
     } = getState();
 
     if (historyPagination.fetching || !historyPagination.canFetchMore) return;
@@ -308,12 +318,13 @@ export const fetchHistory = (): AppThunk => async (dispatch, getState) => {
     dispatch(beginFetchHistory());
 
     const response = await requestBackend(
-        "profiles",
+        "matching/history",
         "GET",
         {
             page: historyPagination.page,
             limit: HISTORY_FETCH_LIMIT,
-            ...{}, // TODO implement history fetch
+            status: Object.keys(historyFilters).filter((k) => historyFilters[k]),
+            search,
         },
         {},
         token,
@@ -322,8 +333,13 @@ export const fetchHistory = (): AppThunk => async (dispatch, getState) => {
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
-        const profiles = (paginated.data as ResponseProfileDto[]).map(convertDtoToProfile);
+        const items = (paginated.data as MatchHistoryItemDto[]).map(convertDtoToHistoryItem);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchHistorySuccess(profiles, canFetchMore));
+        dispatch(fetchHistorySuccess(items, canFetchMore));
     } else dispatch(fetchHistoryFailure());
 };
+
+export const setHistoryFilters = (filters: {[key: string]: boolean}): SetHistoryFiltersAction => ({
+    type: MATCHING_ACTION_TYPES.SET_HISTORY_FILTERS,
+    filters,
+});

@@ -712,11 +712,13 @@ export default {
                 continue: "Keep scrolling",
             },
             history: {
-                filters: {
-                    like: "Liked",
-                    dislike: "Hidden",
-                    block: "Blocked",
+                status: {
+                    requested: "Liked",
+                    declined: "Hidden",
+                    blocked: "Blocked",
                 },
+                noResults: "No results found",
+                noResultsAdvice: "Perhaps try removing some filters",
             },
         },
         // Profile tab
