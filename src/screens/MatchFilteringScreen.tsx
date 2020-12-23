@@ -87,7 +87,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
         const offerSections = categories.map((category: OfferCategory) => (
             <View key={category} style={styles.sectionContainer}>
                 <Separator />
-                <FormattedOfferCategory category={category} iconSize={60} />
+                <FormattedOfferCategory category={category} iconSize={60} fontSize={24} />
                 {offers
                     .filter((o: OfferDto) => o.category == category)
                     .map((o: OfferDto) => (

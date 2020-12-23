@@ -33,7 +33,9 @@ class OnboardingOfferScreen2 extends React.Component<OnboardingOfferScreen2Props
 
         return (
             <OnboardingSlide
-                title={<FormattedOfferCategory category={category} textStyle={styles.categoryTitleText} />}
+                title={
+                    <FormattedOfferCategory category={category} textStyle={styles.categoryTitleText} fontSize={24} />
+                }
                 subtitle={i18n.t("onboarding.offersCollaborate.subtitle")}
                 {...this.props}
             >
