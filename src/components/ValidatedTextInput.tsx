@@ -1,7 +1,20 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInputProps, TextInput} from "react-native";
+import {TextStyle, StyleProp, View, TextInputProps, TextInput, ViewStyle} from "react-native";
 import InputLabel from "./InputLabel";
 import InputErrorText from "./InputErrorText";
+
+export type TextInputStyleProps = {
+    style?: StyleProp<ViewStyle>;
+    wrapperStyle?: StyleProp<ViewStyle>;
+    errorStyle?: StyleProp<TextStyle>;
+    validStyle?: StyleProp<TextStyle>;
+    focusedStyle?: StyleProp<TextStyle>;
+    errorTextStyle?: StyleProp<TextStyle>;
+    labelStyle?: StyleProp<TextStyle>;
+    inputStyle?: StyleProp<TextStyle>;
+    inputFocusedStyle?: StyleProp<TextStyle>;
+    placeholderTextColor?: string;
+};
 
 export type ValidatedTextInputProps = {
     value: string;
@@ -9,14 +22,9 @@ export type ValidatedTextInputProps = {
     error?: string;
     untouched?: boolean;
     label?: string;
-    style?: StyleProp<TextStyle>;
-    wrapperStyle?: StyleProp<TextStyle>;
-    errorStyle?: StyleProp<TextStyle>;
-    validStyle?: StyleProp<TextStyle>;
-    focusedStyle?: StyleProp<TextStyle>;
-    errorTextStyle?: StyleProp<TextStyle>;
-    labelStyle?: StyleProp<TextStyle>;
-} & Partial<TextInputProps>;
+    icon?: (focused: boolean, error: boolean, valid: boolean) => JSX.Element;
+} & TextInputStyleProps &
+    Partial<TextInputProps>;
 
 type ValidatedTextInputState = {
     focused: boolean;
@@ -51,17 +59,21 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
     render(): JSX.Element {
         const {
             showErrorText,
-            style,
-            wrapperStyle,
             error,
             value,
             label,
+            icon,
             untouched,
+            style,
+            wrapperStyle,
+            inputStyle,
+            inputFocusedStyle,
             errorStyle,
             validStyle,
             focusedStyle,
             errorTextStyle,
             labelStyle,
+            placeholderTextColor,
             onBlur,
             onFocus,
             ...otherProps
@@ -77,24 +89,36 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                 ]}
             >
                 {label && <InputLabel style={labelStyle}>{label}</InputLabel>}
-                <TextInput
-                    ref={this.inputRef}
+                <View
                     style={[
+                        {flexDirection: "row", alignItems: "center"},
                         style,
                         this.state.focused ? focusedStyle : {},
                         untouched ? {} : error ? errorStyle : value.length > 0 ? validStyle : {},
                     ]}
-                    onBlur={(e) => {
-                        if (onBlur) onBlur(e);
-                        this.setState({focused: false});
-                    }}
-                    onFocus={(e) => {
-                        if (onFocus) onFocus(e);
-                        this.setState({focused: true});
-                    }}
-                    value={value}
-                    {...otherProps}
-                />
+                >
+                    {icon && icon(this.state.focused, error !== undefined, error !== undefined && value.length > 0)}
+                    <TextInput
+                        ref={this.inputRef}
+                        style={[
+                            {flex: 1, height: "100%", backgroundColor: "transparent"},
+                            inputStyle,
+                            this.state.focused ? inputFocusedStyle : {},
+                            // untouched ? {} : error ? errorStyle : value.length > 0 ? validStyle : {},
+                        ]}
+                        onBlur={(e) => {
+                            if (onBlur) onBlur(e);
+                            this.setState({focused: false});
+                        }}
+                        onFocus={(e) => {
+                            if (onFocus) onFocus(e);
+                            this.setState({focused: true});
+                        }}
+                        value={value}
+                        placeholderTextColor={placeholderTextColor}
+                        {...otherProps}
+                    />
+                </View>
                 {showError && <InputErrorText style={errorTextStyle} error={error} />}
             </View>
         );
