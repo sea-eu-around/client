@@ -43,7 +43,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
     }
 
     render(): JSX.Element {
-        const {historyItems, theme, historyFilters, fetchingHistory, currentPage, dispatch} = this.props;
+        const {historyItems, theme, historyFilters, fetchingHistory, currentPage, navigation, dispatch} = this.props;
         const {search} = this.state;
         const styles = themedStyles(theme);
 
@@ -76,6 +76,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                     inputStyle={styles.searchBarInput}
                 />
                 <InfiniteScroller
+                    navigation={navigation}
                     fetchLimit={HISTORY_FETCH_LIMIT}
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchHistory(search))}
                     fetching={fetchingHistory}
