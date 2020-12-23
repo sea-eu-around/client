@@ -694,8 +694,6 @@ export default {
         },
         // Messaging tab
         messaging: {
-            tabIndividual: "Matches",
-            tabGroup: "Groups",
             noMatches: "It appears that you haven't matched with anyone yet. :(",
         },
         // Matching tab
@@ -714,11 +712,13 @@ export default {
                 continue: "Keep scrolling",
             },
             history: {
-                filters: {
-                    like: "Liked",
-                    dislike: "Hidden",
-                    block: "Blocked",
+                status: {
+                    requested: "Liked",
+                    declined: "Hidden",
+                    blocked: "Blocked",
                 },
+                noResults: "No results found",
+                noResultsAdvice: "Perhaps try removing some filters",
             },
         },
         // Profile tab
@@ -742,8 +742,6 @@ export default {
             OnboardingLegalScreen1: "Terms & Conditions",
             OnboardingPrivacyScreen: "Privacy Policy",
             MessagingScreen: "Messages",
-            IndividualMessagingTab: "Messages",
-            GroupMessagingTab: "Groups",
             ChatScreen: "Chat",
             TabHomeScreen: "Home",
             TabMatchingScreen: "Match",

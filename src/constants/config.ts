@@ -29,15 +29,16 @@ export const AVATAR_QUALITY = 0.75;
 export const PROFILES_FETCH_LIMIT = 8; // Matching tab
 export const ROOMS_FETCH_LIMIT = 10; // Messaging tab
 export const MESSAGES_FETCH_LIMIT = 12; // Chat
+export const HISTORY_FETCH_LIMIT = 12; // Match history tab
+
+/**
+ * The buffer delay before sending a remote request when typing in a search bar (ms).
+ */
+export const SEARCH_BUFFER_DELAY = 250;
 
 /**
  * The maximum number of spoken languages a user can select.
  */
 export const MAX_SPOKEN_LANGUAGES = 8;
 
-export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = [
-    "ChatScreen",
-    "IndividualMessagingTab",
-    "GroupMessagingTab",
-    "MessagingScreen",
-];
+export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "MessagingScreen"];

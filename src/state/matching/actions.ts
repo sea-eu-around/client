@@ -1,7 +1,8 @@
-import {convertDtoToProfile} from "../../api/converters";
+import {convertDtoToHistoryItem, convertDtoToProfile} from "../../api/converters";
 import {
     MatchActionResponseDto,
     MatchActionStatus,
+    MatchHistoryItemDto,
     PaginatedRequestResponse,
     ResponseProfileDto,
     SuccessfulRequestResponse,
@@ -9,22 +10,33 @@ import {
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
 import {MatchingFiltersState, AppThunk} from "../types";
-import {PROFILES_FETCH_LIMIT} from "../../constants/config";
+import {HISTORY_FETCH_LIMIT, PROFILES_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
+import {MatchHistoryItem} from "../../model/matching";
 
 export enum MATCHING_ACTION_TYPES {
     SET_FILTERS = "MATCHING/SET_FILTERS",
     SET_OFFER_FILTER = "MATCHING/SET_OFFER_FILTER",
+
     FETCH_PROFILES_BEGIN = "MATCHING/FETCH_PROFILES_BEGIN",
-    FETCH_PROFILES_SUCCESS = "MATCHING/FETCH_PROFILES_SUCCESS",
     FETCH_PROFILES_FAILURE = "MATCHING/FETCH_PROFILES_FAILURE",
+    FETCH_PROFILES_SUCCESS = "MATCHING/FETCH_PROFILES_SUCCESS",
     FETCH_PROFILES_REFRESH = "MATCHING/FETCH_PROFILES_REFRESH",
+
     LIKE_PROFILE_SUCCESS = "MATCHING/LIKE_PROFILE_SUCCESS",
     DISLIKE_PROFILE_SUCCESS = "MATCHING/DISLIKE_PROFILE_SUCCESS",
     BLOCK_PROFILE_SUCCESS = "MATCHING/BLOCK_PROFILE_SUCCESS",
+
     FETCH_MY_MATCHES_BEGIN = "MATCHING/FETCH_MY_MATCHES_BEGIN",
     FETCH_MY_MATCHES_FAILURE = "MATCHING/FETCH_MY_MATCHES_FAILURE",
     FETCH_MY_MATCHES_SUCCESS = "MATCHING/FETCH_MY_MATCHES_SUCCESS",
+
+    FETCH_HISTORY_BEGIN = "MATCHING/FETCH_HISTORY_BEGIN",
+    FETCH_HISTORY_FAILURE = "MATCHING/FETCH_HISTORY_FAILURE",
+    FETCH_HISTORY_SUCCESS = "MATCHING/FETCH_HISTORY_SUCCESS",
+    FETCH_HISTORY_REFRESH = "MATCHING/FETCH_HISTORY_REFRESH",
+
+    SET_HISTORY_FILTERS = "MATCHING/SET_HISTORY_FILTERS",
 }
 
 export type SetOfferFilterAction = {
@@ -90,6 +102,29 @@ export type FetchMyMatchesSuccessAction = {
     profiles: UserProfile[];
 };
 
+export type BeginFetchHistoryAction = {
+    type: string;
+};
+
+export type FetchHistoryFailureAction = {
+    type: string;
+};
+
+export type FetchHistorySuccessAction = {
+    type: string;
+    items: MatchHistoryItem[];
+    canFetchMore: boolean;
+};
+
+export type FetchHistoryRefreshAction = {
+    type: string;
+};
+
+export type SetHistoryFiltersAction = {
+    type: string;
+    filters: {[key: string]: boolean};
+};
+
 export type MatchingAction =
     | SetOfferFilterAction
     | SetMatchingFiltersAction
@@ -103,7 +138,8 @@ export type MatchingAction =
     | BlockProfileSuccessAction
     | BeginFetchMyMatchesAction
     | FetchMyMatchesFailureAction
-    | FetchMyMatchesSuccessAction;
+    | FetchMyMatchesSuccessAction
+    | SetHistoryFiltersAction;
 
 export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterAction => ({
     type: MATCHING_ACTION_TYPES.SET_OFFER_FILTER,
@@ -252,3 +288,58 @@ export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
         dispatch(fetchMyMatchesSuccess(profiles));
     } else dispatch(fetchMyMatchesFailure());
 };
+
+const beginFetchHistory = (): BeginFetchHistoryAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_BEGIN,
+});
+
+const fetchHistoryFailure = (): FetchHistoryFailureAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE,
+});
+
+const fetchHistorySuccess = (items: MatchHistoryItem[], canFetchMore: boolean): FetchHistorySuccessAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS,
+    items,
+    canFetchMore,
+});
+
+export const refreshFetchedHistory = (): FetchHistoryRefreshAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_REFRESH,
+});
+
+export const fetchHistory = (search?: string): AppThunk => async (dispatch, getState) => {
+    const {
+        auth: {token},
+        matching: {historyPagination, historyFilters},
+    } = getState();
+
+    if (historyPagination.fetching || !historyPagination.canFetchMore) return;
+
+    dispatch(beginFetchHistory());
+
+    const response = await requestBackend(
+        "matching/history",
+        "GET",
+        {
+            page: historyPagination.page,
+            limit: HISTORY_FETCH_LIMIT,
+            status: Object.keys(historyFilters).filter((k) => historyFilters[k]),
+            search,
+        },
+        {},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.OK) {
+        const paginated = response as PaginatedRequestResponse;
+        const items = (paginated.data as MatchHistoryItemDto[]).map(convertDtoToHistoryItem);
+        const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+        dispatch(fetchHistorySuccess(items, canFetchMore));
+    } else dispatch(fetchHistoryFailure());
+};
+
+export const setHistoryFilters = (filters: {[key: string]: boolean}): SetHistoryFiltersAction => ({
+    type: MATCHING_ACTION_TYPES.SET_HISTORY_FILTERS,
+    filters,
+});

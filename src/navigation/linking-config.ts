@@ -34,8 +34,8 @@ const config: LinkingOptions = {
                     },
                     TabMessaging: {
                         screens: {
-                            IndividualMessagingTab: "messaging",
-                            GroupMessagingTab: "messaging/group",
+                            MessagingScreen: "messaging",
+                            ChatScreen: "chat/:roomId",
                         },
                     },
                     TabNotifications: {
@@ -54,7 +54,6 @@ const config: LinkingOptions = {
             SettingsScreen: "settings",
             DeleteAccountScreen: "delete-account",
             DeleteAccountSuccessScreen: "account-deleted",
-            ChatScreen: "chat/:roomId",
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",

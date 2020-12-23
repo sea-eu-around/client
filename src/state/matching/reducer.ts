@@ -1,3 +1,4 @@
+import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES} from "../auth/actions";
 import {initialPaginatedState, MatchingFiltersState, MatchingState} from "../types";
@@ -11,6 +12,8 @@ import {
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
     FetchMyMatchesSuccessAction,
+    FetchHistorySuccessAction,
+    SetHistoryFiltersAction,
 } from "./actions";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
@@ -21,10 +24,19 @@ export const defaultMatchingFilters = (): MatchingFiltersState => ({
     types: [],
 });
 
+const initialHistoryFilters = () => {
+    const filters: {[key: string]: boolean} = {};
+    MATCH_ACTION_HISTORY_STATUSES.forEach((k) => (filters[k] = true));
+    return filters;
+};
+
 export const initialState: MatchingState = {
     filters: defaultMatchingFilters(),
     fetchedProfiles: [],
     profilesPagination: initialPaginatedState(),
+    historyPagination: initialPaginatedState(),
+    historyFilters: initialHistoryFilters(),
+    historyItems: [],
     myMatches: [],
     fetchingMyMatches: false,
 };
@@ -103,6 +115,35 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {
                 ...state,
                 fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_BEGIN: {
+            return {...state, historyPagination: {...state.historyPagination, fetching: true}};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE: {
+            return {...state, historyPagination: {...state.historyPagination, fetching: false, canFetchMore: false}};
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS: {
+            const {items, canFetchMore} = <FetchHistorySuccessAction>action;
+            const pagination = state.historyPagination;
+            return {
+                ...state,
+                historyItems: state.historyItems.concat(items),
+                historyPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_HISTORY_REFRESH: {
+            return {
+                ...state,
+                historyItems: [],
+                historyPagination: initialPaginatedState(),
+            };
+        }
+        case MATCHING_ACTION_TYPES.SET_HISTORY_FILTERS: {
+            const {filters} = action as SetHistoryFiltersAction;
+            return {
+                ...state,
+                historyFilters: {...state.historyFilters, ...filters},
             };
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
