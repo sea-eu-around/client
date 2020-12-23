@@ -148,14 +148,6 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps, Histor
                             textStyle={styles.infoText}
                             iconStyle={styles.infoText}
                         />
-                        {/*<Text style={styles.infoText}>
-                                {i18n.t(`genders.${profile.gender}`)}
-                                {", "}
-                                {i18n.t(`allRoles.${profile.type}`)}
-                                {profile.type == "student"
-                                    ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
-                                    : ""}
-                            </Text>*/}
                     </View>
                     <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
                 </SwipeableCard>
