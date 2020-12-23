@@ -56,13 +56,14 @@ export type TabNotificationsRoot = {
 // Login screen
 
 export type TabLoginRoot = {
-    TabSignin: undefined;
-    TabSignup: undefined;
+    WelcomeScreen: undefined;
+    SigninScreen: undefined;
+    SignupScreen: undefined;
 };
 
 export type TabLoginSigninScreens = {
-    LoginForm: undefined;
-    ForgotPassword: undefined;
+    LoginScreen: undefined;
+    ForgotPasswordScreen: undefined;
 };
 
 // Onboarding

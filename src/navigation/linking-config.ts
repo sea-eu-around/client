@@ -8,13 +8,14 @@ const config: LinkingOptions = {
         screens: {
             LoginScreen: {
                 screens: {
-                    TabSignin: {
+                    WelcomeScreen: "welcome",
+                    SigninScreen: {
                         screens: {
-                            LoginForm: "login",
-                            ForgotPassword: "forgot-password",
+                            LoginScreen: "login",
+                            ForgotPasswordScreen: "forgot-password",
                         },
                     },
-                    TabSignup: "signup",
+                    SignupScreen: "signup",
                 },
             },
             ForgotPasswordEmailSentScreen: "password-email-sent",
