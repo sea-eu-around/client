@@ -3,7 +3,7 @@ import {ScrollView, LayoutChangeEvent, StyleProp, ViewStyle, Keyboard, KeyboardA
 import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 
-type ScrollFormWrapperProps = ThemeProps & {contentStyle?: StyleProp<ViewStyle>};
+type ScrollFormWrapperProps = ThemeProps & {contentStyle?: StyleProp<ViewStyle>; notKeyboardReactive?: boolean};
 
 type ScrollFormWrapperState = {height: number};
 
@@ -17,17 +17,19 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
     }
 
     componentDidMount() {
-        Keyboard.addListener("keyboardDidShow", () => {
-            /*const coords = e.endCoordinates;
-            console.log(coords);
-            if (coords) this.setState({...this.state, height: coords.height, keyboardTopY: coords.screenY, keyboardOpen: true});*/
-            this.keyboardShown = true;
-        });
-        Keyboard.addListener("keyboardDidHide", () => (this.keyboardShown = false));
+        if (!this.props.notKeyboardReactive) {
+            Keyboard.addListener("keyboardDidShow", () => {
+                /*const coords = e.endCoordinates;
+                console.log(coords);
+                if (coords) this.setState({...this.state, height: coords.height, keyboardTopY: coords.screenY, keyboardOpen: true});*/
+                this.keyboardShown = true;
+            });
+            Keyboard.addListener("keyboardDidHide", () => (this.keyboardShown = false));
+        }
     }
 
     render(): JSX.Element {
-        //const {theme} = this.props;
+        const {notKeyboardReactive} = this.props;
         const {height} = this.state;
 
         return (
@@ -40,15 +42,17 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
                     minHeight: height,
                 }}
                 onLayout={(e: LayoutChangeEvent) => {
-                    if (!this.keyboardShown) this.setState({...this.state, height: e.nativeEvent.layout.height});
+                    if (!notKeyboardReactive || this.state.height == 0) {
+                        if (!this.keyboardShown) this.setState({...this.state, height: e.nativeEvent.layout.height});
+                    }
                 }}
             >
                 <KeyboardAvoidingView
                     behavior="padding"
                     style={{
                         flex: 1,
-                        width: "75%",
-                        maxWidth: 300,
+                        width: "80%",
+                        maxWidth: 400,
                         justifyContent: "center",
                         alignItems: "center",
                     }}
