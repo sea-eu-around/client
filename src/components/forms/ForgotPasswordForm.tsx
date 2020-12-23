@@ -4,7 +4,6 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
@@ -13,11 +12,11 @@ import {preTheme} from "../../styles/utils";
 import store from "../../state/store";
 import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {forgotPassword} from "../../state/auth/actions";
-import {TabLoginSigninScreens} from "../../navigation/types";
 import {generalError, localizeError} from "../../api/errors";
 import FormError from "./FormError";
 import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
+import {navigateBack} from "../../navigation/utils";
 
 type FormState = {
     email: string;
@@ -29,9 +28,7 @@ const ForgotPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-export type ForgotPasswordFormProps = ThemeProps & {
-    navigation: StackNavigationProp<TabLoginSigninScreens, "ForgotPassword">;
-};
+export type ForgotPasswordFormProps = ThemeProps;
 
 // Component state
 export type ForgotPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
@@ -56,13 +53,13 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
     }
 
     render(): JSX.Element {
-        const {theme, navigation} = this.props;
+        const {theme} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
         const fstyles = formStyles(theme);
 
         return (
-            <React.Fragment>
+            <>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("newPassword")}</Text>
                     <Text style={styles.description}>{i18n.t("forgotPasswordExplanation")}</Text>
@@ -104,7 +101,7 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
                                     <TouchableOpacity
                                         accessibilityRole="button"
                                         accessibilityLabel={i18n.t("cancel")}
-                                        onPress={() => navigation.goBack()}
+                                        onPress={() => navigateBack()}
                                         style={[fstyles.buttonMajor, styles.buttonCancel]}
                                     >
                                         <Text style={fstyles.buttonMajorText}>{i18n.t("cancel")}</Text>
@@ -121,7 +118,7 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
                         );
                     }}
                 </Formik>
-            </React.Fragment>
+            </>
         );
     }
 }
