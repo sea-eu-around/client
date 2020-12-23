@@ -22,8 +22,9 @@ export default {
         actionNeutral: "#555555",
         okay: "#00b16a",
         warn: "#eecc00",
-        componentBorder: "#eee",
+        componentBorder: "#bbb",
         chatBubble: "#ededed",
+        inputPlaceholder: "#999",
     },
     dark: {
         id: "dark" as ThemeKey,
@@ -45,5 +46,6 @@ export default {
         warn: "#eecc00",
         componentBorder: "#555",
         chatBubble: "#333",
+        inputPlaceholder: "#bbb",
     },
 };
