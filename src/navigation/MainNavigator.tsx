@@ -4,7 +4,6 @@ import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
 import {MainNavigatorTabs, RootNavigatorScreens, TabHomeRoot, TabNotificationsRoot} from "../navigation/types";
-import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import MessagingNavigator from "./MessagingNavigator";
 import {BottomTabBarProps} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
@@ -13,7 +12,7 @@ import TabHomeScreen from "../screens/TabHomeScreen";
 import {screenTitle} from "./utils";
 import MainHeader from "../components/headers/MainHeader";
 import {TabMatchingNavigator} from "./TabMatchingNavigator";
-import MainTabBar, {MainTabBarIcon, MainTabBarLabel} from "../components/tabs/MainTabBar";
+import MainTabBar, {MainTabBarIcon} from "../components/tabs/MainTabBar";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -30,7 +29,8 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabHome"
                 component={TabHomeNavigator}
                 options={{
-                    tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.home")} {...props} />,
+                    // TODO remove
+                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.home")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="home" {...props} />,
                 }}
             />
@@ -38,7 +38,7 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabMatching"
                 component={TabMatchingNavigator}
                 options={{
-                    tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.matching")} {...props} />,
+                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.matching")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="contacts" {...props} />,
                 }}
             />
@@ -46,7 +46,7 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabMessaging"
                 component={MessagingNavigator}
                 options={{
-                    tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
+                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
                 }}
             />
@@ -54,7 +54,7 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabNotifications"
                 component={TabNotificationsNavigator}
                 options={{
-                    tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.notifications")} {...props} />,
+                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.notifications")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="notifications" {...props} />,
                 }}
             />

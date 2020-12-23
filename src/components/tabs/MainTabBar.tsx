@@ -88,6 +88,7 @@ export function MainTabBarIcon({name, color}: {name: string} & MainTabBarIconPro
     return <MaterialIcons size={26} name={name} color={color} />;
 }
 
+// TODO remove
 export function MainTabBarLabel({text, color}: {text: string} & MainTabBarLabelProps): JSX.Element {
     return <Text style={{color, fontSize: 12}}>{text}</Text>;
 }
