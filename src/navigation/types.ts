@@ -13,7 +13,6 @@ export type RootNavigatorScreens = {
     MyProfileScreen: undefined;
     ProfileScreen: undefined;
     SettingsScreen: undefined;
-    ChatScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
     MatchSuccessScreen: undefined;
@@ -45,11 +44,7 @@ export type TabMatchingRoot = {
 
 export type TabMessagingRoot = {
     MessagingScreen: undefined;
-};
-
-export type TabMessagingTabs = {
-    IndividualMessagingTab: undefined;
-    GroupMessagingTab: undefined;
+    ChatScreen: undefined;
 };
 
 // TAB: Notifications
@@ -82,6 +77,5 @@ export type NavigatorRoute =
     | keyof TabMatchingRoot
     | keyof TabNotificationsRoot
     | keyof TabMessagingRoot
-    | keyof TabMessagingTabs
     | keyof TabLoginSigninScreens
     | keyof OnboardingScreens;

@@ -36,9 +36,4 @@ export const HISTORY_FETCH_LIMIT = 12; // Match history tab
  */
 export const MAX_SPOKEN_LANGUAGES = 8;
 
-export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = [
-    "ChatScreen",
-    "IndividualMessagingTab",
-    "GroupMessagingTab",
-    "MessagingScreen",
-];
+export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "MessagingScreen"];

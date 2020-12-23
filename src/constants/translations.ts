@@ -694,8 +694,6 @@ export default {
         },
         // Messaging tab
         messaging: {
-            tabIndividual: "Matches",
-            tabGroup: "Groups",
             noMatches: "It appears that you haven't matched with anyone yet. :(",
         },
         // Matching tab
@@ -742,8 +740,6 @@ export default {
             OnboardingLegalScreen1: "Terms & Conditions",
             OnboardingPrivacyScreen: "Privacy Policy",
             MessagingScreen: "Messages",
-            IndividualMessagingTab: "Messages",
-            GroupMessagingTab: "Groups",
             ChatScreen: "Chat",
             TabHomeScreen: "Home",
             TabMatchingScreen: "Match",

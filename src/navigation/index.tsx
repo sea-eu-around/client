@@ -19,8 +19,6 @@ import {AppState, AppStateStatus, Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
-import ChatScreen from "../screens/messaging/ChatScreen";
-import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {CHAT_CONNECTED_ROUTES} from "../constants/config";
@@ -116,11 +114,6 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{title: screenTitle("ResetPasswordSuccessScreen")}}
                 />
                 <Stack.Screen name="MainScreen" component={MainNavigator} />
-                <Stack.Screen
-                    name="ChatScreen"
-                    component={ChatScreen}
-                    options={{header: ChatScreenHeader, headerShown: true, title: screenTitle("ChatScreen")}}
-                />
                 <Stack.Screen
                     name="MyProfileScreen"
                     component={MyProfileScreen}

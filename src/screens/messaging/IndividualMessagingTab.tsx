@@ -15,11 +15,11 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import i18n from "i18n-js";
 import {fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
-import {MaterialTopTabScreenProps} from "@react-navigation/material-top-tabs";
-import {TabMessagingTabs} from "../../navigation/types";
 import ChatRoomCard from "../../components/messaging/ChatRoomCard";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
+import {StackScreenProps} from "@react-navigation/stack";
+import {TabMessagingRoot} from "../../navigation/types";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -30,10 +30,11 @@ const reduxConnector = connect((state: AppState) => ({
 
 type IndividualMessagingTabProps = ConnectedProps<typeof reduxConnector> &
     ThemeProps &
-    MaterialTopTabScreenProps<TabMessagingTabs>;
+    StackScreenProps<TabMessagingRoot>;
 
 const SCROLL_DISTANCE_TO_LOAD = 50;
 
+// TODO rename IndividualMessagingTab
 class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps> {
     fetchMore() {
         const {fetchingRooms, dispatch} = this.props;
