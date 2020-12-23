@@ -19,9 +19,6 @@ import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import BlockProfileModal from "./modals/BlockProfileModal";
-import {MyThunkDispatch} from "../state/types";
-import {blockProfile} from "../state/matching/actions";
-import store from "../state/store";
 import FormattedUniversity from "./FormattedUniversity";
 import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
@@ -223,9 +220,9 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                 <BlockProfileModal
                                     profile={profile}
                                     visible={blockModalOpen}
-                                    onHide={() => this.setState({...this.state, blockModalOpen: false})}
-                                    onBlock={() => {
-                                        this.hide(() => (store.dispatch as MyThunkDispatch)(blockProfile(profile.id)));
+                                    onHide={() => {
+                                        this.setState({...this.state, blockModalOpen: false});
+                                        this.hide();
                                     }}
                                 />
                             </View>
