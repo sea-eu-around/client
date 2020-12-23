@@ -186,29 +186,22 @@ export const SwipeActionButtons = withTheme(
                         const last = i === actions.length - 1;
                         const isExteriorButton = (first && side === "left") || (last && side === "right");
                         const isInteriorButton = (first && side === "right") || (last && side === "left");
+                        const {backgroundColor} = properties;
 
                         // Add a small view to fill the empty area created by the card's border radius
                         const interiorFiller = isInteriorButton ? (
-                            <View
-                                key={`swipe-actions-${id}-${side}-${i}-filler`}
-                                style={{
-                                    width: borderRadius,
-                                    backgroundColor: properties.backgroundColor,
-                                    height: "100%",
-                                }}
-                            />
+                            <View style={{width: borderRadius, backgroundColor, height: "100%"}} />
                         ) : undefined;
 
                         return (
-                            <>
+                            <React.Fragment key={`swipe-actions-${id}-${side}-${i}`}>
                                 {side === "right" && isInteriorButton && interiorFiller}
                                 <SwipeActionButton
-                                    key={`swipe-actions-${id}-${side}-${i}`}
                                     style={isExteriorButton ? oneSidedBorderRadius(side, borderRadius) : {}}
                                     {...properties}
                                 />
                                 {side === "left" && isInteriorButton && interiorFiller}
-                            </>
+                            </React.Fragment>
                         );
                     })}
                 </View>
