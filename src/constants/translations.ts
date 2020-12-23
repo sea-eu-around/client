@@ -6,6 +6,7 @@ export default {
             en: "English",
             fr: "French",
         },
+        appName: "SEA-EU Around",
         welcome: "Welcome",
         // Component-related
         picker: {
@@ -674,6 +675,19 @@ export default {
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
+        // Welcome
+        welcomeScreen: {
+            signIn: "Log in",
+            signUp: "Sign up",
+            subtitle: "Join an alliance united around the values of European identity.",
+        },
+        // Login
+        loginForm: {
+            title: "Welcome Back!",
+            logIn: "Log in",
+            signUp: "Sign up",
+            or: "or",
+        },
         // Reset password
         resetPassword: {
             instructions: "To choose a new password, click the link in the email we just sent you.",
@@ -727,9 +741,10 @@ export default {
         },
         screenTitles: {
             suffix: " - SEA-EU Around",
-            LoginForm: "Login",
-            ForgotPassword: "Forgot Password",
-            TabSignup: "Sign up",
+            WelcomeScreen: "Welcome",
+            LoginScreen: "Login",
+            ForgotPasswordScreen: "Forgot Password",
+            SignupScreen: "Sign up",
             OnboardingNameScreen: "Welcome",
             OnboardingPersonalInfoScreen: "Profile",
             OnboardingLanguageScreen: "Profile",
@@ -784,6 +799,7 @@ export default {
             en: "Anglais",
             fr: "Français",
         },
+        appName: "SEA-EU Around",
         welcome: "Bienvenue",
         login: "Connexion",
         signup: "Inscription",

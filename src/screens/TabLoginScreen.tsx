@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, Text, TouchableOpacity, Dimensions} from "react-native";
+import {View, Text, TouchableOpacity} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {MyThunkDispatch} from "../state/types";
 import LoginForm from "../components/forms/LoginForm";
@@ -14,24 +14,22 @@ import {APP_VERSION, DEBUG_MODE} from "../constants/config";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {toggleTheme} from "../state/settings/actions";
 import {TabLoginSigninScreens} from "../navigation/types";
-import LocalImage from "../components/LocalImage";
 import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
 import ScreenWrapper from "./ScreenWrapper";
-import {getLocalSvg} from "../assets";
 
-type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginForm">;
+type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginScreen">;
 
-class LoginTabComponent extends React.Component<TabLoginScreenProps> {
+class LoginScreenComponent extends React.Component<TabLoginScreenProps> {
     render(): JSX.Element {
-        const {theme, navigation} = this.props;
+        const {theme} = this.props;
         const styles = loginTabsStyles(theme);
 
         return (
             <ScreenWrapper>
-                <ScrollFormWrapper>
-                    <LoginForm navigation={navigation} />
+                <ScrollFormWrapper notKeyboardReactive={true}>
+                    <LoginForm />
 
-                    <LocalImage resizeMode={"contain"} style={styles.erasmusLogo} imageKey={"logos.erasmusLeft"} />
+                    {/*<LocalImage resizeMode={"contain"} style={styles.erasmusLogo} imageKey={"logos.erasmusLeft"} />*/}
 
                     {DEBUG_MODE && (
                         <View style={styles.debugContainer}>
@@ -78,21 +76,18 @@ class LoginTabComponent extends React.Component<TabLoginScreenProps> {
     }
 }
 
-type TabForgotPasswordProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPassword">;
+type ForgotPasswordScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPasswordScreen">;
 
-class ForgotPasswordTabComponent extends React.Component<TabForgotPasswordProps> {
+export class ForgotPasswordScreen extends React.Component<ForgotPasswordScreenProps> {
     render(): JSX.Element {
-        const {navigation} = this.props;
-
         return (
             <ScreenWrapper>
-                <ScrollFormWrapper>
-                    <ForgotPasswordForm navigation={navigation}></ForgotPasswordForm>
+                <ScrollFormWrapper notKeyboardReactive={true}>
+                    <ForgotPasswordForm />
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );
     }
 }
 
-export const SubTabLogin = withTheme(LoginTabComponent);
-export const SubTabForgotPassword = withTheme(ForgotPasswordTabComponent);
+export const LoginScreen = withTheme(LoginScreenComponent);
