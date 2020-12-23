@@ -1,5 +1,5 @@
 import * as React from "react";
-import {TouchableOpacity, View, ViewStyle, StyleSheet, Platform, StyleProp, Dimensions} from "react-native";
+import {TouchableOpacity, View, ViewStyle, StyleSheet, Platform, StyleProp, Dimensions, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable, {SwipeableProperties} from "react-native-gesture-handler/Swipeable";
@@ -113,7 +113,9 @@ class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardSta
 }
 
 export type SwipeActionProps = {
-    icon: string;
+    icon?: string;
+    text?: string;
+    backgroundColor?: string;
     color?: string;
     onPress?: () => void;
     style?: StyleProp<ViewStyle>;
@@ -127,12 +129,14 @@ const oneSidedBorderRadius = (side: "left" | "right", borderRadius: number) => {
 
 const SwipeActionButton = withTheme(
     (props: SwipeActionProps & ThemeProps): JSX.Element => {
-        const {icon, color, onPress, style, theme} = props;
+        const {icon, text, backgroundColor, onPress, style, theme} = props;
         const styles = buttonStyles(theme);
+        const color = props.color || theme.textWhite;
 
         return (
-            <TouchableOpacity onPress={onPress} style={[styles.swipeActionButton, {backgroundColor: color}, style]}>
-                <MaterialIcons style={styles.swipeActionButtonIcon} name={icon} />
+            <TouchableOpacity onPress={onPress} style={[styles.swipeActionButton, {backgroundColor}, style]}>
+                {icon && <MaterialIcons style={[styles.swipeActionButtonIcon, {color}]} name={icon} />}
+                {text && <Text style={[styles.swipeActionButtonText, {color}]}>{text}</Text>}
             </TouchableOpacity>
         );
     },
@@ -185,7 +189,13 @@ export const SwipeActionButtons = withTheme(
 
                         // Add a small view to fill the empty area created by the card's border radius
                         const interiorFiller = isInteriorButton ? (
-                            <View style={{width: borderRadius, backgroundColor: properties.color, height: "100%"}} />
+                            <View
+                                style={{
+                                    width: borderRadius,
+                                    backgroundColor: properties.backgroundColor,
+                                    height: "100%",
+                                }}
+                            />
                         ) : undefined;
 
                         return (
@@ -233,7 +243,7 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-const buttonStyles = preTheme((theme: Theme) => {
+const buttonStyles = preTheme(() => {
     return StyleSheet.create({
         swipeActionsContainer: {
             height: "100%",
@@ -249,8 +259,10 @@ const buttonStyles = preTheme((theme: Theme) => {
             aspectRatio: 1,
         },
         swipeActionButtonIcon: {
-            color: theme.textWhite,
             fontSize: 22,
+        },
+        swipeActionButtonText: {
+            fontSize: 16,
         },
         swipeActionText: {
             fontSize: 24,
