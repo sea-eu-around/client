@@ -5,9 +5,10 @@ import {
     LoadProfileOffersSuccessAction,
     PROFILE_ACTION_TYPES,
 } from "./profile/actions";
+import {SetLocaleAction, SetThemeAction, SETTINGS_ACTION_TYPES} from "./settings/actions";
 import {AppState} from "./types";
 
-export const staticStorageMiddleware: Middleware<unknown, AppState> = () => (next: Dispatch<AnyAction>) => (
+export const staticStorageMiddleware: Middleware<unknown, AppState> = (store) => (next: Dispatch<AnyAction>) => (
     action: AnyAction,
 ) => {
     switch (action.type) {
@@ -25,6 +26,21 @@ export const staticStorageMiddleware: Middleware<unknown, AppState> = () => (nex
                 console.log("Updating the offers cache.");
                 storeStaticData("offers", offers);
             }
+            break;
+        }
+        case SETTINGS_ACTION_TYPES.SET_LOCALE: {
+            const {locale, fromCache} = action as SetLocaleAction;
+            if (!fromCache) storeStaticData("locale", locale);
+            break;
+        }
+        case SETTINGS_ACTION_TYPES.SET_THEME: {
+            const {theme, fromCache} = action as SetThemeAction;
+            if (!fromCache) storeStaticData("theme", theme);
+            break;
+        }
+        case SETTINGS_ACTION_TYPES.TOGGLE_THEME: {
+            const {theme} = store.getState().settings.userSettings;
+            storeStaticData("theme", theme === "dark" ? "light" : "dark");
             break;
         }
     }
