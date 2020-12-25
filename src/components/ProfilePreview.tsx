@@ -1,20 +1,9 @@
 import * as React from "react";
-import {
-    LayoutChangeEvent,
-    LayoutRectangle,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewStyle,
-    Animated,
-    StyleSheet,
-    Platform,
-} from "react-native";
+import {LayoutChangeEvent, LayoutRectangle, Text, TouchableOpacity, View, StyleSheet, Platform} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import {UserProfile, UserProfileStudent} from "../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -25,11 +14,11 @@ import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
 import {styleTextLight, styleTextThin} from "../styles/general";
 import ProfileAvatar from "./ProfileAvatar";
 import Chips from "./Chips";
+import SwipeableCard, {SwipeableCardClass, SwipeActionContainer} from "./SwipeableCard";
 
 // Component props
 export type ProfilePreviewProps = ThemeProps & {
     profile: UserProfile;
-    style?: ViewStyle;
     onExpand?: (layout: LayoutRectangle) => void;
     onSwipeLeft?: () => void;
     onSwipeRight?: () => void;
@@ -44,7 +33,14 @@ export type ProfilePreviewState = {
     blockModalOpen: boolean;
 };
 
+const LOOKS = {
+    sideMargin: 15,
+    verticalSpacing: 10,
+    borderRadius: 20,
+};
+
 class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreviewState> {
+    cardRef = React.createRef<SwipeableCardClass>();
     layout: LayoutRectangle;
 
     constructor(props: ProfilePreviewProps) {
@@ -90,6 +86,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         }).start();
         setTimeout(() => {
             if (onFinish) onFinish();
+            this.cardRef.current?.hide();
             if (this.props.onHidden) this.props.onHidden();
         }, duration);
     }
@@ -102,7 +99,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
     }
 
     render() {
-        const {theme, profile, style} = this.props;
+        const {theme, profile} = this.props;
         const {expanded, animating, height, blockModalOpen} = this.state;
         const styles = themedStyles(theme);
 
@@ -112,85 +109,99 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         const chipStyleProps = {chipStyle: styles.chip};
 
         return (
-            <ReAnimated.View
-                style={[styles.wrapper, style, {height}]}
-                onLayout={(e: LayoutChangeEvent) => {
-                    this.layout = e.nativeEvent.layout;
+            <SwipeableCard
+                ref={this.cardRef}
+                looks={LOOKS}
+                wrapperProps={{
+                    onLayout: (e: LayoutChangeEvent) => {
+                        this.layout = e.nativeEvent.layout;
+                    },
                 }}
-            >
-                <Swipeable
-                    containerStyle={styles.swipeableContainer}
-                    childrenContainerStyle={styles.swipeable}
-                    useNativeAnimations={Platform.OS !== "web"}
-                    friction={1}
-                    onSwipeableRightWillOpen={() => {
-                        this.hide();
-                        if (this.props.onSwipeLeft) this.props.onSwipeLeft();
-                    }}
-                    onSwipeableLeftWillOpen={() => {
-                        this.hide();
-                        if (this.props.onSwipeRight) this.props.onSwipeRight();
-                    }}
-                    leftThreshold={100}
-                    rightThreshold={100}
-                    renderRightActions={() => (
-                        <Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
-                            <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
-                                <Text style={styles.swipeActionText}>{i18n.t("matching.actionHide")}</Text>
-                            </View>
-                        </Animated.View>
-                    )}
-                    renderLeftActions={() => (
-                        <View style={[styles.swipeAction, styles.swipeActionLeft]}>
-                            <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
-                                <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
-                            </View>
-                        </View>
-                    )}
-                >
-                    <TouchableOpacity
-                        onPress={() => this.toggleExpanded()}
-                        activeOpacity={0.75}
-                        style={styles.touchable}
+                useNativeAnimations={Platform.OS !== "web"}
+                friction={1}
+                leftThreshold={100}
+                rightThreshold={100}
+                onSwipeableRightWillOpen={() => {
+                    this.hide();
+                    if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                }}
+                onSwipeableLeftWillOpen={() => {
+                    this.hide();
+                    if (this.props.onSwipeRight) this.props.onSwipeRight();
+                }}
+                renderRightActions={() => (
+                    <SwipeActionContainer
+                        side="right"
+                        looks={LOOKS}
+                        fullCardWidth
+                        contentStyle={styles.swipeActionContentRight}
                     >
-                        <View style={styles.collapsedContent}>
-                            <View style={styles.avatarContainer}>
-                                <ProfileAvatar profile={profile} size={120} rounded containerStyle={styles.avatar} />
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <Text style={styles.name}>{fullName}</Text>
-                                {university && <FormattedUniversity style={styles.infoText} university={university} />}
-                                <Text style={styles.infoText}>
-                                    {i18n.t(`genders.${profile.gender}`)}
-                                    {", "}
-                                    {i18n.t(`allRoles.${profile.type}`)}
-                                    {profile.type == "student"
-                                        ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
-                                        : ""}
-                                </Text>
-                                {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
-                            </View>
+                        <Text style={styles.swipeActionText}>{i18n.t("matching.actionHide")}</Text>
+                    </SwipeActionContainer>
+                )}
+                renderLeftActions={() => (
+                    <SwipeActionContainer
+                        side="left"
+                        looks={LOOKS}
+                        fullCardWidth
+                        contentStyle={styles.swipeActionContentLeft}
+                    >
+                        <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
+                    </SwipeActionContainer>
+                )}
+                /*<Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
+                        <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
+                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionHide")}</Text>
                         </View>
-                        {(expanded || animating) && (
-                            <View style={styles.expandedContent}>
-                                <Text style={styles.expandedSectionTitle}>{i18n.t("spokenLanguages")}</Text>
-                                <Chips
-                                    items={profile.languages}
-                                    label={(v: SpokenLanguageDto) =>
-                                        `${i18n.t(`languageNames.${v.code}`)}${
-                                            v.level != "native" ? ` (${v.level.toUpperCase()})` : ""
-                                        }`
-                                    }
-                                    {...chipStyleProps}
-                                />
-                                <Text style={styles.expandedSectionTitle}>{i18n.t("offers")}</Text>
-                                <Chips
-                                    items={profile.profileOffers}
-                                    label={(o: OfferValueDto) => i18n.t(`allOffers.${o.offerId}.name`)}
-                                    {...chipStyleProps}
-                                />
+                </Animated.View>*/
+                /*renderLeftActions={() => (
+                    <View style={[styles.swipeAction, styles.swipeActionLeft]}>
+                        <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
+                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
+                        </View>
+                    </View>
+                )}*/
+                onPress={() => this.toggleExpanded()}
+            >
+                <ReAnimated.View style={[styles.cardContent, {height}]}>
+                    <View style={styles.collapsedContent}>
+                        <View style={styles.avatarContainer}>
+                            <ProfileAvatar profile={profile} size={120} rounded containerStyle={styles.avatar} />
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.name}>{fullName}</Text>
+                            {university && <FormattedUniversity style={styles.infoText} university={university} />}
+                            <Text style={styles.infoText}>
+                                {i18n.t(`genders.${profile.gender}`)}
+                                {", "}
+                                {i18n.t(`allRoles.${profile.type}`)}
+                                {profile.type == "student"
+                                    ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
+                                    : ""}
+                            </Text>
+                            {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
+                        </View>
+                    </View>
+                    {(expanded || animating) && (
+                        <View style={styles.expandedContent}>
+                            <Text style={styles.expandedSectionTitle}>{i18n.t("spokenLanguages")}</Text>
+                            <Chips
+                                items={profile.languages}
+                                label={(v: SpokenLanguageDto) =>
+                                    `${i18n.t(`languageNames.${v.code}`)}${
+                                        v.level != "native" ? ` (${v.level.toUpperCase()})` : ""
+                                    }`
+                                }
+                                {...chipStyleProps}
+                            />
+                            <Text style={styles.expandedSectionTitle}>{i18n.t("offers")}</Text>
+                            <Chips
+                                items={profile.profileOffers}
+                                label={(o: OfferValueDto) => i18n.t(`allOffers.${o.offerId}.name`)}
+                                {...chipStyleProps}
+                            />
 
-                                {/*<Text style={styles.expandedSectionTitle}>{i18n.t("fieldsOfEducation")}</Text>
+                            {/*<Text style={styles.expandedSectionTitle}>{i18n.t("fieldsOfEducation")}</Text>
                                 <View style={styles.chipsContainer}>
                                     {profile.educationFields.map((fieldId: string) => (
                                         <ItemChip
@@ -200,7 +211,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                     ))}
                                 </View>
                                 */}
-                                {/*
+                            {/*
                                 <Text style={styles.expandedSectionTitle}>{i18n.t("interests")}</Text>
                                 <View style={styles.chipsContainer}>
                                     {profile.interests.map((interestId: string) => (
@@ -211,25 +222,24 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                     ))}
                                 </View>
                                 */}
-                                <TouchableOpacity
-                                    style={styles.blockButton}
-                                    onPress={() => this.setState({...this.state, blockModalOpen: true})}
-                                >
-                                    <MaterialIcons style={styles.blockButtonIcon} name="block" />
-                                </TouchableOpacity>
-                                <BlockProfileModal
-                                    profile={profile}
-                                    visible={blockModalOpen}
-                                    onHide={() => {
-                                        this.setState({...this.state, blockModalOpen: false});
-                                        this.hide();
-                                    }}
-                                />
-                            </View>
-                        )}
-                    </TouchableOpacity>
-                </Swipeable>
-            </ReAnimated.View>
+                            <TouchableOpacity
+                                style={styles.blockButton}
+                                onPress={() => this.setState({...this.state, blockModalOpen: true})}
+                            >
+                                <MaterialIcons style={styles.blockButtonIcon} name="block" />
+                            </TouchableOpacity>
+                            <BlockProfileModal
+                                profile={profile}
+                                visible={blockModalOpen}
+                                onHide={() => {
+                                    this.setState({...this.state, blockModalOpen: false});
+                                    this.hide();
+                                }}
+                            />
+                        </View>
+                    )}
+                </ReAnimated.View>
+            </SwipeableCard>
         );
     }
 }
@@ -238,59 +248,21 @@ export const Separator = withTheme(({theme}: ThemeProps) => {
     return <View style={themedStyles(theme).separator}></View>;
 });
 
-const sideMargin = 15;
-const verticalSpacing = 10;
-const cardPadding = 10;
-const PROFILE_PREVIEW_COLLAPSED_HEIGHT = 180;
-const PROFILE_PREVIEW_EXPANDED_HEIGHT = 400;
+const PROFILE_PREVIEW_COLLAPSED_HEIGHT = 150;
+const PROFILE_PREVIEW_EXPANDED_HEIGHT = 360;
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        wrapper: {
-            width: "100%",
-            overflow: "hidden",
-        },
-        swipeableContainer: {
-            width: "100%",
-            paddingHorizontal: sideMargin,
-            paddingVertical: verticalSpacing,
-        },
-        swipeable: {
-            width: "100%",
-            borderRadius: 20,
-            padding: cardPadding,
-            overflow: "hidden",
-            backgroundColor: theme.cardBackground,
-        },
-        touchable: {
-            width: "100%",
-            height: "100%",
-            flexDirection: "column",
-        },
-        swipeAction: {
-            width: "100%",
-            marginHorizontal: sideMargin,
-            marginVertical: verticalSpacing,
-        },
-        swipeActionLeft: {
-            paddingRight: sideMargin * 2,
-        },
-        swipeActionRight: {
-            paddingLeft: sideMargin * 2,
-        },
-        swipeActionContent: {
-            padding: 20,
-            borderRadius: 10,
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-        },
         swipeActionContentRight: {
             backgroundColor: theme.accentTernary,
-            alignItems: "flex-end",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            padding: 20,
         },
         swipeActionContentLeft: {
             backgroundColor: theme.accentSlight,
+            alignItems: "center",
+            padding: 20,
         },
         swipeActionText: {
             fontSize: 24,
@@ -299,20 +271,14 @@ const themedStyles = preTheme((theme: Theme) => {
             ...styleTextThin,
         },
 
-        separator: {
-            height: 1,
-            width: "100%",
-            backgroundColor: "#000",
-            opacity: 0.1,
-            alignSelf: "center",
-            marginBottom: 5,
-        },
-
         // Card content
+
+        cardContent: {
+            padding: 10,
+        },
 
         collapsedContent: {
             flexDirection: "row",
-            height: PROFILE_PREVIEW_COLLAPSED_HEIGHT - verticalSpacing * 2 - cardPadding * 2,
         },
 
         avatarContainer: {
@@ -341,6 +307,15 @@ const themedStyles = preTheme((theme: Theme) => {
             flexShrink: 1, // Ensures text wrapping
         },
 
+        separator: {
+            height: 1,
+            width: "100%",
+            backgroundColor: "#000",
+            opacity: 0.1,
+            alignSelf: "center",
+            marginBottom: 5,
+        },
+
         expandedContent: {
             flex: 1,
         },
@@ -360,11 +335,6 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 1,
             marginTop: 5,
             color: theme.text,
-        },
-        actionContainer: {
-            flexDirection: "column",
-            flex: 1,
-            justifyContent: "flex-end",
         },
         blockButton: {
             position: "absolute",
