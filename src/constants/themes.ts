@@ -13,11 +13,10 @@ export default {
         textInverted: "#fff",
         background: "#fff",
         cardBackground: "#f7f7f7", //"#f7f7f7",
-        almostBackground: "#f7f7f7",
-        accent: "#003da5", // Pantone 293c
+        accent: "#003da5",
         accentSlight: "#ccd8ea",
-        accentSecondary: "#009ace", // Pantone 801c
-        accentTernary: "#fbe122", // Pantone 207c
+        accentSecondary: "#009ace",
+        accentTernary: "#fbe122",
         error: "rgba(255,59,48,1)",
         actionNeutral: "#555555",
         okay: "#00b16a",
@@ -35,11 +34,10 @@ export default {
         textInverted: "#111",
         background: "rgba(0,0,0,1)",
         cardBackground: "rgba(28,28,30,1)",
-        almostBackground: "rgba(28,28,30,1)",
-        accent: "#003da5", // Pantone 801c
+        accent: "#003da5",
         accentSlight: "#ccd8ea",
-        accentSecondary: "#003da5", // Pantone 293c
-        accentTernary: "#fbe122", // Pantone 207c
+        accentSecondary: "#003da5",
+        accentTernary: "#fbe122",
         error: "rgba(255,69,58,1)",
         actionNeutral: "#777",
         okay: "#00b16a",

@@ -75,7 +75,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
         const routeName = (this.props.route || this.props.scene?.route || {name: "undef"}).name;
         const title = headerTitle(routeName as NavigatorRoute);
         const textColor = color || theme.text;
-        const buttonBackgroundColor = this.props.buttonBackgroundColor || theme.almostBackground;
+        const buttonBackgroundColor = this.props.buttonBackgroundColor || theme.cardBackground;
 
         const WrapperComponent = blur ? BlurView : View;
         const blurProps: Partial<BlurProps> = blur

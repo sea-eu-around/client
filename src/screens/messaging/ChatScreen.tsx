@@ -193,7 +193,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                         />
                     )}
                     renderFooter={() => <ChatFooter userWriting={userWriting} theme={theme} />}
-                    //renderActions={(props: ActionsProps) => <ChatActions actionsProps={props} theme={theme} />}
+                    renderActions={(props: ActionsProps) => <ChatActions actionsProps={props} theme={theme} />}
                     //renderLoadEarlier={() => <></>}
                     onInputTextChanged={(t) => {
                         if (t.length > 0) chatSocket.setWriting(room);
@@ -322,9 +322,9 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "flex-end",
         },
         textInput: {
-            backgroundColor: theme.almostBackground,
-            borderWidth: 1,
-            borderColor: theme.almostBackground,
+            backgroundColor: theme.cardBackground,
+            //borderWidth: 1,
+            //borderColor: theme.cardBackground,
             borderRadius: 20,
             marginVertical: INPUT_VERTICAL_MARGIN,
             marginHorizontal: 20,
