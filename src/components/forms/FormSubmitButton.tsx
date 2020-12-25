@@ -1,17 +1,18 @@
 import * as React from "react";
-import {ActivityIndicator, StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle} from "react-native";
+import {ActivityIndicator, StyleProp, Text, TextStyle, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../../types";
+import Button from "../Button";
 
 // Component props
 type FormSubmitButtonProps = {
     onPress: () => void;
+    text: string;
+    icon?: JSX.Element;
     submitting: boolean;
     style?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
     loadingIndicatorStyle?: StyleProp<ViewStyle>;
-    text: string;
-    icon?: JSX.Element;
 } & ThemeProps;
 
 class FormSubmitButton extends React.Component<FormSubmitButtonProps> {
@@ -19,9 +20,7 @@ class FormSubmitButton extends React.Component<FormSubmitButtonProps> {
         const {submitting, onPress, text, icon, style, textStyle, loadingIndicatorStyle, theme} = this.props;
 
         return (
-            <TouchableOpacity
-                accessibilityRole="button"
-                accessibilityLabel={text}
+            <Button
                 {...{onPress: submitting ? undefined : onPress}}
                 style={[{flexDirection: "row", alignItems: "center"}, style]}
             >
@@ -32,7 +31,7 @@ class FormSubmitButton extends React.Component<FormSubmitButtonProps> {
                         {icon}
                     </>
                 )}
-            </TouchableOpacity>
+            </Button>
         );
     }
 }
