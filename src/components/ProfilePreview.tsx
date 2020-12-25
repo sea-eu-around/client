@@ -76,8 +76,8 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         setTimeout(() => this.setState({...this.state, animating: false}), duration);
     }
 
-    hide(onFinish?: () => void) {
-        const duration = this.state.expanded ? 160 : 120;
+    hide(onFinish?: () => void, right?: boolean) {
+        /*const duration = this.state.expanded ? 160 : 120;
         this.setState({...this.state, animating: true, expanded: false});
         ReAnimated.timing(this.state.height, {
             toValue: 0,
@@ -88,7 +88,8 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
             if (onFinish) onFinish();
             this.cardRef.current?.hide();
             if (this.props.onHidden) this.props.onHidden();
-        }, duration);
+        }, duration);*/
+        this.cardRef.current?.collapse(onFinish, right);
     }
 
     toggleExpanded() {
@@ -122,12 +123,14 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                 leftThreshold={100}
                 rightThreshold={100}
                 onSwipeableRightWillOpen={() => {
-                    this.hide();
-                    if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                    this.hide(() => {
+                        if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                    }, false);
                 }}
                 onSwipeableLeftWillOpen={() => {
-                    this.hide();
-                    if (this.props.onSwipeRight) this.props.onSwipeRight();
+                    this.hide(() => {
+                        if (this.props.onSwipeRight) this.props.onSwipeRight();
+                    }, true);
                 }}
                 renderRightActions={() => (
                     <SwipeActionContainer

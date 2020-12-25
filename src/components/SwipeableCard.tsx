@@ -71,7 +71,7 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
     }
 
     collapse(onFinish?: () => void, right?: boolean): void {
-        const duration = 250;
+        const duration = 200;
         ReAnimated.timing(this.state.right, {
             toValue: (right ? -1 : 1) * Dimensions.get("window").width * 1.5,
             duration,
