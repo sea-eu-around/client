@@ -26,7 +26,7 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
             <ScreenWrapper>
                 <View style={styles.container}>
                     <View style={styles.imageContainer}>
-                        <WelcomeImage width={"100%"} />
+                        <WelcomeImage />
                     </View>
                     <View style={styles.textContainer}>
                         <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
@@ -64,11 +64,8 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         imageContainer: {
             width: "100%",
-            height: 0,
-            paddingTop: 300,
-            justifyContent: "center",
+            height: 300,
         },
-
         textContainer: {},
         appName: {
             color: theme.accent,

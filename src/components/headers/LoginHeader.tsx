@@ -1,10 +1,10 @@
 import * as React from "react";
-import {Text, TouchableOpacity, View, StyleSheet, Dimensions, Keyboard} from "react-native";
+import {Text, TouchableOpacity, StyleSheet, Dimensions, Keyboard, Platform} from "react-native";
 import {ThemeConsumer} from "react-native-elements";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {Theme, ThemeProps} from "../../types";
 import {MaterialIcons} from "@expo/vector-icons";
-import {navigateBack} from "../../navigation/utils";
+import {rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
 import {getLocalSvg} from "../../assets";
 import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
@@ -13,72 +13,86 @@ import i18n from "i18n-js";
 // Component props
 type LoginHeaderProps = ThemeProps & {insets: EdgeInsets};
 
-type LoginHeaderState = {
-    height: ReAnimated.Value<number>;
-    collapsed: boolean;
-};
+export const LOGIN_HEADER_WAVE_HEIGHT = 60;
+const SVG_VIEWBOX_W = 620;
+const SVG_VIEWBOX_H = 800;
 
-class LoginHeaderClass extends React.Component<LoginHeaderProps, LoginHeaderState> {
-    constructor(props: LoginHeaderProps) {
-        super(props);
-        this.state = {
-            height: new ReAnimated.Value<number>(this.getFullHeight()),
-            collapsed: false,
-        };
+class LoginHeaderClass extends React.Component<LoginHeaderProps> {
+    height = new ReAnimated.Value<number>(this.getFullHeight() - LOGIN_HEADER_WAVE_HEIGHT);
+    imageTop = new ReAnimated.Value<number>(this.getFullHeight() - this.getImageHeight());
+
+    back(): void {
+        Keyboard.dismiss();
+        rootNavigate("WelcomeScreen");
     }
 
-    back() {
-        navigateBack("WelcomeScreen");
+    getImageHeight(): number {
+        return (SVG_VIEWBOX_H / SVG_VIEWBOX_W) * Dimensions.get("window").width;
     }
 
     getCollapsedHeight(): number {
-        return 180 + this.props.insets.top;
+        return 280 + this.props.insets.top;
     }
 
     getFullHeight(): number {
-        return Dimensions.get("window").height * 0.4 + this.props.insets.top;
+        const maxHeight = 530;
+        return Math.min(Dimensions.get("window").height - 420 + this.props.insets.top, maxHeight);
     }
 
     componentDidMount() {
         Keyboard.addListener("keyboardDidShow", () => {
-            ReAnimated.timing(this.state.height, {
-                toValue: this.getCollapsedHeight(),
-                duration: 100,
-                easing: Easing.cubic,
+            const easing: ReAnimated.EasingFunction = Easing.cubic;
+            const duration = 100;
+
+            ReAnimated.timing(this.height, {
+                toValue: this.getCollapsedHeight() - LOGIN_HEADER_WAVE_HEIGHT,
+                duration,
+                easing,
             }).start();
-            // this.state.height.setValue(this.getCollapsedHeight());
-            this.setState({...this.state, collapsed: true});
+            ReAnimated.timing(this.imageTop, {
+                toValue: this.getCollapsedHeight() - this.getImageHeight(),
+                duration,
+                easing,
+            }).start();
         });
+
         Keyboard.addListener("keyboardDidHide", () => {
-            ReAnimated.timing(this.state.height, {
-                toValue: this.getFullHeight(),
-                duration: 100,
-                easing: Easing.cubic,
+            const easing: ReAnimated.EasingFunction = Easing.cubic;
+            const duration = 100;
+
+            ReAnimated.timing(this.height, {
+                toValue: this.getFullHeight() - LOGIN_HEADER_WAVE_HEIGHT,
+                duration,
+                easing,
             }).start();
-            // this.state.height.setValue(this.getFullHeight());
-            this.setState({...this.state, collapsed: false});
+            ReAnimated.timing(this.imageTop, {
+                toValue: this.getFullHeight() - this.getImageHeight(),
+                duration,
+                easing,
+            }).start();
         });
     }
 
     render(): JSX.Element {
         const {theme} = this.props;
-        const {height} = this.state;
 
         const styles = themedStyles(theme);
-        const Image = getLocalSvg("welcome", () => this.forceUpdate());
+        const Image = getLocalSvg("login-header");
 
-        //const height = collapsed ? this.getCollapsedHeight() : this.getFullHeight();
-
-        return (
-            <ReAnimated.View style={[styles.container, {height}]}>
-                <TouchableOpacity style={styles.navigationButton} onPress={() => this.back()}>
-                    <MaterialIcons name="chevron-left" style={styles.navigationIcon} />
-                </TouchableOpacity>
-                <Text style={styles.title}>{i18n.t("loginForm.title")}</Text>
-                <View style={styles.image}>
-                    <Image width="100%" />
-                </View>
-            </ReAnimated.View>
+        return Platform.OS === "web" ? (
+            <></>
+        ) : (
+            <>
+                <ReAnimated.View style={[styles.image, {top: this.imageTop}]}>
+                    <Image viewBox={`0 0 ${SVG_VIEWBOX_W} ${SVG_VIEWBOX_H}`} />
+                </ReAnimated.View>
+                <ReAnimated.View style={[styles.container, {height: this.height}]}>
+                    <TouchableOpacity style={styles.navigationButton} onPress={() => this.back()}>
+                        <MaterialIcons name="chevron-left" style={styles.navigationIcon} />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>{i18n.t("loginForm.title")}</Text>
+                </ReAnimated.View>
+            </>
         );
     }
 }
@@ -86,10 +100,10 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps, LoginHeaderStat
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
-            backgroundColor: theme.accent,
             width: "100%",
             padding: 40,
-            overflow: "hidden",
+            zIndex: 2,
+            //overflow: "hidden",
         },
         navigationButton: {
             width: 50,
@@ -106,8 +120,11 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontFamily: "RalewaySemiBold",
         },
         image: {
-            width: "100%",
-            height: 200,
+            position: "absolute",
+            left: 0,
+            width: Dimensions.get("window").width,
+            aspectRatio: SVG_VIEWBOX_W / SVG_VIEWBOX_H,
+            zIndex: 1,
         },
     });
 });

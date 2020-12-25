@@ -12,6 +12,8 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
     switch (key) {
         case "welcome":
             return import("@assets/images/welcome.svg");
+        case "login-header":
+            return import("@assets/images/login.svg");
         case "offers.categories.discover":
             return import("@assets/images/offers/discover.svg");
         case "offers.categories.meet":

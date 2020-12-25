@@ -1,12 +1,12 @@
 import * as React from "react";
-import {StyleSheet, Text, TextInput, View} from "react-native";
+import {StyleProp, StyleSheet, Text, TextInput, View, ViewStyle, Keyboard} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
 import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 import {withTheme} from "react-native-elements";
@@ -16,6 +16,9 @@ import FormError from "./FormError";
 import {generalError, localizeError} from "../../api/errors";
 import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
+import {MaterialIcons} from "@expo/vector-icons";
+import {navigateBack} from "../../navigation/utils";
+import Button from "../Button";
 
 type FormState = {
     email: string;
@@ -37,7 +40,7 @@ const SignupFormSchema = Yup.object().shape({
 });
 
 // Component props
-type SignupFormProps = FormProps<FormState> & ThemeProps;
+type SignupFormProps = FormProps<FormState> & ThemeProps & {containerStyle?: StyleProp<ViewStyle>};
 
 // Component state
 type SignupFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
@@ -67,16 +70,14 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
+        const lstyles = loginTabsStyles(theme);
 
         return (
-            <React.Fragment>
-                <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{i18n.t("signupWelcome")}</Text>
-                </View>
+            <View style={[{width: "100%"}, containerStyle]}>
+                <Text style={styles.title}>{i18n.t("signupWelcome")}</Text>
                 <Formik
                     initialValues={initialState()}
                     validationSchema={SignupFormSchema}
@@ -94,7 +95,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                             handleBlur,
                             setFieldError,
                         } = formikProps;
-                        const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
+                        const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 5)};
                         this.setFieldError = setFieldError;
 
                         return (
@@ -111,6 +112,15 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     blurOnSubmit={false}
                                     onSubmitEditing={() => this.pwdField1Ref.current?.focus()}
                                     {...textInputProps}
+                                    icon={(focused) => (
+                                        <MaterialIcons
+                                            name="email"
+                                            style={[
+                                                lstyles.inputFieldIcon,
+                                                focused ? lstyles.inputFieldIconFocused : {},
+                                            ]}
+                                        />
+                                    )}
                                 />
 
                                 <FormTextInput
@@ -126,6 +136,15 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     blurOnSubmit={false}
                                     onSubmitEditing={() => this.pwdField2Ref.current?.focus()}
                                     {...textInputProps}
+                                    icon={(focused) => (
+                                        <MaterialIcons
+                                            name="lock"
+                                            style={[
+                                                lstyles.inputFieldIcon,
+                                                focused ? lstyles.inputFieldIconFocused : {},
+                                            ]}
+                                        />
+                                    )}
                                 />
 
                                 {/* TEMP This is a workaround for a bug on some iOS versions.
@@ -143,38 +162,57 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                     isPassword={true}
                                     returnKeyType="done"
                                     {...textInputProps}
+                                    icon={(focused) => (
+                                        <MaterialIcons
+                                            name="lock"
+                                            style={[
+                                                lstyles.inputFieldIcon,
+                                                focused ? lstyles.inputFieldIconFocused : {},
+                                            ]}
+                                        />
+                                    )}
                                 />
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={fstyles.actionRow}>
+                                <View style={[lstyles.actionsContainer, styles.actionsContainer]}>
                                     <FormSubmitButton
-                                        onPress={() => handleSubmit()}
-                                        style={[fstyles.buttonMajor, styles.createAccountButton]}
-                                        textStyle={fstyles.buttonMajorText}
+                                        onPress={() => {
+                                            Keyboard.dismiss();
+                                            handleSubmit();
+                                        }}
+                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
+                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
                                         text={i18n.t("createAccount")}
                                         submitting={submitting}
+                                    />
+                                    <Button
+                                        onPress={() => {
+                                            Keyboard.dismiss();
+                                            navigateBack();
+                                        }}
+                                        style={lstyles.actionButton}
+                                        textStyle={lstyles.actionText}
+                                        text={i18n.t("cancel")}
                                     />
                                 </View>
                             </>
                         );
                     }}
                 </Formik>
-            </React.Fragment>
+            </View>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        titleWrapper: {
-            width: "100%",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            marginBottom: 20,
+        actionsContainer: {
+            marginTop: 10,
         },
         title: {
             fontSize: 22,
+            marginBottom: 5,
             color: theme.text,
         },
         inlineInputs: {
@@ -186,7 +224,12 @@ const themedStyles = preTheme((theme: Theme) => {
         inlineInputRight: {
             marginLeft: 5,
         },
-        createAccountButton: {
+        buttonCancel: {
+            width: "40%",
+            backgroundColor: theme.actionNeutral,
+            marginRight: 6,
+        },
+        buttonCreateAccount: {
             width: "60%",
             backgroundColor: theme.accent,
         },

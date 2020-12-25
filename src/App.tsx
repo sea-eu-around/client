@@ -9,8 +9,10 @@ import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvide
 import store from "./state/store";
 import ThemedStatusBar from "./components/ThemedStatusBar";
 import {configureNotifications} from "./notifications";
+import {initPolyfills} from "./state/polyfills";
 
 function App() {
+    initPolyfills();
     const {isLoadingComplete, initialRoute} = useCachedResources();
     configureLocalization();
     configureNotifications();

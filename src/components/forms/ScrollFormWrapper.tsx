@@ -39,7 +39,7 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
                 contentContainerStyle={{
                     justifyContent: "center",
                     alignItems: "center",
-                    minHeight: height,
+                    minHeight: notKeyboardReactive ? 0 : height,
                 }}
                 onLayout={(e: LayoutChangeEvent) => {
                     if (!notKeyboardReactive || this.state.height == 0) {

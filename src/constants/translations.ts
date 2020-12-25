@@ -25,7 +25,7 @@ export default {
             "Enter the email address associated with your account below. Instructions for choosing a new password will be sent shortly.",
         cancel: "Cancel",
         ok: "OK",
-        signupWelcome: "We can't wait for you to join our community!\n\nJust one more step.",
+        signupWelcome: "We can't wait for you to join our community!",
         firstname: "First name",
         lastname: "Last name",
         noResultsFound: "No results found",

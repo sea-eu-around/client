@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Keyboard, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -18,6 +18,7 @@ import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
+import Button from "../Button";
 
 type FormState = {
     email: string;
@@ -36,7 +37,9 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type LoginFormProps = ConnectedProps<typeof reduxConnector> & ThemeProps & FormProps<FormState>;
+type LoginFormProps = ConnectedProps<typeof reduxConnector> &
+    ThemeProps &
+    FormProps<FormState> & {containerStyle?: StyleProp<ViewStyle>};
 
 type LoginFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
@@ -71,121 +74,128 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
         const lstyles = loginTabsStyles(theme);
 
         return (
-            <Formik
-                initialValues={{email: "", password: ""} as FormState}
-                validationSchema={LoginFormSchema}
-                validateOnBlur={false}
-                onSubmit={(values) => this.submit(values)}
-            >
-                {(formikProps: FormikProps<FormState>) => {
-                    const {
-                        handleSubmit,
-                        values,
-                        errors,
-                        touched,
-                        handleChange,
-                        handleBlur,
-                        setFieldValue,
-                        setFieldError,
-                    } = formikProps;
-                    const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 15)};
-                    this.setFieldValue = setFieldValue;
-                    this.setFieldError = setFieldError;
+            <View style={[{width: "100%"}, containerStyle]}>
+                <Formik
+                    initialValues={{email: "", password: ""} as FormState}
+                    validationSchema={LoginFormSchema}
+                    validateOnBlur={false}
+                    onSubmit={(values) => this.submit(values)}
+                >
+                    {(formikProps: FormikProps<FormState>) => {
+                        const {
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            handleChange,
+                            handleBlur,
+                            setFieldValue,
+                            setFieldError,
+                        } = formikProps;
+                        const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 10)};
+                        this.setFieldValue = setFieldValue;
+                        this.setFieldError = setFieldError;
 
-                    return (
-                        <>
-                            <FormTextInput
-                                field="email"
-                                placeholder={i18n.t("emailAddress")}
-                                accessibilityLabel={i18n.t("emailAddress")}
-                                error={errors.email}
-                                value={values.email}
-                                touched={touched.email}
-                                isEmail={true}
-                                returnKeyType="next"
-                                blurOnSubmit={false}
-                                onSubmitEditing={() => this.pwdInputRef.current?.focus()}
-                                icon={(focused) => (
-                                    <MaterialIcons
-                                        name="email"
-                                        style={[lstyles.inputFieldIcon, focused ? lstyles.inputFieldIconFocused : {}]}
-                                    />
-                                )}
-                                {...textInputProps}
-                            />
-
-                            <FormTextInput
-                                ref={this.pwdInputRef}
-                                field="password"
-                                placeholder={i18n.t("password")}
-                                accessibilityLabel={i18n.t("password")}
-                                error={errors.password}
-                                value={values.password}
-                                touched={touched.password}
-                                isPassword={true}
-                                returnKeyType="done"
-                                icon={(focused) => (
-                                    <MaterialIcons
-                                        name="lock"
-                                        style={[lstyles.inputFieldIcon, focused ? lstyles.inputFieldIconFocused : {}]}
-                                    />
-                                )}
-                                {...textInputProps}
-                            />
-
-                            <FormError error={generalError(remoteErrors)} />
-
-                            <TouchableOpacity
-                                accessibilityRole="link"
-                                accessibilityLabel={i18n.t("forgotPassword")}
-                                onPress={() => rootNavigate("ForgotPasswordScreen")}
-                                style={styles.forgotPwdLink}
-                            >
-                                <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
-                            </TouchableOpacity>
-
-                            <View style={styles.actionsContainer}>
-                                <FormSubmitButton
-                                    onPress={() => handleSubmit()}
-                                    style={[lstyles.actionButton, lstyles.actionButtonFilled]}
-                                    textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
-                                    text={i18n.t("loginForm.logIn")}
-                                    icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
-                                    submitting={submitting}
+                        return (
+                            <View>
+                                <FormTextInput
+                                    field="email"
+                                    placeholder={i18n.t("emailAddress")}
+                                    accessibilityLabel={i18n.t("emailAddress")}
+                                    error={errors.email}
+                                    value={values.email}
+                                    touched={touched.email}
+                                    isEmail={true}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => this.pwdInputRef.current?.focus()}
+                                    icon={(focused) => (
+                                        <MaterialIcons
+                                            name="email"
+                                            style={[
+                                                lstyles.inputFieldIcon,
+                                                focused ? lstyles.inputFieldIconFocused : {},
+                                            ]}
+                                        />
+                                    )}
+                                    {...textInputProps}
                                 />
-                                <View style={styles.separatorContainer}>
-                                    <View style={styles.separatorHbar} />
-                                    <Text style={styles.separatorText}>{i18n.t("loginForm.or")}</Text>
-                                    <View style={styles.separatorHbar} />
+
+                                <FormTextInput
+                                    ref={this.pwdInputRef}
+                                    field="password"
+                                    placeholder={i18n.t("password")}
+                                    accessibilityLabel={i18n.t("password")}
+                                    error={errors.password}
+                                    value={values.password}
+                                    touched={touched.password}
+                                    isPassword={true}
+                                    returnKeyType="done"
+                                    icon={(focused) => (
+                                        <MaterialIcons
+                                            name="lock"
+                                            style={[
+                                                lstyles.inputFieldIcon,
+                                                focused ? lstyles.inputFieldIconFocused : {},
+                                            ]}
+                                        />
+                                    )}
+                                    {...textInputProps}
+                                />
+
+                                <FormError error={generalError(remoteErrors)} />
+
+                                <TouchableOpacity
+                                    accessibilityRole="link"
+                                    accessibilityLabel={i18n.t("forgotPassword")}
+                                    onPress={() => {
+                                        Keyboard.dismiss();
+                                        rootNavigate("ForgotPasswordScreen");
+                                    }}
+                                    style={styles.forgotPwdLink}
+                                >
+                                    <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
+                                </TouchableOpacity>
+
+                                <View style={lstyles.actionsContainer}>
+                                    <FormSubmitButton
+                                        onPress={() => handleSubmit()}
+                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
+                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
+                                        text={i18n.t("loginForm.logIn")}
+                                        icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
+                                        submitting={submitting}
+                                    />
+                                    <View style={styles.separatorContainer}>
+                                        <View style={styles.separatorHbar} />
+                                        <Text style={styles.separatorText}>{i18n.t("loginForm.or")}</Text>
+                                        <View style={styles.separatorHbar} />
+                                    </View>
+                                    <Button
+                                        onPress={() => rootNavigate("SignupScreen")}
+                                        style={lstyles.actionButton}
+                                        textStyle={lstyles.actionText}
+                                        text={i18n.t("loginForm.signUp")}
+                                    />
                                 </View>
-                                <FormSubmitButton
-                                    onPress={() => rootNavigate("SignupScreen")}
-                                    style={lstyles.actionButton}
-                                    textStyle={lstyles.actionText}
-                                    text={i18n.t("loginForm.signUp")}
-                                    submitting={submitting}
-                                />
                             </View>
-                        </>
-                    );
-                }}
-            </Formik>
+                        );
+                    }}
+                </Formik>
+            </View>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        actionsContainer: {
-            width: "100%",
-        },
         loginButtonIcon: {
             color: theme.textWhite,
             fontSize: 20,
@@ -194,8 +204,7 @@ const themedStyles = preTheme((theme: Theme) => {
         forgotPwdLink: {
             height: 48,
             justifyContent: "center",
-            marginTop: 20,
-            padding: 8, // make the button larger to click on
+            paddingHorizontal: 8, // make the button larger to click on
         },
         forgotPasswordText: {
             fontSize: 14,

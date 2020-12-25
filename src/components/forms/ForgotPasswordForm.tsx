@@ -1,10 +1,10 @@
 import * as React from "react";
-import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
+import {Text, View, StyleSheet, StyleProp, ViewStyle, Keyboard} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
-import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {VALIDATOR_EMAIL_LOGIN} from "../../validators";
@@ -17,6 +17,7 @@ import FormError from "./FormError";
 import FormSubmitButton from "./FormSubmitButton";
 import {RemoteValidationErrors} from "../../api/dto";
 import {navigateBack} from "../../navigation/utils";
+import Button from "../Button";
 
 type FormState = {
     email: string;
@@ -28,7 +29,7 @@ const ForgotPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-export type ForgotPasswordFormProps = ThemeProps;
+export type ForgotPasswordFormProps = ThemeProps & {containerStyle?: StyleProp<ViewStyle>};
 
 // Component state
 export type ForgotPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
@@ -53,13 +54,13 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
+        const lstyles = loginTabsStyles(theme);
 
         return (
-            <>
+            <View style={[{width: "100%"}, containerStyle]}>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("newPassword")}</Text>
                     <Text style={styles.description}>{i18n.t("forgotPasswordExplanation")}</Text>
@@ -84,7 +85,7 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
                         this.setFieldError = setFieldError;
 
                         return (
-                            <React.Fragment>
+                            <>
                                 <FormTextInput
                                     field="email"
                                     placeholder={i18n.t("emailAddress")}
@@ -97,34 +98,42 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={fstyles.actionRow}>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("cancel")}
-                                        onPress={() => navigateBack()}
-                                        style={[fstyles.buttonMajor, styles.buttonCancel]}
-                                    >
-                                        <Text style={fstyles.buttonMajorText}>{i18n.t("cancel")}</Text>
-                                    </TouchableOpacity>
+                                <View style={[lstyles.actionsContainer, styles.actionsContainer]}>
                                     <FormSubmitButton
-                                        onPress={() => handleSubmit()}
-                                        style={[fstyles.buttonMajor, styles.buttonSend]}
-                                        textStyle={fstyles.buttonMajorText}
+                                        onPress={() => {
+                                            Keyboard.dismiss();
+                                            handleSubmit();
+                                        }}
+                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
+                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
                                         text={i18n.t("send")}
+                                        //icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
                                         submitting={submitting}
                                     />
+                                    <Button
+                                        onPress={() => {
+                                            Keyboard.dismiss();
+                                            navigateBack();
+                                        }}
+                                        style={lstyles.actionButton}
+                                        textStyle={lstyles.actionText}
+                                        text={i18n.t("cancel")}
+                                    />
                                 </View>
-                            </React.Fragment>
+                            </>
                         );
                     }}
                 </Formik>
-            </>
+            </View>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        actionsContainer: {
+            marginTop: 40,
+        },
         titleWrapper: {
             width: "100%",
             flexDirection: "column",
