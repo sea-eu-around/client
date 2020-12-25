@@ -227,6 +227,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         return (
             <View style={styles.screenWrapper}>
                 <View style={styles.topView}>
+                    {/* TODO wavyheader */}
                     <WavyHeader
                         customStyles={styles.svgCurve}
                         customHeight={210}
