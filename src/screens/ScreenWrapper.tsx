@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Platform, StyleSheet, View} from "react-native";
 import {withTheme} from "react-native-elements";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 
 type ScreenWrapperProps = ThemeProps;
@@ -19,11 +19,10 @@ class ScreenWrapper extends React.Component<ScreenWrapperProps> {
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
+const themedStyles = preTheme(() => {
     return StyleSheet.create({
         wrapper: {
             flex: 1,
-            backgroundColor: theme.background,
             justifyContent: "center",
             flexDirection: "row",
         },
