@@ -75,11 +75,19 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
     const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
     consumedInitialRoute = true;
 
+    const reactNavigationTheme = {
+        dark: theme.id === "dark",
+        colors: {
+            ...(theme.id === "dark" ? DarkTheme : DefaultTheme).colors,
+            background: theme.background,
+        },
+    };
+
     return (
         <NavigationContainer
             ref={rootNavigationRef}
             linking={LinkingConfiguration}
-            theme={theme.id === "dark" ? DarkTheme : DefaultTheme}
+            theme={reactNavigationTheme}
             onReady={() => {
                 AppState.addEventListener("change", onAppStateChange);
                 onStateChange();
