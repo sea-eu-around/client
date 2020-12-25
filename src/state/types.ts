@@ -95,6 +95,9 @@ export type MessagingState = {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type NotificationsState = {};
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ReportsState = {};
+
 export type AppState = {
     auth: AuthState;
     settings: SettingsState;

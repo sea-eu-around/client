@@ -11,6 +11,7 @@ export enum SETTINGS_ACTION_TYPES {
 export type SetThemeAction = {
     type: string;
     theme: ThemeKey;
+    fromCache?: boolean;
 };
 
 export type ToggleThemeAction = {
@@ -20,16 +21,17 @@ export type ToggleThemeAction = {
 export type SetLocaleAction = {
     type: string;
     locale: SupportedLocale;
+    fromCache?: boolean;
 };
 
 export type SettingsAction = SetThemeAction | SetLocaleAction;
 
-export const setTheme = (theme: ThemeKey): SetThemeAction =>
-    ({type: SETTINGS_ACTION_TYPES.SET_THEME, theme} as SetThemeAction);
+export const setTheme = (theme: ThemeKey, fromCache?: boolean): SetThemeAction =>
+    ({type: SETTINGS_ACTION_TYPES.SET_THEME, theme, fromCache} as SetThemeAction);
 
 export const toggleTheme = (): ToggleThemeAction => ({type: SETTINGS_ACTION_TYPES.TOGGLE_THEME} as ToggleThemeAction);
 
-export const setLocale = (locale: SupportedLocale): SetLocaleAction => {
+export const setLocale = (locale: SupportedLocale, fromCache?: boolean): SetLocaleAction => {
     i18n.locale = locale;
-    return {type: SETTINGS_ACTION_TYPES.SET_LOCALE, locale} as SetLocaleAction;
+    return {type: SETTINGS_ACTION_TYPES.SET_LOCALE, locale, fromCache} as SetLocaleAction;
 };
