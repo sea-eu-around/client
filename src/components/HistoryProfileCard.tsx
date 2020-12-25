@@ -33,7 +33,6 @@ const LOOKS = {
     sideMargin: 10,
     borderRadius: 10,
     minHeight: 100,
-    maxHeight: 600,
 };
 
 class HistoryProfileCard extends React.Component<HistoryProfileCardProps, HistoryProfileCardState> {
@@ -124,32 +123,34 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps, Histor
                         />
                     )}
                 >
-                    <View style={styles.avatarContainer}>
-                        <ProfileAvatar
-                            profile={profile}
-                            size={60}
-                            rounded
-                            containerStyle={styles.avatar}
-                            onPress={() => rootNavigate("ProfileScreen", {id: profile.id})}
-                        />
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.name}>{fullName}</Text>
-                        {university && (
-                            <FormattedUniversity
-                                flagSize={14}
-                                flagEmoji={true}
-                                style={[styles.infoText, {marginLeft: -10}]}
-                                university={university}
+                    <View style={styles.cardContent}>
+                        <View style={styles.avatarContainer}>
+                            <ProfileAvatar
+                                profile={profile}
+                                size={60}
+                                rounded
+                                containerStyle={styles.avatar}
+                                onPress={() => rootNavigate("ProfileScreen", {id: profile.id})}
                             />
-                        )}
-                        <FormattedMatchStatus
-                            status={item.status}
-                            textStyle={styles.infoText}
-                            iconStyle={styles.infoText}
-                        />
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.name}>{fullName}</Text>
+                            {university && (
+                                <FormattedUniversity
+                                    flagSize={14}
+                                    flagEmoji={true}
+                                    style={[styles.infoText, {marginLeft: -10}]}
+                                    university={university}
+                                />
+                            )}
+                            <FormattedMatchStatus
+                                status={item.status}
+                                textStyle={styles.infoText}
+                                iconStyle={styles.infoText}
+                            />
+                        </View>
+                        <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
                     </View>
-                    <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
                 </SwipeableCard>
                 <BlockProfileModal
                     profile={profile}
@@ -165,6 +166,10 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps, Histor
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        cardContent: {
+            flexDirection: "row",
+            padding: 10,
+        },
         avatarContainer: {
             justifyContent: "center",
             alignItems: "center",

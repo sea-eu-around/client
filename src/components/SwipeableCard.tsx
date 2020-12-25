@@ -1,5 +1,15 @@
 import * as React from "react";
-import {TouchableOpacity, View, ViewStyle, StyleSheet, Platform, StyleProp, Dimensions, Text} from "react-native";
+import {
+    TouchableOpacity,
+    View,
+    ViewStyle,
+    StyleSheet,
+    Platform,
+    StyleProp,
+    Dimensions,
+    Text,
+    ViewProps,
+} from "react-native";
 import {withTheme} from "react-native-elements";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable, {SwipeableProperties} from "react-native-gesture-handler/Swipeable";
@@ -28,9 +38,11 @@ export type SwipeableCardProps = ThemeProps &
     SwipeableProperties & {
         style?: ViewStyle;
         onHidden?: () => void;
+        onPress?: () => void;
         looks?: Partial<SwipeableLooks>;
         leftActions?: (hideCard: (noAnimation?: boolean) => void) => JSX.Element;
         rightActions?: (hideCard: (noAnimation?: boolean) => void) => JSX.Element;
+        wrapperProps?: ViewProps;
     };
 
 // Component state
@@ -40,7 +52,7 @@ export type SwipeableCardState = {
     hidden: boolean;
 };
 
-class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardState> {
+export class SwipeableCardClass extends React.Component<SwipeableCardProps, SwipeableCardState> {
     constructor(props: SwipeableCardProps) {
         super(props);
 
@@ -53,15 +65,15 @@ class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardSta
         };
     }
 
-    hide() {
+    hide(): void {
         this.setState({...this.state, hidden: true});
         if (this.props.onHidden) this.props.onHidden();
     }
 
-    collapse(onFinish?: () => void) {
+    collapse(onFinish?: () => void, right?: boolean): void {
         const duration = 250;
         ReAnimated.timing(this.state.right, {
-            toValue: Dimensions.get("window").width * 1.5,
+            toValue: (right ? -1 : 1) * Dimensions.get("window").width * 1.5,
             duration,
             easing: Easing.ease,
         }).start();
@@ -71,8 +83,18 @@ class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardSta
         }, duration);
     }
 
-    render() {
-        const {theme, children, leftActions, rightActions, style, looks, ...swipeableProps} = this.props;
+    render(): JSX.Element {
+        const {
+            theme,
+            children,
+            leftActions,
+            rightActions,
+            style,
+            looks,
+            onPress,
+            wrapperProps,
+            ...swipeableProps
+        } = this.props;
         const {minHeight, right, hidden} = this.state;
         const styles = themedStyles(theme);
 
@@ -86,6 +108,7 @@ class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardSta
             // Use flexBasis, acting as minHeight
             <ReAnimated.View
                 style={[styles.wrapper, style, {flexBasis: minHeight, right}, hidden ? {display: "none"} : {}]}
+                {...wrapperProps}
             >
                 <ReAnimated.View style={{}}>
                     <Swipeable
@@ -102,8 +125,8 @@ class SwipeableCard extends React.Component<SwipeableCardProps, SwipeableCardSta
                         }
                         {...swipeableProps}
                     >
-                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable}>
-                            <View style={styles.cardContent}>{children}</View>
+                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable} onPress={onPress}>
+                            {children}
                         </TouchableOpacity>
                     </Swipeable>
                 </ReAnimated.View>
@@ -151,7 +174,58 @@ type SwipeActionsProps = ThemeProps & {
 
 export const SwipeActionButtons = withTheme(
     (props: React.PropsWithChildren<SwipeActionsProps>): JSX.Element => {
-        const {id, actions, side, looks, theme} = props;
+        const {id, actions, side, looks} = props;
+
+        const {borderRadius} = {...DEFAULT_LOOKS, ...looks};
+
+        return (
+            <SwipeActionContainer side={side} looks={looks} contentStyle={{aspectRatio: actions.length}}>
+                {actions.map((properties: SwipeActionProps, i: number) => {
+                    const first = i === 0;
+                    const last = i === actions.length - 1;
+                    const isExteriorButton = (first && side === "left") || (last && side === "right");
+                    const isInteriorButton = (first && side === "right") || (last && side === "left");
+                    const {backgroundColor} = properties;
+
+                    // Add a small view to fill the empty area created by the card's border radius
+                    const interiorFiller = isInteriorButton ? (
+                        <View
+                            style={{
+                                width: borderRadius,
+                                height: "100%",
+                                position: "absolute",
+                                top: 0,
+                                ...(side === "left" ? {right: -borderRadius} : {left: -borderRadius}),
+                                backgroundColor,
+                            }}
+                        />
+                    ) : undefined;
+
+                    return (
+                        <React.Fragment key={`swipe-actions-${id}-${side}-${i}`}>
+                            {isInteriorButton && interiorFiller}
+                            <SwipeActionButton
+                                style={isExteriorButton ? oneSidedBorderRadius(side, borderRadius) : {}}
+                                {...properties}
+                            />
+                        </React.Fragment>
+                    );
+                })}
+            </SwipeActionContainer>
+        );
+    },
+);
+
+type SwipeActionContainerProps = ThemeProps & {
+    side: "left" | "right";
+    looks?: Partial<SwipeableLooks>;
+    contentStyle?: StyleProp<ViewStyle>;
+    fullCardWidth?: boolean;
+};
+
+export const SwipeActionContainer = withTheme(
+    (props: React.PropsWithChildren<SwipeActionContainerProps>): JSX.Element => {
+        const {side, looks, fullCardWidth, contentStyle, theme} = props;
         const styles = buttonStyles(theme);
 
         const {borderRadius, sideMargin, verticalSpacing} = {...DEFAULT_LOOKS, ...looks};
@@ -163,47 +237,32 @@ export const SwipeActionButtons = withTheme(
                     {paddingVertical: verticalSpacing},
                     side === "left"
                         ? {
-                              marginRight: -sideMargin,
                               marginLeft: sideMargin,
+                              marginRight: -sideMargin,
                               justifyContent: "flex-start",
                           }
                         : {
-                              marginLeft: -sideMargin - borderRadius,
-                              marginRight: sideMargin + borderRadius,
+                              marginLeft: -sideMargin,
+                              marginRight: sideMargin,
                               justifyContent: "flex-end",
                           },
+                    fullCardWidth
+                        ? {
+                              width: "100%",
+                              marginHorizontal: sideMargin,
+                              ...(side === "left" ? {paddingRight: sideMargin * 2} : {paddingLeft: sideMargin * 2}),
+                          }
+                        : {},
                 ]}
             >
                 <View
                     style={[
                         styles.swipeActionsContent,
-                        {aspectRatio: actions.length},
-                        oneSidedBorderRadius(side, borderRadius),
+                        fullCardWidth ? {borderRadius} : oneSidedBorderRadius(side, borderRadius),
+                        contentStyle,
                     ]}
                 >
-                    {actions.map((properties: SwipeActionProps, i: number) => {
-                        const first = i === 0;
-                        const last = i === actions.length - 1;
-                        const isExteriorButton = (first && side === "left") || (last && side === "right");
-                        const isInteriorButton = (first && side === "right") || (last && side === "left");
-                        const {backgroundColor} = properties;
-
-                        // Add a small view to fill the empty area created by the card's border radius
-                        const interiorFiller = isInteriorButton ? (
-                            <View style={{width: borderRadius, backgroundColor, height: "100%"}} />
-                        ) : undefined;
-
-                        return (
-                            <React.Fragment key={`swipe-actions-${id}-${side}-${i}`}>
-                                {side === "right" && isInteriorButton && interiorFiller}
-                                <SwipeActionButton
-                                    style={isExteriorButton ? oneSidedBorderRadius(side, borderRadius) : {}}
-                                    {...properties}
-                                />
-                                {side === "left" && isInteriorButton && interiorFiller}
-                            </React.Fragment>
-                        );
-                    })}
+                    {props.children}
                 </View>
             </View>
         );
@@ -227,12 +286,7 @@ const themedStyles = preTheme((theme: Theme) => {
         touchable: {
             width: "100%",
             height: "100%",
-        },
-        cardContent: {
-            flexDirection: "row",
-            height: "100%",
             overflow: "hidden",
-            padding: 10,
         },
     });
 });
@@ -266,4 +320,4 @@ const buttonStyles = preTheme(() => {
     });
 });
 
-export default withTheme(SwipeableCard);
+export default withTheme(SwipeableCardClass);
