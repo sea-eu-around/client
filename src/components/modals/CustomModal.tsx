@@ -57,9 +57,12 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
                                 position: "absolute",
                                 left: 0,
                                 right: 0,
+                                top: 0,
+                                bottom: 0,
                                 margin: "auto",
                                 // Actual styling
                                 width: "50%",
+                                height: "fit-content",
                                 maxWidth: 300,
                                 borderRadius: 3,
                                 padding: "20px 30px",
