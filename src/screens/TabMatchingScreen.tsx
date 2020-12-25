@@ -57,7 +57,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             profile={profile}
                             onExpand={(layout: LayoutRectangle) => {
                                 const scroll = this.scrollerRef.current?.scrollViewRef.current;
-                                if (scroll) scroll.scrollTo({y: layout.y, animated: true});
+                                if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
                             }}
                             onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
