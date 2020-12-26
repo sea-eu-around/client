@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import {ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../../types";
@@ -16,9 +17,16 @@ type CustomModalState = {
 };
 
 export class CustomModalClass extends React.Component<CustomModalProps, CustomModalState> {
+    el: HTMLDivElement;
+
     constructor(props: CustomModalProps) {
         super(props);
         this.state = {modalVisible: props.visible || false};
+        this.el = document.createElement("div");
+    }
+
+    componentDidMount(): void {
+        document.body.appendChild(this.el);
     }
 
     componentDidUpdate(oldProps: CustomModalProps): void {
@@ -35,7 +43,8 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
     render(): JSX.Element {
         const {theme, modalViewStyle} = this.props;
         const {modalVisible} = this.state;
-        return (
+
+        const modal = (
             <>
                 {modalVisible && (
                     <>
@@ -54,12 +63,15 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
                         <div
                             style={{
                                 // Centering
-                                position: "absolute",
+                                position: "fixed",
                                 left: 0,
                                 right: 0,
+                                top: 0,
+                                bottom: 0,
                                 margin: "auto",
                                 // Actual styling
                                 width: "50%",
+                                height: "fit-content",
                                 maxWidth: 300,
                                 borderRadius: 3,
                                 padding: "20px 30px",
@@ -76,6 +88,9 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
                 )}
             </>
         );
+
+        // "Teleport" the modal to an element that we previously appended to the <body>
+        return ReactDOM.createPortal(modal, this.el);
     }
 }
 
