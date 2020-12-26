@@ -693,6 +693,8 @@ export default {
             },
             confirmationTitle: "Thank you",
             confirmation: "An administrator will investigate your report shortly.",
+            failureTitle: "Sorry",
+            failure: "We are unable to fulfill your request.",
         },
         // Reset password
         resetPassword: {
