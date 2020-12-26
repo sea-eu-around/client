@@ -16,6 +16,7 @@ export type PopUpSelectorProps = ThemeProps & {
     onSelect?: (selected: string[]) => void;
     multiple?: boolean;
     atLeastOne?: boolean;
+    placeholder?: string;
     buttonStyle?: StyleProp<ViewStyle>;
     valueStyle?: StyleProp<TextStyle>;
 };
@@ -73,7 +74,18 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
     }
 
     render(): JSX.Element {
-        const {values, selected, label, icon, multiple, atLeastOne, buttonStyle, valueStyle, theme} = this.props;
+        const {
+            values,
+            selected,
+            label,
+            icon,
+            multiple,
+            atLeastOne,
+            placeholder,
+            buttonStyle,
+            valueStyle,
+            theme,
+        } = this.props;
         const {valueDict} = this.state;
         const styles = themedStyles(theme);
         const pstyles = pickerStyles(theme);
@@ -84,9 +96,16 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
                     style={[styles.button, selected.length > 0 ? styles.buttonOk : {}, buttonStyle]}
                     onPress={() => this.show()}
                 >
-                    <Text style={[styles.value, valueStyle]} numberOfLines={2}>
-                        {selected.map(label).join(", ")}
-                    </Text>
+                    {selected.length === 0 && (
+                        <Text style={[styles.value, styles.placeholderText, valueStyle]} numberOfLines={2}>
+                            {placeholder}
+                        </Text>
+                    )}
+                    {selected.length > 0 && (
+                        <Text style={[styles.value, valueStyle]} numberOfLines={2}>
+                            {selected.map(label).join(", ")}
+                        </Text>
+                    )}
                 </TouchableOpacity>
                 <CustomModal
                     ref={this.modalRef}
@@ -149,6 +168,7 @@ const themedStyles = preTheme((theme: Theme) => {
             borderBottomColor: theme.okay,
         },
         value: {},
+        placeholderText: {color: theme.textLight},
         scroll: {
             width: "100%",
         },
