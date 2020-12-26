@@ -1,5 +1,5 @@
 import React from "react";
-import {Modal, TouchableOpacity, View, ViewStyle, StyleSheet} from "react-native";
+import {Modal, TouchableOpacity, ViewStyle, StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -10,6 +10,7 @@ export type CustomModalProps = ThemeProps & {
     renderContent: (hide: () => void) => JSX.Element;
     modalViewStyle?: ViewStyle;
     visible?: boolean;
+    animationType?: "fade" | "none" | "slide" | undefined;
 };
 
 type CustomModalState = {
@@ -34,19 +35,23 @@ class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
     }
 
     render(): JSX.Element {
-        const {theme, modalViewStyle} = this.props;
+        const {theme, modalViewStyle, animationType} = this.props;
         const {modalVisible} = this.state;
         const styles = themedStyles(theme);
         return (
-            <Modal animationType="fade" transparent={true} visible={modalVisible}>
+            <Modal animationType={animationType} transparent={true} visible={modalVisible}>
                 <TouchableOpacity
                     style={styles.centeredView}
                     activeOpacity={1.0}
                     onPress={() => this.setModalVisible(false)}
                 >
-                    <View style={[styles.modalView, modalViewStyle]}>
+                    <TouchableOpacity
+                        // This TouchableOpacity intercepts press events so the modal doesn't hide when pressed
+                        activeOpacity={1.0}
+                        style={[styles.modalView, modalViewStyle]}
+                    >
                         {this.props.renderContent(() => this.setModalVisible(false))}
-                    </View>
+                    </TouchableOpacity>
                 </TouchableOpacity>
             </Modal>
         );
