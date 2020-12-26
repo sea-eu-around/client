@@ -194,6 +194,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             <SpokenLanguagesInput
                                 languages={value}
                                 onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
+                                style={{width: "100%"}}
                             />
                         )}
                         apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
@@ -309,7 +310,7 @@ const OfferCategoryRow = reduxConnector(
                                             .concat([offerVal]);
                                         onChange(updatedVal);
                                     }}
-                                    style={{marginVertical: 10}}
+                                    style={{marginVertical: 10, width: "100%"}}
                                 />
                             ))}
                     </>
