@@ -52,7 +52,7 @@ export const reportEntity = (
     entityId: string,
 ): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("reports", "POST", {type, entityType, entityId}, {}, token, true);
+    const response = await requestBackend("reports", "POST", {}, {type, entityType, entityId}, token, true);
 
     if (response.status === HttpStatusCode.OK) {
         dispatch(reportEntitySuccess(type, entityType, entityId));
