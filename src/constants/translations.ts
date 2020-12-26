@@ -674,6 +674,26 @@ export default {
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
+        // Report
+        report: {
+            title: "Report",
+            send: "Send",
+            cancel: "Cancel",
+            what: "What / who?",
+            why: "Why?",
+            typePlaceholder: "Select a type",
+            types: {
+                violence: "Violence",
+                nudity: "Nudity",
+                harassment: "Harassment",
+                "undesirable-content": "Undesirable content",
+                "hate-speech": "Hate speech",
+                "vulgar-content": "Vulgar content",
+                other: "Other",
+            },
+            confirmationTitle: "Thank you",
+            confirmation: "An administrator will investigate your report shortly.",
+        },
         // Reset password
         resetPassword: {
             instructions: "To choose a new password, click the link in the email we just sent you.",
