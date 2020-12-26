@@ -4,11 +4,12 @@ import i18n from "i18n-js";
 import DropDownPicker from "react-native-dropdown-picker";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
-import {Overlay, withTheme} from "react-native-elements";
+import {withTheme} from "react-native-elements";
 import {pickerStyles} from "../styles/picker";
 import {ThemeProps} from "../types";
 import {SupportedLocale} from "../localization";
 import Chips from "./Chips";
+import CustomModal from "./modals/CustomModal";
 
 type PickerItem = {
     value: string;
@@ -150,50 +151,57 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                     </View>
                 </View>
                 {this.state.open && (
-                    <Overlay
-                        overlayStyle={[styles.overlay, {height: 150 + items.length * 40}]}
-                        isVisible={this.state.open}
-                        onRequestClose={() => this.close()}
-                        onBackdropPress={() => this.close()}
-                    >
-                        <>
-                            <View
-                                style={styles.dropdownWrapper}
-                                onLayout={(e: LayoutChangeEvent) => {
-                                    this.setState({...this.state, dropdownWrapperHeight: e.nativeEvent.layout.height});
-                                }}
-                            >
-                                <DropDownPicker
-                                    items={items}
-                                    multiple={!single}
-                                    searchable={true}
-                                    defaultValue={selected}
-                                    onChangeItem={(values: string[]) => {
-                                        this.tempSelected = values;
+                    <CustomModal
+                        visible={this.state.open}
+                        onHide={() => this.close()}
+                        modalViewStyle={{
+                            height: 150 + items.length * 40,
+                            maxHeight: "70%",
+                            overflow: "hidden",
+                            paddingHorizontal: 0,
+                            paddingVertical: 0,
+                        }}
+                        renderContent={() => (
+                            <>
+                                <View
+                                    style={styles.dropdownWrapper}
+                                    onLayout={(e: LayoutChangeEvent) => {
+                                        this.setState({
+                                            ...this.state,
+                                            dropdownWrapperHeight: e.nativeEvent.layout.height,
+                                        });
                                     }}
-                                    placeholder={placeholder}
-                                    multipleText={multipleText}
-                                    searchablePlaceholder={searchablePlaceholder}
-                                    scrollViewProps={{keyboardShouldPersistTaps: "handled"}} // ensures items are clickable even when the keyboard is open
-                                    isVisible={true}
-                                    showArrow={false}
-                                    dropDownMaxHeight={this.state.dropdownWrapperHeight - 10}
-                                    // Style props
-                                    selectedLabelStyle={{display: "none"}}
-                                    style={styles.dropdownStyle}
-                                    itemStyle={styles.dropdownItemStyle}
-                                    activeItemStyle={styles.dropdownActiveItemStyle}
-                                    activeLabelStyle={styles.dropdownActiveLabelStyle}
-                                    labelStyle={styles.dropdownLabelStyle}
-                                />
-                            </View>
-                            <View>
+                                >
+                                    <DropDownPicker
+                                        items={items}
+                                        multiple={!single}
+                                        searchable={true}
+                                        defaultValue={selected}
+                                        onChangeItem={(values: string[]) => {
+                                            this.tempSelected = values;
+                                        }}
+                                        placeholder={placeholder}
+                                        multipleText={multipleText}
+                                        searchablePlaceholder={searchablePlaceholder}
+                                        scrollViewProps={{keyboardShouldPersistTaps: "handled"}} // ensures items are clickable even when the keyboard is open
+                                        isVisible={true}
+                                        showArrow={false}
+                                        dropDownMaxHeight={this.state.dropdownWrapperHeight - 10}
+                                        // Style props
+                                        selectedLabelStyle={{display: "none"}}
+                                        style={styles.dropdownStyle}
+                                        itemStyle={styles.dropdownItemStyle}
+                                        activeItemStyle={styles.dropdownActiveItemStyle}
+                                        activeLabelStyle={styles.dropdownActiveLabelStyle}
+                                        labelStyle={styles.dropdownLabelStyle}
+                                    />
+                                </View>
                                 <TouchableOpacity onPress={() => this.close()} style={styles.okButton}>
                                     <Text style={styles.okButtonText}>OK</Text>
                                 </TouchableOpacity>
-                            </View>
-                        </>
-                    </Overlay>
+                            </>
+                        )}
+                    />
                 )}
             </View>
         );
