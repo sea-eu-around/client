@@ -4,7 +4,13 @@ import Constants from "expo-constants";
 import {Platform} from "react-native";
 import {rootNavigate} from "./navigation/utils";
 
+function areNotificationsSupported(): boolean {
+    return Constants.isDevice && Platform.OS !== "web";
+}
+
 export function configureNotifications(): void {
+    if (!areNotificationsSupported()) return;
+
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
             shouldShowAlert: true,
@@ -39,19 +45,16 @@ export function configureNotifications(): void {
 }
 
 export async function askForPushNotificationToken(): Promise<string | null> {
-    if (Constants.isDevice) {
-        let status = (await Permissions.getAsync(Permissions.NOTIFICATIONS)).status;
-        if (status !== "granted") status = (await Permissions.askAsync(Permissions.NOTIFICATIONS)).status;
+    if (!areNotificationsSupported()) return null;
 
-        if (status === "granted") {
-            const token = (await Notifications.getExpoPushTokenAsync()).data;
-            return token;
-        } else {
-            // User refused notifications
-            return null;
-        }
+    let status = (await Permissions.getAsync(Permissions.NOTIFICATIONS)).status;
+    if (status !== "granted") status = (await Permissions.askAsync(Permissions.NOTIFICATIONS)).status;
+
+    if (status === "granted") {
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        return token;
     } else {
-        // Not a physical device, so no push notifications
+        // User refused notifications
         return null;
     }
 }
