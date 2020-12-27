@@ -9,6 +9,7 @@ import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvide
 import store from "./state/store";
 import ThemedStatusBar from "./components/ThemedStatusBar";
 import {configureNotifications} from "./notifications";
+import CookieBanner from "./components/CookieBanner";
 
 function App() {
     const {isLoadingComplete, initialRoute} = useCachedResources();
@@ -24,6 +25,7 @@ function App() {
                     <ConnectedThemeProvider>
                         <Navigation initialRoute={initialRoute} />
                         <ThemedStatusBar />
+                        <CookieBanner />
                     </ConnectedThemeProvider>
                 </Provider>
             </SafeAreaProvider>
