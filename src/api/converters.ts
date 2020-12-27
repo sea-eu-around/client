@@ -141,6 +141,7 @@ export function convertDtoToHistoryItem(dto: MatchHistoryItemDto): MatchHistoryI
     return {
         profile: convertDtoToProfile(dto.profile),
         status: dto.status,
-        date: new Date(dto.createdAt),
+        date: new Date(dto.date),
+        id: dto.id,
     };
 }

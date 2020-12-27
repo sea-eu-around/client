@@ -5,4 +5,5 @@ export type MatchHistoryItem = {
     profile: UserProfile;
     status: MatchActionStatus;
     date: Date;
+    id: string;
 };

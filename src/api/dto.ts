@@ -204,5 +204,6 @@ export type MatchActionResponseDto = {
 export type MatchHistoryItemDto = {
     profile: ResponseProfileDto;
     status: MatchActionStatus;
-    createdAt: string;
+    date: string;
+    id: string;
 };
