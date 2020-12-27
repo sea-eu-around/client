@@ -24,6 +24,7 @@ export default {
             "Enter the email address associated with your account below. Instructions for choosing a new password will be sent shortly.",
         cancel: "Cancel",
         ok: "OK",
+        save: "Save",
         signupWelcome: "We can't wait for you to join our community!\n\nJust one more step.",
         firstname: "First name",
         lastname: "Last name",
@@ -674,6 +675,24 @@ export default {
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
+        // Cookies
+        cookies: {
+            bannerText:
+                "We use cookies to provide you with the best possible user experience.\nOur usage of cookies includes caching data for faster loading, storing your preferences and authentication. We do not collect any information that could be used for tracking or advertising.",
+            acceptAll: "Accept cookies",
+            customize: "Customize",
+            preferences: {
+                auth: {
+                    name: "Authentication",
+                    description: "Store information used to sign-in automatically when starting the app.",
+                },
+                cache: {
+                    name: "Cache",
+                    description: "Store some data on your device (less than 1MB) for faster loading.",
+                },
+                settings: {name: "Settings", description: "Store your settings (e.g. theme and locale)."},
+            },
+        },
         // Report
         report: {
             title: "Report",
@@ -804,6 +823,7 @@ export default {
             termsOfService: "Terms of Service",
             reportABug: "Report a Bug",
             logOut: "Log out",
+            customizeCookies: "Customize cookies",
         },
     },
     fr: {
