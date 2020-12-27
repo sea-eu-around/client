@@ -8,9 +8,12 @@ export type CustomModalProps = ThemeProps & {
     onHide?: () => void;
     onShow?: () => void;
     renderContent: (hide: () => void) => JSX.Element;
-    modalViewStyle?: ViewStyle;
+    modalViewStyle?: StyleProp<ViewStyle>;
     visible?: boolean;
     animationType?: "fade" | "none" | "slide" | undefined;
+    bottom?: boolean;
+    fullWidth?: boolean;
+    nonDismissable?: boolean;
 };
 
 type CustomModalState = {
@@ -42,56 +45,56 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
     }
 
     render(): JSX.Element {
-        const {theme, modalViewStyle} = this.props;
+        const {theme, modalViewStyle, bottom, fullWidth, nonDismissable} = this.props;
         const {modalVisible} = this.state;
 
-        const modal = (
+        const modal = modalVisible ? (
             <>
-                {modalVisible && (
-                    <>
-                        <TouchableOpacity
-                            onPress={() => this.setModalVisible(false)}
-                            style={
-                                ({
-                                    position: "fixed",
-                                    width: "100%",
-                                    height: "100%",
-                                    left: 0,
-                                    top: 0,
-                                    backgroundColor: "rgba(0,0,0,0.05)",
-                                    cursor: "pointer",
-                                } as unknown) as StyleProp<ViewStyle> // force typings to accept web-specific styling
-                            }
-                        />
-                        <View
-                            style={[
-                                ({
-                                    // Centering
-                                    position: "fixed",
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0,
-                                    margin: "auto",
-                                    // Actual styling
-                                    width: "50%",
-                                    height: "fit-content",
-                                    maxWidth: 300,
-                                    borderRadius: 3,
-                                    paddingVertical: 20,
-                                    paddingHorizontal: 30,
-                                    alignItems: "center",
-                                    boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
-                                    backgroundColor: theme.background,
-                                } as unknown) as ViewStyle, // force typings to accept web-specific styling
-                                modalViewStyle,
-                            ]}
-                        >
-                            {this.props.renderContent(() => this.setModalVisible(false))}
-                        </View>
-                    </>
-                )}
+                <TouchableOpacity
+                    style={
+                        ({
+                            position: "fixed",
+                            width: "100%",
+                            height: "100%",
+                            left: 0,
+                            top: 0,
+                            backgroundColor: "rgba(0,0,0,0.05)",
+                            cursor: "pointer",
+                        } as unknown) as StyleProp<ViewStyle> // force typings to accept web-specific styling
+                    }
+                    activeOpacity={1.0}
+                    onPress={nonDismissable ? undefined : () => this.setModalVisible(false)}
+                />
+                <View
+                    style={[
+                        ({
+                            // Centering
+                            position: "fixed",
+                            left: 0,
+                            right: 0,
+                            ...(bottom ? {} : {top: 0}),
+                            bottom: 0,
+                            margin: "auto",
+                            // Actual styling
+                            width: "50%",
+                            height: "fit-content",
+                            maxWidth: 300,
+                            borderRadius: 3,
+                            paddingVertical: 20,
+                            paddingHorizontal: 30,
+                            alignItems: "center",
+                            boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
+                            backgroundColor: theme.background,
+                        } as unknown) as ViewStyle, // force typings to accept web-specific styling
+                        fullWidth ? {width: "100%", maxWidth: "100%"} : {},
+                        modalViewStyle,
+                    ]}
+                >
+                    {this.props.renderContent(() => this.setModalVisible(false))}
+                </View>
             </>
+        ) : (
+            <></>
         );
 
         // "Teleport" the modal to an element that we previously appended to the <body>
