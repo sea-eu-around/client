@@ -8,9 +8,30 @@ import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import ScreenWrapper from "./ScreenWrapper";
 
-export type TabNotImplementedScreenProps = ThemeProps;
+export type TabHomeScreenProps = ThemeProps;
 
-class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenProps> {
+class TabHomeScreen extends React.Component<TabHomeScreenProps> {
+    private async fetchPostEmbed(shortCode: string): Promise<Response> {
+        // seaEuAlliance profile ID: 32204624961
+        // url=
+        const BASE_URL = "https://graph.facebook.com/v9.0/instagram_oembed";
+        const CLIENT_TOKEN = "80cd0bc3c132ad645a15d234ccd841bd";
+        const POST_URL = `https://www.instagram.com/p/${shortCode}/`;
+        const url = `${BASE_URL}?url=${POST_URL}&access_token=${CLIENT_TOKEN}`;
+
+        const headers: {[key: string]: string} = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        };
+        console.log(url);
+        const response = await fetch(url, {method: "GET", headers});
+        return response;
+    }
+
+    fetchEmbed() {
+        this.fetchPostEmbed("CJQ-ZX_rZb8").then((response) => console.log(JSON.stringify(response)));
+    }
+
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
@@ -18,6 +39,9 @@ class TabNotImplementedScreen extends React.Component<TabNotImplementedScreenPro
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
+                    {/*<TouchableOpacity onPress={() => this.fetchEmbed()}>
+                        <Text style={{fontSize: 22, padding: 20}}>Fetch</Text>
+                    </TouchableOpacity>*/}
                     <FontAwesome style={styles.icon} name="heart" />
                     <Text style={styles.title}>Thank you for participating in the alpha program.</Text>
                     <View style={styles.separator} />
@@ -75,4 +99,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(TabNotImplementedScreen);
+export default withTheme(TabHomeScreen);

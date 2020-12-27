@@ -26,6 +26,7 @@ export default {
         cancel: "Cancel",
         ok: "OK",
         signupWelcome: "We can't wait for you to join our community!",
+        save: "Save",
         firstname: "First name",
         lastname: "Last name",
         noResultsFound: "No results found",
@@ -688,6 +689,46 @@ export default {
             signUp: "Sign up",
             or: "or",
         },
+        // Cookies
+        cookies: {
+            bannerText:
+                "We use cookies to provide you with the best possible user experience.\nOur usage of cookies includes caching data for faster loading, storing your preferences and authentication. We do not collect any information that could be used for tracking or advertising.",
+            acceptAll: "Accept cookies",
+            customize: "Customize",
+            preferences: {
+                auth: {
+                    name: "Authentication",
+                    description: "Store information used to sign-in automatically when starting the app.",
+                },
+                cache: {
+                    name: "Cache",
+                    description: "Store some data on your device (less than 1MB) for faster loading.",
+                },
+                settings: {name: "Settings", description: "Store your settings (e.g. theme and locale)."},
+            },
+        },
+        // Report
+        report: {
+            title: "Report",
+            send: "Send",
+            cancel: "Cancel",
+            what: "What / who?",
+            why: "Why?",
+            typePlaceholder: "Select a type",
+            types: {
+                violence: "Violence",
+                nudity: "Nudity",
+                harassment: "Harassment",
+                "undesirable-content": "Undesirable content",
+                "hate-speech": "Hate speech",
+                "vulgar-content": "Vulgar content",
+                other: "Other",
+            },
+            confirmationTitle: "Thank you",
+            confirmation: "An administrator will investigate your report shortly.",
+            failureTitle: "Sorry",
+            failure: "We are unable to fulfill your request.",
+        },
         // Reset password
         resetPassword: {
             instructions: "To choose a new password, click the link in the email we just sent you.",
@@ -797,6 +838,7 @@ export default {
             termsOfService: "Terms of Service",
             reportABug: "Report a Bug",
             logOut: "Log out",
+            customizeCookies: "Customize cookies",
         },
     },
     fr: {

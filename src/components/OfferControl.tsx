@@ -55,12 +55,15 @@ class OfferControl extends React.Component<OfferControlProps> {
                         checked={isSomethingSelected}
                         onPress={() => this.setAllValues(!isSomethingSelected)}
                         containerStyle={styles.checkboxContainer}
-                    ></CheckBox>
-                    <TouchableOpacity onPress={() => this.setAllValues(!isSomethingSelected)}>
+                    />
+                    <TouchableOpacity
+                        style={styles.offerNameTouchable}
+                        onPress={() => this.setAllValues(!isSomethingSelected)}
+                    >
                         <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
                     </TouchableOpacity>
                     <CustomTooltip text={i18n.t(`allOffers.${offer.id}.help`)}>
-                        <MaterialIcons style={styles.helpIcon} name="help"></MaterialIcons>
+                        <MaterialIcons style={styles.helpIcon} name="help" />
                     </CustomTooltip>
                 </View>
                 {isSomethingSelected && (
@@ -107,6 +110,9 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
         },
+        offerNameTouchable: {
+            flex: 1,
+        },
         offerName: {
             textTransform: "uppercase",
             letterSpacing: 1,
@@ -122,7 +128,10 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         checkboxContainer: {
             padding: 0,
-            margin: 0,
+            marginTop: 0,
+            marginBottom: 0,
+            marginLeft: 0,
+            marginRight: 5,
         },
     });
 });

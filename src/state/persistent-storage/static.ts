@@ -9,17 +9,29 @@ type StaticDataObject<T> = {
  * Store the given data (with the current date) to unsecure persistent storage (unsuitable for sensitive info).
  * @param key - The name under which to store the given object.
  * @param data - An object to store.
+ * @param cookieConsent - Whether or not the user has agreed to storing this type of data. This is here so we don't forget.
  */
-export function storeStaticData<T>(key: string, data: T): void {
-    console.log(`Updating cache entry for '${key}'.`);
+export function storeStaticData<T>(key: string, data: T, cookieConsent: boolean): void {
+    if (cookieConsent) {
+        console.log(`Updating static storage '${key}'.`);
 
-    // Store the data along with the date
-    const storageObject = {
-        updatedAt: new Date().toJSON(),
-        data,
-    };
+        // Store the data along with the date
+        const storageObject = {
+            updatedAt: new Date().toJSON(),
+            data,
+        };
 
-    AsyncStorage.setItem(key, JSON.stringify(storageObject));
+        AsyncStorage.setItem(key, JSON.stringify(storageObject));
+    }
+}
+
+/**
+ * Clear the data at the given keys from persistent storage.
+ * @param keys - The keys to clear.
+ */
+export function clearStaticData<T>(...keys: string[]): void {
+    console.log(`Clearing static storage: ${keys.map((s) => `'${s}'`).join(", ")}.`);
+    AsyncStorage.multiRemove(keys);
 }
 
 /**

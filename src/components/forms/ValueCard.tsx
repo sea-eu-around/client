@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Modal, Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet, Platform} from "react-native";
+import {Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} from "react-native";
 import {formStyles} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -78,59 +78,41 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
         }
     }
 
-    renderModalContent = (): JSX.Element => {
+    renderModalContent = (theme: Theme): JSX.Element => {
         const {label, renderInput, oneLine} = this.props;
         const {value, error} = this.state;
 
+        const styles = themedStyles(oneLine)(theme);
+        const fstyles = formStyles(theme);
+
         return (
-            // We have to use a ThemeConsumer here instead of the standard withTheme(...) pattern so our generic typing doesn't break.
-            <ThemeConsumer>
-                {({theme}: ThemeProps) => {
-                    const styles = themedStyles(oneLine)(theme);
-                    const fstyles = formStyles(theme);
-                    return (
-                        <TouchableOpacity
-                            style={styles.modalTouchable}
-                            onPress={() => this.setModal(false)}
-                            activeOpacity={1}
-                        >
-                            <TouchableOpacity activeOpacity={1} style={styles.modalWrapper}>
-                                <Text style={styles.modalLabel}>{label}</Text>
-                                {renderInput && value ? (
-                                    renderInput(value, error, (value: T, error?: string | null) =>
-                                        this.onChange(value, error),
-                                    )
-                                ) : (
-                                    <></>
-                                )}
-                                <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
-                                <View style={[fstyles.actionRow, styles.modalActions]}>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("cancel")}
-                                        onPress={() => this.setModal(false)}
-                                        style={[fstyles.buttonMajor, styles.modalCancel]}
-                                    >
-                                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>
-                                            {i18n.t("cancel")}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        accessibilityRole="button"
-                                        accessibilityLabel={i18n.t("apply")}
-                                        onPress={() => this.apply()}
-                                        style={[fstyles.buttonMajor, styles.modalOk]}
-                                    >
-                                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>
-                                            {i18n.t("apply")}
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </TouchableOpacity>
-                        </TouchableOpacity>
-                    );
-                }}
-            </ThemeConsumer>
+            <>
+                <Text style={styles.modalLabel}>{label}</Text>
+                {renderInput && value ? (
+                    renderInput(value, error, (value: T, error?: string | null) => this.onChange(value, error))
+                ) : (
+                    <></>
+                )}
+                <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
+                <View style={[fstyles.actionRow, styles.modalActions]}>
+                    <TouchableOpacity
+                        accessibilityRole="button"
+                        accessibilityLabel={i18n.t("cancel")}
+                        onPress={() => this.setModal(false)}
+                        style={[fstyles.buttonMajor, styles.modalCancel]}
+                    >
+                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("cancel")}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        accessibilityRole="button"
+                        accessibilityLabel={i18n.t("apply")}
+                        onPress={() => this.apply()}
+                        style={[fstyles.buttonMajor, styles.modalOk]}
+                    >
+                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("apply")}</Text>
+                    </TouchableOpacity>
+                </View>
+            </>
         );
     };
 
@@ -197,24 +179,16 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                                     {overrideModal !== undefined &&
                                         modalOpen &&
                                         overrideModal(() => this.setModal(false))}
-                                    {overrideModal === undefined &&
-                                        modalOpen &&
-                                        (Platform.OS === "web" ? (
-                                            <CustomModal
-                                                visible={modalOpen}
-                                                renderContent={() => this.renderModalContent()}
-                                                onShow={onShow}
-                                            />
-                                        ) : (
-                                            <Modal
-                                                transparent={true}
-                                                visible={modalOpen}
-                                                onShow={onShow}
-                                                animationType="slide"
-                                            >
-                                                {this.renderModalContent()}
-                                            </Modal>
-                                        ))}
+                                    {overrideModal === undefined && modalOpen && (
+                                        <CustomModal
+                                            visible={modalOpen}
+                                            modalViewStyle={styles.modalContent}
+                                            animationType="slide"
+                                            renderContent={() => this.renderModalContent(theme)}
+                                            onShow={onShow}
+                                            onHide={() => this.setModal(false)}
+                                        />
+                                    )}
                                 </>
                             )}
                         </>
@@ -228,11 +202,8 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
 const themedStyles = (oneLine?: boolean) =>
     preTheme((theme: Theme) => {
         return StyleSheet.create({
-            modalTouchable: {
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0,0,0,0.5)",
+            modalContent: {
+                alignItems: "flex-start",
             },
             modalWrapper: {
                 width: "80%",

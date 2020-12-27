@@ -12,9 +12,10 @@ export const pickerStyles = preTheme((theme: Theme) => {
             paddingVertical: 0,
         },
         dropdownWrapper: {
+            width: "100%",
             flex: 1,
         },
-        dropdownStyle: {backgroundColor: "#fafafa"},
+        dropdownStyle: {backgroundColor: "#fafafa", height: "100%"},
         dropdownItemStyle: {justifyContent: "flex-start"} as ViewStyle,
         dropdownActiveItemStyle: {},
         dropdownActiveLabelStyle: {color: theme.accentSecondary},

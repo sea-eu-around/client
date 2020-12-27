@@ -46,16 +46,19 @@ const reportEntityFailure = (
     entityId,
 });
 
-export const reportEntity = (type: ReportType, entityType: ReportEntityType, entityId: string): AppThunk => async (
-    dispatch,
-    getState,
-) => {
+export const reportEntity = (
+    type: ReportType,
+    entityType: ReportEntityType,
+    entityId: string,
+): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("reports", "POST", {type, entityType, entityId}, {}, token, true);
+    const response = await requestBackend("reports", "POST", {}, {type, entityType, entityId}, token, true);
 
     if (response.status === HttpStatusCode.OK) {
         dispatch(reportEntitySuccess(type, entityType, entityId));
+        return true;
     } else {
         dispatch(reportEntityFailure(type, entityType, entityId));
+        return false;
     }
 };
