@@ -60,7 +60,14 @@ const Chip = withTheme(
         const styles = themedStyles(theme);
         return (
             <View style={[styles.chip, chipStyle]}>
-                <Text style={[styles.chipText, textStyle]} numberOfLines={1}>
+                <Text
+                    style={[
+                        styles.chipText,
+                        removable ? {marginRight: 20} /* depends on width of "remove" button */ : {},
+                        textStyle,
+                    ]}
+                    numberOfLines={1}
+                >
                     {text}
                 </Text>
                 {removable && (
@@ -90,7 +97,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             backgroundColor: theme.accentSlight,
             paddingVertical: 6,
-            paddingLeft: 10,
+            paddingHorizontal: 10,
             borderRadius: 20,
             marginRight: 4,
             marginBottom: 4,
@@ -98,7 +105,6 @@ export const themedStyles = preTheme((theme: Theme) => {
         chipText: {
             fontSize: 14,
             color: theme.textBlack,
-            marginRight: 30, // depends on width of "remove" button
         },
         chipRemoveButton: {
             position: "absolute",
