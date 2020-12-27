@@ -19,6 +19,7 @@ import LocalImage from "../components/LocalImage";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import {logout} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
+import CustomizeCookiesModal from "../components/modals/CustomizeCookiesModal";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -76,6 +77,28 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             }
                             noModal={true}
                         />
+                        <ValueCard
+                            style={styles.card}
+                            label={i18n.t("settings.logOut")}
+                            icon={<MaterialCommunityIcons name="logout" style={styles.cardIcon} />}
+                            oneLine={true}
+                            display={
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.redActionButton]}
+                                    onPress={() => dispatch(logout())}
+                                >
+                                    <Text style={styles.actionText}>{i18n.t("settings.logOut")}</Text>
+                                </TouchableOpacity>
+                            }
+                            noModal={true}
+                        />
+                        <ValueCard
+                            style={styles.card}
+                            label={i18n.t("settings.customizeCookies")}
+                            icon={<MaterialCommunityIcons name="cookie" style={styles.cardIcon} />}
+                            oneLine={true}
+                            overrideModal={(hide) => <CustomizeCookiesModal visible={true} onHide={hide} />}
+                        />
                     </Section>
                     <Section
                         theme={theme}
@@ -115,21 +138,6 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
-                        <ValueCard
-                            style={styles.card}
-                            label={i18n.t("settings.logOut")}
-                            icon={<MaterialCommunityIcons name="logout" style={styles.cardIcon} />}
-                            oneLine={true}
-                            display={
-                                <TouchableOpacity
-                                    style={[styles.redActionButton, styles.logoutButton]}
-                                    onPress={() => dispatch(logout())}
-                                >
-                                    <Text style={styles.logoutText}>{i18n.t("settings.logOut")}</Text>
-                                </TouchableOpacity>
-                            }
-                            noModal={true}
-                        />
                     </Section>
                     <Section
                         theme={theme}
@@ -137,14 +145,14 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                         icon={{name: "warning", color: theme.warn}}
                     >
                         <ValueCard
-                            style={styles.card}
+                            style={[styles.card, {height: 100}]}
                             label={i18n.t("settings.deleteAccount")}
                             display={
                                 <TouchableHighlight
-                                    style={styles.redActionButton}
+                                    style={styles.deleteAccountButton}
                                     onPress={() => rootNavigate("DeleteAccountScreen")}
                                 >
-                                    <Text style={styles.deleteAccountText}>{i18n.t("settings.deleteMyAccount")}</Text>
+                                    <Text style={styles.actionText}>{i18n.t("settings.deleteMyAccount")}</Text>
                                 </TouchableHighlight>
                             }
                             noModal={true}
@@ -226,6 +234,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         card: {
             marginVertical: 6,
+            height: 60,
         },
         cardIcon: {
             marginRight: 6,
@@ -240,24 +249,32 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             marginHorizontal: 10,
         },
-        redActionButton: {
-            backgroundColor: theme.error,
-            borderRadius: 4,
-            height: 40,
-            paddingHorizontal: 20,
+        // TODO general action button style
+        actionButton: {
+            backgroundColor: theme.accent,
+            borderRadius: 20,
+            width: 120,
+            height: 36,
             justifyContent: "center",
             alignItems: "center",
-            elevation: 2,
         },
-        deleteAccountText: {
+        actionText: {
             color: theme.textWhite,
             fontSize: 16,
         },
-        logoutButton: {},
-        logoutText: {
-            color: theme.textWhite,
-            fontSize: 16,
+        redActionButton: {
+            backgroundColor: theme.error,
         },
+
+        deleteAccountButton: {
+            backgroundColor: theme.error,
+            borderRadius: 20,
+            width: "100%",
+            height: 42,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+
         infoText: {
             color: theme.text,
             fontSize: 16,
