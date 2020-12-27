@@ -1,4 +1,5 @@
 import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
+import {MatchHistoryItem} from "../../model/matching";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES} from "../auth/actions";
 import {initialPaginatedState, MatchingFiltersState, MatchingState} from "../types";
@@ -14,6 +15,7 @@ import {
     FetchMyMatchesSuccessAction,
     FetchHistorySuccessAction,
     SetHistoryFiltersAction,
+    ActionCancelSuccessAction,
 } from "./actions";
 
 export const defaultMatchingFilters = (): MatchingFiltersState => ({
@@ -146,6 +148,13 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 historyFilters: {...state.historyFilters, ...filters},
             };
         }
+        case MATCHING_ACTION_TYPES.ACTION_CANCEL_SUCCESS: {
+            const {historyItemId} = action as ActionCancelSuccessAction;
+            return {
+                ...state,
+                historyItems: state.historyItems.filter((it: MatchHistoryItem) => it.id !== historyItemId),
+            };
+        }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,
@@ -154,6 +163,8 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 profilesPagination: initialPaginatedState(),
                 myMatches: [],
                 fetchingMyMatches: false,
+                historyItems: [],
+                historyPagination: initialPaginatedState(),
             };
         }
         default:

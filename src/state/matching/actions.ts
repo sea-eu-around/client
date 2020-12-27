@@ -36,6 +36,9 @@ export enum MATCHING_ACTION_TYPES {
     FETCH_HISTORY_SUCCESS = "MATCHING/FETCH_HISTORY_SUCCESS",
     FETCH_HISTORY_REFRESH = "MATCHING/FETCH_HISTORY_REFRESH",
 
+    ACTION_CANCEL_SUCCESS = "MATCHING/ACTION_CANCEL_SUCCESS",
+    ACTION_CANCEL_FAILURE = "MATCHING/ACTION_CANCEL_FAILURE",
+
     SET_HISTORY_FILTERS = "MATCHING/SET_HISTORY_FILTERS",
 }
 
@@ -125,6 +128,16 @@ export type SetHistoryFiltersAction = {
     filters: {[key: string]: boolean};
 };
 
+export type ActionCancelSuccessAction = {
+    type: string;
+    historyItemId: string;
+};
+
+export type ActionCancelFailureAction = {
+    type: string;
+    historyItemId: string;
+};
+
 export type MatchingAction =
     | SetOfferFilterAction
     | SetMatchingFiltersAction
@@ -139,7 +152,9 @@ export type MatchingAction =
     | BeginFetchMyMatchesAction
     | FetchMyMatchesFailureAction
     | FetchMyMatchesSuccessAction
-    | SetHistoryFiltersAction;
+    | SetHistoryFiltersAction
+    | ActionCancelSuccessAction
+    | ActionCancelFailureAction;
 
 export const setOfferFilter = (offerId: string, value: boolean): SetOfferFilterAction => ({
     type: MATCHING_ACTION_TYPES.SET_OFFER_FILTER,
@@ -343,3 +358,28 @@ export const setHistoryFilters = (filters: {[key: string]: boolean}): SetHistory
     type: MATCHING_ACTION_TYPES.SET_HISTORY_FILTERS,
     filters,
 });
+
+const cancelActionFailure = (historyItemId: string): ActionCancelFailureAction => ({
+    type: MATCHING_ACTION_TYPES.ACTION_CANCEL_FAILURE,
+    historyItemId,
+});
+
+const cancelActionSuccess = (historyItemId: string): ActionCancelSuccessAction => ({
+    type: MATCHING_ACTION_TYPES.ACTION_CANCEL_SUCCESS,
+    historyItemId,
+});
+
+export const cancelMatchAction = (historyItemId: string): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend(
+        "matching/cancel",
+        "POST",
+        {},
+        {matchingEntityId: historyItemId},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.OK) dispatch(cancelActionSuccess(historyItemId));
+    else dispatch(cancelActionFailure(historyItemId));
+};

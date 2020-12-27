@@ -92,7 +92,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                     refresh={() => dispatch(refreshFetchedHistory())}
                     renderItem={(item: MatchHistoryItem, hide: () => void) => (
                         <HistoryProfileCard
-                            key={`history-card-${item.profile.id}-${item.status}`}
+                            key={`history-card-${item.id}-${item.status}`}
                             item={item}
                             onHidden={hide}
                         />
