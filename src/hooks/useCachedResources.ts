@@ -4,11 +4,12 @@ import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
 import {SupportedLocale} from "../localization";
 import {User} from "../model/user";
+import {CookiesPreferences} from "../model/user-settings";
 import {RootNavigatorScreens} from "../navigation/types";
 import {attemptLoginFromCache} from "../state/auth/actions";
 import {readCachedStaticData} from "../state/persistent-storage/static";
 import {loadProfileInterests, loadProfileOffers} from "../state/profile/actions";
-import {setLocale, setTheme} from "../state/settings/actions";
+import {loadCookiesPreferences, setLocale, setTheme} from "../state/settings/actions";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 import {ThemeKey} from "../types";
@@ -43,7 +44,17 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                     RalewayBold: require("@assets/fonts/Raleway-Bold.ttf"),
                 });
 
-                // Attempt to read the settings from static storage
+                // Read cookie consent information from persistent storage
+                readCachedStaticData("cookieConsentDate").then((consentDate) => {
+                    readCachedStaticData("cookies").then((cookies) => {
+                        if (consentDate && cookies) {
+                            const date = new Date(consentDate.data as string);
+                            store.dispatch(loadCookiesPreferences(cookies.data as CookiesPreferences, date));
+                        }
+                    });
+                });
+
+                // Attempt to read the settings from persistent storage
                 readCachedStaticData("theme").then((theme) => {
                     if (theme) store.dispatch(setTheme(theme.data as ThemeKey, true));
                 });
