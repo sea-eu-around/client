@@ -1,16 +1,12 @@
 import React from "react";
 import {MaterialTopTabBarProps} from "@react-navigation/material-top-tabs";
-import {View, Text, StyleSheet, Dimensions, Keyboard, TouchableOpacity} from "react-native";
-import i18n from "i18n-js";
+import {View, Text, StyleSheet, Dimensions, Keyboard} from "react-native";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
-import Animated from "react-native-reanimated";
-import Svg, {Path} from "react-native-svg";
 import WavyHeader from "./headers/WavyHeader";
-import {ThemeProvider} from "@react-navigation/native";
 
 // Component props
 type LoginTabBarProps = ThemeProps & MaterialTopTabBarProps & {insets: EdgeInsets};
@@ -75,11 +71,9 @@ class TabBarComponent extends React.Component<LoginTabBarProps> {
             <ReAnimated.View style={[{height: this.height}]}>
                 <View style={styles.container}>
                     <WavyHeader
-                        customStyles={styles.svgCurve}
-                        customHeight={160}
-                        customTop={130}
-                        customBgColor={theme.accent}
-                        customWavePattern="M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+                        style={styles.svgCurve}
+                        color={theme.accent}
+                        wavePattern="M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
                     />
                     <View style={styles.headerContainer}>
                         <Text style={styles.headerText}>SEA-EU Around</Text>
@@ -142,6 +136,7 @@ const themedStyles = preTheme((theme: Theme) => {
         svgCurve: {
             position: "absolute",
             width: Dimensions.get("window").width,
+            height: 160,
         },
         /*tabBarWrapper: {
             backgroundColor: theme.background,

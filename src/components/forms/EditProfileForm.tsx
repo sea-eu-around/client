@@ -1,9 +1,9 @@
 import * as React from "react";
-import {ActivityIndicator, Dimensions, KeyboardAvoidingView, Text, View} from "react-native";
+import {ActivityIndicator, Text, View} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
-import {ScrollView, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 import DegreeToggle from "../DegreeToggle";
 import {CountryCode} from "../../model/country-codes";
 import RoleToggle from "../RoleToggle";
@@ -35,6 +35,7 @@ import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
 import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
+import ScrollFormWrapper from "./ScrollFormWrapper";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -226,16 +227,8 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         }
 
         return (
-            <View style={styles.screenWrapper}>
-                <View style={styles.topView}>
-                    {/* TODO wavyheader */}
-                    <WavyHeader
-                        customStyles={styles.svgCurve}
-                        customHeight={210}
-                        customTop={170}
-                        customBgColor={theme.accent}
-                        customWavePattern="M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
-                    />
+            <>
+                <WavyHeader style={styles.header} color={theme.accent}>
                     <EnlargeableAvatar
                         profile={user?.profile}
                         size={140}
@@ -257,19 +250,15 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                             containerStyle={styles.universityContainer}
                             style={styles.university}
                             university={getUniversityFromEmail(user.email)}
-                        ></FormattedUniversity>
+                        />
                     )}
-                </View>
-                <ScrollView style={styles.scrollWrapper} keyboardShouldPersistTaps="handled">
-                    <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={-100} style={styles.formWrapper}>
-                        <View style={styles.titleWrapper}>
-                            <Text style={styles.title}>{i18n.t("myProfile")}</Text>
-                        </View>
-                        {profileFieldComponents}
-                        {!user && <ActivityIndicator size="large" color={theme.accent} />}
-                    </KeyboardAvoidingView>
-                </ScrollView>
-            </View>
+                </WavyHeader>
+                <ScrollFormWrapper contentStyle={styles.content}>
+                    <Text style={styles.title}>{i18n.t("myProfile")}</Text>
+                    {profileFieldComponents}
+                    {!user && <ActivityIndicator size="large" color={theme.accent} />}
+                </ScrollFormWrapper>
+            </>
         );
     }
 }
@@ -332,51 +321,9 @@ const OfferCategoryRow = reduxConnector(
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        svgCurve: {
-            position: "absolute",
-            width: Dimensions.get("window").width,
-        },
-        titleWrapper: {
-            width: "100%",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            marginBottom: 20,
-        },
-        title: {
-            fontSize: 22,
-            color: theme.text,
-        },
-        buttonSend: {
-            flex: 1,
-            backgroundColor: theme.accent,
-            marginLeft: 6,
-        },
-        screenWrapper: {
-            backgroundColor: theme.background,
-            width: "100%",
-        },
-        topView: {
-            /*width: "160%",
-            borderBottomLeftRadius: 200,
-            borderBottomRightRadius: 200,*/
-            width: "100%",
-            paddingTop: 10,
-            paddingBottom: 10,
+        // Header-related styles
+        header: {
             alignItems: "center",
-            alignSelf: "center",
-        },
-        scrollWrapper: {
-            width: "100%",
-        },
-        formWrapper: {
-            flex: 1,
-            width: "90%",
-            maxWidth: 600,
-            flexDirection: "column",
-            alignItems: "center",
-            alignSelf: "center",
-            paddingTop: 60,
-            marginBottom: 300,
         },
         name: {
             fontSize: 30,
@@ -391,9 +338,9 @@ export const themedStyles = preTheme((theme: Theme) => {
             marginVertical: 5,
         },
         avatarContainer: {
+            backgroundColor: theme.accentSecondary,
             borderColor: theme.cardBackground,
             borderWidth: 2,
-            backgroundColor: theme.accentSecondary,
         },
         avatarAccessory: {
             width: 40,
@@ -405,6 +352,20 @@ export const themedStyles = preTheme((theme: Theme) => {
             textShadowRadius: 0,
             color: "#444",
         },
+
+        // Content-related style
+        content: {
+            width: "90%",
+            paddingTop: 85,
+            marginBottom: 40,
+        },
+        title: {
+            fontSize: 22,
+            color: theme.text,
+            marginBottom: 20,
+            width: "100%",
+        },
+
         cardText: {
             color: theme.text,
         },
