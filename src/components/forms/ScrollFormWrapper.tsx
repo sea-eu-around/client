@@ -2,12 +2,12 @@ import * as React from "react";
 import {ScrollView, LayoutChangeEvent, StyleProp, ViewStyle, Keyboard, KeyboardAvoidingView} from "react-native";
 import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
+import {preTheme} from "../../styles/utils";
 
 type ScrollFormWrapperProps = ThemeProps & {contentStyle?: StyleProp<ViewStyle>; notKeyboardReactive?: boolean};
 
 type ScrollFormWrapperState = {height: number};
 
-// TODO clean-up
 class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFormWrapperState> {
     keyboardShown = false;
 
@@ -29,42 +29,52 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
     }
 
     render(): JSX.Element {
-        const {notKeyboardReactive, contentStyle} = this.props;
+        const {notKeyboardReactive, contentStyle, theme} = this.props;
         const {height} = this.state;
+
+        const styles = themedStyles(theme);
 
         return (
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                style={{flex: 1, width: "100%"}}
-                contentContainerStyle={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    minHeight: notKeyboardReactive ? 0 : height,
-                }}
+                style={styles.scrollView}
+                contentContainerStyle={[
+                    styles.scrollViewContent,
+                    {
+                        minHeight: notKeyboardReactive ? 0 : height,
+                    },
+                ]}
                 onLayout={(e: LayoutChangeEvent) => {
                     if (!notKeyboardReactive || this.state.height == 0) {
+                        // Manually give a minimum height to the content
                         if (!this.keyboardShown) this.setState({...this.state, height: e.nativeEvent.layout.height});
                     }
                 }}
             >
-                <KeyboardAvoidingView
-                    behavior="padding"
-                    style={[
-                        {
-                            flex: 1,
-                            width: "80%",
-                            maxWidth: 400,
-                            justifyContent: "center",
-                            alignItems: "center",
-                        },
-                        contentStyle,
-                    ]}
-                >
+                <KeyboardAvoidingView behavior="padding" style={[styles.keyboardAvoidingView, contentStyle]}>
                     {this.props.children}
                 </KeyboardAvoidingView>
             </ScrollView>
         );
     }
 }
+
+const themedStyles = preTheme(() => ({
+    keyboardAvoidingView: {
+        flex: 1,
+        width: "80%",
+        maxWidth: 400,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    scrollView: {
+        flex: 1,
+        width: "100%",
+    },
+    scrollViewContent: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+}));
 
 export default withTheme(ScrollFormWrapper);
