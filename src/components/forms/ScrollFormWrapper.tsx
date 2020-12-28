@@ -29,7 +29,7 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
     }
 
     render(): JSX.Element {
-        const {notKeyboardReactive} = this.props;
+        const {notKeyboardReactive, contentStyle} = this.props;
         const {height} = this.state;
 
         return (
@@ -49,13 +49,16 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
             >
                 <KeyboardAvoidingView
                     behavior="padding"
-                    style={{
-                        flex: 1,
-                        width: "80%",
-                        maxWidth: 400,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
+                    style={[
+                        {
+                            flex: 1,
+                            width: "80%",
+                            maxWidth: 400,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        },
+                        contentStyle,
+                    ]}
                 >
                     {this.props.children}
                 </KeyboardAvoidingView>
