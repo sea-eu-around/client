@@ -2,19 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {StyleProp, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
-import {ThemeProps} from "../../types";
-
-export type CustomModalProps = ThemeProps & {
-    onHide?: () => void;
-    onShow?: () => void;
-    renderContent: (hide: () => void) => JSX.Element;
-    modalViewStyle?: StyleProp<ViewStyle>;
-    visible?: boolean;
-    animationType?: "fade" | "none" | "slide" | undefined;
-    bottom?: boolean;
-    fullWidth?: boolean;
-    nonDismissable?: boolean;
-};
+import {CustomModalProps} from "./CustomModal.native";
 
 type CustomModalState = {
     modalVisible: boolean;
@@ -45,7 +33,16 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
     }
 
     render(): JSX.Element {
-        const {theme, modalViewStyle, bottom, fullWidth, nonDismissable} = this.props;
+        const {
+            theme,
+            modalViewStyle,
+            bottom,
+            fullWidth,
+            fullHeight,
+            nonDismissable,
+            noBackground,
+            backdropOpacity,
+        } = this.props;
         const {modalVisible} = this.state;
 
         const modal = modalVisible ? (
@@ -58,7 +55,7 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
                             height: "100%",
                             left: 0,
                             top: 0,
-                            backgroundColor: "rgba(0,0,0,0.05)",
+                            backgroundColor: `rgba(0,0,0,${backdropOpacity || 0.05})`,
                             cursor: "pointer",
                         } as unknown) as StyleProp<ViewStyle> // force typings to accept web-specific styling
                     }
@@ -83,10 +80,15 @@ export class CustomModalClass extends React.Component<CustomModalProps, CustomMo
                             paddingVertical: 20,
                             paddingHorizontal: 30,
                             alignItems: "center",
-                            boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
-                            backgroundColor: theme.background,
                         } as unknown) as ViewStyle, // force typings to accept web-specific styling
                         fullWidth ? {width: "100%", maxWidth: "100%"} : {},
+                        fullHeight ? {height: "100%"} : {},
+                        !noBackground
+                            ? (({
+                                  backgroundColor: theme.background,
+                                  boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
+                              } as unknown) as ViewStyle)
+                            : {},
                         modalViewStyle,
                     ]}
                 >
