@@ -1,15 +1,70 @@
 import React from "react";
-import {View} from "react-native";
-import Svg, {Path, Image} from "react-native-svg";
+import {StyleProp, View, ViewStyle} from "react-native";
+import Svg, {Path} from "react-native-svg";
 
-export default function WavyHeader({customStyles, customHeight, customTop, customBgColor, customWavePattern}) {
-    return (
-        <View style={customStyles}>
-            <View style={{backgroundColor: customBgColor, height: customHeight}}>
-                <Svg height="60%" width="100%" viewBox="0 0 1440 320" style={{position: "absolute", top: customTop}}>
-                    <Path fill={customBgColor} d={customWavePattern} />
-                </Svg>
-            </View>
-        </View>
-    );
+export type WavyHeaderProps = {
+    style: StyleProp<ViewStyle>;
+    color: string;
+    wavePattern?: string;
+};
+
+type WavyHeaderState = {
+    waveTop: number;
+    wavePatternIdx: number;
+};
+
+const WAVE_PATTERNS = [
+    "M0,160L48,154.7C96,149,192,139,288,165.3C384,192,480,256,576,245.3C672,235,768,149,864,101.3C960,53,1056,43,1152,64C1248,85,1344,139,1392,165.3L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,224L48,197.3C96,171,192,117,288,128C384,139,480,213,576,218.7C672,224,768,160,864,144C960,128,1056,160,1152,181.3C1248,203,1344,213,1392,218.7L1440,224L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,96L48,106.7C96,117,192,139,288,160C384,181,480,203,576,213.3C672,224,768,224,864,192C960,160,1056,96,1152,85.3C1248,75,1344,117,1392,138.7L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,192L48,197.3C96,203,192,213,288,197.3C384,181,480,139,576,122.7C672,107,768,117,864,128C960,139,1056,149,1152,133.3C1248,117,1344,75,1392,53.3L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,128L48,138.7C96,149,192,171,288,160C384,149,480,107,576,122.7C672,139,768,213,864,202.7C960,192,1056,96,1152,64C1248,32,1344,64,1392,80L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,96C672,75,768,85,864,101.3C960,117,1056,139,1152,160C1248,181,1344,203,1392,213.3L1440,224L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,160L48,154.7C96,149,192,139,288,122.7C384,107,480,85,576,96C672,107,768,149,864,138.7C960,128,1056,64,1152,53.3C1248,43,1344,85,1392,106.7L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+    "M0,32L60,69.3C120,107,240,181,360,186.7C480,192,600,128,720,90.7C840,53,960,43,1080,48C1200,53,1320,75,1380,85.3L1440,96L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
+    "M0,128L60,117.3C120,107,240,85,360,64C480,43,600,21,720,64C840,107,960,213,1080,250.7C1200,288,1320,256,1380,240L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
+    "M0,288L60,245.3C120,203,240,117,360,101.3C480,85,600,139,720,176C840,213,960,235,1080,240C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
+    "M0,96L60,117.3C120,139,240,181,360,181.3C480,181,600,139,720,138.7C840,139,960,181,1080,202.7C1200,224,1320,224,1380,224L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
+    // EditProfileForm
+    "M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
+];
+
+export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHeaderState> {
+    constructor(props: WavyHeaderProps) {
+        super(props);
+        this.state = {
+            waveTop: -1,
+            // Assign a random wave pattern
+            wavePatternIdx: Math.floor(Math.random() * WAVE_PATTERNS.length),
+        };
+    }
+
+    render(): JSX.Element {
+        const {style, color, children} = this.props;
+        const {waveTop} = this.state;
+
+        const wavePattern = this.props.wavePattern || WAVE_PATTERNS[this.state.wavePatternIdx];
+        console.log(this.state.wavePatternIdx);
+
+        return (
+            <>
+                <View
+                    style={[{backgroundColor: color, width: "100%", zIndex: 10}, style]}
+                    onLayout={(layout) => {
+                        const {y, height} = layout.nativeEvent.layout;
+                        this.setState({...this.state, waveTop: y + height});
+                    }}
+                >
+                    {children}
+                </View>
+                {waveTop !== -1 && (
+                    <View style={{position: "absolute", top: waveTop, width: "100%", height: 100, zIndex: 10}}>
+                        <Svg viewBox="0 20 1440 320">
+                            <Path fill={color} d={wavePattern} />
+                        </Svg>
+                    </View>
+                )}
+            </>
+        );
+    }
 }
