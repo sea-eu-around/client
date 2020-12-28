@@ -43,7 +43,7 @@ export type TabMatchingRoot = {
 // TAB: Messaging
 
 export type TabMessagingRoot = {
-    MessagingScreen: undefined;
+    ChatRoomsScreen: undefined;
     ChatScreen: undefined;
 };
 

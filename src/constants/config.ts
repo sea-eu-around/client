@@ -44,7 +44,7 @@ export const MAX_SPOKEN_LANGUAGES = 8;
 /**
  * The navigation routes that require a connection to the chat socket.
  */
-export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "MessagingScreen"];
+export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "ChatRoomsScreen"];
 
 /**
  * The time before we ask the user to consent for cookies again.

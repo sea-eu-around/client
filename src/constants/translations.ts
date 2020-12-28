@@ -802,7 +802,7 @@ export default {
             OnboardingOffersScreen3: "Meet",
             OnboardingLegalScreen1: "Terms & Conditions",
             OnboardingPrivacyScreen: "Privacy Policy",
-            MessagingScreen: "Messages",
+            ChatRoomsScreen: "Messages",
             ChatScreen: "Chat",
             TabHomeScreen: "Home",
             TabMatchingScreen: "Match",

@@ -22,12 +22,9 @@ const reduxConnector = connect((state: AppState) => ({
     currentPage: state.messaging.matchRoomsPagination.page,
 }));
 
-type IndividualMessagingTabProps = ConnectedProps<typeof reduxConnector> &
-    ThemeProps &
-    StackScreenProps<TabMessagingRoot>;
+type ChatRoomsScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackScreenProps<TabMessagingRoot>;
 
-// TODO rename IndividualMessagingTab
-class IndividualMessagingTab extends React.Component<IndividualMessagingTabProps> {
+class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
     render(): JSX.Element {
         const {theme, rooms, roomIds, fetchingRooms, currentPage, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
@@ -62,18 +59,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             lineHeight: 24,
             textAlign: "center",
         },
-
-        // Search bar
-        searchBarContainer: {
-            width: "90%",
-            marginBottom: 10,
-        },
-        searchBarInputContainer: {
-            height: 45,
-            backgroundColor: theme.cardBackground,
-            elevation: 2,
-        },
     });
 });
 
-export default reduxConnector(withTheme(IndividualMessagingTab));
+export default reduxConnector(withTheme(ChatRoomsScreen));

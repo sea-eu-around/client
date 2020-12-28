@@ -35,7 +35,7 @@ const config: LinkingOptions = {
                     },
                     TabMessaging: {
                         screens: {
-                            MessagingScreen: "messaging",
+                            ChatRoomsScreen: "messaging",
                             ChatScreen: "chat/:roomId",
                         },
                     },

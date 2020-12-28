@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import * as React from "react";
-import IndividualMessagingTab from "../screens/messaging/IndividualMessagingTab";
+import ChatRoomsScreen from "../screens/messaging/ChatRoomsScreen";
 import {TabMessagingRoot} from "./types";
 import {screenTitle} from "./utils";
 import MainHeader from "../components/headers/MainHeader";
@@ -13,10 +13,10 @@ const Stack = createStackNavigator<TabMessagingRoot>();
 const MessagingNavigator = (): JSX.Element => (
     <Stack.Navigator>
         <Stack.Screen
-            name="MessagingScreen"
-            component={IndividualMessagingTab}
+            name="ChatRoomsScreen"
+            component={ChatRoomsScreen}
             options={{
-                title: screenTitle("MessagingScreen"),
+                title: screenTitle("ChatRoomsScreen"),
                 headerShown: true,
                 header: MainHeader,
             }}
