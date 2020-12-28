@@ -19,10 +19,9 @@ export const headerStyles = preTheme((theme: Theme) => {
             left: 0,
             right: 0,
         },
-        // TODO check if useless and remove style
         wrapperNoShadow: {
-            //shadowColor: "transparent",
-            //elevation: 0,
+            shadowColor: "transparent",
+            elevation: 0,
         },
         backButton: {
             width: 40,

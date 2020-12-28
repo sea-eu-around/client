@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
@@ -10,7 +10,7 @@ import {RootNavigatorScreens} from "../navigation/types";
 import ScreenWrapper from "./ScreenWrapper";
 import SemiHighlightedText from "../components/SemiHighlightedText";
 import {getLocalSvg} from "../assets";
-import {loginTabsStyles} from "../styles/forms";
+import Button from "../components/Button";
 
 export type WelcomeScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -18,7 +18,6 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
-        const lstyles = loginTabsStyles(theme);
 
         const WelcomeImage = getLocalSvg("welcome", () => this.forceUpdate());
 
@@ -35,17 +34,16 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                         </Text>
                     </View>
                     <View style={styles.actionsContainer}>
-                        <TouchableOpacity
-                            style={[lstyles.actionButton, lstyles.actionButtonFilled]}
+                        <Button
+                            text={i18n.t("welcomeScreen.signIn")}
                             onPress={() => rootNavigate("SigninScreen")}
-                        >
-                            <Text style={[lstyles.actionText, lstyles.actionTextFilled]}>
-                                {i18n.t("welcomeScreen.signIn")}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={lstyles.actionButton} onPress={() => rootNavigate("SignupScreen")}>
-                            <Text style={lstyles.actionText}>{i18n.t("welcomeScreen.signUp")}</Text>
-                        </TouchableOpacity>
+                            skin="rounded-filled"
+                        />
+                        <Button
+                            text={i18n.t("welcomeScreen.signUp")}
+                            onPress={() => rootNavigate("SignupScreen")}
+                            skin="rounded-hollow"
+                        />
                     </View>
                 </View>
             </ScreenWrapper>

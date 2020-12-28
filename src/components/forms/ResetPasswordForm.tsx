@@ -1,11 +1,11 @@
 import * as React from "react";
-import {StyleSheet, Text, TextInput, View} from "react-native";
+import {StyleSheet, Text, TextInput} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
 import {VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {getLoginTextInputsStyleProps} from "../../styles/forms";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
@@ -72,13 +72,10 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
         const {theme} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
 
         return (
             <>
-                <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{i18n.t("resetPassword.title")}</Text>
-                </View>
+                <Text style={styles.title}>{i18n.t("resetPassword.title")}</Text>
                 <Formik
                     initialValues={initialState()}
                     validationSchema={ResetPasswordFormSchema}
@@ -132,15 +129,13 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={fstyles.actionRow}>
-                                    <FormSubmitButton
-                                        onPress={() => handleSubmit()}
-                                        style={[fstyles.buttonMajor, styles.button]}
-                                        textStyle={fstyles.buttonMajorText}
-                                        text={i18n.t("resetPassword.button")}
-                                        submitting={submitting}
-                                    />
-                                </View>
+                                <FormSubmitButton
+                                    onPress={() => handleSubmit()}
+                                    style={styles.button}
+                                    skin="rounded-filled"
+                                    text={i18n.t("resetPassword.button")}
+                                    submitting={submitting}
+                                />
                             </React.Fragment>
                         );
                     }}
@@ -152,19 +147,14 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        titleWrapper: {
-            width: "100%",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            marginBottom: 20,
-        },
         title: {
+            width: "100%",
             fontSize: 22,
             color: theme.text,
+            marginBottom: 20,
         },
         button: {
-            width: "60%",
-            backgroundColor: theme.accent,
+            marginTop: 30,
         },
     });
 });

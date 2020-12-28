@@ -1,6 +1,5 @@
 import * as React from "react";
 import {Text, TouchableOpacity, TouchableOpacityProps, View, StyleSheet} from "react-native";
-import {formStyles} from "../../styles/forms";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
 import {ArraySchema, Schema, ValidationError} from "yup";
@@ -8,6 +7,7 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {ThemeConsumer} from "react-native-elements";
 import CustomModal from "../modals/CustomModal";
+import Button from "../Button";
 
 // Component props
 type ValueCardProps<T> = {
@@ -83,7 +83,6 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
         const {value, error} = this.state;
 
         const styles = themedStyles(oneLine)(theme);
-        const fstyles = formStyles(theme);
 
         return (
             <>
@@ -94,23 +93,19 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                     <></>
                 )}
                 <Text style={styles.modalErrorText}>{/*touched && */ error ? i18n.t(error) : ""}</Text>
-                <View style={[fstyles.actionRow, styles.modalActions]}>
-                    <TouchableOpacity
-                        accessibilityRole="button"
-                        accessibilityLabel={i18n.t("cancel")}
-                        onPress={() => this.setModal(false)}
-                        style={[fstyles.buttonMajor, styles.modalCancel]}
-                    >
-                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("cancel")}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        accessibilityRole="button"
-                        accessibilityLabel={i18n.t("apply")}
+                <View style={styles.modalButtonsContainer}>
+                    <Button
                         onPress={() => this.apply()}
-                        style={[fstyles.buttonMajor, styles.modalOk]}
-                    >
-                        <Text style={[fstyles.buttonMajorText, styles.modalActionText]}>{i18n.t("apply")}</Text>
-                    </TouchableOpacity>
+                        style={styles.modalButton}
+                        text={i18n.t("apply")}
+                        skin="rounded-filled"
+                    />
+                    <Button
+                        onPress={() => this.setModal(false)}
+                        style={styles.modalButton}
+                        text={i18n.t("cancel")}
+                        skin="rounded-hollow"
+                    />
                 </View>
             </>
         );
@@ -170,7 +165,7 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                                             name={locked ? "lock" : "keyboard-arrow-right"}
                                             size={locked ? 30 : 40}
                                             style={styles.rightIcon}
-                                        ></MaterialIcons>
+                                        />
                                     </View>
                                 )}
                             </TouchableOpacity>
@@ -204,17 +199,7 @@ const themedStyles = (oneLine?: boolean) =>
         return StyleSheet.create({
             modalContent: {
                 alignItems: "flex-start",
-            },
-            modalWrapper: {
-                width: "80%",
-                maxWidth: 500,
-                backgroundColor: theme.cardBackground,
-                paddingHorizontal: 10,
-                paddingVertical: 20,
-                borderRadius: 4,
-                borderColor: "#ccc",
-                borderWidth: 0.5,
-                borderStyle: "solid",
+                paddingHorizontal: 20,
             },
             modalErrorText: {
                 fontSize: 12,
@@ -227,24 +212,13 @@ const themedStyles = (oneLine?: boolean) =>
                 fontSize: 13,
                 marginBottom: 12,
             },
-            modalActions: {
-                height: 50,
-                marginTop: 20,
+            modalButtonsContainer: {
+                flexDirection: "column",
+                width: "100%",
             },
-            modalCancel: {
-                flex: 1,
-                backgroundColor: theme.actionNeutral,
-                marginRight: 6,
-                height: 50,
-            },
-            modalOk: {
-                flex: 1,
-                backgroundColor: theme.accent,
-                marginLeft: 6,
-                height: 50,
-            },
-            modalActionText: {
-                lineHeight: 50,
+            modalButton: {
+                marginVertical: 0,
+                marginTop: 15,
             },
             cardWrapper: {
                 width: "100%",
@@ -259,7 +233,6 @@ const themedStyles = (oneLine?: boolean) =>
             cardContent: {
                 flex: 1,
                 flexDirection: oneLine ? "row" : "column",
-                //justifyContent: "space-evenly",
                 justifyContent: "space-between",
             },
             cardLabelContainer: {

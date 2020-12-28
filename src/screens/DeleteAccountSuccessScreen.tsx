@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
+import {Text, View, StyleSheet} from "react-native";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
@@ -10,29 +10,27 @@ import store from "../state/store";
 import {logout} from "../state/auth/actions";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import ScreenWrapper from "./ScreenWrapper";
-import {formStyles} from "../styles/forms";
+import Button from "../components/Button";
 
 type DeleteAccountSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
-// TODO implement
 class DeleteAccountSuccessScreen extends React.Component<DeleteAccountSuccessScreenProps> {
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
 
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
                     <Text style={styles.successText}>{i18n.t("deleteAccount.success1")}</Text>
                     <Text style={styles.successText}>{i18n.t("deleteAccount.success2")}</Text>
-                    <TouchableOpacity
-                        style={[fstyles.buttonMajor, styles.button]}
+                    <Button
+                        text={i18n.t("deleteAccount.leave")}
+                        icon={<MaterialCommunityIcons name="logout" style={styles.buttonIcon} />}
                         onPress={() => store.dispatch(logout())}
-                    >
-                        <Text style={fstyles.buttonMajorText}>{i18n.t("deleteAccount.leave")}</Text>
-                        <MaterialCommunityIcons name="logout" style={styles.buttonIcon} />
-                    </TouchableOpacity>
+                        skin="rounded-filled"
+                        style={styles.button}
+                    />
                 </View>
             </ScreenWrapper>
         );
@@ -55,16 +53,13 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         button: {
-            paddingHorizontal: 25,
-            marginTop: 40,
+            marginTop: 30,
             backgroundColor: theme.error,
-            alignItems: "center",
-            flexDirection: "row",
         },
         buttonIcon: {
             fontSize: 20,
             color: theme.textWhite,
-            marginLeft: 4,
+            marginLeft: 5,
         },
     });
 });

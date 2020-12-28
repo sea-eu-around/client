@@ -4,76 +4,8 @@ import {FormCheckBoxProps} from "../components/forms/FormCheckBox";
 import {preTheme} from "./utils";
 import {TextInputStyleProps} from "../components/ValidatedTextInput";
 
-export const formStyles = preTheme(() => {
+export const formStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        inputErrorText: {
-            fontSize: 12,
-            marginTop: 2,
-            marginBottom: -12, // prevents an offset from appearing when there is an error
-        },
-        inputRow: {
-            flexDirection: "row",
-            justifyContent: "center",
-            width: "100%",
-        },
-        actionRow: {
-            flexDirection: "row",
-            justifyContent: "center",
-            width: "100%",
-            marginTop: 25,
-        },
-        buttonMajor: {
-            justifyContent: "center",
-            height: 50,
-            borderRadius: 10,
-        },
-        buttonMajorText: {
-            color: "white",
-            textAlign: "center",
-            fontSize: 16,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-        },
-    });
-});
-
-export const loginTabsStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        // TODO remove
-        erasmusLogo: {
-            width: "100%",
-            height: 40,
-            marginTop: 40,
-        },
-
-        actionsContainer: {
-            flexDirection: "column",
-            width: "100%",
-        },
-        actionButton: {
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: 48,
-            marginVertical: 10,
-            borderRadius: 100,
-
-            borderColor: theme.accent,
-            borderWidth: 1,
-        },
-        actionText: {
-            fontSize: 18,
-            letterSpacing: 1,
-
-            color: theme.accent,
-        },
-        actionButtonFilled: {
-            backgroundColor: theme.accent,
-        },
-        actionTextFilled: {
-            color: theme.textWhite,
-        },
-
         inputFieldIcon: {
             fontSize: 20,
             color: theme.inputPlaceholder,

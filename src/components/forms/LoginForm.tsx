@@ -7,7 +7,7 @@ import {FormTextInput} from "../forms/FormTextInput";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_LOGIN, VALIDATOR_PASSWORD_LOGIN} from "../../validators";
-import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
+import {getLoginTextInputsStyleProps, formStyles} from "../../styles/forms";
 import {requestLogin} from "../../state/auth/actions";
 import FormError from "./FormError";
 import {FormProps, Theme, ThemeProps} from "../../types";
@@ -78,7 +78,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
         const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
-        const lstyles = loginTabsStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <View style={[{width: "100%"}, containerStyle]}>
@@ -120,8 +120,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         <MaterialIcons
                                             name="email"
                                             style={[
-                                                lstyles.inputFieldIcon,
-                                                focused ? lstyles.inputFieldIconFocused : {},
+                                                fstyles.inputFieldIcon,
+                                                focused ? fstyles.inputFieldIconFocused : {},
                                             ]}
                                         />
                                     )}
@@ -142,8 +142,8 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         <MaterialIcons
                                             name="lock"
                                             style={[
-                                                lstyles.inputFieldIcon,
-                                                focused ? lstyles.inputFieldIconFocused : {},
+                                                fstyles.inputFieldIcon,
+                                                focused ? fstyles.inputFieldIconFocused : {},
                                             ]}
                                         />
                                     )}
@@ -164,11 +164,10 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                     <Text style={styles.forgotPasswordText}>{i18n.t("forgotPassword")}</Text>
                                 </TouchableOpacity>
 
-                                <View style={lstyles.actionsContainer}>
+                                <View style={styles.actionsContainer}>
                                     <FormSubmitButton
                                         onPress={() => handleSubmit()}
-                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
-                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
+                                        skin="rounded-filled"
                                         text={i18n.t("loginForm.logIn")}
                                         icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
                                         submitting={submitting}
@@ -180,8 +179,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                     </View>
                                     <Button
                                         onPress={() => rootNavigate("SignupScreen")}
-                                        style={lstyles.actionButton}
-                                        textStyle={lstyles.actionText}
+                                        skin="rounded-hollow"
                                         text={i18n.t("loginForm.signUp")}
                                     />
                                 </View>
@@ -196,6 +194,10 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        actionsContainer: {
+            flexDirection: "column",
+            width: "100%",
+        },
         loginButtonIcon: {
             color: theme.textWhite,
             fontSize: 20,

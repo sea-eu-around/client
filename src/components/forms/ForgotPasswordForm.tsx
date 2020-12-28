@@ -4,7 +4,7 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
-import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
+import {getLoginTextInputsStyleProps} from "../../styles/forms";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {VALIDATOR_EMAIL_LOGIN} from "../../validators";
@@ -57,7 +57,6 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
         const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const lstyles = loginTabsStyles(theme);
 
         return (
             <View style={[{width: "100%"}, containerStyle]}>
@@ -98,16 +97,14 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={[lstyles.actionsContainer, styles.actionsContainer]}>
+                                <View style={styles.actionsContainer}>
                                     <FormSubmitButton
                                         onPress={() => {
                                             Keyboard.dismiss();
                                             handleSubmit();
                                         }}
-                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
-                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
+                                        skin="rounded-filled"
                                         text={i18n.t("send")}
-                                        //icon={<MaterialCommunityIcons name="login" style={styles.loginButtonIcon} />}
                                         submitting={submitting}
                                     />
                                     <Button
@@ -115,8 +112,7 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
                                             Keyboard.dismiss();
                                             navigateBack();
                                         }}
-                                        style={lstyles.actionButton}
-                                        textStyle={lstyles.actionText}
+                                        skin="rounded-hollow"
                                         text={i18n.t("cancel")}
                                     />
                                 </View>
@@ -132,6 +128,8 @@ class ForgotPasswordForm extends React.Component<ForgotPasswordFormProps, Forgot
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         actionsContainer: {
+            flexDirection: "column",
+            width: "100%",
             marginTop: 40,
         },
         titleWrapper: {
@@ -149,16 +147,6 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             marginTop: 10,
             color: theme.textLight,
-        },
-        buttonSend: {
-            flex: 1,
-            backgroundColor: theme.accent,
-            marginLeft: 6,
-        },
-        buttonCancel: {
-            flex: 1,
-            backgroundColor: theme.actionNeutral,
-            marginRight: 6,
         },
     });
 });

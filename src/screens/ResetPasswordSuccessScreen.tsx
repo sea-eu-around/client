@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
+import {Text, View, StyleSheet} from "react-native";
 import {rootNavigate} from "../navigation/utils";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../types";
@@ -9,7 +9,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
 import ScreenWrapper from "./ScreenWrapper";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {formStyles} from "../styles/forms";
+import Button from "../components/Button";
 
 type ResetPasswordSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -17,19 +17,18 @@ class ResetPasswordSuccessScreen extends React.Component<ResetPasswordSuccessScr
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
 
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
                     <Text style={styles.successText}>{i18n.t("resetPassword.success")}</Text>
-                    <TouchableOpacity
-                        style={[fstyles.buttonMajor, styles.button]}
+                    <Button
+                        text={i18n.t("login")}
+                        icon={<MaterialCommunityIcons name="login" style={styles.buttonIcon} />}
                         onPress={() => rootNavigate("LoginScreen")}
-                    >
-                        <Text style={fstyles.buttonMajorText}>{i18n.t("login")}</Text>
-                        <MaterialCommunityIcons name="login" style={styles.buttonIcon} />
-                    </TouchableOpacity>
+                        skin="rounded-filled"
+                        style={styles.button}
+                    />
                 </View>
             </ScreenWrapper>
         );
@@ -51,11 +50,7 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         button: {
-            paddingHorizontal: 25,
-            marginTop: 20,
-            backgroundColor: theme.accent,
-            alignItems: "center",
-            flexDirection: "row",
+            marginTop: 30,
         },
         buttonIcon: {
             fontSize: 20,

@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
 import {VALIDATOR_PASSWORD_LOGIN} from "../../validators";
-import {formStyles, getLoginTextInputsStyleProps} from "../../styles/forms";
+import {getLoginTextInputsStyleProps} from "../../styles/forms";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
@@ -60,7 +60,6 @@ class DeleteAccountForm extends React.Component<DeleteAccountFormProps, DeleteAc
         const {theme} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const fstyles = formStyles(theme);
 
         return (
             <>
@@ -104,15 +103,13 @@ class DeleteAccountForm extends React.Component<DeleteAccountFormProps, DeleteAc
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={fstyles.actionRow}>
-                                    <FormSubmitButton
-                                        onPress={() => handleSubmit()}
-                                        style={[fstyles.buttonMajor, styles.button]}
-                                        textStyle={[fstyles.buttonMajorText, styles.buttonText]}
-                                        text={i18n.t("deleteAccount.button")}
-                                        submitting={submitting}
-                                    />
-                                </View>
+                                <FormSubmitButton
+                                    onPress={() => handleSubmit()}
+                                    style={styles.button}
+                                    skin="rounded-filled"
+                                    text={i18n.t("deleteAccount.button")}
+                                    submitting={submitting}
+                                />
                             </>
                         );
                     }}
@@ -145,11 +142,8 @@ const themedStyles = preTheme((theme: Theme) => {
             marginTop: 20,
         },
         button: {
-            width: "60%",
             backgroundColor: theme.error,
-        },
-        buttonText: {
-            color: theme.textWhite,
+            marginTop: 30,
         },
     });
 });

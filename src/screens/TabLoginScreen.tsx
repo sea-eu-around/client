@@ -18,7 +18,6 @@ export class LoginScreen extends React.Component<TabLoginScreenProps> {
                 <ScrollFormWrapper notKeyboardReactive={true}>
                     {/* Add top padding to the form so the top is below the header wave */}
                     <LoginForm containerStyle={{paddingTop: LOGIN_HEADER_WAVE_HEIGHT}} />
-                    {/*<LocalImage resizeMode={"contain"} style={styles.erasmusLogo} imageKey={"logos.erasmusLeft"} />*/}
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );

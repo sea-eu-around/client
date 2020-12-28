@@ -6,7 +6,7 @@ import {Formik, FormikProps} from "formik";
 import {FormTextInput} from "../forms/FormTextInput";
 import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import {VALIDATOR_EMAIL_SIGNUP, VALIDATOR_PASSWORD_SIGNUP, VALIDATOR_PASSWORD_REPEAT} from "../../validators";
-import {getLoginTextInputsStyleProps, loginTabsStyles} from "../../styles/forms";
+import {getLoginTextInputsStyleProps, formStyles} from "../../styles/forms";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {requestRegister} from "../../state/auth/actions";
 import {withTheme} from "react-native-elements";
@@ -73,7 +73,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
         const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
-        const lstyles = loginTabsStyles(theme);
+        const fstyles = formStyles(theme);
 
         return (
             <View style={[{width: "100%"}, containerStyle]}>
@@ -116,8 +116,8 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                         <MaterialIcons
                                             name="email"
                                             style={[
-                                                lstyles.inputFieldIcon,
-                                                focused ? lstyles.inputFieldIconFocused : {},
+                                                fstyles.inputFieldIcon,
+                                                focused ? fstyles.inputFieldIconFocused : {},
                                             ]}
                                         />
                                     )}
@@ -140,8 +140,8 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                         <MaterialIcons
                                             name="lock"
                                             style={[
-                                                lstyles.inputFieldIcon,
-                                                focused ? lstyles.inputFieldIconFocused : {},
+                                                fstyles.inputFieldIcon,
+                                                focused ? fstyles.inputFieldIconFocused : {},
                                             ]}
                                         />
                                     )}
@@ -166,8 +166,8 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                         <MaterialIcons
                                             name="lock"
                                             style={[
-                                                lstyles.inputFieldIcon,
-                                                focused ? lstyles.inputFieldIconFocused : {},
+                                                fstyles.inputFieldIcon,
+                                                focused ? fstyles.inputFieldIconFocused : {},
                                             ]}
                                         />
                                     )}
@@ -175,14 +175,13 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
 
                                 <FormError error={generalError(remoteErrors)} />
 
-                                <View style={[lstyles.actionsContainer, styles.actionsContainer]}>
+                                <View style={styles.actionsContainer}>
                                     <FormSubmitButton
                                         onPress={() => {
                                             Keyboard.dismiss();
                                             handleSubmit();
                                         }}
-                                        style={[lstyles.actionButton, lstyles.actionButtonFilled]}
-                                        textStyle={[lstyles.actionText, lstyles.actionTextFilled]}
+                                        skin="rounded-filled"
                                         text={i18n.t("createAccount")}
                                         submitting={submitting}
                                     />
@@ -191,8 +190,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                                             Keyboard.dismiss();
                                             navigateBack();
                                         }}
-                                        style={lstyles.actionButton}
-                                        textStyle={lstyles.actionText}
+                                        skin="rounded-hollow"
                                         text={i18n.t("cancel")}
                                     />
                                 </View>
@@ -208,30 +206,14 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         actionsContainer: {
+            flexDirection: "column",
+            width: "100%",
             marginTop: 10,
         },
         title: {
             fontSize: 22,
             marginBottom: 5,
             color: theme.text,
-        },
-        inlineInputs: {
-            flex: 1,
-        },
-        inlineInputLeft: {
-            marginRight: 5,
-        },
-        inlineInputRight: {
-            marginLeft: 5,
-        },
-        buttonCancel: {
-            width: "40%",
-            backgroundColor: theme.actionNeutral,
-            marginRight: 6,
-        },
-        buttonCreateAccount: {
-            width: "60%",
-            backgroundColor: theme.accent,
         },
     });
 });
