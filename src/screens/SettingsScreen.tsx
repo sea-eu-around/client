@@ -1,6 +1,6 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {Alert, ScrollView, StyleSheet, Switch, Text, TouchableHighlight, View} from "react-native";
+import {Alert, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {RootNavigatorScreens} from "../navigation/types";
 import {preTheme} from "../styles/utils";
@@ -16,10 +16,10 @@ import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
 import {APP_VERSION} from "../constants/config";
 import LocalImage from "../components/LocalImage";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {logout} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import CustomizeCookiesModal from "../components/modals/CustomizeCookiesModal";
+import Button from "../components/Button";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -83,12 +83,13 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             icon={<MaterialCommunityIcons name="logout" style={styles.cardIcon} />}
                             oneLine={true}
                             display={
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.redActionButton]}
+                                <Button
+                                    text={i18n.t("settings.logOut")}
                                     onPress={() => dispatch(logout())}
-                                >
-                                    <Text style={styles.actionText}>{i18n.t("settings.logOut")}</Text>
-                                </TouchableOpacity>
+                                    skin="rounded-filled"
+                                    textStyle={styles.cardButtonText}
+                                    style={[styles.oneLineCardButton, styles.redBackground]}
+                                />
                             }
                             noModal={true}
                         />
@@ -148,12 +149,13 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             style={[styles.card, {height: 100}]}
                             label={i18n.t("settings.deleteAccount")}
                             display={
-                                <TouchableHighlight
-                                    style={styles.deleteAccountButton}
+                                <Button
+                                    text={i18n.t("settings.deleteMyAccount")}
                                     onPress={() => rootNavigate("DeleteAccountScreen")}
-                                >
-                                    <Text style={styles.actionText}>{i18n.t("settings.deleteMyAccount")}</Text>
-                                </TouchableHighlight>
+                                    skin="rounded-filled"
+                                    style={[styles.cardButton, styles.redBackground]}
+                                    textStyle={styles.cardButtonText}
+                                />
                             }
                             noModal={true}
                         />
@@ -249,30 +251,20 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             marginHorizontal: 10,
         },
-        // TODO general action button style
-        actionButton: {
-            backgroundColor: theme.accent,
-            borderRadius: 20,
-            width: 120,
-            height: 36,
-            justifyContent: "center",
-            alignItems: "center",
+        cardButton: {
+            height: 42,
+            marginVertical: 0,
         },
-        actionText: {
-            color: theme.textWhite,
+        oneLineCardButton: {
+            width: 120,
+            height: 40,
+            marginVertical: 0,
+        },
+        cardButtonText: {
             fontSize: 16,
         },
-        redActionButton: {
+        redBackground: {
             backgroundColor: theme.error,
-        },
-
-        deleteAccountButton: {
-            backgroundColor: theme.error,
-            borderRadius: 20,
-            width: "100%",
-            height: 42,
-            justifyContent: "center",
-            alignItems: "center",
         },
 
         infoText: {
@@ -286,7 +278,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         logoErasmus: {height: 40},
         logoSeaEuAround: {height: 60},
-        logoJA: {height: 40},
+        /*logoJA: {height: 40},
         developedBy: {
             textTransform: "uppercase",
             textAlign: "center",
@@ -294,7 +286,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 11,
             color: theme.textLight,
             marginTop: 40,
-        },
+        },*/
     });
 });
 

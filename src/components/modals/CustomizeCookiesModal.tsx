@@ -1,6 +1,6 @@
 import React from "react";
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
-import CustomModal, {CustomModalProps} from "./CustomModal";
+import CustomModal from "./CustomModal";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {CheckBox, withTheme} from "react-native-elements";
@@ -10,6 +10,8 @@ import store from "../../state/store";
 import {CookiesPreferences, COOKIES_PREFERENCES_KEYS} from "../../model/user-settings";
 import {connect, ConnectedProps} from "react-redux";
 import {saveCookiesPreferences} from "../../state/settings/actions";
+import {CustomModalProps} from "./CustomModal.native";
+import Button from "../Button";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -78,24 +80,26 @@ class CustomizeCookiesModal extends React.Component<CustomizeCookiesModalProps, 
                             </View>
                         ))}
                         <View style={styles.actions}>
-                            <TouchableOpacity
-                                style={[styles.action, styles.actionFilled]}
+                            <Button
+                                text={i18n.t("save")}
                                 onPress={() => {
                                     hide();
                                     store.dispatch(saveCookiesPreferences(cookies));
                                 }}
-                            >
-                                <Text style={[styles.actionText, styles.actionTextFilled]}>{i18n.t("save")}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.action}
+                                skin="rounded-filled"
+                                textStyle={styles.buttonText}
+                                style={styles.button}
+                            />
+                            <Button
+                                text={i18n.t("cancel")}
                                 onPress={() => {
                                     hide();
                                     this.setState({...this.state, cookies: this.props.cookies});
                                 }}
-                            >
-                                <Text style={styles.actionText}>{i18n.t("cancel")}</Text>
-                            </TouchableOpacity>
+                                skin="rounded-hollow"
+                                textStyle={styles.buttonText}
+                                style={styles.button}
+                            />
                         </View>
                     </>
                 )}
@@ -142,34 +146,20 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
         },
 
-        // TODO general actions style
         actions: {
             flexDirection: "row",
             marginTop: 20,
             width: "100%",
             maxWidth: 350,
         },
-        action: {
+        button: {
             flex: 1,
             height: 40,
             marginHorizontal: 10,
-
-            justifyContent: "center",
-            alignItems: "center",
-
-            borderColor: theme.accent,
-            borderWidth: 1,
-            borderRadius: 40,
+            marginVertical: 0,
         },
-        actionFilled: {
-            backgroundColor: theme.accent,
-        },
-        actionText: {
+        buttonText: {
             fontSize: 16,
-            color: theme.accent,
-        },
-        actionTextFilled: {
-            color: theme.textWhite,
         },
     });
 });

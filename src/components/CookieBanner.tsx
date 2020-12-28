@@ -1,5 +1,5 @@
 import React from "react";
-import {Text, StyleSheet, View, TouchableOpacity} from "react-native";
+import {Text, StyleSheet, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {acceptAllCookies} from "../state/settings/actions";
@@ -11,6 +11,7 @@ import CustomModal from "./modals/CustomModal";
 import i18n from "i18n-js";
 import CustomizeCookiesModal from "./modals/CustomizeCookiesModal";
 import {hasUserGivenCookieConsent} from "../state/static-storage-middleware";
+import Button from "./Button";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -45,26 +46,26 @@ class CookieBanner extends React.Component<CookieBannerProps, CookieBannerState>
                     animationType="slide"
                     fullWidth
                     bottom
-                    nonDismissable={true}
+                    nonDismissable
                     modalViewStyle={styles.modalView}
                     renderContent={() => (
                         <>
                             <Text style={styles.cookieText}>{i18n.t("cookies.bannerText")}</Text>
                             <View style={styles.actions}>
-                                <TouchableOpacity
-                                    style={[styles.action, styles.actionFilled]}
+                                <Button
+                                    text={i18n.t("cookies.acceptAll")}
                                     onPress={() => (store.dispatch as MyThunkDispatch)(acceptAllCookies())}
-                                >
-                                    <Text style={[styles.actionText, styles.actionTextFilled]}>
-                                        {i18n.t("cookies.acceptAll")}
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.action]}
+                                    style={styles.action}
+                                    textStyle={styles.actionText}
+                                    skin="rounded-filled"
+                                />
+                                <Button
+                                    text={i18n.t("cookies.customize")}
                                     onPress={() => this.setState({...this.state, showCustomize: true})}
-                                >
-                                    <Text style={styles.actionText}>{i18n.t("cookies.customize")}</Text>
-                                </TouchableOpacity>
+                                    style={styles.action}
+                                    textStyle={styles.actionText}
+                                    skin="rounded-hollow"
+                                />
                             </View>
                         </>
                     )}
@@ -97,28 +98,14 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             maxWidth: 350,
         },
-        // TODO General actions styles
         action: {
             flex: 1,
             height: 40,
             marginHorizontal: 10,
-
-            justifyContent: "center",
-            alignItems: "center",
-
-            borderColor: theme.accent,
-            borderWidth: 1,
-            borderRadius: 40,
-        },
-        actionFilled: {
-            backgroundColor: theme.accent,
+            marginVertical: 0,
         },
         actionText: {
             fontSize: 16,
-            color: theme.accent,
-        },
-        actionTextFilled: {
-            color: theme.textWhite,
         },
     });
 });
