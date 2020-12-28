@@ -233,6 +233,7 @@ const themedStyles = (oneLine?: boolean) =>
             cardContent: {
                 flex: 1,
                 flexDirection: oneLine ? "row" : "column",
+                ...(oneLine ? {alignItems: "center"} : {}),
                 justifyContent: "space-between",
             },
             cardLabelContainer: {
