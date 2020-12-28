@@ -9,10 +9,13 @@ class ProfileAvatar extends React.Component<ProfileAvatarProps> {
     render(): JSX.Element {
         const {children, profile, ...avatarProps} = this.props;
 
-        const avatarTitle = profile ? (profile.firstName[0] + profile.lastName[0]).toUpperCase() : "";
-        const avatarSourceProp = profile && profile.avatarUrl ? {uri: profile.avatarUrl} : {};
+        const avatarTitle =
+            avatarProps.title || (profile ? (profile.firstName[0] + profile.lastName[0]).toUpperCase() : undefined);
+
+        const avatarSourceProp = profile && profile.avatarUrl ? {source: {uri: profile.avatarUrl}} : {};
+
         return (
-            <Avatar {...avatarProps} title={avatarProps.title || avatarTitle} {...avatarSourceProp}>
+            <Avatar {...avatarProps} title={avatarTitle} {...avatarSourceProp}>
                 {children}
             </Avatar>
         );
