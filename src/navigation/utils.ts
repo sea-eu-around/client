@@ -2,7 +2,7 @@ import * as React from "react";
 import {NavigationContainerRef} from "@react-navigation/native";
 import {NavigatorRoute} from "./types";
 import {Platform} from "react-native";
-import {APP_SCHEME} from "../constants/config";
+import {APP_SCHEME, WEB_TO_APP_TIMEOUT} from "../constants/config";
 import i18n from "i18n-js";
 
 // Store a ref to the root navigator
@@ -23,16 +23,20 @@ export function navigateBack(fallback?: NavigatorRoute): void {
     }
 }
 
-export function attemptRedirectToApp(path: string, fallbackRoute: NavigatorRoute): void {
+export function attemptRedirectToApp(routeName: string, fallbackRoute: NavigatorRoute): void {
     const fallback = () => rootNavigate(fallbackRoute);
 
-    if (Platform.OS == "web") {
-        const link = `${APP_SCHEME}://${path}`;
+    if (Platform.OS === "web") {
+        const link = `${APP_SCHEME}://${routeName}`;
         window.location.replace(link);
 
-        console.log(`window.location.replace(${link})`);
-        // TODO fallback after a timeout ?
-        setTimeout(fallback, 5000);
+        // TODO look at Linking.openURL and Linking.canOpenURL
+        setTimeout(() => {
+            console.log(
+                `Failed to redirect to ${link} (perhaps app is not installed on this device) - Staying on web version`,
+            );
+            fallback();
+        }, WEB_TO_APP_TIMEOUT);
     } else fallback();
 }
 

@@ -50,3 +50,9 @@ export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "ChatRooms
  * The time before we ask the user to consent for cookies again.
  */
 export const COOKIE_CONSENT_DURATION = 365 * 24 * 60 * 60;
+
+/**
+ * The amount of time before we fall back to the web version when trying to
+ * redirect to the app.
+ */
+export const WEB_TO_APP_TIMEOUT = 5000;

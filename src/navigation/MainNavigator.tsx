@@ -29,7 +29,6 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabHome"
                 component={TabHomeNavigator}
                 options={{
-                    // TODO remove
                     //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.home")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="home" {...props} />,
                 }}
