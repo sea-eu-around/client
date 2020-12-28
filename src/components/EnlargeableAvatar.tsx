@@ -1,10 +1,11 @@
 import * as React from "react";
-import {AvatarProps, Overlay, withTheme} from "react-native-elements";
+import {AvatarProps, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
 import {StyleSheet} from "react-native";
 import {UserProfile} from "../model/user-profile";
 import ProfileAvatar from "./ProfileAvatar";
+import CustomModal from "./modals/CustomModal";
 
 // Component props
 export type EnlargeableAvatarProps = {profile?: UserProfile} & AvatarProps & ThemeProps;
@@ -20,8 +21,12 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
         this.state = {enlarged: false};
     }
 
-    toggleEnlarged() {
-        this.setState({...this.state, enlarged: !this.state.enlarged});
+    showEnlarged() {
+        this.setState({...this.state, enlarged: true});
+    }
+
+    hideEnlarged() {
+        this.setState({...this.state, enlarged: false});
     }
 
     render(): JSX.Element {
@@ -31,7 +36,7 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
 
         const onPress = () => {
             if (avatarProps.onPress) avatarProps.onPress();
-            this.toggleEnlarged();
+            this.showEnlarged();
         };
 
         return (
@@ -43,21 +48,25 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
                 >
                     {children}
                 </ProfileAvatar>
-                <Overlay
-                    isVisible={enlarged}
-                    onBackdropPress={() => this.toggleEnlarged()}
-                    overlayStyle={styles.overlay}
-                    backdropStyle={styles.overlayBackdrop}
-                >
-                    <ProfileAvatar
-                        profile={profile}
-                        source={avatarProps.source}
-                        containerStyle={styles.enlargedAvatarContainer}
-                        avatarStyle={styles.enlargedAvatar}
-                        activeOpacity={0.8}
-                        onPress={() => this.toggleEnlarged()}
-                    />
-                </Overlay>
+                <CustomModal
+                    visible={enlarged}
+                    onHide={() => this.hideEnlarged()}
+                    fullWidth
+                    noBackground
+                    backdropOpacity={0.5}
+                    modalViewStyle={styles.modal}
+                    renderContent={() => (
+                        <ProfileAvatar
+                            profile={profile}
+                            source={avatarProps.source}
+                            containerStyle={styles.enlargedAvatarContainer}
+                            avatarStyle={styles.enlargedAvatar}
+                            activeOpacity={0.8}
+                            onPress={() => this.hideEnlarged()}
+                            rounded
+                        />
+                    )}
+                />
             </>
         );
     }
@@ -65,17 +74,12 @@ class EnlargeableAvatar extends React.Component<EnlargeableAvatarProps, Enlargea
 
 export const themedStyles = preTheme(() => {
     return StyleSheet.create({
-        overlay: {
-            width: "100%",
+        modal: {
             aspectRatio: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "transparent",
-            elevation: 0,
-            shadowOpacity: 0,
-        },
-        overlayBackdrop: {
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            paddingHorizontal: 20,
+            paddingVertical: 20,
+            maxWidth: 400,
+            maxHeight: 400,
         },
         enlargedAvatar: {
             borderRadius: 300,
@@ -83,9 +87,6 @@ export const themedStyles = preTheme(() => {
         enlargedAvatarContainer: {
             width: "100%",
             height: "100%",
-            maxWidth: 400,
-            maxHeight: 400,
-            flex: 1,
         },
     });
 });
