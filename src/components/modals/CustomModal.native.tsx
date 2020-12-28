@@ -2,7 +2,7 @@ import React from "react";
 import {Modal, TouchableOpacity, ViewStyle, StyleSheet, StyleProp} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
-import {Theme, ThemeProps} from "../../types";
+import {ThemeProps} from "../../types";
 
 export type CustomModalProps = ThemeProps & {
     onHide?: () => void;
@@ -13,7 +13,10 @@ export type CustomModalProps = ThemeProps & {
     animationType?: "fade" | "none" | "slide" | undefined;
     bottom?: boolean;
     fullWidth?: boolean;
+    fullHeight?: boolean;
     nonDismissable?: boolean;
+    noBackground?: boolean;
+    backdropOpacity?: number;
 };
 
 type CustomModalState = {
@@ -38,14 +41,24 @@ class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
     }
 
     render(): JSX.Element {
-        const {theme, modalViewStyle, animationType, bottom, fullWidth, nonDismissable} = this.props;
+        const {
+            theme,
+            modalViewStyle,
+            animationType,
+            bottom,
+            fullWidth,
+            fullHeight,
+            nonDismissable,
+            noBackground,
+            backdropOpacity,
+        } = this.props;
         const {modalVisible} = this.state;
         const styles = themedStyles(theme);
 
         return (
             <Modal animationType={animationType} transparent={true} visible={modalVisible}>
                 <TouchableOpacity
-                    style={styles.centeredView}
+                    style={[styles.centeredView, {backgroundColor: `rgba(0,0,0,${backdropOpacity || 0.05})`}]}
                     activeOpacity={1.0}
                     onPress={nonDismissable ? undefined : () => this.setModalVisible(false)}
                 >
@@ -56,6 +69,17 @@ class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
                             styles.modalView,
                             bottom ? {position: "absolute", bottom: 0, margin: 0} : {},
                             fullWidth ? {width: "100%", maxWidth: "100%"} : {},
+                            fullHeight ? {height: "100%"} : {},
+                            !noBackground
+                                ? {
+                                      backgroundColor: theme.background,
+                                      shadowColor: "#000",
+                                      shadowOffset: {width: 0, height: 1},
+                                      shadowOpacity: 0.22,
+                                      shadowRadius: 2.22,
+                                      elevation: 3,
+                                  }
+                                : {elevation: 0, shadowRadius: 0},
                             modalViewStyle,
                         ]}
                     >
@@ -67,13 +91,12 @@ class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
     }
 }
 
-export const themedStyles = preTheme((theme: Theme) => {
+export const themedStyles = preTheme(() => {
     return StyleSheet.create({
         centeredView: {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.05)",
             borderColor: "transparent",
         },
         modalView: {
@@ -84,13 +107,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             paddingVertical: 20,
             paddingHorizontal: 30,
             alignItems: "center",
-            backgroundColor: theme.background,
-
-            shadowColor: "#000",
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.22,
-            shadowRadius: 2.22,
-            elevation: 3,
         },
     });
 });
