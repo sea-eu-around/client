@@ -60,74 +60,75 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 
         const fullName = user && user.profile ? user.profile.firstName + " " + user.profile.lastName : "";
 
-        let profileFieldComponents = <></>;
+        const profile = user?.profile;
 
-        if (user && user.profile) {
-            const profile = user.profile;
-
-            profileFieldComponents = (
-                <>
-                    <ValueCard
-                        label={i18n.t("emailAddress")}
-                        initialValue={user.email}
-                        display={<Text style={styles.cardText}>{user.email}</Text>}
-                        locked={true}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("dateOfBirth")}
-                        initialValue={profile.birthdate}
-                        display={<FormattedDate style={styles.cardText} date={profile.birthdate} />}
-                        renderInput={(value: Date, _error, onChange) => (
-                            <BirthDateInput
-                                ref={this.birthDateInputRef}
-                                date={value}
-                                containerStyle={styles.birthdateInputContainer}
-                                inputStyle={styles.birthdateInput}
-                                onChange={(birthdate?: Date, inputError?: string) => {
-                                    onChange(birthdate || value, inputError || null);
-                                }}
-                            />
-                        )}
-                        onModalShown={() => this.birthDateInputRef.current?.focus()}
-                        apply={(birthdate: Date) => this.onFieldChanged({birthdate})}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("nationality")}
-                        initialValue={profile.nationality}
-                        display={<FormattedNationality style={styles.cardText} countryCode={profile.nationality} />}
-                        overrideModal={(hide: () => void) => (
+        const profileFieldComponents = (
+            <>
+                <ValueCard
+                    label={i18n.t("emailAddress")}
+                    initialValue={user?.email}
+                    display={(user && <Text style={styles.cardText}>{user.email}</Text>) || undefined}
+                    locked={true}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("dateOfBirth")}
+                    initialValue={profile?.birthdate}
+                    display={profile && <FormattedDate style={styles.cardText} date={profile.birthdate} />}
+                    renderInput={(value: Date, _error, onChange) => (
+                        <BirthDateInput
+                            ref={this.birthDateInputRef}
+                            date={value}
+                            containerStyle={styles.birthdateInputContainer}
+                            inputStyle={styles.birthdateInput}
+                            onChange={(birthdate?: Date, inputError?: string) => {
+                                onChange(birthdate || value, inputError || null);
+                            }}
+                        />
+                    )}
+                    onModalShown={() => this.birthDateInputRef.current?.focus()}
+                    apply={(birthdate: Date) => this.onFieldChanged({birthdate})}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("nationality")}
+                    initialValue={profile?.nationality}
+                    display={
+                        profile && <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
+                    }
+                    overrideModal={
+                        profile &&
+                        ((hide: () => void) => (
                             <NationalityPicker
                                 nationality={profile.nationality}
                                 onSelect={(cc: CountryCode) => this.onFieldChanged({nationality: cc})}
                                 onHide={hide}
                             />
-                        )}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("gender")}
-                        initialValue={profile.gender}
-                        display={
+                        ))
+                    }
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("gender")}
+                    initialValue={profile?.gender}
+                    display={
+                        profile && (
                             <GenderToggle
                                 gender={profile.gender}
                                 onSelect={(gender: Gender) => this.onFieldChanged({gender})}
                             />
-                        }
-                        noModal={true}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("profileType")}
-                        initialValue={profile.type}
-                        display={
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("profileType")}
+                    initialValue={profile?.type}
+                    display={
+                        profile && (
                             <>
-                                <RoleToggle
-                                    role={profile.type}
-                                    /*onSelect={(role: Role) => onFieldChanged({role})}*/
-                                    disabled={true}
-                                />
+                                <RoleToggle role={profile.type} disabled={true} />
                                 {profile.type == "staff" && (
                                     <StaffRolePicker
                                         staffRoles={(profile as UserProfileStaff).staffRoles}
@@ -144,87 +145,91 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                                     />
                                 )}
                             </>
-                        }
-                        noModal={true}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("fieldsOfEducation")}
-                        initialValue={profile.educationFields}
-                        display={
-                            <EducationFieldPicker
-                                fields={profile.educationFields}
-                                onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
-                                showChips={true}
-                            />
-                        }
-                        noModal={true}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("interests")}
-                        initialValue={profile.interests}
-                        display={
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("fieldsOfEducation")}
+                    initialValue={profile?.educationFields}
+                    display={
+                        <EducationFieldPicker
+                            fields={profile?.educationFields}
+                            onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
+                            showChips={true}
+                        />
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("interests")}
+                    initialValue={profile?.interests}
+                    display={
+                        profile && (
                             <InterestsPicker
                                 interests={profile.interests}
                                 onChange={(interests: string[]) => this.onFieldChanged({interests})}
                                 showChips={true}
                             />
-                        }
-                        noModal={true}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("spokenLanguages")}
-                        initialValue={profile.languages}
-                        validator={VALIDATOR_ONBOARDING_LANGUAGES}
-                        display={
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    label={i18n.t("spokenLanguages")}
+                    initialValue={profile?.languages}
+                    validator={VALIDATOR_ONBOARDING_LANGUAGES}
+                    display={
+                        profile && (
                             <Chips
-                                items={profile.languages}
+                                items={profile?.languages}
                                 label={(item: SpokenLanguageDto) =>
                                     `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
                                         `languageLevels.${item.level}`,
                                     )})`
                                 }
                             />
-                        }
-                        renderInput={(
-                            value: SpokenLanguageDto[],
-                            error: string | null,
-                            onChange: (value: SpokenLanguageDto[]) => void,
-                        ) => (
-                            <SpokenLanguagesInput
-                                languages={value}
-                                onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
-                                style={{width: "100%"}}
-                            />
-                        )}
-                        apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
-                    />
-                    <Spacer />
-                    <OfferCategoryRow
-                        category={OfferCategory.Discover}
-                        profileOffers={profile.profileOffers}
-                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                        theme={theme}
-                    />
-                    <Spacer />
-                    <OfferCategoryRow
-                        category={OfferCategory.Collaborate}
-                        profileOffers={profile.profileOffers}
-                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                        theme={theme}
-                    />
-                    <Spacer />
-                    <OfferCategoryRow
-                        category={OfferCategory.Meet}
-                        profileOffers={profile.profileOffers}
-                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                        theme={theme}
-                    />
-                </>
-            );
-        }
+                        )
+                    }
+                    renderInput={(
+                        value: SpokenLanguageDto[],
+                        error: string | null,
+                        onChange: (value: SpokenLanguageDto[]) => void,
+                    ) => (
+                        <SpokenLanguagesInput
+                            languages={value}
+                            onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
+                            style={{width: "100%"}}
+                        />
+                    )}
+                    apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
+                />
+                <Spacer />
+                <OfferCategoryRow
+                    category={OfferCategory.Discover}
+                    profileOffers={profile?.profileOffers}
+                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    theme={theme}
+                />
+                <Spacer />
+                <OfferCategoryRow
+                    category={OfferCategory.Collaborate}
+                    profileOffers={profile?.profileOffers}
+                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    theme={theme}
+                />
+                <Spacer />
+                <OfferCategoryRow
+                    category={OfferCategory.Meet}
+                    profileOffers={profile?.profileOffers}
+                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                    theme={theme}
+                />
+            </>
+        );
 
         return (
             <>
@@ -271,16 +276,17 @@ const reduxConnector = connect((state: AppState) => ({
 
 type OfferCategoryRowProps = {
     category: OfferCategory;
-    profileOffers: OfferValueDto[];
+    profileOffers: OfferValueDto[] | undefined;
     onApply: (offerValues: OfferValueDto[]) => void;
     theme: Theme;
 } & ConnectedProps<typeof reduxConnector>;
 
 const OfferCategoryRow = reduxConnector(
     ({category, profileOffers, onApply, offers, offerIdToCategory, theme}: OfferCategoryRowProps): JSX.Element => {
-        const items = profileOffers.filter((o) => offerIdToCategory.get(o.offerId) == category);
+        const items = profileOffers?.filter((o) => offerIdToCategory.get(o.offerId) == category) || [];
         return (
             <ValueCard
+                blank={!profileOffers}
                 label={i18n.t(`offerCategories.${category}`)}
                 initialValue={profileOffers}
                 display={

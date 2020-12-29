@@ -18,6 +18,7 @@ import FormattedGender from "./FormattedGender";
 import Chips from "./Chips";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
+import WavyHeader from "./headers/WavyHeader";
 
 // Component props
 export type ProfileViewProps = ThemeProps & {
@@ -37,37 +38,42 @@ class ProfileView extends React.Component<ProfileViewProps> {
         const fullName = profile ? profile.firstName + " " + profile.lastName : "";
         const university = profile ? PARTNER_UNIVERSITIES.find((u) => u.key === profile.university) : undefined;
 
-        let profileFieldComponents = <></>;
-
-        if (profile) {
-            profileFieldComponents = (
-                <>
-                    <ValueCard
-                        label={i18n.t("dateOfBirth")}
-                        display={<FormattedDate style={styles.cardText} date={profile.birthdate} />}
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("nationality")}
-                        display={<FormattedNationality style={styles.cardText} countryCode={profile.nationality} />}
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("gender")}
-                        display={<FormattedGender gender={profile.gender} />}
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("profileType")}
-                        display={
+        const profileFieldComponents = (
+            <>
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("dateOfBirth")}
+                    display={profile ? <FormattedDate style={styles.cardText} date={profile.birthdate} /> : <></>}
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("nationality")}
+                    display={
+                        profile ? (
+                            <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
+                        ) : (
+                            <></>
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("gender")}
+                    display={profile ? <FormattedGender style={styles.cardText} gender={profile.gender} /> : <></>}
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("profileType")}
+                    display={
+                        profile ? (
                             <>
-                                <Text>{i18n.t(`allRoles.${profile.type}`)}</Text>
+                                <Text style={styles.cardText}>{i18n.t(`allRoles.${profile.type}`)}</Text>
                                 {profile.type == "staff" && (
                                     <>
                                         {(profile as UserProfileStaff).staffRoles.map((sr: StaffRole) => (
@@ -76,41 +82,55 @@ class ProfileView extends React.Component<ProfileViewProps> {
                                     </>
                                 )}
                                 {profile.type == "student" && (
-                                    <Text>{i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}</Text>
+                                    <Text style={styles.cardText}>
+                                        {i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}
+                                    </Text>
                                 )}
                             </>
-                        }
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("fieldsOfEducation")}
-                        display={
+                        ) : (
+                            <></>
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("fieldsOfEducation")}
+                    display={
+                        profile ? (
                             <Chips
                                 items={profile.educationFields}
                                 label={(item: string) => i18n.t(`educationFields.${item}`)}
                             />
-                        }
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("interests")}
-                        display={
+                        ) : (
+                            <></>
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("interests")}
+                    display={
+                        profile ? (
                             <Chips
                                 items={profile.interests}
                                 label={(item: string) => i18n.t(`interestNames.${item}`)}
                             />
-                        }
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <ValueCard
-                        label={i18n.t("spokenLanguages")}
-                        display={
+                        ) : (
+                            <></>
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <ValueCard
+                    blank={!profile}
+                    label={i18n.t("spokenLanguages")}
+                    display={
+                        profile ? (
                             <Chips
                                 items={profile.languages}
                                 label={(item: SpokenLanguageDto) =>
@@ -119,23 +139,24 @@ class ProfileView extends React.Component<ProfileViewProps> {
                                     )})`
                                 }
                             />
-                        }
-                        noModal={true}
-                        initialValue={undefined}
-                    />
-                    <Spacer />
-                    <OfferCategoryRow category={OfferCategory.Discover} profileOffers={profile.profileOffers} />
-                    <Spacer />
-                    <OfferCategoryRow category={OfferCategory.Collaborate} profileOffers={profile.profileOffers} />
-                    <Spacer />
-                    <OfferCategoryRow category={OfferCategory.Meet} profileOffers={profile.profileOffers} />
-                </>
-            );
-        }
+                        ) : (
+                            <></>
+                        )
+                    }
+                    noModal={true}
+                />
+                <Spacer />
+                <OfferCategoryRow category={OfferCategory.Discover} profileOffers={profile?.profileOffers || null} />
+                <Spacer />
+                <OfferCategoryRow category={OfferCategory.Collaborate} profileOffers={profile?.profileOffers || null} />
+                <Spacer />
+                <OfferCategoryRow category={OfferCategory.Meet} profileOffers={profile?.profileOffers || null} />
+            </>
+        );
 
         return (
             <>
-                <View style={styles.topView}>
+                <WavyHeader style={styles.header} color={theme.accent}>
                     <EnlargeableAvatar
                         profile={profile || undefined}
                         size={120}
@@ -143,23 +164,23 @@ class ProfileView extends React.Component<ProfileViewProps> {
                         containerStyle={styles.avatarContainer}
                         activeOpacity={0.8}
                     />
-                    <Text style={styles.name}>{fullName}</Text>
-                    {university && (
-                        <FormattedUniversity
-                            containerStyle={styles.universityContainer}
-                            style={styles.university}
-                            university={university}
-                        />
+                    {!profile && (
+                        <ActivityIndicator size="large" color={theme.textWhite} style={styles.loadingIndicator} />
                     )}
+                    <Text style={styles.name}>{fullName}</Text>
+                    <FormattedUniversity
+                        containerStyle={styles.universityContainer}
+                        style={styles.university}
+                        university={university || null}
+                    />
                     {actionBar}
-                </View>
+                </WavyHeader>
                 <ScrollView
                     style={styles.scrollWrapper}
                     contentContainerStyle={styles.formWrapper}
                     keyboardShouldPersistTaps="handled"
                 >
                     {profileFieldComponents}
-                    {!profile && <ActivityIndicator size="large" color={theme.accent} />}
                 </ScrollView>
             </>
         );
@@ -173,31 +194,35 @@ const reduxConnector = connect((state: AppState) => ({
 
 type OfferCategoryRowProps = {
     category: OfferCategory;
-    profileOffers: OfferValueDto[];
-} & ConnectedProps<typeof reduxConnector>;
+    profileOffers: OfferValueDto[] | null;
+} & ConnectedProps<typeof reduxConnector> &
+    ThemeProps;
 
 const OfferCategoryRow = reduxConnector(
-    ({category, profileOffers, offerIdToCategory}: OfferCategoryRowProps): JSX.Element => {
-        const items = profileOffers.filter((o) => offerIdToCategory.get(o.offerId) == category);
+    withTheme(
+        ({category, profileOffers, offerIdToCategory, theme}: OfferCategoryRowProps): JSX.Element => {
+            const items = profileOffers?.filter((o) => offerIdToCategory.get(o.offerId) == category) || [];
+            const styles = themedStyles(theme);
 
-        return (
-            <ValueCard
-                label={i18n.t(`offerCategories.${category}`)}
-                display={
-                    items.length > 0 ? (
-                        <Chips
-                            items={items}
-                            label={(item: OfferValueDto) => i18n.t(`allOffers.${item.offerId}.name`)}
-                        />
-                    ) : (
-                        <Text>{i18n.t("profile.noOffersSelected")}</Text>
-                    )
-                }
-                noModal={true}
-                initialValue={undefined}
-            />
-        );
-    },
+            return (
+                <ValueCard
+                    blank={!profileOffers}
+                    label={i18n.t(`offerCategories.${category}`)}
+                    display={
+                        items.length > 0 ? (
+                            <Chips
+                                items={items}
+                                label={(item: OfferValueDto) => i18n.t(`allOffers.${item.offerId}.name`)}
+                            />
+                        ) : (
+                            <Text style={styles.cardText}>{i18n.t("profile.noOffersSelected")}</Text>
+                        )
+                    }
+                    noModal={true}
+                />
+            );
+        },
+    ),
 );
 
 export const themedStyles = preTheme((theme: Theme) => {
@@ -217,16 +242,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.accent,
             marginLeft: 6,
         },
-        topView: {
-            /*width: "180%",
-            borderBottomLeftRadius: 200,
-            borderBottomRightRadius: 200,*/
-            width: "100%",
-            paddingTop: 0,
-            paddingBottom: 10,
+        header: {
             alignItems: "center",
-            alignSelf: "center",
-            backgroundColor: theme.accent,
         },
         scrollWrapper: {
             width: "100%",
@@ -234,22 +251,28 @@ export const themedStyles = preTheme((theme: Theme) => {
         formWrapper: {
             width: "90%",
             maxWidth: 600,
-            flexDirection: "column",
             alignSelf: "center",
-            paddingTop: 20,
+            paddingTop: 80,
             paddingBottom: 20,
+        },
+        loadingIndicator: {
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 140,
         },
         name: {
             fontSize: 24,
             color: theme.textWhite,
-            marginTop: 5,
+            marginTop: 10,
+            height: 30,
         },
         university: {
             fontSize: 14,
             color: theme.textWhite,
         },
         universityContainer: {
-            marginVertical: 5,
+            height: 25,
         },
         avatarContainer: {
             borderColor: theme.cardBackground,
