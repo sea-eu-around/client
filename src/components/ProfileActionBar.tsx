@@ -6,65 +6,122 @@ import {Theme, ThemeProps} from "../types";
 import {UserProfile} from "../model/user-profile";
 import {MaterialIcons} from "@expo/vector-icons";
 import {styleTextLight} from "../styles/general";
+import BlockProfileModal from "./modals/BlockProfileModal";
+import QuickFormReport from "./forms/QuickFormReport";
+import {ReportEntityType} from "../constants/reports";
+import UnmatchProfileModal from "./modals/UnmatchProfileModal";
+import i18n from "i18n-js";
+import {navigateBack, rootNavigate} from "../navigation/utils";
 
 export type ProfileActionBarProps = {
     profile: UserProfile | null;
+    isMatched: boolean;
+    roomId: string | null;
 } & ThemeProps;
 
 function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
-    const {profile, theme} = props;
+    const {profile, isMatched, roomId, theme} = props;
     const styles = themedStyles(theme);
 
-    // TODO implement button actions
+    let buttons;
 
-    const buttons: Omit<ActionButtonProps, "theme">[] = [
-        {
-            text: "Unmatch",
-            icon: "close",
-            backgroundColor: theme.accentSecondary,
-            color: theme.textBlack,
-        },
-        {text: "Block", icon: "block", backgroundColor: theme.warn, color: theme.textBlack},
-        {text: "Report", icon: "report", backgroundColor: theme.error, color: theme.textBlack},
-    ];
-
-    return (
-        <View style={styles.container}>
-            {buttons.map((b, i) => (
-                <ActionButton
-                    key={`profile-action-bar-${i}`}
-                    theme={theme}
-                    text={b.text}
-                    icon={b.icon}
-                    backgroundColor={b.backgroundColor}
-                    color={b.color}
-                />
-            ))}
-        </View>
+    const buttonBlock = (
+        <BlockProfileModal
+            profile={profile}
+            activator={(open) => (
+                <ActionButton blank={!profile} text={i18n.t("profile.action.block")} icon="block" onPress={open} />
+            )}
+        />
     );
+
+    const buttonReport = (
+        <QuickFormReport
+            entity={profile}
+            entityType={ReportEntityType.PROFILE_ENTITY}
+            activator={(open) => (
+                <ActionButton blank={!profile} text={i18n.t("profile.action.report")} icon="report" onPress={open} />
+            )}
+        />
+    );
+
+    if (isMatched) {
+        const buttonChat = (
+            <ActionButton
+                blank={!profile}
+                text={i18n.t("profile.action.chat")}
+                icon="chat"
+                onPress={() => {
+                    rootNavigate("ChatScreen", {roomId});
+                }}
+            />
+        );
+
+        // TODO implement chat mute
+        /*const buttonMute = (
+            <ActionButton blank={!profile} text={i18n.t("profile.action.mute")} icon="notifications-off" />
+        );*/
+        const buttonMute = <></>;
+
+        const buttonUnmatch = (
+            <UnmatchProfileModal
+                profile={profile}
+                roomId={roomId}
+                onSubmit={(block: boolean) => {
+                    if (block) navigateBack();
+                }}
+                activator={(open) => (
+                    <ActionButton
+                        blank={!profile}
+                        text={i18n.t("profile.action.unmatch")}
+                        icon="close"
+                        onPress={open}
+                    />
+                )}
+            />
+        );
+
+        buttons = (
+            <>
+                {buttonChat}
+                {buttonMute}
+                {buttonUnmatch}
+                {buttonReport}
+            </>
+        );
+    } else {
+        buttons = (
+            <>
+                {buttonBlock}
+                {buttonReport}
+            </>
+        );
+    }
+
+    return <View style={styles.container}>{buttons}</View>;
 }
 
-type ActionButtonProps = {
-    theme: Theme;
+type ActionButtonProps = ThemeProps & {
     text: string;
     icon?: string;
-    backgroundColor: string;
-    color: string;
+    onPress?: () => void;
+    blank?: boolean;
 };
 
-function ActionButton({theme, text, icon, backgroundColor, color}: ActionButtonProps) {
-    const styles = themedStyles(theme);
-    return (
-        <TouchableOpacity style={styles.button} activeOpacity={0.75}>
-            {icon && (
-                <View style={[styles.buttonTop, {backgroundColor}]}>
-                    <MaterialIcons name={icon} style={[styles.buttonTopIcon, {color}]} />
-                </View>
-            )}
-            <Text style={styles.buttonText}>{text}</Text>
-        </TouchableOpacity>
-    );
-}
+const ActionButton = withTheme(
+    ({text, icon, onPress, blank, theme}: ActionButtonProps): JSX.Element => {
+        const styles = themedStyles(theme);
+        return (
+            <TouchableOpacity style={styles.button} activeOpacity={0.75} onPress={blank ? undefined : onPress}>
+                {icon && (
+                    <View style={[styles.buttonTop, blank ? styles.buttonTopBlank : {}]}>
+                        {!blank && <MaterialIcons name={icon} style={styles.buttonTopIcon} />}
+                    </View>
+                )}
+                <Text style={styles.buttonText}>{text}</Text>
+            </TouchableOpacity>
+        );
+    },
+);
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -73,16 +130,6 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             justifyContent: "center",
             marginTop: 20,
-            marginBottom: 5,
-
-            paddingVertical: 10,
-            backgroundColor: theme.accent,
-
-            /*shadowColor: "#000",
-            shadowOffset: {width: 0, height: 3},
-            shadowOpacity: 0.27,
-            shadowRadius: 4.65,
-            elevation: 6,*/
         },
         button: {
             width: 75,
@@ -106,9 +153,17 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             borderRadius: 60,
             marginBottom: 5,
+            backgroundColor: "#fff4",
+        },
+        buttonTopBlank: {
+            opacity: 0.4,
+            backgroundColor: "transparent",
+            borderColor: theme.textWhite,
+            borderWidth: 1,
         },
         buttonTopIcon: {
             fontSize: 24,
+            color: theme.textInverted,
         },
     });
 });
