@@ -1,5 +1,5 @@
 import React from "react";
-import {TouchableOpacity, View, StyleSheet, Platform, Text} from "react-native";
+import {View, StyleSheet, Platform, Text} from "react-native";
 import {BottomSheet, withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -7,6 +7,7 @@ import CustomModal from "../modals/CustomModal";
 import i18n from "i18n-js";
 import FormSubmitButton from "../forms/FormSubmitButton";
 import {Icon} from "expo";
+import Button from "../Button";
 
 export type QuickFormProps = ThemeProps & {
     activator: (open: () => void) => JSX.Element;
@@ -89,16 +90,21 @@ class QuickForm extends React.Component<QuickFormProps, QuickFormState> {
             <>
                 {!hideSubmit && (
                     <FormSubmitButton
-                        style={[styles.actionButton, styles.submitButton]}
-                        textStyle={[styles.actionButtonText, styles.submitButtonText]}
                         text={submitText}
                         submitting={submitting}
                         onPress={() => this.submit()}
+                        skin="rounded-filled"
+                        style={styles.actionButton}
+                        textStyle={styles.actionButtonText}
                     />
                 )}
-                <TouchableOpacity style={[styles.actionButton, styles.dismissButton]} onPress={() => this.close()}>
-                    <Text style={[styles.actionButtonText, styles.dismissButtonText]}>{i18n.t("cancel")}</Text>
-                </TouchableOpacity>
+                <Button
+                    text={i18n.t("cancel")}
+                    onPress={() => this.close()}
+                    skin="rounded-hollow"
+                    style={styles.actionButton}
+                    textStyle={styles.actionButtonText}
+                />
             </>
         );
 
@@ -141,12 +147,13 @@ class QuickForm extends React.Component<QuickFormProps, QuickFormState> {
                         <View style={styles.containerModal}>
                             <Text style={styles.feedbackTitle}>{confirmationTitle}</Text>
                             <Text style={styles.feedbackText}>{confirmationText}</Text>
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.dismissButton]}
+                            <Button
+                                text={i18n.t("ok")}
                                 onPress={() => this.setState({...this.state, confirmationOpen: false})}
-                            >
-                                <Text style={[styles.actionButtonText, styles.dismissButtonText]}>{i18n.t("ok")}</Text>
-                            </TouchableOpacity>
+                                skin="rounded-hollow"
+                                style={styles.actionButton}
+                                textStyle={styles.actionButtonText}
+                            />
                         </View>
                     )}
                 />
@@ -158,12 +165,13 @@ class QuickForm extends React.Component<QuickFormProps, QuickFormState> {
                         <View style={styles.containerModal}>
                             <Text style={styles.feedbackTitle}>{failureTitle}</Text>
                             <Text style={styles.feedbackText}>{failureText}</Text>
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.dismissButton]}
+                            <Button
+                                text={i18n.t("ok")}
                                 onPress={() => this.setState({...this.state, failureOpen: false})}
-                            >
-                                <Text style={[styles.actionButtonText, styles.dismissButtonText]}>{i18n.t("ok")}</Text>
-                            </TouchableOpacity>
+                                skin="rounded-hollow"
+                                style={styles.actionButton}
+                                textStyle={styles.actionButtonText}
+                            />
                         </View>
                     )}
                 />
@@ -204,26 +212,13 @@ export const themedStyles = preTheme((theme: Theme) => {
 
         // Actions
         actionButton: {
-            width: "100%",
-            borderRadius: 20,
             height: 44,
+            marginVertical: 0,
             marginTop: 15,
-            justifyContent: "center",
-            alignItems: "center",
-        },
-        submitButton: {
-            backgroundColor: theme.accent,
-        },
-        dismissButton: {
-            backgroundColor: theme.cardBackground,
-            borderColor: theme.accent,
-            borderWidth: 1,
         },
         actionButtonText: {
             fontSize: 16,
         },
-        submitButtonText: {color: theme.textWhite},
-        dismissButtonText: {color: theme.accent},
 
         feedbackModal: {
             paddingVertical: 15,

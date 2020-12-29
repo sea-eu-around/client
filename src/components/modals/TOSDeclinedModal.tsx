@@ -1,11 +1,12 @@
 import React from "react";
-import {Text, TouchableHighlight, View, StyleSheet} from "react-native";
+import {Text, View, StyleSheet} from "react-native";
 import {rootNavigate} from "../../navigation/utils";
-import CustomModal, {CustomModalProps} from "./CustomModal";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
+import CustomModal, {CustomModalProps} from "./CustomModal";
+import Button from "../Button";
 
 export type TOSDeclinedModalProps = ThemeProps & Partial<CustomModalProps>;
 
@@ -25,21 +26,23 @@ class TOSDeclinedModal extends React.Component<TOSDeclinedModalProps> {
                             {i18n.t("legal.modal.disclaimer2")}
                         </Text>
                         <View style={styles.actionButtonsWrapper}>
-                            <TouchableHighlight
-                                style={[styles.actionButton, styles.actionButtonCancel]}
+                            <Button
+                                text={i18n.t("cancel")}
                                 onPress={() => hide()}
-                            >
-                                <Text style={[styles.actionText]}>{i18n.t("cancel")}</Text>
-                            </TouchableHighlight>
-                            <TouchableHighlight
-                                style={[styles.actionButton, styles.actionButtonDecline]}
+                                skin="rounded-hollow"
+                                style={styles.actionButton}
+                                textStyle={styles.actionText}
+                            />
+                            <Button
+                                text={i18n.t("legal.decline")}
                                 onPress={() => {
                                     hide();
                                     rootNavigate("LoginScreen");
                                 }}
-                            >
-                                <Text style={styles.actionText}>{i18n.t("legal.decline")}</Text>
-                            </TouchableHighlight>
+                                skin="rounded-filled"
+                                style={[styles.actionButton, styles.redBackground]}
+                                textStyle={styles.actionText}
+                            />
                         </View>
                     </>
                 )}
@@ -54,26 +57,19 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             flexDirection: "row",
             marginTop: 20,
-            justifyContent: "space-evenly",
         },
         actionButton: {
-            width: 110,
-            maxWidth: "40%",
-            borderRadius: 3,
-            paddingVertical: 10,
-            elevation: 2,
-        },
-        actionButtonCancel: {
-            backgroundColor: theme.accentSecondary,
-        },
-        actionButtonDecline: {
-            backgroundColor: theme.error,
+            flex: 1,
+            marginHorizontal: 10,
+            marginVertical: 0,
         },
         actionText: {
-            fontWeight: "bold",
-            textAlign: "center",
-            color: theme.textInverted,
+            fontSize: 16,
         },
+        redBackground: {
+            backgroundColor: theme.error,
+        },
+
         text: {
             fontSize: 16,
             textAlign: "justify",

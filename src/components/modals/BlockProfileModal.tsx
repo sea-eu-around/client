@@ -1,6 +1,5 @@
 import React from "react";
-import {Text, TouchableHighlight, View, StyleSheet} from "react-native";
-import CustomModal, {CustomModalProps} from "./CustomModal";
+import {Text, View, StyleSheet} from "react-native";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
@@ -9,9 +8,11 @@ import {UserProfile} from "../../model/user-profile";
 import {MyThunkDispatch} from "../../state/types";
 import {blockProfile} from "../../state/matching/actions";
 import store from "../../state/store";
+import CustomModal, {CustomModalProps} from "./CustomModal";
+import Button from "../Button";
 
 export type BlockProfileModalProps = ThemeProps &
-    Partial<CustomModalProps> & {onBlock?: () => void; profile: UserProfile};
+    Partial<CustomModalProps> & {onBlock?: () => void; profile: UserProfile | null};
 
 class BlockProfileModal extends React.Component<BlockProfileModalProps> {
     render() {
@@ -20,31 +21,37 @@ class BlockProfileModal extends React.Component<BlockProfileModalProps> {
         return (
             <CustomModal
                 {...otherProps}
-                renderContent={(hide: () => void) => (
-                    <>
-                        <Text style={styles.text}>
-                            {i18n.t("block.warning", {firstname: profile.firstName, lastname: profile.lastName})}
-                        </Text>
-                        <View style={styles.actionButtonsWrapper}>
-                            <TouchableHighlight
-                                style={[styles.actionButton, styles.actionButtonCancel]}
-                                onPress={() => hide()}
-                            >
-                                <Text style={styles.actionText}>{i18n.t("cancel")}</Text>
-                            </TouchableHighlight>
-                            <TouchableHighlight
-                                style={[styles.actionButton, styles.actionButtonDecline]}
-                                onPress={() => {
-                                    hide();
-                                    (store.dispatch as MyThunkDispatch)(blockProfile(profile.id));
-                                    if (onBlock) onBlock();
-                                }}
-                            >
-                                <Text style={styles.actionText}>{i18n.t("block.action")}</Text>
-                            </TouchableHighlight>
-                        </View>
-                    </>
-                )}
+                renderContent={(hide: () => void) =>
+                    profile ? (
+                        <>
+                            <Text style={styles.text}>
+                                {i18n.t("block.warning", {firstname: profile.firstName, lastname: profile.lastName})}
+                            </Text>
+                            <View style={styles.actionButtonsWrapper}>
+                                <Button
+                                    text={i18n.t("cancel")}
+                                    onPress={() => hide()}
+                                    skin="rounded-hollow"
+                                    style={styles.actionButton}
+                                    textStyle={styles.actionText}
+                                />
+                                <Button
+                                    text={i18n.t("block.action")}
+                                    onPress={() => {
+                                        hide();
+                                        (store.dispatch as MyThunkDispatch)(blockProfile(profile.id));
+                                        if (onBlock) onBlock();
+                                    }}
+                                    skin="rounded-filled"
+                                    style={[styles.actionButton, styles.redBackground]}
+                                    textStyle={styles.actionText}
+                                />
+                            </View>
+                        </>
+                    ) : (
+                        <></>
+                    )
+                }
             />
         );
     }
@@ -56,26 +63,19 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             flexDirection: "row",
             marginTop: 20,
-            justifyContent: "space-evenly",
         },
         actionButton: {
-            width: 110,
-            maxWidth: "40%",
-            borderRadius: 3,
-            paddingVertical: 10,
-            elevation: 2,
-        },
-        actionButtonCancel: {
-            backgroundColor: theme.accentSecondary,
-        },
-        actionButtonDecline: {
-            backgroundColor: theme.error,
+            flex: 1,
+            marginHorizontal: 10,
+            marginVertical: 0,
         },
         actionText: {
-            fontWeight: "bold",
-            textAlign: "center",
-            color: theme.textWhite,
+            fontSize: 16,
         },
+        redBackground: {
+            backgroundColor: theme.error,
+        },
+
         text: {
             fontSize: 16,
             textAlign: "justify",
