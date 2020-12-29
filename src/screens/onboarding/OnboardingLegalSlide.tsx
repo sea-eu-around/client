@@ -12,21 +12,7 @@ import {preTheme} from "../../styles/utils";
 // Component props
 type OnboardingLegalSlideProps = ThemeProps & OnboardingScreenProps & {title: string; text: string};
 
-// Component state
-type OnboardingLegalSlideState = {
-    declined: boolean;
-};
-
-class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps, OnboardingLegalSlideState> {
-    constructor(props: OnboardingLegalSlideProps) {
-        super(props);
-        this.state = {declined: false};
-    }
-
-    decline() {
-        this.setState({...this.state, declined: true});
-    }
-
+class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
     render(): JSX.Element {
         const {theme, title, text, next, ...otherProps} = this.props;
         const styles = themedStyles(theme);
@@ -41,19 +27,19 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps, On
                 </Text>
 
                 <View style={styles.actionsWrapper}>
-                    <TouchableOpacity style={styles.actionButton} onPress={() => this.decline()}>
-                        <Text style={styles.actionButtonTextDecline}>{i18n.t("legal.decline")}</Text>
-                        <MaterialIcons name="close" style={styles.actionButtonTextDecline} />
-                    </TouchableOpacity>
+                    <TOSDeclinedModal
+                        activator={(show) => (
+                            <TouchableOpacity style={styles.actionButton} onPress={show}>
+                                <Text style={styles.actionButtonTextDecline}>{i18n.t("legal.decline")}</Text>
+                                <MaterialIcons name="close" style={styles.actionButtonTextDecline} />
+                            </TouchableOpacity>
+                        )}
+                    />
                     <TouchableOpacity style={styles.actionButton} onPress={() => next()}>
                         <Text style={styles.actionButtonTextAccept}>{i18n.t("legal.accept")}</Text>
                         <MaterialIcons name="check" style={styles.actionButtonTextAccept} />
                     </TouchableOpacity>
                 </View>
-
-                {this.state.declined && (
-                    <TOSDeclinedModal visible={true} onHide={() => this.setState({...this.state, declined: false})} />
-                )}
             </OnboardingSlide>
         );
     }

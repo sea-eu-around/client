@@ -30,7 +30,6 @@ export type ProfilePreviewState = {
     expanded: boolean;
     animating: boolean;
     height: ReAnimated.Value<number>;
-    blockModalOpen: boolean;
 };
 
 const LOOKS = {
@@ -48,7 +47,6 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
         this.state = {
             expanded: false,
             height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT),
-            blockModalOpen: false,
             animating: false,
         };
         this.layout = {x: 0, y: 0, width: 0, height: 0};
@@ -101,7 +99,7 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
 
     render() {
         const {theme, profile} = this.props;
-        const {expanded, animating, height, blockModalOpen} = this.state;
+        const {expanded, animating, height} = this.state;
         const styles = themedStyles(theme);
 
         const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
@@ -225,19 +223,14 @@ class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreview
                                     ))}
                                 </View>
                                 */}
-                            <TouchableOpacity
-                                style={styles.blockButton}
-                                onPress={() => this.setState({...this.state, blockModalOpen: true})}
-                            >
-                                <MaterialIcons style={styles.blockButtonIcon} name="block" />
-                            </TouchableOpacity>
                             <BlockProfileModal
                                 profile={profile}
-                                visible={blockModalOpen}
-                                onHide={() => {
-                                    this.setState({...this.state, blockModalOpen: false});
-                                    this.hide();
-                                }}
+                                activator={(open) => (
+                                    <TouchableOpacity style={styles.blockButton} onPress={() => open()}>
+                                        <MaterialIcons style={styles.blockButtonIcon} name="block" />
+                                    </TouchableOpacity>
+                                )}
+                                onBlock={() => this.hide()}
                             />
                         </View>
                     )}
