@@ -4,7 +4,7 @@ import {LayoutRectangle, StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {UserProfile} from "../model/user-profile";
-import ProfilePreview from "../components/cards/ProfilePreviewCard";
+import ProfilePreview from "../components/cards/MatchProfileCard";
 import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";

@@ -17,7 +17,7 @@ import Chips from "../Chips";
 import SwipeableCard, {SwipeableCardClass, SwipeActionContainer} from "./SwipeableCard";
 
 // Component props
-export type ProfilePreviewCardProps = ThemeProps & {
+export type MatchProfileCardProps = ThemeProps & {
     profile: UserProfile;
     onExpand?: (layout: LayoutRectangle) => void;
     onSwipeLeft?: () => void;
@@ -26,7 +26,7 @@ export type ProfilePreviewCardProps = ThemeProps & {
 };
 
 // Component state
-export type ProfilePreviewCardState = {
+export type MatchProfileCardState = {
     expanded: boolean;
     animating: boolean;
     height: ReAnimated.Value<number>;
@@ -38,11 +38,11 @@ const LOOKS = {
     borderRadius: 20,
 };
 
-class ProfilePreviewCard extends React.Component<ProfilePreviewCardProps, ProfilePreviewCardState> {
+class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfileCardState> {
     cardRef = React.createRef<SwipeableCardClass>();
     layout: LayoutRectangle;
 
-    constructor(props: ProfilePreviewCardProps) {
+    constructor(props: MatchProfileCardProps) {
         super(props);
         this.state = {
             expanded: false,
@@ -344,4 +344,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(ProfilePreviewCard);
+export default withTheme(MatchProfileCard);
