@@ -11,7 +11,7 @@ import {PARTNER_UNIVERSITIES} from "../constants/universities";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {StaffRole} from "../constants/profile-constants";
-import ValueCard from "./forms/ValueCard";
+import ValueCard from "./cards/ValueCard";
 import EnlargeableAvatar from "./EnlargeableAvatar";
 import {OfferCategory, OfferValueDto, SpokenLanguageDto} from "../api/dto";
 import FormattedGender from "./FormattedGender";

@@ -8,7 +8,7 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {GiftedAvatar} from "react-native-gifted-chat";
 import {rootNavigate} from "../../navigation/utils";
-import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "../SwipeableCard";
+import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({

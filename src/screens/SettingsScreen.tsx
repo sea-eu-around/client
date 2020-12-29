@@ -7,7 +7,7 @@ import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import ScreenWrapper from "./ScreenWrapper";
-import ValueCard from "../components/forms/ValueCard";
+import ValueCard from "../components/cards/ValueCard";
 import i18n from "i18n-js";
 import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {AppState} from "../state/types";

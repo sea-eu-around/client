@@ -13,7 +13,7 @@ import {HISTORY_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
 import {styleTextLight} from "../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
-import HistoryProfileCard from "../components/HistoryProfileCard";
+import HistoryProfileCard from "../components/cards/HistoryProfileCard";
 import InfiniteScroller from "../components/InfiniteScroller";
 import {MATCH_ACTION_HISTORY_STATUSES} from "../api/dto";
 import {MatchHistoryItem} from "../model/matching";

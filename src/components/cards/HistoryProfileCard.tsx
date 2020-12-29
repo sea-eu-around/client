@@ -1,21 +1,21 @@
 import * as React from "react";
 import {Text, View, ViewStyle, StyleSheet, Alert} from "react-native";
 import {withTheme} from "react-native-elements";
-import {Theme, ThemeProps} from "../types";
-import {preTheme} from "../styles/utils";
-import FormattedUniversity from "./FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
-import ProfileAvatar from "./ProfileAvatar";
+import {Theme, ThemeProps} from "../../types";
+import {preTheme} from "../../styles/utils";
+import FormattedUniversity from "../FormattedUniversity";
+import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
+import ProfileAvatar from "../ProfileAvatar";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {rootNavigate} from "../navigation/utils";
-import {MatchHistoryItem} from "../model/matching";
-import FormattedMatchStatus from "./FormattedMatchStatus";
+import {rootNavigate} from "../../navigation/utils";
+import {MatchHistoryItem} from "../../model/matching";
+import FormattedMatchStatus from "../FormattedMatchStatus";
 import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 import i18n from "i18n-js";
-import store from "../state/store";
-import {MyThunkDispatch} from "../state/types";
-import BlockProfileModal from "./modals/BlockProfileModal";
-import {MatchActionStatus} from "../api/dto";
+import store from "../../state/store";
+import {MyThunkDispatch} from "../../state/types";
+import BlockProfileModal from "../modals/BlockProfileModal";
+import {MatchActionStatus} from "../../api/dto";
 
 // Component props
 export type HistoryProfileCardProps = ThemeProps & {

@@ -2,22 +2,22 @@ import * as React from "react";
 import {LayoutChangeEvent, LayoutRectangle, Text, TouchableOpacity, View, StyleSheet, Platform} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
-import {UserProfile, UserProfileStudent} from "../model/user-profile";
+import {UserProfile, UserProfileStudent} from "../../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
-import {Theme, ThemeProps} from "../types";
-import {preTheme} from "../styles/utils";
+import {Theme, ThemeProps} from "../../types";
+import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
-import BlockProfileModal from "./modals/BlockProfileModal";
-import FormattedUniversity from "./FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../constants/universities";
-import {OfferValueDto, SpokenLanguageDto} from "../api/dto";
-import {styleTextLight, styleTextThin} from "../styles/general";
-import ProfileAvatar from "./ProfileAvatar";
-import Chips from "./Chips";
+import BlockProfileModal from "../modals/BlockProfileModal";
+import FormattedUniversity from "../FormattedUniversity";
+import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
+import {OfferValueDto, SpokenLanguageDto} from "../../api/dto";
+import {styleTextLight, styleTextThin} from "../../styles/general";
+import ProfileAvatar from "../ProfileAvatar";
+import Chips from "../Chips";
 import SwipeableCard, {SwipeableCardClass, SwipeActionContainer} from "./SwipeableCard";
 
 // Component props
-export type ProfilePreviewProps = ThemeProps & {
+export type ProfilePreviewCardProps = ThemeProps & {
     profile: UserProfile;
     onExpand?: (layout: LayoutRectangle) => void;
     onSwipeLeft?: () => void;
@@ -26,7 +26,7 @@ export type ProfilePreviewProps = ThemeProps & {
 };
 
 // Component state
-export type ProfilePreviewState = {
+export type ProfilePreviewCardState = {
     expanded: boolean;
     animating: boolean;
     height: ReAnimated.Value<number>;
@@ -38,11 +38,11 @@ const LOOKS = {
     borderRadius: 20,
 };
 
-class ProfilePreview extends React.Component<ProfilePreviewProps, ProfilePreviewState> {
+class ProfilePreviewCard extends React.Component<ProfilePreviewCardProps, ProfilePreviewCardState> {
     cardRef = React.createRef<SwipeableCardClass>();
     layout: LayoutRectangle;
 
-    constructor(props: ProfilePreviewProps) {
+    constructor(props: ProfilePreviewCardProps) {
         super(props);
         this.state = {
             expanded: false,
@@ -344,4 +344,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(ProfilePreview);
+export default withTheme(ProfilePreviewCard);

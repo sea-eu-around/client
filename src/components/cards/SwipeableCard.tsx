@@ -13,9 +13,9 @@ import {
 import {withTheme} from "react-native-elements";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import Swipeable, {SwipeableProperties} from "react-native-gesture-handler/Swipeable";
-import {Theme, ThemeProps} from "../types";
-import {preTheme} from "../styles/utils";
-import {styleTextThin} from "../styles/general";
+import {Theme, ThemeProps} from "../../types";
+import {preTheme} from "../../styles/utils";
+import {styleTextThin} from "../../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
 
 // Theses style elements are defined this way because they have to be set in very specific ways

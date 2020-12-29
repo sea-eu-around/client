@@ -7,7 +7,7 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import i18n from "i18n-js";
 import {fetchMatchRooms, refreshMatchRooms} from "../../state/messaging/actions";
-import ChatRoomCard from "../../components/messaging/ChatRoomCard";
+import ChatRoomCard from "../../components/cards/ChatRoomCard";
 import {ROOMS_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import {StackScreenProps} from "@react-navigation/stack";

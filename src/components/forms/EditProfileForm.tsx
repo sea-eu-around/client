@@ -11,7 +11,7 @@ import {Degree, Gender, StaffRole} from "../../constants/profile-constants";
 import StaffRolePicker from "../StaffRolePicker";
 import GenderToggle from "../GenderToggle";
 import AvatarEditButton from "../AvatarEditButton";
-import ValueCard from "./ValueCard";
+import ValueCard from "../cards/ValueCard";
 import {FormattedDate} from "../FormattedDate";
 import NationalityPicker from "../NationalityPicker";
 import FormattedNationality from "../FormattedNationality";
