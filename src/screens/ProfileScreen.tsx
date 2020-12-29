@@ -17,33 +17,44 @@ const reduxConnector = connect(() => ({}));
 type ProfileScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
 // Component state
-type ProfileScreenState = {profile: UserProfile | null};
+type ProfileScreenState = {profile: UserProfile | null; isMatched: boolean; roomId: string | null};
 
 class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
     constructor(props: ProfileScreenProps) {
         super(props);
-        this.state = {profile: null};
+        this.state = {profile: null, isMatched: false, roomId: null};
     }
 
-    getRouteParams(): {[key: string]: string} {
+    getRouteParams(): {[key: string]: string | boolean | number} {
         const params = this.props.route.params;
-        return params ? (params as {[key: string]: string}) : {};
+        return params ? (params as {[key: string]: string | boolean | number}) : {};
     }
 
     componentDidMount() {
         const {dispatch} = this.props;
 
-        const {id} = this.getRouteParams();
-        if (id)
-            (dispatch as MyThunkDispatch)(fetchProfile(id)).then((profile) => this.setState({...this.state, profile}));
+        this.props.navigation.addListener("focus", () => {
+            const {id} = this.getRouteParams();
+            if (id && (!this.state.profile || this.state.profile.id !== id)) {
+                (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then((profileWithMatchInfo) => {
+                    if (profileWithMatchInfo) {
+                        const {profile, isMatched, roomId} = profileWithMatchInfo;
+                        this.setState({...this.state, profile, isMatched, roomId});
+                    } else this.setState({...this.state, profile: null, isMatched: false, roomId: null});
+                });
+            }
+        });
     }
 
     render(): JSX.Element {
-        const {profile} = this.state;
+        const {profile, isMatched, roomId} = this.state;
 
         return (
             <ScreenWrapper>
-                <ProfileView profile={profile} actionBar={<ProfileActionBar profile={profile} />} />
+                <ProfileView
+                    profile={profile}
+                    actionBar={<ProfileActionBar profile={profile} isMatched={isMatched} roomId={roomId} />}
+                />
             </ScreenWrapper>
         );
     }
