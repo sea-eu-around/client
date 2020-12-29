@@ -671,12 +671,19 @@ export default {
                 help: "I am willing to join a language tandem to help others learn one of my languages.",
             },
         },
+        // Unmatch modal
+        unmatch: {
+            text: "Are you sure you want to unmatch {{firstname}}? You will not be able to communicate anymore.",
+            blockQuestion: "If you don't want {{firstname}} to be able to find you anymore, you can also block them:",
+            action: "Unmatch",
+        },
+        // Block modal
         block: {
             warning:
                 "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
-        // Welcome
+        // Welcome screen
         welcomeScreen: {
             signIn: "Log in",
             signUp: "Sign up",
@@ -783,6 +790,13 @@ export default {
         },
         // Profile tab
         profile: {
+            action: {
+                chat: "Chat",
+                mute: "Mute",
+                block: "Block",
+                unmatch: "Unmatch",
+                report: "Report",
+            },
             noOffersSelected: "No offers selected.",
         },
         screenTitles: {
