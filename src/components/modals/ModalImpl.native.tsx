@@ -4,7 +4,7 @@ import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {ThemeProps} from "../../types";
 
-export type CustomModalProps = ThemeProps & {
+export type ModalImplProps = ThemeProps & {
     onHide?: () => void;
     onShow?: () => void;
     renderContent: (hide: () => void) => JSX.Element;
@@ -19,17 +19,17 @@ export type CustomModalProps = ThemeProps & {
     backdropOpacity?: number;
 };
 
-type CustomModalState = {
+type ModalImplState = {
     modalVisible: boolean;
 };
 
-class CustomModal extends React.Component<CustomModalProps, CustomModalState> {
-    constructor(props: CustomModalProps) {
+class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
+    constructor(props: ModalImplProps) {
         super(props);
         this.state = {modalVisible: props.visible || false};
     }
 
-    componentDidUpdate(oldProps: CustomModalProps): void {
+    componentDidUpdate(oldProps: ModalImplProps): void {
         if (oldProps.visible && !this.props.visible) this.setModalVisible(false);
         if (!oldProps.visible && this.props.visible) this.setModalVisible(true);
     }
@@ -111,4 +111,4 @@ export const themedStyles = preTheme(() => {
     });
 });
 
-export default withTheme(CustomModal);
+export default withTheme(ModalImpl);

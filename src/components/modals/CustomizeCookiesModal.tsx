@@ -1,6 +1,6 @@
 import React from "react";
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
-import CustomModal from "./CustomModal";
+import CustomModal, {CustomModalProps} from "./CustomModal";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {CheckBox, withTheme} from "react-native-elements";
@@ -10,7 +10,6 @@ import store from "../../state/store";
 import {CookiesPreferences, COOKIES_PREFERENCES_KEYS} from "../../model/user-settings";
 import {connect, ConnectedProps} from "react-redux";
 import {saveCookiesPreferences} from "../../state/settings/actions";
-import {CustomModalProps} from "./CustomModal.native";
 import Button from "../Button";
 
 // Map props from store
