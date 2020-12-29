@@ -24,6 +24,7 @@ type ValueCardProps<T> = {
     oneLine?: boolean;
     onPress?: () => void;
     onModalShown?: () => void;
+    blank?: boolean;
 } & TouchableOpacityProps;
 
 // Component state
@@ -121,6 +122,7 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
             style,
             locked,
             oneLine,
+            blank,
             onPress,
             onModalShown,
             ...otherProps
@@ -151,12 +153,12 @@ class ValueCard<T> extends React.Component<ValueCardProps<T>, ValueCardState<T>>
                             >
                                 <View style={styles.cardContent}>
                                     <View style={styles.cardLabelContainer}>
-                                        {icon}
-                                        <Text style={styles.cardLabel}>{label}</Text>
+                                        {!blank && icon}
+                                        <Text style={styles.cardLabel}>{!blank && label}</Text>
                                     </View>
                                     <View>
-                                        {display !== undefined && display}
-                                        {display === undefined && this.props.children}
+                                        {!blank && display !== undefined && display}
+                                        {!blank && display === undefined && this.props.children}
                                     </View>
                                 </View>
                                 {!noModal && (
