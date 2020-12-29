@@ -28,3 +28,9 @@ export type UserProfileStaff = UserProfileCommon & {
 };
 
 export type UserProfile = UserProfileStudent | UserProfileStaff;
+
+export type UserProfileWithMatchInfo = {
+    profile: UserProfile;
+    isMatched: boolean;
+    roomId: string | null;
+};

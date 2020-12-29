@@ -11,8 +11,15 @@ import {
     ResponseProfileDtoStudent,
     ResponseRoomDto,
     ResponseUserDto,
+    ResponseProfileWithMatchInfoDto,
 } from "./dto";
-import {UserProfile, UserProfileCommon, UserProfileStaff, UserProfileStudent} from "../model/user-profile";
+import {
+    UserProfile,
+    UserProfileCommon,
+    UserProfileStaff,
+    UserProfileStudent,
+    UserProfileWithMatchInfo,
+} from "../model/user-profile";
 import {User} from "../model/user";
 import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 import {initialPaginatedState} from "../state/types";
@@ -143,5 +150,12 @@ export function convertDtoToHistoryItem(dto: MatchHistoryItemDto): MatchHistoryI
         status: dto.status,
         date: new Date(dto.date),
         id: dto.id,
+    };
+}
+
+export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchInfoDto): UserProfileWithMatchInfo {
+    return {
+        ...dto,
+        profile: convertDtoToProfile(dto.profile),
     };
 }

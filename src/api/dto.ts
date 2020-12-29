@@ -90,6 +90,8 @@ export type ResponseProfileDtoStudent = ResponseProfileDtoCommon & CreateProfile
 export type ResponseProfileDtoStaff = ResponseProfileDtoCommon & CreateProfileDtoStaff;
 export type ResponseProfileDto = ResponseProfileDtoStudent | ResponseProfileDtoStaff;
 
+export type ResponseProfileWithMatchInfoDto = {isMatched: boolean; roomId: string | null; profile: ResponseProfileDto};
+
 export enum OfferCategory {
     Discover = "discover",
     Collaborate = "collaborate",

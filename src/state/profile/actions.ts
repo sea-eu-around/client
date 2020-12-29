@@ -9,11 +9,17 @@ import {
     ResponseUserDto,
     SignedUrlResponseDto,
     SuccessfulRequestResponse,
+    ResponseProfileWithMatchInfoDto,
 } from "../../api/dto";
-import {UserProfile} from "../../model/user-profile";
+import {UserProfile, UserProfileWithMatchInfo} from "../../model/user-profile";
 import {User} from "../../model/user";
 import {requestBackend} from "../../api/utils";
-import {convertDtoToProfile, convertDtoToUser, convertPartialProfileToCreateDto} from "../../api/converters";
+import {
+    convertDtoToProfile,
+    convertDtoToProfileWithMatchInfo,
+    convertDtoToUser,
+    convertPartialProfileToCreateDto,
+} from "../../api/converters";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {readCachedStaticData} from "../persistent-storage/static";
@@ -91,7 +97,7 @@ export type FetchUserSuccessAction = {
 
 export type FetchProfileSuccessAction = {
     type: string;
-    profile: UserProfile;
+    profile: UserProfileWithMatchInfo;
 };
 
 export type SetAvatarSuccessAction = {
@@ -214,19 +220,22 @@ const fetchUserSuccess = (user: User): FetchUserSuccessAction => ({
     user,
 });
 
-export const fetchProfile = (id: string): AppThunk<Promise<UserProfile | null>> => async (dispatch, getState) => {
+export const fetchProfile = (id: string): AppThunk<Promise<UserProfileWithMatchInfo | null>> => async (
+    dispatch,
+    getState,
+) => {
     const token = getState().auth.token;
-    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token);
+    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token, true);
     if (response.status === HttpStatusCode.OK) {
-        const payload = (response as SuccessfulRequestResponse).data;
-        const profile = convertDtoToProfile(payload as ResponseProfileDto);
-        dispatch(fetchProfileSuccess(profile));
-        return profile;
+        const payload = (response as SuccessfulRequestResponse).data as ResponseProfileWithMatchInfoDto;
+        const profileWithMatchInfo = convertDtoToProfileWithMatchInfo(payload);
+        dispatch(fetchProfileSuccess(profileWithMatchInfo));
+        return profileWithMatchInfo;
     }
     return null;
 };
 
-const fetchProfileSuccess = (profile: UserProfile): FetchProfileSuccessAction => ({
+const fetchProfileSuccess = (profile: UserProfileWithMatchInfo): FetchProfileSuccessAction => ({
     type: PROFILE_ACTION_TYPES.FETCH_PROFILE_SUCCESS,
     profile,
 });
