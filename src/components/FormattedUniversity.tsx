@@ -17,7 +17,7 @@ export default class FormattedUniversity extends React.Component<FormattedUniver
         const {university, containerStyle, flagSize, flagEmoji, ...otherProps} = this.props;
 
         return (
-            <View style={[{flexDirection: "row"}, containerStyle]}>
+            <View style={[{flexDirection: "row", alignItems: "center"}, containerStyle]}>
                 {university && (
                     <>
                         <Flag
