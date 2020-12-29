@@ -65,6 +65,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
         const profileFieldComponents = (
             <>
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("emailAddress")}
                     initialValue={user?.email}
                     display={(user && <Text style={styles.cardText}>{user.email}</Text>) || undefined}
@@ -72,6 +73,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("dateOfBirth")}
                     initialValue={profile?.birthdate}
                     display={profile && <FormattedDate style={styles.cardText} date={profile.birthdate} />}
@@ -91,6 +93,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("nationality")}
                     initialValue={profile?.nationality}
                     display={
@@ -109,6 +112,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("gender")}
                     initialValue={profile?.gender}
                     display={
@@ -123,6 +127,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("profileType")}
                     initialValue={profile?.type}
                     display={
@@ -151,6 +156,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("fieldsOfEducation")}
                     initialValue={profile?.educationFields}
                     display={
@@ -164,6 +170,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("interests")}
                     initialValue={profile?.interests}
                     display={
@@ -179,6 +186,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                 />
                 <Spacer />
                 <ValueCard
+                    blank={!user}
                     label={i18n.t("spokenLanguages")}
                     initialValue={profile?.languages}
                     validator={VALIDATOR_ONBOARDING_LANGUAGES}
