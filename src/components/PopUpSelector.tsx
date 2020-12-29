@@ -42,11 +42,11 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
 
     show(): void {
         this.fromSelectedProp();
-        if (this.modalRef.current) this.modalRef.current.setModalVisible(true);
+        this.modalRef.current?.show();
     }
 
     hide(apply: boolean): void {
-        if (this.modalRef.current) this.modalRef.current.setModalVisible(false);
+        this.modalRef.current?.hide();
         if (apply) this.apply();
         else this.fromSelectedProp();
     }
