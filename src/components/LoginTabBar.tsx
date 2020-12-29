@@ -11,6 +11,8 @@ import WavyHeader from "./headers/WavyHeader";
 // Component props
 type LoginTabBarProps = ThemeProps & MaterialTopTabBarProps & {insets: EdgeInsets};
 
+// TODO delete component
+
 class TabBarComponent extends React.Component<LoginTabBarProps> {
     height = new ReAnimated.Value<number>(0);
 
