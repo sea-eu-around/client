@@ -34,6 +34,8 @@ class QuickFormReport extends React.Component<QuickFormReportProps, QuickFormRep
     private getEntityInfo(): {id: string; name: string} | null {
         const {entityType, entity} = this.props;
 
+        if (!entity) return null;
+
         switch (entityType) {
             case ReportEntityType.PROFILE_ENTITY:
                 if ((entity as ChatRoomUser)._id) {
