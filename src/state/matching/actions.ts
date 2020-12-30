@@ -369,7 +369,7 @@ const cancelActionSuccess = (historyItemId: string): ActionCancelSuccessAction =
     historyItemId,
 });
 
-export const cancelMatchAction = (historyItemId: string): AppThunk => async (dispatch, getState) => {
+export const cancelMatchAction = (historyItemId: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
     const token = getState().auth.token;
     const response = await requestBackend(
         "matching/cancel",
@@ -380,6 +380,11 @@ export const cancelMatchAction = (historyItemId: string): AppThunk => async (dis
         true,
     );
 
-    if (response.status === HttpStatusCode.OK) dispatch(cancelActionSuccess(historyItemId));
-    else dispatch(cancelActionFailure(historyItemId));
+    if (response.status === HttpStatusCode.OK) {
+        dispatch(cancelActionSuccess(historyItemId));
+        return true;
+    } else {
+        dispatch(cancelActionFailure(historyItemId));
+        return false;
+    }
 };
