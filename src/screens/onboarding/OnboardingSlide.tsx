@@ -66,7 +66,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
         const {width, height} = Dimensions.get("screen");
         return (
             <ScreenWrapper>
-                <WavyHeader style={styles.wavyHeader} color={theme.accent} />
+                {/*<WavyHeader style={styles.wavyHeader} color={theme.accent} />*/}
                 <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
                     <Background
                         preserveAspectRatio={"true"}
