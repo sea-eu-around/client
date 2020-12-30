@@ -8,18 +8,25 @@ import {UserProfile} from "../../model/user-profile";
 import {MyThunkDispatch} from "../../state/types";
 import {blockProfile} from "../../state/matching/actions";
 import store from "../../state/store";
-import CustomModal, {CustomModalProps} from "./CustomModal";
+import CustomModal, {CustomModalClass, CustomModalProps} from "./CustomModal";
 import Button from "../Button";
 
 export type BlockProfileModalProps = ThemeProps &
     Partial<CustomModalProps> & {onBlock?: () => void; profile: UserProfile | null};
 
-class BlockProfileModal extends React.Component<BlockProfileModalProps> {
-    render() {
+export class BlockProfileModalClass extends React.Component<BlockProfileModalProps> {
+    modalRef = React.createRef<CustomModalClass>();
+
+    show(): void {
+        this.modalRef.current?.show();
+    }
+
+    render(): JSX.Element {
         const {theme, profile, onBlock, ...otherProps} = this.props;
         const styles = themedStyles(theme);
         return (
             <CustomModal
+                ref={this.modalRef}
                 {...otherProps}
                 renderContent={(hide: () => void) =>
                     profile ? (
@@ -84,4 +91,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(BlockProfileModal);
+export default withTheme(BlockProfileModalClass);
