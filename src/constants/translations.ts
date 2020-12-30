@@ -721,7 +721,7 @@ export default {
             cancel: "Cancel",
             what: "What / who?",
             why: "Why?",
-            typePlaceholder: "Select a type",
+            typePlaceholder: "Select a reason",
             types: {
                 violence: "Violence",
                 nudity: "Nudity",
@@ -781,7 +781,11 @@ export default {
                 },
                 actions: {
                     report: "Report",
-                    cancel: "Cancel",
+                    cancel: {
+                        requested: "Cancel like",
+                        declined: "Cancel hide",
+                        blocked: "Cancel block",
+                    },
                     block: "Block",
                 },
                 noResults: "No results found",
