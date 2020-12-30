@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "471103499554",
+    "project_id": "sea-eu-around",
+    "storage_bucket": "sea-eu-around.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471103499554:android:43c55fe63de89338e1897b",
+        "android_client_info": {
+          "package_name": "com.sea_eu.around"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "471103499554-io9s83qlmgt9ndk1l9fj84spqv8np7l1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbuYF4aKkeCTX4LLeXEyih7_mqKVC9-l4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "471103499554-io9s83qlmgt9ndk1l9fj84spqv8np7l1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -58,6 +58,7 @@ export default {
             sourceExts: ["expo.ts", "expo.tsx", "expo.js", "expo.jsx", "ts", "tsx", "js", "jsx", "json", "wasm", "svg"],
         },
         ios: {
+            icon: "./assets/images/icon.ios.png",
             supportsTablet: true,
             bundleIdentifier: "com.sea-eu.around",
             buildNumber: VERSION,
@@ -65,6 +66,7 @@ export default {
         android: {
             package: "com.sea_eu.around",
             versionCode: ANDROID_VERSION_CODE,
+            googleServicesFile: "./google-services.json",
             permissions: [],
             intentFilters: [
                 {
