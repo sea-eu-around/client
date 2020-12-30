@@ -82,7 +82,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                     fetching={fetchingHistory}
                     currentPage={currentPage}
                     items={historyItems}
-                    id={(it: MatchHistoryItem): string => it.profile.id}
+                    id={(it: MatchHistoryItem): string => it.id}
                     noResultsComponent={
                         <>
                             <Text style={styles.noResultsText1}>{i18n.t("matching.history.noResults")}</Text>
@@ -90,6 +90,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                         </>
                     }
                     refresh={() => dispatch(refreshFetchedHistory())}
+                    refreshOnFocus
                     renderItem={(item: MatchHistoryItem, hide: () => void) => (
                         <HistoryProfileCard
                             key={`history-card-${item.id}-${item.status}`}
