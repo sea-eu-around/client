@@ -7,7 +7,7 @@ import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {GiftedAvatar} from "react-native-gifted-chat";
-import {rootNavigate} from "../../navigation/utils";
+import {openChat} from "../../navigation/utils";
 import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 
 // Map props from store
@@ -32,23 +32,20 @@ const LOOKS = {
 
 class ChatRoomCard extends React.Component<ChatRoomCardProps> {
     private getActions(hideCard: () => void): SwipeActionProps[] {
-        const {theme} = this.props;
+        /*const {theme} = this.props;
 
         return [
+            // TODO implement chat mute
             {
                 icon: "notifications-off",
                 backgroundColor: "#ccc",
             },
             {
                 icon: "report",
-                backgroundColor: theme.warn,
-            },
-            {
-                icon: "close",
                 backgroundColor: theme.error,
-                onPress: () => hideCard(),
             },
-        ];
+        ];*/
+        return [];
     }
 
     render() {
@@ -100,7 +97,7 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
                 )}
                 onPress={() => {
                     if (onPress) onPress();
-                    rootNavigate("ChatScreen", {roomId: room.id});
+                    openChat(room.id);
                 }}
             >
                 <View style={styles.cardContent}>
