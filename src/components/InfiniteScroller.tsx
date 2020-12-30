@@ -29,6 +29,7 @@ export type InfiniteScrollerProps<T> = {
     navigation: {isFocused: () => boolean; addListener: (k: any, l: () => void) => void};
     itemsContainerStyle?: StyleProp<ViewStyle>;
     progressViewOffset?: number;
+    refreshOnFocus?: boolean;
 };
 
 // Component state
@@ -51,11 +52,15 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
         if (!fetching && navigation.isFocused()) fetchMore();
     }
 
+    getShownItems(): T[] {
+        const {items, id} = this.props;
+        return items.filter((it) => !this.state.hiddenIds[id(it)]);
+    }
+
     hideItem(item: T): void {
-        const {items, fetchLimit, id} = this.props;
+        const {fetchLimit, id} = this.props;
         this.setState({...this.state, hiddenIds: {...this.state.hiddenIds, [id(item)]: true}});
-        const shown = items.filter((it) => !this.state.hiddenIds[id(it)]).length;
-        if (shown < fetchLimit) this.fetchMore();
+        if (this.getShownItems().length < fetchLimit) this.fetchMore();
     }
 
     componentDidMount(): void {
@@ -67,18 +72,18 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
     }
 
     onFocus(): void {
-        const {items, fetchLimit, fetching} = this.props;
-        if (items.length < fetchLimit && !fetching) this.fetchMore();
+        const {items, fetchLimit, fetching, refreshOnFocus, refresh} = this.props;
+        if (refreshOnFocus) refresh();
+        else if (items.length < fetchLimit && !fetching) this.fetchMore();
     }
 
     componentDidUpdate(oldProps: InfiniteScrollerProps<T>): void {
-        const {fetchLimit, currentPage, id, navigation} = this.props;
+        const {fetchLimit, currentPage, navigation} = this.props;
 
         const justRefreshed = oldProps.currentPage > 1 && currentPage === 1;
 
         if (navigation.isFocused()) {
-            const shown = this.props.items.filter((it) => !this.state.hiddenIds[id(it)]).length;
-            if (shown < fetchLimit) this.fetchMore();
+            if (this.getShownItems().length < fetchLimit) this.fetchMore();
             // Reset the hidden profiles when the user purposedly refreshes
             if (justRefreshed) this.setState({...this.state, hiddenIds: {}});
         }
@@ -91,11 +96,9 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             refresh,
             renderItem,
             noResultsComponent,
-            id,
             itemsContainerStyle,
             progressViewOffset,
         } = this.props;
-        const {hiddenIds} = this.state;
 
         return (
             <ThemeConsumer>
@@ -120,9 +123,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                 if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                             }}
                         >
-                            {items
-                                .filter((it: T) => !hiddenIds[id(it)])
-                                .map((it: T) => renderItem(it, () => this.hideItem(it)))}
+                            {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
                             <View style={styles.loadingIndicatorContainer}>
                                 {fetching && items.length > 0 && (
                                     <ActivityIndicator size="large" color={theme.accentSecondary} />
