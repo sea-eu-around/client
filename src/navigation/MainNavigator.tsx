@@ -13,6 +13,7 @@ import {screenTitle} from "./utils";
 import MainHeader from "../components/headers/MainHeader";
 import {TabMatchingNavigator} from "./TabMatchingNavigator";
 import MainTabBar, {MainTabBarIcon} from "../components/tabs/MainTabBar";
+import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -44,10 +45,11 @@ function MainNavigatorComponent(): JSX.Element {
             <TabNavigator.Screen
                 name="TabMessaging"
                 component={MessagingNavigator}
-                options={{
+                options={({route}) => ({
+                    tabBarVisible: getFocusedRouteNameFromRoute(route) !== "ChatScreen",
                     //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
-                }}
+                })}
             />
             <TabNavigator.Screen
                 name="TabNotifications"
