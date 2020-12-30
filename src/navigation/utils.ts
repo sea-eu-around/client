@@ -47,3 +47,7 @@ export function screenTitle(route: NavigatorRoute): string {
 export function headerTitle(route: NavigatorRoute): string {
     return i18n.t(`screenTitles.${route}`);
 }
+
+export function openChat(roomId: string): void {
+    rootNavigate("TabMessaging", {screen: "ChatScreen", params: {roomId}});
+}

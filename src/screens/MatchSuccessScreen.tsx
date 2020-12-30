@@ -1,7 +1,7 @@
 import * as React from "react";
 import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
-import {rootNavigate} from "../navigation/utils";
+import {openChat, rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
@@ -25,7 +25,7 @@ class MatchSuccessScreen extends React.Component<MatchSuccessScreenProps> {
 
     async chat(): Promise<void> {
         const roomId = this.getRoomId();
-        if (roomId) rootNavigate("ChatScreen", {roomId});
+        if (roomId) openChat(roomId);
         else rootNavigate("TabMessaging");
     }
 

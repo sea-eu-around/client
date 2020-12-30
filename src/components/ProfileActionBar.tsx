@@ -11,7 +11,7 @@ import QuickFormReport from "./forms/QuickFormReport";
 import {ReportEntityType} from "../constants/reports";
 import UnmatchProfileModal from "./modals/UnmatchProfileModal";
 import i18n from "i18n-js";
-import {navigateBack, rootNavigate} from "../navigation/utils";
+import {navigateBack, openChat} from "../navigation/utils";
 
 export type ProfileActionBarProps = {
     profile: UserProfile | null;
@@ -50,9 +50,7 @@ function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
                 blank={!profile}
                 text={i18n.t("profile.action.chat")}
                 icon="chat"
-                onPress={() => {
-                    rootNavigate("ChatScreen", {roomId});
-                }}
+                onPress={() => roomId && openChat(roomId)}
             />
         );
 

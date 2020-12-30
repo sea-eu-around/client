@@ -2,7 +2,7 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import {Platform} from "react-native";
-import {rootNavigate} from "./navigation/utils";
+import {openChat} from "./navigation/utils";
 
 function areNotificationsSupported(): boolean {
     return Constants.isDevice && Platform.OS !== "web";
@@ -28,10 +28,7 @@ export function configureNotifications(): void {
         console.log("Notification response received:");
         const data = response.notification.request.content.data;
 
-        if (data.roomId) {
-            const roomId = data.roomId as string;
-            rootNavigate("ChatScreen", {roomId});
-        }
+        if (data.roomId) openChat(data.roomId as string);
     });
 
     if (Platform.OS === "android") {
