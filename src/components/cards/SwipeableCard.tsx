@@ -53,6 +53,8 @@ export type SwipeableCardState = {
 };
 
 export class SwipeableCardClass extends React.Component<SwipeableCardProps, SwipeableCardState> {
+    swipeableRef = React.createRef<Swipeable>();
+
     constructor(props: SwipeableCardProps) {
         super(props);
 
@@ -81,6 +83,10 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             if (onFinish) onFinish();
             this.hide();
         }, duration);
+    }
+
+    resetSwipe(): void {
+        this.swipeableRef.current?.close();
     }
 
     render(): JSX.Element {
@@ -112,6 +118,7 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             >
                 <ReAnimated.View style={{}}>
                     <Swipeable
+                        ref={this.swipeableRef}
                         containerStyle={[
                             styles.swipeableContainer,
                             {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
@@ -125,7 +132,7 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
                         }
                         {...swipeableProps}
                     >
-                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable} onPress={onPress}>
+                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable} {...(onPress ? {onPress} : {})}>
                             {children}
                         </TouchableOpacity>
                     </Swipeable>
@@ -170,11 +177,12 @@ type SwipeActionsProps = ThemeProps & {
     side: "left" | "right";
     actions: SwipeActionProps[];
     looks?: Partial<SwipeableLooks>;
+    buttonStyle?: StyleProp<ViewStyle>;
 };
 
 export const SwipeActionButtons = withTheme(
     (props: React.PropsWithChildren<SwipeActionsProps>): JSX.Element => {
-        const {id, actions, side, looks} = props;
+        const {id, actions, side, looks, buttonStyle} = props;
 
         const {borderRadius} = {...DEFAULT_LOOKS, ...looks};
 
@@ -205,7 +213,7 @@ export const SwipeActionButtons = withTheme(
                         <React.Fragment key={`swipe-actions-${id}-${side}-${i}`}>
                             {isInteriorButton && interiorFiller}
                             <SwipeActionButton
-                                style={isExteriorButton ? oneSidedBorderRadius(side, borderRadius) : {}}
+                                style={[isExteriorButton ? oneSidedBorderRadius(side, borderRadius) : {}, buttonStyle]}
                                 {...properties}
                             />
                         </React.Fragment>
@@ -311,6 +319,7 @@ const buttonStyles = preTheme(() => {
         },
         swipeActionButtonText: {
             fontSize: 16,
+            textAlign: "center",
         },
         swipeActionText: {
             fontSize: 24,
