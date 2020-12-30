@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, View, ViewStyle, StyleSheet, Alert} from "react-native";
+import {Text, View, ViewStyle, StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
@@ -10,12 +10,15 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
 import {MatchHistoryItem} from "../../model/matching";
 import FormattedMatchStatus from "../FormattedMatchStatus";
-import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
+import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 import i18n from "i18n-js";
 import store from "../../state/store";
 import {MyThunkDispatch} from "../../state/types";
-import BlockProfileModal from "../modals/BlockProfileModal";
+import BlockProfileModal, {BlockProfileModalClass} from "../modals/BlockProfileModal";
 import {MatchActionStatus} from "../../api/dto";
+import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
+import {ReportEntityType} from "../../constants/reports";
+import {cancelMatchAction} from "../../state/matching/actions";
 
 // Component props
 export type HistoryProfileCardProps = ThemeProps & {
@@ -24,68 +27,55 @@ export type HistoryProfileCardProps = ThemeProps & {
     onHidden?: () => void;
 };
 
-// Component state
-export type HistoryProfileCardState = {
-    blockModalOpen: boolean;
-};
-
 const LOOKS = {
     sideMargin: 10,
     borderRadius: 10,
     minHeight: 100,
 };
 
-class HistoryProfileCard extends React.Component<HistoryProfileCardProps, HistoryProfileCardState> {
-    constructor(props: HistoryProfileCardProps) {
-        super(props);
-        this.state = {
-            blockModalOpen: false,
-        };
-    }
+class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
+    swipeableCardRef = React.createRef<SwipeableCardClass>();
+    reportFormRef = React.createRef<QuickFormReportClass>();
+    blockModalRef = React.createRef<BlockProfileModalClass>();
 
     private getActions(hideCard: () => void): SwipeActionProps[] {
         const {
             theme,
-            item: {status},
+            item: {id, status},
         } = this.props;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const dispatch = store.dispatch as MyThunkDispatch;
 
         const reportButton = {
             icon: "report",
             text: i18n.t("matching.history.actions.report"),
-            backgroundColor: theme.warn,
+            backgroundColor: theme.error,
             color: theme.textWhite,
-            onPress: () => {
-                Alert.alert("Reports not yet implemented");
-            },
+            onPress: () => this.reportFormRef.current?.open(),
         };
         const blockButton = {
             icon: "block",
             text: i18n.t("matching.history.actions.block"),
             backgroundColor: theme.error,
             color: theme.textWhite,
-            onPress: () => {
-                this.setState({...this.state, blockModalOpen: true});
-            },
+            onPress: () => this.blockModalRef.current?.show(),
         };
         const cancelButton = {
             icon: "close",
-            text: i18n.t("matching.history.actions.cancel"),
+            text: i18n.t(`matching.history.actions.cancel.${status}`),
             backgroundColor: theme.accent,
             color: theme.textWhite,
             onPress: () => {
                 hideCard();
+                dispatch(cancelMatchAction(id));
             },
         };
 
-        if (status === MatchActionStatus.Blocked) return [reportButton, blockButton, cancelButton];
-        else return [reportButton, cancelButton];
+        if (status === MatchActionStatus.Blocked) return [reportButton, cancelButton];
+        else return [reportButton, blockButton, cancelButton];
     }
 
     render() {
         const {theme, item} = this.props;
-        const {blockModalOpen} = this.state;
         const styles = themedStyles(theme);
 
         const profile = item.profile;
@@ -95,31 +85,17 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps, Histor
         return (
             <>
                 <SwipeableCard
+                    ref={this.swipeableCardRef}
                     looks={LOOKS}
                     rightThreshold={100}
                     overshootRight={false}
-                    /*overshootLeft={false}
-                    leftActions={() => (
-                        <SwipeActionButtons
-                            id={`${item.profile.id}-${item.status}`}
-                            looks={LOOKS}
-                            side="left"
-                            actions={[
-                                {icon: "report", backgroundColor: theme.warn, color: theme.textWhite},
-                                {
-                                    icon: "close",
-                                    backgroundColor: theme.error,
-                                    color: theme.textWhite,
-                                },
-                            ]}
-                        />
-                    )}*/
                     rightActions={(hideCard) => (
                         <SwipeActionButtons
                             id={`${item.profile.id}-${item.status}`}
                             looks={LOOKS}
                             side="right"
                             actions={this.getActions(hideCard)}
+                            buttonStyle={styles.actionButton}
                         />
                     )}
                 >
@@ -152,12 +128,16 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps, Histor
                         <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
                     </View>
                 </SwipeableCard>
+                <QuickFormReport
+                    ref={this.reportFormRef}
+                    entityType={ReportEntityType.PROFILE_ENTITY}
+                    entity={profile}
+                    onSubmit={() => this.swipeableCardRef.current?.resetSwipe()}
+                />
                 <BlockProfileModal
+                    ref={this.blockModalRef}
                     profile={profile}
-                    visible={blockModalOpen}
-                    onHide={() => {
-                        this.setState({...this.state, blockModalOpen: false});
-                    }}
+                    onBlock={() => this.swipeableCardRef.current?.collapse()}
                 />
             </>
         );
@@ -199,6 +179,10 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
             opacity: 0.25,
             fontSize: 20,
+        },
+
+        actionButton: {
+            paddingHorizontal: 5,
         },
     });
 });
