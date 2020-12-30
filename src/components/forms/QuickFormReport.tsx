@@ -13,19 +13,22 @@ import {UserProfile} from "../../model/user-profile";
 import store from "../../state/store";
 import {reportEntity} from "../../state/reports/actions";
 import {MyThunkDispatch} from "../../state/types";
-import QuickForm from "./QuickForm";
+import QuickForm, {QuickFormClass} from "./QuickForm";
 
 export type QuickFormReportProps = ThemeProps & {
     entityType: ReportEntityType;
     entity: unknown;
-    activator: (open: () => void) => JSX.Element;
+    activator?: (open: () => void) => JSX.Element;
+    onSubmit?: (success: boolean) => void;
 };
 
 type QuickFormReportState = {
     selectedType: ReportType | null;
 };
 
-class QuickFormReport extends React.Component<QuickFormReportProps, QuickFormReportState> {
+export class QuickFormReportClass extends React.Component<QuickFormReportProps, QuickFormReportState> {
+    quickFormRef = React.createRef<QuickFormClass>();
+
     constructor(props: QuickFormReportProps) {
         super(props);
         this.state = {selectedType: null};
@@ -51,17 +54,26 @@ class QuickFormReport extends React.Component<QuickFormReportProps, QuickFormRep
         }
     }
 
+    open(): void {
+        this.quickFormRef.current?.open();
+    }
+
+    close(): void {
+        this.quickFormRef.current?.close();
+    }
+
     async submit(): Promise<boolean> {
-        const {entityType} = this.props;
+        const {entityType, onSubmit} = this.props;
         const {selectedType} = this.state;
 
         const info = this.getEntityInfo();
 
-        if (selectedType && info) {
-            const success = await (store.dispatch as MyThunkDispatch)(reportEntity(selectedType, entityType, info.id));
-            return success;
-        }
-        return false;
+        let success = false;
+        if (selectedType && info)
+            success = await (store.dispatch as MyThunkDispatch)(reportEntity(selectedType, entityType, info.id));
+
+        if (onSubmit) onSubmit(success);
+        return success;
     }
 
     render(): JSX.Element {
@@ -74,6 +86,7 @@ class QuickFormReport extends React.Component<QuickFormReportProps, QuickFormRep
         return (
             <>
                 <QuickForm
+                    ref={this.quickFormRef}
                     activator={activator}
                     submit={() => this.submit()}
                     titleIcon={{component: MaterialIcons, name: "report"}}
@@ -127,4 +140,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(QuickFormReport);
+export default withTheme(QuickFormReportClass);

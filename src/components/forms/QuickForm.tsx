@@ -10,7 +10,7 @@ import {Icon} from "expo";
 import Button from "../Button";
 
 export type QuickFormProps = ThemeProps & {
-    activator: (open: () => void) => JSX.Element;
+    activator?: (open: () => void) => JSX.Element;
     submit: () => Promise<boolean>;
     hideSubmit?: boolean;
     title?: string;
@@ -29,7 +29,7 @@ type QuickFormState = {
     submitting: boolean;
 };
 
-class QuickForm extends React.Component<QuickFormProps, QuickFormState> {
+export class QuickFormClass extends React.Component<QuickFormProps, QuickFormState> {
     constructor(props: QuickFormProps) {
         super(props);
         this.state = {open: false, confirmationOpen: false, failureOpen: false, submitting: false};
@@ -125,7 +125,7 @@ class QuickForm extends React.Component<QuickFormProps, QuickFormState> {
 
         return (
             <>
-                {activator(() => this.open())}
+                {activator && activator(() => this.open())}
                 {Platform.OS === "web" ? (
                     <CustomModal
                         visible={open}
@@ -237,4 +237,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(QuickForm);
+export default withTheme(QuickFormClass);
