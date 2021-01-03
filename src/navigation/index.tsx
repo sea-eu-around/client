@@ -30,6 +30,10 @@ import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 
+type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
+    onReady?: () => void;
+};
+
 // The root stack navigator
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
@@ -70,7 +74,7 @@ function onAppStateChange(status: AppStateStatus) {
     previousAppStatus = status;
 }
 
-function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
+function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
     const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
     consumedInitialRoute = true;
@@ -91,6 +95,7 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
             onReady={() => {
                 AppState.addEventListener("change", onAppStateChange);
                 onStateChange();
+                if (onReady) onReady();
             }}
             onStateChange={onStateChange}
         >
