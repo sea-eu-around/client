@@ -6,7 +6,7 @@ import {UserProfile, UserProfileStudent} from "../../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
-import {MaterialIcons} from "@expo/vector-icons";
+import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import BlockProfileModal from "../modals/BlockProfileModal";
 import FormattedUniversity from "../FormattedUniversity";
 import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
@@ -182,6 +182,7 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                             </Text>
                             {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
                         </View>
+                        <MaterialCommunityIcons name="gesture-swipe-horizontal" style={styles.swipeIcon} />
                     </View>
                     {(expanded || animating) && (
                         <View style={styles.expandedContent}>
@@ -301,6 +302,14 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.5,
             color: theme.textLight,
             flexShrink: 1, // Ensures text wrapping
+        },
+
+        swipeIcon: {
+            position: "absolute",
+            top: 0,
+            right: 0,
+            fontSize: 22,
+            color: theme.textLight,
         },
 
         separator: {
