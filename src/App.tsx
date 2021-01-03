@@ -1,5 +1,5 @@
 import {registerRootComponent} from "expo";
-import React from "react";
+import React, {useState} from "react";
 import useCachedResources from "./hooks/useCachedResources";
 import Navigation from "./navigation";
 import {Provider} from "react-redux";
@@ -18,6 +18,8 @@ function App() {
     configureLocalization();
     configureNotifications();
 
+    const [navigationReady, setNavigationReady] = useState<boolean>(false);
+
     if (!isLoadingComplete) {
         return null;
     } else {
@@ -25,8 +27,8 @@ function App() {
             <SafeAreaProvider>
                 <Provider store={store}>
                     <ConnectedThemeProvider>
-                        <Navigation initialRoute={initialRoute} />
-                        <ThemedStatusBar />
+                        <Navigation onReady={() => setNavigationReady(true)} initialRoute={initialRoute} />
+                        {navigationReady && <ThemedStatusBar />}
                         <CookieBanner />
                     </ConnectedThemeProvider>
                 </Provider>
