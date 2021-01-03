@@ -35,7 +35,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 await dispatch(loadProfileInterests());
 
                 // Load fonts
-                Font.loadAsync({
+                await Font.loadAsync({
                     ...FontAwesome.font,
                     Raleway: require("@assets/fonts/Raleway-Regular.ttf"),
                     RalewayThin: require("@assets/fonts/Raleway-Thin.ttf"),
