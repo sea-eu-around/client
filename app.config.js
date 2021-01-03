@@ -32,6 +32,7 @@ export default {
     expo: {
         name: "SEA-EU Around",
         slug: "seaEuAround",
+        owner: "sea-eu-around",
         privacy: "unlisted",
         version: VERSION,
         orientation: "portrait",
