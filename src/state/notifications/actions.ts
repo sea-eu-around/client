@@ -3,23 +3,40 @@ import {AppThunk} from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
 
 export enum NOTIFICATIONS_ACTION_TYPES {
-    REGISTER_SUCCESS = "NOTIFICATIONS/REGISTER_SUCCESS",
+    REGISTER_TOKEN_SUCCESS = "NOTIFICATIONS/REGISTER_TOKEN_SUCCESS",
+    DELETE_TOKEN_SUCCESS = "NOTIFICATIONS/DELETE_TOKEN_SUCCESS",
 }
 
-export type NotificationsRegisterSuccessAction = {
+export type RegisterNotificationSuccessAction = {
     type: string;
 };
 
-export type NotificationsAction = NotificationsRegisterSuccessAction;
+export type DeleteNotificationTokenSuccessAction = {
+    type: string;
+};
 
-export const registerNotifications = (pushToken: string): AppThunk => async (dispatch, getState) => {
+export type NotificationsAction = RegisterNotificationSuccessAction & DeleteNotificationTokenSuccessAction;
+
+export const registerNotificationToken = (pushToken: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("notifications/register", "POST", {}, {token: pushToken}, token, true);
+    const response = await requestBackend("notifications/token", "POST", {}, {token: pushToken}, token, true);
     if (response.status === HttpStatusCode.NO_CONTENT) {
-        dispatch(registerNotificationsSuccess());
+        dispatch(registerNotificationTokenSuccess());
     }
 };
 
-const registerNotificationsSuccess = (): NotificationsRegisterSuccessAction => ({
-    type: NOTIFICATIONS_ACTION_TYPES.REGISTER_SUCCESS,
+const registerNotificationTokenSuccess = (): RegisterNotificationSuccessAction => ({
+    type: NOTIFICATIONS_ACTION_TYPES.REGISTER_TOKEN_SUCCESS,
+});
+
+export const deleteNotificationToken = (): AppThunk => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const response = await requestBackend("notifications/token", "DELETE", {}, {}, token, true);
+    if (response.status === HttpStatusCode.NO_CONTENT) {
+        dispatch(deleteNotificationTokenSuccess());
+    }
+};
+
+const deleteNotificationTokenSuccess = (): DeleteNotificationTokenSuccessAction => ({
+    type: NOTIFICATIONS_ACTION_TYPES.DELETE_TOKEN_SUCCESS,
 });
