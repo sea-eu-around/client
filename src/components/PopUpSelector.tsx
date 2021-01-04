@@ -167,7 +167,7 @@ const themedStyles = preTheme((theme: Theme) => {
             borderBottomWidth: 2,
             borderBottomColor: theme.okay,
         },
-        value: {},
+        value: {color: theme.text},
         placeholderText: {color: theme.textLight},
         scroll: {
             width: "100%",
