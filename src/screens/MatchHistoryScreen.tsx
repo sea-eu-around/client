@@ -171,9 +171,9 @@ const themedStyles = preTheme((theme: Theme) => {
         filterButtonContainer: {
             flex: 1,
             marginHorizontal: 15,
+            borderRadius: 25,
         },
         filterButton: {
-            borderRadius: 25,
             height: 40,
             backgroundColor: theme.cardBackground,
         },
