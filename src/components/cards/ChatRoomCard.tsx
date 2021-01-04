@@ -8,7 +8,9 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {GiftedAvatar} from "react-native-gifted-chat";
 import {openChat} from "../../navigation/utils";
-import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
+import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
+import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
+import {ReportEntityType} from "../../constants/reports";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -31,21 +33,24 @@ const LOOKS = {
 };
 
 class ChatRoomCard extends React.Component<ChatRoomCardProps> {
+    reportFormRef = React.createRef<QuickFormReportClass>();
+    swipeableCardRef = React.createRef<SwipeableCardClass>();
+
     private getActions(hideCard: () => void): SwipeActionProps[] {
-        /*const {theme} = this.props;
+        const {theme} = this.props;
 
         return [
             // TODO implement chat mute
-            {
+            /*{
                 icon: "notifications-off",
                 backgroundColor: "#ccc",
-            },
+            },*/
             {
                 icon: "report",
                 backgroundColor: theme.error,
+                onPress: () => this.reportFormRef.current?.open(),
             },
-        ];*/
-        return [];
+        ];
     }
 
     render() {
@@ -84,6 +89,7 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
 
         return (
             <SwipeableCard
+                ref={this.swipeableCardRef}
                 looks={LOOKS}
                 rightThreshold={100}
                 overshootRight={false}
@@ -109,6 +115,12 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
                         <View style={styles.lastMessage}>{lastMessageComponent}</View>
                     </View>
                 </View>
+                <QuickFormReport
+                    ref={this.reportFormRef}
+                    entityType={ReportEntityType.PROFILE_ENTITY}
+                    entity={user}
+                    onSubmit={() => this.swipeableCardRef.current?.resetSwipe()}
+                />
             </SwipeableCard>
         );
     }
