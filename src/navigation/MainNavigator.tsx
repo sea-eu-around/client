@@ -45,15 +45,11 @@ function MainNavigatorComponent(): JSX.Element {
             <TabNavigator.Screen
                 name="TabMessaging"
                 component={MessagingNavigator}
-                /*options={({route}) => ({
+                options={({route}) => ({
                     tabBarVisible: getFocusedRouteNameFromRoute(route) !== "ChatScreen",
                     //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
-                })} TODO CHAT */
-                options={{
-                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
-                    tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
-                }}
+                })}
             />
             <TabNavigator.Screen
                 name="TabNotifications"
