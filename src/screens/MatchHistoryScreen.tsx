@@ -11,8 +11,6 @@ import i18n from "i18n-js";
 import {TabMatchingRoot} from "../navigation/types";
 import {HISTORY_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
-import {styleTextLight} from "../styles/general";
-import {MaterialIcons} from "@expo/vector-icons";
 import HistoryProfileCard from "../components/cards/HistoryProfileCard";
 import InfiniteScroller from "../components/InfiniteScroller";
 import {MATCH_ACTION_HISTORY_STATUSES} from "../api/dto";
@@ -123,13 +121,7 @@ function Filter({
             containerStyle={styles.filterButtonContainer}
             buttonStyle={[styles.filterButton, selected ? styles.filterButtonSelected : {}]}
             titleStyle={[styles.filterLabel, selected ? styles.filterLabelSelected : {}]}
-            icon={
-                <MaterialIcons
-                    name={selected ? "check" : "close"}
-                    style={[styles.filterIcon, selected ? styles.filterIconSelected : {}]}
-                />
-            }
-            raised={true}
+            raised={false}
         />
     );
 }
@@ -181,6 +173,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginHorizontal: 15,
         },
         filterButton: {
+            borderRadius: 25,
             height: 40,
             backgroundColor: theme.cardBackground,
         },
@@ -192,11 +185,10 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: 0.6,
-            ...styleTextLight,
         },
         filterLabelSelected: {
             color: theme.textWhite,
-            fontWeight: "bold",
+            fontWeight: "600",
         },
         filterIcon: {
             fontSize: 18,
