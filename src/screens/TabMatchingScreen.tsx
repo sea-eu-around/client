@@ -65,7 +65,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                         />
                     )}
                     // Compensate for the header
-                    itemsContainerStyle={{paddingTop: 100}}
+                    itemsContainerStyle={{paddingTop: 100, paddingBottom: 25}}
                     progressViewOffset={100}
                 />
             </ScreenWrapper>
