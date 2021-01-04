@@ -23,7 +23,7 @@ const MessagingNavigator = (): JSX.Element => (
         />
         <Stack.Screen
             name="ChatScreen"
-            options={{header: () => <></>, headerShown: false, title: screenTitle("ChatScreen")}}
+            options={() => ({header: () => <></>, headerShown: false, title: screenTitle("ChatScreen")})}
         >
             {(props) => (
                 <>
