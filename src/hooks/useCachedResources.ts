@@ -50,6 +50,11 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                         if (consentDate && cookies) {
                             const date = new Date(consentDate.data as string);
                             store.dispatch(loadCookiesPreferences(cookies.data as CookiesPreferences, date));
+                        } else {
+                            // On mobile, storage is turned on by default on the first visit
+                            store.dispatch(
+                                loadCookiesPreferences({auth: true, cache: true, settings: true}, new Date()),
+                            );
                         }
                     });
                 });
