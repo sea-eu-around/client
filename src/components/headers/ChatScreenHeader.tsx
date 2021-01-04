@@ -22,7 +22,7 @@ export type ChatScreenHeaderProps = ConnectedProps<typeof reduxConnector> & Them
 
 class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
     render(): JSX.Element {
-        const {theme, activeRoom, profileId} = this.props;
+        const {theme, activeRoom, profileId, ...stackProps} = this.props;
         const styles = themedStyles(theme);
         const hstyles = headerStyles(theme);
 
@@ -30,6 +30,7 @@ class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
             const user = activeRoom.users.filter((p: ChatRoomUser) => p._id != profileId)[0];
             return (
                 <MainHeader
+                    {...stackProps}
                     backButton={true}
                     blur={true}
                     overrideAvatar={
