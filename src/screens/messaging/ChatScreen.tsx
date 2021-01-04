@@ -222,7 +222,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
 
         return (
             <ScreenWrapper>
-                <View style={styles.container}>{/*chatComponent TODO CHAT */}</View>
+                <View style={styles.container}>{chatComponent}</View>
             </ScreenWrapper>
         );
     }
