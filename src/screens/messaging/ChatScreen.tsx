@@ -38,6 +38,7 @@ import {TypingAnimation} from "react-native-typing-animation";
 import {ChatRoomUser} from "../../model/chat-room";
 import store from "../../state/store";
 import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
+import ScreenWrapper from "../ScreenWrapper";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -219,7 +220,11 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             );
         }
 
-        return <View style={styles.container}>{chatComponent}</View>;
+        return (
+            <ScreenWrapper>
+                <View style={styles.container}>{chatComponent}</View>
+            </ScreenWrapper>
+        );
     }
 }
 
@@ -310,8 +315,7 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.background,
-            justifyContent: "center",
+            width: "100%",
         },
         inputToolbarContainer: {
             justifyContent: "center",

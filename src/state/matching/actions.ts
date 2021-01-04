@@ -177,6 +177,8 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         matching: {filters, profilesPagination},
     } = getState();
 
+    if (!profilesPagination.canFetchMore) console.log("Cannot fetch more profiles");
+
     if (profilesPagination.fetching || !profilesPagination.canFetchMore) return;
 
     dispatch(beginFetchProfiles());
