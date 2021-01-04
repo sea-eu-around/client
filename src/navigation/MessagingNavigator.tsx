@@ -4,9 +4,10 @@ import ChatRoomsScreen from "../screens/messaging/ChatRoomsScreen";
 import {TabMessagingRoot} from "./types";
 import {screenTitle} from "./utils";
 import MainHeader from "../components/headers/MainHeader";
-import {createStackNavigator} from "@react-navigation/stack";
+import {createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import ChatScreen from "../screens/messaging/ChatScreen";
+import MatchScreenHeader from "../components/headers/MatchScreenHeader";
 
 const Stack = createStackNavigator<TabMessagingRoot>();
 
@@ -18,17 +19,15 @@ const MessagingNavigator = (): JSX.Element => (
             options={{
                 title: screenTitle("ChatRoomsScreen"),
                 headerShown: true,
-                header: MainHeader,
+                header: (props: StackHeaderProps) => <MainHeader {...props} />,
             }}
         />
-        <Stack.Screen
-            name="ChatScreen"
-            options={() => ({header: () => <></>, headerShown: false, title: screenTitle("ChatScreen")})}
-        >
+        <Stack.Screen name="ChatScreen" options={() => ({headerShown: false, title: screenTitle("ChatScreen")})}>
             {(props) => (
                 <>
                     <ChatScreen {...props} />
-                    <ChatScreenHeader {...props} />
+                    {/*<ChatScreenHeader {...props} />*/}
+                    <MatchScreenHeader blur={true} {...props} />
                 </>
             )}
         </Stack.Screen>
