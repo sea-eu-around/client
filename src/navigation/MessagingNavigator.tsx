@@ -26,7 +26,7 @@ const MessagingNavigator = (): JSX.Element => (
             {(props) => (
                 <>
                     <ChatScreen {...props} />
-                    {/*<ChatScreenHeader {...props} />*/}
+                    {/*<ChatScreenHeader {...props} /> TODO CHAT */}
                     <MatchScreenHeader blur={true} {...props} />
                 </>
             )}
