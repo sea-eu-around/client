@@ -16,12 +16,6 @@ export const TabMatchingNavigator = (): JSX.Element => (
     <TabMatchingStack.Navigator>
         <TabMatchingStack.Screen
             name="TabMatchingScreen"
-            /*component={TabMatchingScreen}
-            options={() => ({
-                headerShown: true,
-                title: screenTitle("TabMatchingScreen"),
-                header: (props: StackHeaderProps) => <MatchScreenHeader blur={true} {...props} />,
-            })}*/
             options={() => ({
                 headerShown: false,
                 title: screenTitle("TabMatchingScreen"),
