@@ -85,7 +85,7 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
                         fullHeight ? {height: "100%"} : {},
                         !noBackground
                             ? (({
-                                  backgroundColor: theme.background,
+                                  backgroundColor: theme.cardBackground,
                                   boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.05)",
                               } as unknown) as ViewStyle)
                             : {},

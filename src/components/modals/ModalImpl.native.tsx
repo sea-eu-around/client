@@ -72,7 +72,7 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
                             fullHeight ? {height: "100%"} : {},
                             !noBackground
                                 ? {
-                                      backgroundColor: theme.background,
+                                      backgroundColor: theme.cardBackground,
                                       shadowColor: "#000",
                                       shadowOffset: {width: 0, height: 1},
                                       shadowOpacity: 0.22,
