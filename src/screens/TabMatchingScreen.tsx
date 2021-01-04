@@ -4,7 +4,7 @@ import {LayoutRectangle, StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {UserProfile} from "../model/user-profile";
-import ProfilePreview from "../components/cards/MatchProfileCard";
+import MatchProfileCard from "../components/cards/MatchProfileCard";
 import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
@@ -52,7 +52,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     }
                     refresh={() => dispatch(refreshFetchedProfiles())}
                     renderItem={(profile: UserProfile, hide: () => void) => (
-                        <ProfilePreview
+                        <MatchProfileCard
                             key={`match-profile-card-${profile.id}`}
                             profile={profile}
                             onExpand={(layout: LayoutRectangle) => {
@@ -62,6 +62,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
                             onHidden={() => hide()}
+                            showSwipeTip={profile.id == profiles[0].id}
                         />
                     )}
                     // Compensate for the header

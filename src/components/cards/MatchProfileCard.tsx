@@ -6,7 +6,7 @@ import {UserProfile, UserProfileStudent} from "../../model/user-profile";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
-import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {MaterialIcons} from "@expo/vector-icons";
 import BlockProfileModal from "../modals/BlockProfileModal";
 import FormattedUniversity from "../FormattedUniversity";
 import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
@@ -15,6 +15,7 @@ import {styleTextLight, styleTextThin} from "../../styles/general";
 import ProfileAvatar from "../ProfileAvatar";
 import Chips from "../Chips";
 import SwipeableCard, {SwipeableCardClass, SwipeActionContainer} from "./SwipeableCard";
+import SwipeTip from "../SwipeTip";
 
 // Component props
 export type MatchProfileCardProps = ThemeProps & {
@@ -23,6 +24,7 @@ export type MatchProfileCardProps = ThemeProps & {
     onSwipeLeft?: () => void;
     onSwipeRight?: () => void;
     onHidden?: () => void;
+    showSwipeTip?: boolean;
 };
 
 // Component state
@@ -98,7 +100,7 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
     }
 
     render() {
-        const {theme, profile} = this.props;
+        const {theme, profile, showSwipeTip} = this.props;
         const {expanded, animating, height} = this.state;
         const styles = themedStyles(theme);
 
@@ -150,18 +152,6 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                         <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
                     </SwipeActionContainer>
                 )}
-                /*<Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
-                        <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
-                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionHide")}</Text>
-                        </View>
-                </Animated.View>*/
-                /*renderLeftActions={() => (
-                    <View style={[styles.swipeAction, styles.swipeActionLeft]}>
-                        <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
-                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
-                        </View>
-                    </View>
-                )}*/
                 onPress={() => this.toggleExpanded()}
             >
                 <ReAnimated.View style={[styles.cardContent, {height}]}>
@@ -182,7 +172,9 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                             </Text>
                             {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
                         </View>
-                        <MaterialCommunityIcons name="gesture-swipe-horizontal" style={styles.swipeIcon} />
+                        {showSwipeTip && (
+                            <SwipeTip direction="horizontal" style={styles.swipeTip} iconStyle={styles.swipeTipIcon} />
+                        )}
                     </View>
                     {(expanded || animating) && (
                         <View style={styles.expandedContent}>
@@ -304,10 +296,12 @@ const themedStyles = preTheme((theme: Theme) => {
             flexShrink: 1, // Ensures text wrapping
         },
 
-        swipeIcon: {
+        swipeTip: {
             position: "absolute",
             top: 0,
-            right: 0,
+            right: 5,
+        },
+        swipeTipIcon: {
             fontSize: 22,
             color: theme.textLight,
         },
