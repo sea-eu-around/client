@@ -1,6 +1,6 @@
 import React from "react";
 import {withTheme} from "react-native-elements";
-import CustomModal, {ModalImplClass} from "./ModalImpl";
+import ModalImpl, {ModalImplClass} from "./ModalImpl";
 import {ModalImplProps} from "./ModalImpl.native";
 
 export type ModalActivator = (show: () => void) => JSX.Element;
@@ -26,7 +26,7 @@ export class CustomModalClass extends React.Component<CustomModalProps> {
         return (
             <>
                 {activatorElement}
-                <CustomModal ref={this.modalRef} {...otherProps} />
+                <ModalImpl ref={this.modalRef} {...otherProps} />
             </>
         );
     }
