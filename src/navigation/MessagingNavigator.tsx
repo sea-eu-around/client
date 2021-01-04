@@ -7,12 +7,11 @@ import MainHeader from "../components/headers/MainHeader";
 import {createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import ChatScreenHeader from "../components/headers/ChatScreenHeader";
 import ChatScreen from "../screens/messaging/ChatScreen";
-import MatchScreenHeader from "../components/headers/MatchScreenHeader";
 
 const Stack = createStackNavigator<TabMessagingRoot>();
 
 const MessagingNavigator = (): JSX.Element => (
-    <Stack.Navigator>
+    <Stack.Navigator headerMode="screen">
         <Stack.Screen
             name="ChatRoomsScreen"
             component={ChatRoomsScreen}
@@ -26,8 +25,7 @@ const MessagingNavigator = (): JSX.Element => (
             {(props) => (
                 <>
                     <ChatScreen {...props} />
-                    {/*<ChatScreenHeader {...props} /> TODO CHAT */}
-                    <MatchScreenHeader blur={true} {...props} />
+                    <ChatScreenHeader {...props} />
                 </>
             )}
         </Stack.Screen>
