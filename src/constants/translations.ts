@@ -13,8 +13,6 @@ export default {
             callToAction: "Select (%d selected)",
         },
         login: "Log in",
-        tabsignin: "Log in",
-        tabsignup: "Sign up",
         emailAddress: "Email address",
         password: "Password",
         passwordRepeat: "Repeat password",
@@ -30,6 +28,8 @@ export default {
         firstname: "First name",
         lastname: "Last name",
         noResultsFound: "No results found",
+        apply: "Apply",
+        logOut: "Log out",
         legal: {
             modal: {
                 disclaimer1:
@@ -90,17 +90,56 @@ export default {
                 },
             },
         },
-        pageNotFound: "404: Page not found.",
-        pageDoesntExist: "This page doesn't exist.",
-        goHome: "Go to home screen",
         tabs: {
             home: "Home",
             matching: "Matching",
             messaging: "Messaging",
             notifications: "Notifications",
         },
+        search: "Search",
+        // General translations related to the profile
         myProfile: "My Profile",
         editProfile: "Edit profile",
+        nationality: "Nationality",
+        university: "University",
+        selectCountry: "Select country",
+        countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
+        profileType: "Type",
+        profileTypes: "Types",
+        allRoles: {
+            student: "Student",
+            staff: "Staff",
+        },
+        staffRoles: {
+            teaching: "Teaching",
+            research: "Research",
+            administration: "Administration",
+            technical: "Technical",
+            other: "Other",
+        },
+        gender: "Gender",
+        genders: {
+            male: "Male",
+            female: "Female",
+            other: "Other",
+        },
+        dateOfBirth: "Date of birth",
+        months: {
+            0: "January",
+            1: "February",
+            2: "March",
+            3: "April",
+            4: "May",
+            5: "June",
+            6: "July",
+            7: "August",
+            8: "September",
+            9: "October",
+            10: "November",
+            11: "December",
+        },
+        // Education fields
+        fieldsOfEducation: "Fields of education",
         educationFieldsPicker: {
             placeholder: "Select fields",
             searchPlaceholder: "Search",
@@ -198,6 +237,7 @@ export default {
             "protection-of-persons-property": "Protection of persons and property",
             "transport-services": "Transport services",
         },
+        // Level of study
         levelOfStudy: "Level of study",
         degrees: {
             bsc1: "BSc1",
@@ -207,47 +247,13 @@ export default {
             m2: "M2",
             phd: "PhD",
         },
-        nationality: "Nationality",
-        university: "University",
-        search: "Search",
-        selectCountry: "Select country",
-        countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
-        profileType: "Type",
-        profileTypes: "Types",
-        allRoles: {
-            student: "Student",
-            staff: "Staff",
+        // 404 not found screen
+        notFoundScreen: {
+            title: "404: Page not found.",
+            subtitle: "This page doesn't exist.",
+            redirect: "Go to home screen",
         },
-        staffRoles: {
-            teaching: "Teaching",
-            research: "Research",
-            administration: "Administration",
-            technical: "Technical",
-            other: "Other",
-        },
-        gender: "Gender",
-        genders: {
-            male: "Male",
-            female: "Female",
-            other: "Other",
-        },
-        dateOfBirth: "Date of birth",
-        months: {
-            0: "January",
-            1: "February",
-            2: "March",
-            3: "April",
-            4: "May",
-            5: "June",
-            6: "July",
-            7: "August",
-            8: "September",
-            9: "October",
-            10: "November",
-            11: "December",
-        },
-        fieldsOfEducation: "Fields of education",
-        apply: "Apply",
+        // University-related
         universities: {
             "univ-cadiz": "University of Cádiz",
             "univ-brest": "University of Bretagne Occidentale",
@@ -261,7 +267,7 @@ export default {
             searchPlaceholder: "Search",
             multiple: "%d selected",
         },
-        logOut: "Log out",
+        // On-boarding slides
         onboarding: {
             name: {
                 title: "Welcome",
@@ -325,6 +331,7 @@ export default {
                 yes: "Yes",
             },
         },
+        // Language-related
         spokenLanguages: "Spoken languages",
         languagePicker: {
             placeholderSingle: "Language",
@@ -532,6 +539,7 @@ export default {
             zh: "Chinese",
             zu: "Zulu",
         },
+        // Interests-related
         interests: "Interests",
         chooseInterests: "Choose interests",
         interestsPicker: {
@@ -635,6 +643,7 @@ export default {
             "dog-lover": "Dog Lover",
             "cat-lover": "Cat Lover",
         },
+        // Offer-related
         offerCategories: {
             meet: "Meet",
             discover: "Discover",
@@ -806,7 +815,7 @@ export default {
         screenTitles: {
             suffix: " - SEA-EU Around",
             WelcomeScreen: "Welcome",
-            LoginScreen: "Login",
+            SigninScreen: "Login",
             ForgotPasswordScreen: "Forgot Password",
             SignupScreen: "Sign up",
             OnboardingNameScreen: "Welcome",

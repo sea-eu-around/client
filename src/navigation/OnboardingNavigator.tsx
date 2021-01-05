@@ -7,22 +7,16 @@ import {rootNavigate, screenTitle} from "./utils";
 const OnboardingStack = createMaterialTopTabNavigator<OnboardingScreens>();
 
 const screens = ONBOARDING_ORDER.map((name: keyof OnboardingScreens, i: number) => {
-    const ComponentClass = ONBOARDING_SCREENS[name];
     const hasNext = i < ONBOARDING_ORDER.length - 1;
-    const next = () => {
-        if (hasNext) rootNavigate(ONBOARDING_ORDER[i + 1]);
-    };
-    const previous = () => {
-        if (i > 0) rootNavigate(ONBOARDING_ORDER[i - 1]);
-    };
+    const next = () => hasNext && rootNavigate(ONBOARDING_ORDER[i + 1]);
+    const previous = () => i > 0 && rootNavigate(ONBOARDING_ORDER[i - 1]);
 
-    class temp extends React.Component {
-        render(): JSX.Element {
-            return <ComponentClass next={next} previous={previous} index={i} hasNext={hasNext} />;
-        }
+    const ComponentClass = ONBOARDING_SCREENS[name] as typeof React.Component;
+    function Wrapper(): JSX.Element {
+        return <ComponentClass next={next} previous={previous} index={i} hasNext={hasNext} />;
     }
 
-    return <OnboardingStack.Screen key={i} name={name} component={temp} options={{title: screenTitle(name)}} />;
+    return <OnboardingStack.Screen key={i} name={name} component={Wrapper} options={{title: screenTitle(name)}} />;
 });
 
 export default function OnboardingNavigator(): JSX.Element {
