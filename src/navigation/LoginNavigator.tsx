@@ -1,8 +1,8 @@
 /* eslint-disable react/display-name */
 import * as React from "react";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
-import SignupScreen, {LoginScreen, ForgotPasswordScreen} from "../screens/TabLoginScreen";
-import {TabLoginRoot, TabLoginSigninScreens} from "./types";
+import {SigninScreen, SignupScreen, ForgotPasswordScreen} from "../screens/TabLoginScreen";
+import {LoginRoot, LoginScreens} from "./types";
 import {screenTitle} from "./utils";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import LoginHeader from "../components/headers/LoginHeader";
@@ -11,17 +11,17 @@ import {DEBUG_MODE} from "../constants/config";
 import VersionInfo from "../components/VersionInfo";
 import FloatingThemeToggle from "../components/FloatingThemeToggle";
 
-const SigninRoot = createMaterialTopTabNavigator<TabLoginSigninScreens>();
-const Tab = createMaterialTopTabNavigator<TabLoginRoot>();
+const SigninRoot = createMaterialTopTabNavigator<LoginScreens>();
+const Tab = createMaterialTopTabNavigator<LoginRoot>();
 
 const LoginNavigator = (): JSX.Element => (
     <Tab.Navigator swipeEnabled={false} tabBar={() => <></>}>
         <Tab.Screen name="WelcomeScreen" component={WelcomeScreen} options={{title: screenTitle("WelcomeScreen")}} />
-        <Tab.Screen name="SigninScreen">
+        <Tab.Screen name="LoginScreens">
             {() => (
                 <>
                     <LoginHeader />
-                    <SigninRoot.Navigator tabBar={() => <></>} initialRouteName="LoginScreen" swipeEnabled={false}>
+                    <SigninRoot.Navigator tabBar={() => <></>} initialRouteName="SigninScreen" swipeEnabled={false}>
                         <SigninRoot.Screen
                             name="ForgotPasswordScreen"
                             component={ForgotPasswordScreen}
@@ -30,9 +30,9 @@ const LoginNavigator = (): JSX.Element => (
                             }}
                         />
                         <SigninRoot.Screen
-                            name="LoginScreen"
-                            component={LoginScreen}
-                            options={{title: screenTitle("LoginScreen")}}
+                            name="SigninScreen"
+                            component={SigninScreen}
+                            options={{title: screenTitle("SigninScreen")}}
                         />
                         <SigninRoot.Screen
                             name="SignupScreen"

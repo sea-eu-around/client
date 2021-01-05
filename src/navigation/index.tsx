@@ -100,7 +100,7 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
             onStateChange={onStateChange}
         >
             <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRouteName}>
-                <Stack.Screen name="LoginScreen" component={LoginNavigator} />
+                <Stack.Screen name="LoginRoot" component={LoginNavigator} />
                 <Stack.Screen
                     name="ForgotPasswordEmailSentScreen"
                     component={ForgotPasswordEmailSentScreen}

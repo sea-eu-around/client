@@ -25,7 +25,12 @@ class ResetPasswordSuccessScreen extends React.Component<ResetPasswordSuccessScr
                     <Button
                         text={i18n.t("login")}
                         icon={<MaterialCommunityIcons name="login" style={styles.buttonIcon} />}
-                        onPress={() => rootNavigate("LoginScreen")}
+                        onPress={() => {
+                            rootNavigate("LoginRoot", {
+                                screen: "LoginScreens",
+                                params: {screen: "SigninScreen"},
+                            });
+                        }}
                         skin="rounded-filled"
                         style={styles.button}
                     />

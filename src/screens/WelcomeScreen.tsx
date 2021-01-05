@@ -36,12 +36,22 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                     <View style={styles.actionsContainer}>
                         <Button
                             text={i18n.t("welcomeScreen.signIn")}
-                            onPress={() => rootNavigate("SigninScreen")}
+                            onPress={() => {
+                                rootNavigate("LoginRoot", {
+                                    screen: "LoginScreens",
+                                    params: {screen: "SigninScreen"},
+                                });
+                            }}
                             skin="rounded-filled"
                         />
                         <Button
                             text={i18n.t("welcomeScreen.signUp")}
-                            onPress={() => rootNavigate("SignupScreen")}
+                            onPress={() => {
+                                rootNavigate("LoginRoot", {
+                                    screen: "LoginScreens",
+                                    params: {screen: "SignupScreen"},
+                                });
+                            }}
                             skin="rounded-hollow"
                         />
                     </View>

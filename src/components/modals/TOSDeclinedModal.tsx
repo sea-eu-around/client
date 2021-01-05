@@ -37,7 +37,10 @@ class TOSDeclinedModal extends React.Component<TOSDeclinedModalProps> {
                                 text={i18n.t("legal.decline")}
                                 onPress={() => {
                                     hide();
-                                    rootNavigate("LoginScreen");
+                                    rootNavigate("LoginRoot", {
+                                        screen: "LoginScreens",
+                                        params: {screen: "SigninScreen"},
+                                    });
                                 }}
                                 skin="rounded-filled"
                                 style={[styles.actionButton, styles.redBackground]}

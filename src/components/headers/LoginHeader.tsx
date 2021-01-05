@@ -23,7 +23,7 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
 
     back(): void {
         Keyboard.dismiss();
-        rootNavigate("WelcomeScreen");
+        rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
     }
 
     getImageHeight(): number {

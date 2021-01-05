@@ -3,15 +3,15 @@ import {StackScreenProps} from "@react-navigation/stack";
 import LoginForm from "../components/forms/LoginForm";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import {ThemeProps} from "../types";
-import {TabLoginSigninScreens} from "../navigation/types";
+import {LoginScreens} from "../navigation/types";
 import ScrollFormWrapper from "../components/forms/ScrollFormWrapper";
 import ScreenWrapper from "./ScreenWrapper";
 import SignupForm from "../components/forms/SignupForm";
 import {LOGIN_HEADER_WAVE_HEIGHT} from "../components/headers/LoginHeader";
 
-type TabLoginScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "LoginScreen">;
+type TabSigninScreenProps = ThemeProps & StackScreenProps<LoginScreens, "SigninScreen">;
 
-export class LoginScreen extends React.Component<TabLoginScreenProps> {
+export class SigninScreen extends React.Component<TabSigninScreenProps> {
     render(): JSX.Element {
         return (
             <ScreenWrapper>
@@ -24,7 +24,7 @@ export class LoginScreen extends React.Component<TabLoginScreenProps> {
     }
 }
 
-type ForgotPasswordScreenProps = ThemeProps & StackScreenProps<TabLoginSigninScreens, "ForgotPasswordScreen">;
+type ForgotPasswordScreenProps = ThemeProps & StackScreenProps<LoginScreens, "ForgotPasswordScreen">;
 
 export class ForgotPasswordScreen extends React.Component<ForgotPasswordScreenProps> {
     render(): JSX.Element {
@@ -39,7 +39,7 @@ export class ForgotPasswordScreen extends React.Component<ForgotPasswordScreenPr
 }
 type SignupScreenProps = ThemeProps;
 
-export default class SignupScreen extends React.Component<SignupScreenProps> {
+export class SignupScreen extends React.Component<SignupScreenProps> {
     render(): JSX.Element {
         return (
             <ScreenWrapper>

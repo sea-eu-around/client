@@ -157,7 +157,10 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                     accessibilityLabel={i18n.t("forgotPassword")}
                                     onPress={() => {
                                         Keyboard.dismiss();
-                                        rootNavigate("ForgotPasswordScreen");
+                                        rootNavigate("LoginRoot", {
+                                            screen: "LoginScreens",
+                                            params: {screen: "ForgotPasswordScreen"},
+                                        });
                                     }}
                                     style={styles.forgotPwdLink}
                                 >
@@ -178,7 +181,12 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         <View style={styles.separatorHbar} />
                                     </View>
                                     <Button
-                                        onPress={() => rootNavigate("SignupScreen")}
+                                        onPress={() =>
+                                            rootNavigate("LoginRoot", {
+                                                screen: "LoginScreens",
+                                                params: {screen: "SignupScreen"},
+                                            })
+                                        }
                                         skin="rounded-hollow"
                                         text={i18n.t("loginForm.signUp")}
                                     />

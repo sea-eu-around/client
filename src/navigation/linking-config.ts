@@ -6,16 +6,16 @@ const config: LinkingOptions = {
     prefixes: [Linking.makeUrl("/"), CLIENT_URL, `${APP_SCHEME}://`],
     config: {
         screens: {
-            LoginScreen: {
+            LoginRoot: {
                 screens: {
                     WelcomeScreen: "welcome",
-                    SigninScreen: {
+                    LoginScreens: {
                         screens: {
-                            LoginScreen: "login",
+                            SigninScreen: "login",
                             ForgotPasswordScreen: "forgot-password",
+                            SignupScreen: "signup",
                         },
                     },
-                    SignupScreen: "signup",
                 },
             },
             ForgotPasswordEmailSentScreen: "password-email-sent",
@@ -30,7 +30,7 @@ const config: LinkingOptions = {
                     TabMatching: {
                         screens: {
                             TabMatchingScreen: "match",
-                            MAtchFilteringScren: "match/filters",
+                            MatchFilteringScren: "match/filters",
                         },
                     },
                     TabMessaging: {
@@ -66,7 +66,9 @@ const config: LinkingOptions = {
                     OnboardingOffersScreen1: "onboarding/offers/1",
                     OnboardingOffersScreen2: "onboarding/offers/2",
                     OnboardingOffersScreen3: "onboarding/offers/3",
-                    OnboardingTosScreen: "onboarding/tos",
+                    OnboardingLegalScreen1: "onboarding/tos",
+                    OnboardingLegalScreen2: "onboarding/data",
+                    OnboardingLegalScreen3: "onboarding/cookies",
                     OnboardingPrivacyScreen: "onboarding/privacy",
                 },
             },

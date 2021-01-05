@@ -8,6 +8,7 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import ScreenWrapper from "./ScreenWrapper";
 import {styleTextLight} from "../styles/general";
+import store from "../state/store";
 
 export type NotFoundScreenProps = StackScreenProps<RootNavigatorScreens, "NotFoundScreen"> & ThemeProps;
 
@@ -19,10 +20,19 @@ class NotFoundScreen extends React.Component<NotFoundScreenProps> {
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
-                    <Text style={styles.title}>{i18n.t("pageNotFound")}</Text>
-                    <Text style={styles.subtitle}>{i18n.t("pageDoesntExist")}</Text>
-                    <TouchableOpacity onPress={() => navigation.replace("LoginScreen")} style={styles.link}>
-                        <Text style={styles.linkText}>{i18n.t("goHome")}</Text>
+                    <Text style={styles.title}>{i18n.t("notFoundScreen.title")}</Text>
+                    <Text style={styles.subtitle}>{i18n.t("notFoundScreen.subtitle")}</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            const {authenticated, onboarded} = store.getState().auth;
+                            if (authenticated) {
+                                if (onboarded) navigation.replace("MainScreen");
+                                else navigation.replace("OnboardingScreen");
+                            } else navigation.replace("LoginRoot");
+                        }}
+                        style={styles.link}
+                    >
+                        <Text style={styles.linkText}>{i18n.t("notFoundScreen.redirect")}</Text>
                     </TouchableOpacity>
                 </View>
             </ScreenWrapper>

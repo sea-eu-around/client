@@ -23,7 +23,10 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             break;
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
-            rootNavigate("LoginScreen");
+            rootNavigate("LoginRoot", {
+                screen: "LoginScreens",
+                params: {screen: "SigninScreen"},
+            });
             break;
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
@@ -49,7 +52,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             break;
         }
         case AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS: {
-            rootNavigate("LoginScreen");
+            rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
             break;
         }
     }

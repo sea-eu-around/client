@@ -2,7 +2,7 @@ import {ONBOARDING_SCREENS} from "../screens/onboarding";
 
 export type RootNavigatorScreens = {
     MainScreen: undefined;
-    LoginScreen: undefined;
+    LoginRoot: undefined;
     ForgotPasswordEmailSentScreen: undefined;
     ValidationEmailSentScreen: undefined;
     ValidateEmailScreen: undefined;
@@ -55,14 +55,14 @@ export type TabNotificationsRoot = {
 
 // Login screen
 
-export type TabLoginRoot = {
+export type LoginRoot = {
     WelcomeScreen: undefined;
-    SigninScreen: undefined;
+    LoginScreens: undefined;
 };
 
-export type TabLoginSigninScreens = {
-    LoginScreen: undefined;
+export type LoginScreens = {
     ForgotPasswordScreen: undefined;
+    SigninScreen: undefined;
     SignupScreen: undefined;
 };
 
@@ -74,9 +74,9 @@ export type NavigatorRoute =
     | keyof RootNavigatorScreens
     | keyof MainNavigatorTabs
     | keyof TabHomeRoot
-    | keyof TabLoginRoot
+    | keyof LoginRoot
+    | keyof LoginScreens
     | keyof TabMatchingRoot
     | keyof TabNotificationsRoot
     | keyof TabMessagingRoot
-    | keyof TabLoginSigninScreens
     | keyof OnboardingScreens;
