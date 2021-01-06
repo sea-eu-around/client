@@ -44,7 +44,6 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
         const {waveTop} = this.state;
 
         const wavePattern = this.props.wavePattern || WAVE_PATTERNS[this.state.wavePatternIdx];
-        console.log(this.state.wavePatternIdx);
 
         return (
             <>
@@ -58,8 +57,17 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
                     {children}
                 </View>
                 {waveTop !== -1 && (
-                    <View style={{position: "absolute", top: waveTop, width: "100%", height: 100, zIndex: 10}}>
-                        <Svg viewBox="0 20 1440 320">
+                    <View
+                        style={{
+                            position: "absolute",
+                            top: waveTop,
+                            width: "100%",
+                            minWidth: 400, // fix empty space above the wave on narrow screens
+                            height: 100,
+                            zIndex: 10,
+                        }}
+                    >
+                        <Svg viewBox="0 40 1440 320">
                             <Path fill={color} d={wavePattern} />
                         </Svg>
                     </View>
@@ -68,3 +76,11 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
         );
     }
 }
+
+/*
+<View style={{position: "absolute", top: waveTop, width: "100%", height: 100, zIndex: 10}}>
+    <Svg viewBox="0 20 1440 320">
+        <Path fill={color} d={wavePattern} />
+    </Svg>
+</View>
+*/
