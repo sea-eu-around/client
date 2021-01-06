@@ -64,7 +64,7 @@ class DebugMenu extends React.Component<DebugMenuProps, DebugMenuState> {
             <>
                 <ListItem>
                     <ListItem.Content>
-                        <ListItem.Title style={{fontSize: 26, marginBottom: 10, color: theme.text}}>
+                        <ListItem.Title style={{fontSize: 26, marginBottom: 10, color: theme.textBlack}}>
                             Debug Menu
                         </ListItem.Title>
                     </ListItem.Content>
