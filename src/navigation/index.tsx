@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
+import {NavigationContainer, DefaultTheme, DarkTheme, NavigationState} from "@react-navigation/native";
 import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
@@ -15,7 +15,7 @@ import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
 import MatchSuccessScreen from "../screens/MatchSuccessScreen";
-import {AppState, AppStateStatus, Platform} from "react-native";
+import {Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
@@ -39,39 +39,21 @@ const Stack = createStackNavigator<RootNavigatorScreens>();
 
 let consumedInitialRoute = false;
 let previousRoute: string | undefined = undefined;
-let previousAppStatus: AppStateStatus;
+let savedNavigationState: NavigationState | undefined = undefined;
 
 // Handle route changes
-function onStateChange() {
+function onStateChange(state: NavigationState | undefined) {
+    if (state) savedNavigationState = state;
     const route = rootNavigationRef.current?.getCurrentRoute();
     if (route) {
+        // Handle connecting / disconnecting from the chat depending on the focused route
         const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === route.name);
         const fromChat = previousRoute && CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
         if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
         if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
+
         previousRoute = route.name;
     }
-}
-
-// Handle app state changes (active / inactive)
-function onAppStateChange(status: AppStateStatus) {
-    const state = store.getState();
-    const dispatch = store.dispatch as MyThunkDispatch;
-    const connectedToChat = state.messaging.socketState.connected;
-
-    // If the app is now active
-    if (previousAppStatus !== "active" && status === "active") {
-        // Reconnect to chat if needed
-        const isChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
-        if (isChat && !connectedToChat) dispatch(connectToChat());
-    }
-
-    // If the app is no longer active
-    if (previousAppStatus === "active" && status !== "active") {
-        // Disconnect from the chat
-        if (connectedToChat) dispatch(disconnectFromChat());
-    }
-    previousAppStatus = status;
 }
 
 function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.Element {
@@ -90,11 +72,11 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
     return (
         <NavigationContainer
             ref={rootNavigationRef}
+            initialState={savedNavigationState}
             linking={LinkingConfiguration}
             theme={reactNavigationTheme}
             onReady={() => {
-                AppState.addEventListener("change", onAppStateChange);
-                onStateChange();
+                onStateChange(undefined);
                 if (onReady) onReady();
             }}
             onStateChange={onStateChange}
