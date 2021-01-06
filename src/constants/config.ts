@@ -56,3 +56,9 @@ export const COOKIE_CONSENT_DURATION = 365 * 24 * 60 * 60;
  * redirect to the app.
  */
 export const WEB_TO_APP_TIMEOUT = 5000;
+
+/**
+ * URL of the complete Terms & Conditions.
+ */
+export const TERMS_AND_CONDITIONS_URL =
+    "https://sea-eu.org/wp-content/uploads/2021/01/SEA-EU-Around_Termsconditions-v2.pdf";

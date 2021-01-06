@@ -14,12 +14,13 @@ import {AppState} from "../state/types";
 import {setLocale, toggleTheme} from "../state/settings/actions";
 import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
-import {APP_VERSION} from "../constants/config";
+import {APP_VERSION, TERMS_AND_CONDITIONS_URL} from "../constants/config";
 import LocalImage from "../components/LocalImage";
 import {logout} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import CustomizeCookiesModal from "../components/modals/CustomizeCookiesModal";
 import Button from "../components/Button";
+import * as Linking from "expo-linking";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -126,7 +127,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             style={styles.card}
                             label={i18n.t("settings.termsOfService")}
                             oneLine={true}
-                            onPress={() => Alert.alert("Not implemented")} // TODO Implement TOS link
+                            onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
