@@ -51,14 +51,16 @@ function MainNavigatorComponent(): JSX.Element {
                     tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
                 })}
             />
+            {/*
             <TabNavigator.Screen
                 name="TabNotifications"
                 component={TabNotificationsNavigator}
                 options={{
-                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.notifications")} {...props} />,
+                    //tabBarLabel: (props)  => <MainTabBarLabel text={i18n.t("tabs.notifications")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="notifications" {...props} />,
                 }}
             />
+            */}
         </TabNavigator.Navigator>
     );
 }
