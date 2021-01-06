@@ -77,7 +77,7 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
         const {theme} = this.props;
 
         const styles = themedStyles(theme);
-        const Image = getLocalSvg("login-header");
+        const Image = getLocalSvg("login-header", () => this.forceUpdate());
 
         return Platform.OS === "web" ? (
             <></>
