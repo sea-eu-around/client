@@ -90,6 +90,7 @@ export type MessagingState = {
     matchRoomsPagination: PaginatedState;
     activeRoom: ChatRoom | null;
     localChatUser: ChatRoomUser | null;
+    fetchingNewMessages: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types

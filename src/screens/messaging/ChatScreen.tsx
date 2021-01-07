@@ -1,7 +1,7 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, View} from "react-native";
+import {AppState as RNAppState, AppStateStatus, StyleSheet, View} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -25,8 +25,10 @@ import chatSocket from "../../api/chat-socket";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {
     connectToChat,
+    disconnectFromChat,
     fetchEarlierMessages,
     fetchMatchRoom,
+    fetchNewMessages,
     joinChatRoom,
     leaveChatRoom,
     sendChatMessage,
@@ -35,10 +37,11 @@ import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import {TypingAnimation} from "react-native-typing-animation";
-import {ChatRoomUser} from "../../model/chat-room";
+import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import store from "../../state/store";
-import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
+import {CHAT_CONNECTED_ROUTES, DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
+import {rootNavigationRef} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -59,9 +62,14 @@ const INPUT_VERTICAL_MARGIN = 10;
 class ChatScreen extends React.Component<ChatScreenProps> {
     ref = React.createRef<GiftedChat>();
 
-    connectToRoom() {
+    connectToRoom(): void {
         const {route} = this.props;
         const dispatch = this.props.dispatch as MyThunkDispatch;
+
+        const joinRoom = async (room: ChatRoom) => {
+            dispatch(joinChatRoom(room));
+            this.ensureLatestMessages();
+        };
 
         // Get the room ID from the route parameters
         if (route.params) {
@@ -71,17 +79,13 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
             if (roomId) {
                 const room = store.getState().messaging.matchRooms[roomId];
-                if (room) dispatch(joinChatRoom(room));
-                else {
-                    dispatch(fetchMatchRoom(roomId)).then((r) => {
-                        if (r) dispatch(joinChatRoom(r));
-                    });
-                }
+                if (room) joinRoom(room);
+                else dispatch(fetchMatchRoom(roomId)).then((r) => r && joinRoom(r));
             }
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         const {connected, connecting, dispatch} = this.props;
 
         // If are already connected to the chat, connect to the room
@@ -92,29 +96,69 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         this.props.navigation.addListener("blur", () => this.onBlur());
         this.props.navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
+
+        // Handle app state changes (active / inactive)
+        let previousAppStatus: AppStateStatus;
+        RNAppState.addEventListener("change", (status: AppStateStatus) => {
+            // If the app is now active
+            if (previousAppStatus !== "active" && status === "active") this.onAppActive();
+            // If the app is no longer active
+            if (previousAppStatus === "active" && status !== "active") this.onAppInactive();
+            previousAppStatus = status;
+        });
     }
 
-    onBlur() {
+    /**
+     * Ensures that the latest n messages are loaded
+     */
+    private ensureLatestMessages(): void {
+        // Fetch all messages that are more recent than the last one we have
+        this.fetchNewMessages();
+        // Fetch earlier messages if we need to
+        const {activeRoom} = this.props;
+        if (activeRoom && activeRoom.messages.length < MESSAGES_FETCH_LIMIT) this.fetchEarlier();
+    }
+
+    private onAppActive(): void {
+        const {connected, dispatch} = this.props;
+        // Reconnect to chat if needed
+        if (!connected) {
+            const route = rootNavigationRef.current?.getCurrentRoute()?.name;
+            const isChat = CHAT_CONNECTED_ROUTES.find((r) => r === route);
+            if (isChat) (dispatch as MyThunkDispatch)(connectToChat());
+        }
+    }
+
+    private onAppInactive(): void {
+        const {connected, dispatch} = this.props;
+        // Disconnect from the chat if connected
+        if (connected) dispatch(disconnectFromChat());
+    }
+
+    private onBlur(): void {
         // Leave the room when navigating to another screen
         const {dispatch, activeRoom} = this.props;
         if (activeRoom) (dispatch as MyThunkDispatch)(leaveChatRoom(activeRoom));
     }
 
-    onFocus() {
-        // Fetch earlier messages if we need to
-        const room = this.props.activeRoom;
-        if (room && room.messages.length < MESSAGES_FETCH_LIMIT) this.fetchEarlier();
+    private onFocus(): void {
+        this.ensureLatestMessages();
     }
 
-    componentDidUpdate(oldProps: ChatScreenProps) {
+    componentDidUpdate(oldProps: ChatScreenProps): void {
         const {activeRoom, connected} = this.props;
         // If we've just connected to the chat, connect to the room
         if (!oldProps.connected && connected) this.connectToRoom();
         // If we're at the beginning of the messages pagination
-        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.fetchEarlier();
+        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
     }
 
-    fetchEarlier() {
+    fetchNewMessages(): void {
+        const {dispatch, activeRoom} = this.props;
+        if (activeRoom && !activeRoom.fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(activeRoom));
+    }
+
+    fetchEarlier(): void {
         const {dispatch, activeRoom} = this.props;
         if (activeRoom && !activeRoom.messagePagination.fetching)
             (dispatch as MyThunkDispatch)(fetchEarlierMessages(activeRoom));

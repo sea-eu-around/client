@@ -9,6 +9,7 @@ import {
     FetchEarlierMessagesFailureAction,
     FetchEarlierMessagesSuccessAction,
     FetchMatchRoomsSuccessAction,
+    FetchNewMessagesSuccessAction,
     JoinChatRoomSuccessAction,
     MessagingAction,
     MESSAGING_ACTION_TYPES,
@@ -25,6 +26,7 @@ export const initialState: MessagingState = {
     socketState: {connected: false, connecting: false},
     activeRoom: null,
     localChatUser: null,
+    fetchingNewMessages: false,
 };
 
 function toLocalChatUser(profile: UserProfile): ChatRoomUser | null {
@@ -36,8 +38,6 @@ function toLocalChatUser(profile: UserProfile): ChatRoomUser | null {
         lastMessageSeenId: null,
     };
 }
-
-// TODO reset rooms when disconnecting from chat?
 
 export const messagingReducer = (state: MessagingState = initialState, action: MessagingAction): MessagingState => {
     switch (action.type) {
@@ -94,7 +94,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             return {...state, socketState: {connected: true, connecting: false}};
         }
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
-            return {...state, socketState: {connected: false, connecting: false}, activeRoom: null};
+            return {...state, socketState: {connected: false, connecting: false}};
         }
         case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_SUCCESS: {
             const {room} = action as JoinChatRoomSuccessAction;
@@ -196,6 +196,25 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 ...room,
                 messages: room.messages.concat(messages),
                 messagePagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            });
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_BEGIN: {
+            return {
+                ...state,
+                fetchingNewMessages: true,
+            };
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_FAILURE: {
+            return {
+                ...state,
+                fetchingNewMessages: false,
+            };
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS: {
+            const {room, messages} = action as FetchNewMessagesSuccessAction;
+            return updateRoom({...state, fetchingNewMessages: false}, false, {
+                ...room,
+                messages: room.messages.concat(messages).sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1)),
             });
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
