@@ -49,6 +49,7 @@ const reduxConnector = connect((state: AppState) => ({
     localChatUser: state.messaging.localChatUser,
     connected: state.messaging.socketState.connected,
     connecting: state.messaging.socketState.connecting,
+    fetchingNewMessages: state.messaging.fetchingNewMessages,
 }));
 
 // Component props
@@ -154,8 +155,8 @@ class ChatScreen extends React.Component<ChatScreenProps> {
     }
 
     fetchNewMessages(): void {
-        const {dispatch, activeRoom} = this.props;
-        if (activeRoom && !activeRoom.fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(activeRoom));
+        const {dispatch, activeRoom, fetchingNewMessages} = this.props;
+        if (activeRoom && !fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(activeRoom));
     }
 
     fetchEarlier(): void {
