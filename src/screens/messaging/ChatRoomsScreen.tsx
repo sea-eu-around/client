@@ -58,6 +58,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontSize: 18,
             lineHeight: 24,
             textAlign: "center",
+            paddingHorizontal: 50,
         },
     });
 });
