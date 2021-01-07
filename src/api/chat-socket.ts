@@ -21,6 +21,8 @@ class ChatSocket {
     private connectCallbacks: ((connected: boolean) => void)[];
     private writingTimeout: NodeJS.Timeout | null;
     private lastSentWritingState: boolean;
+
+    private connectTimeout: NodeJS.Timeout | null;
     private connecting: boolean;
     private connected: boolean;
 
@@ -29,6 +31,8 @@ class ChatSocket {
         this.connectCallbacks = [];
         this.writingTimeout = null;
         this.lastSentWritingState = false;
+
+        this.connectTimeout = null;
         this.connecting = false;
         this.connected = false;
     }
@@ -43,6 +47,10 @@ class ChatSocket {
 
         this.socket.on("connect", () => {
             console.log("[ChatSocket] connected");
+            if (this.connectTimeout) {
+                clearTimeout(this.connectTimeout);
+                this.connectTimeout = null;
+            }
             this.consumeConnectCallbacks(true);
             this.connecting = false;
             this.connected = true;
@@ -120,7 +128,8 @@ class ChatSocket {
             this.registerListeners(listeners);
         }
 
-        setTimeout(() => {
+        this.connectTimeout = setTimeout(() => {
+            this.connectTimeout = null;
             if (!this.connected) {
                 this.connecting = false;
                 this.consumeConnectCallbacks(false);
