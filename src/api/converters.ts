@@ -132,7 +132,6 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         lastMessage,
         writing: {},
         messagePagination: initialPaginatedState(),
-        fetchingNewMessages: false,
     };
 }
 
