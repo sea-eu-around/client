@@ -23,4 +23,5 @@ export type ChatRoom = {
     lastMessage: ChatRoomMessage | null;
     writing: {[key: string]: boolean};
     messagePagination: PaginatedState;
+    fetchingNewMessages: boolean;
 };
