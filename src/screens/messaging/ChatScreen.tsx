@@ -87,13 +87,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
     }
 
     componentDidMount(): void {
-        const {connected, connecting, dispatch} = this.props;
-
-        // If are already connected to the chat, connect to the room
-        if (connected) this.connectToRoom();
-        // If we are not connected nor connecting to the chat, connect to the chat first
-        else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
-
         this.props.navigation.addListener("blur", () => this.onBlur());
         this.props.navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
@@ -143,7 +136,12 @@ class ChatScreen extends React.Component<ChatScreenProps> {
     }
 
     private onFocus(): void {
-        this.ensureLatestMessages();
+        const {connected, connecting, dispatch} = this.props;
+
+        // If are already connected to the chat, connect to the room
+        if (connected) this.connectToRoom();
+        // If we are not connected nor connecting to the chat, connect to the chat first
+        else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
     }
 
     componentDidUpdate(oldProps: ChatScreenProps): void {
