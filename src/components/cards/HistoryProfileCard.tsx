@@ -4,7 +4,6 @@ import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import FormattedUniversity from "../FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import ProfileAvatar from "../ProfileAvatar";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
@@ -79,7 +78,6 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
         const styles = themedStyles(theme);
 
         const profile = item.profile;
-        const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
 
         return (
@@ -111,12 +109,12 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                         </View>
                         <View style={styles.infoContainer}>
                             <Text style={styles.name}>{fullName}</Text>
-                            {university && (
+                            {profile && (
                                 <FormattedUniversity
                                     flagSize={14}
                                     flagEmoji={true}
                                     style={[styles.infoText, {marginLeft: -10}]}
-                                    university={university}
+                                    university={profile.university}
                                 />
                             )}
                             <FormattedMatchStatus

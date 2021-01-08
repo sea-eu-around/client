@@ -25,6 +25,7 @@ import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
+import {PARTNER_UNIVERSITIES} from "../constants/universities";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -41,6 +42,7 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         profileOffers: dto.profileOffers || [],
         interests: (dto.interests || []).map((i) => i.id),
         languages: dto.languages || [],
+        university: PARTNER_UNIVERSITIES.find((u) => u.key === dto.university) || PARTNER_UNIVERSITIES[0],
     };
 
     let complete: UserProfile;

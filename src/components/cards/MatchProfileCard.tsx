@@ -9,7 +9,6 @@ import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import BlockProfileModal from "../modals/BlockProfileModal";
 import FormattedUniversity from "../FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../../api/dto";
 import {styleTextLight, styleTextThin} from "../../styles/general";
 import ProfileAvatar from "../ProfileAvatar";
@@ -104,7 +103,6 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
         const {expanded, animating, height} = this.state;
         const styles = themedStyles(theme);
 
-        const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
 
         const chipStyleProps = {chipStyle: styles.chip};
@@ -161,7 +159,7 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                         </View>
                         <View style={styles.infoContainer}>
                             <Text style={styles.name}>{fullName}</Text>
-                            {university && <FormattedUniversity style={styles.infoText} university={university} />}
+                            {profile && <FormattedUniversity style={styles.infoText} university={profile.university} />}
                             <Text style={styles.infoText}>
                                 {i18n.t(`genders.${profile.gender}`)}
                                 {", "}

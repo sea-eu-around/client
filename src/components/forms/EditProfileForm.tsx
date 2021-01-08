@@ -15,7 +15,6 @@ import ValueCard from "../cards/ValueCard";
 import {FormattedDate} from "../FormattedDate";
 import NationalityPicker from "../NationalityPicker";
 import FormattedNationality from "../FormattedNationality";
-import {getUniversityFromEmail} from "../../model/utils";
 import FormattedUniversity from "../FormattedUniversity";
 import InterestsPicker from "../InterestsPicker";
 import {initOfferValue, OfferCategory, OfferDto, OfferValueDto, SpokenLanguageDto} from "../../api/dto";
@@ -258,11 +257,11 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         )}
                     </EnlargeableAvatar>
                     <Text style={styles.name}>{fullName}</Text>
-                    {user && (
+                    {profile && (
                         <FormattedUniversity
                             containerStyle={styles.universityContainer}
                             style={styles.university}
-                            university={getUniversityFromEmail(user.email)}
+                            university={profile.university}
                         />
                     )}
                 </WavyHeader>

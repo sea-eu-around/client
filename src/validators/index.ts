@@ -3,16 +3,7 @@ import {DEGREES} from "../constants/profile-constants";
 
 export const MIN_PASSWORD_LENGTH = 8;
 
-// Email domains are not verified to allow for server-side whitelisting of specific adresses.
-// const VALID_EMAIL_DOMAINS = PARTNER_UNIVERSITIES.map((uni: University) => uni.domain);
-
 export const VALIDATOR_EMAIL_SIGNUP = Yup.string().required("validation.required").email("validation.email.invalid");
-/*.test(
-    "email-domain",
-    "validation.email.invalidDomain",
-    (value: string | null | undefined) =>
-        value !== null && value !== undefined && VALID_EMAIL_DOMAINS.some((domain) => value.endsWith(domain)),
-);*/
 
 export const VALIDATOR_PASSWORD_SIGNUP = Yup.string()
     .required("validation.required")

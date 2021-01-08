@@ -7,7 +7,6 @@ import {FormattedDate} from "./FormattedDate";
 import FormattedNationality from "./FormattedNationality";
 import FormattedUniversity from "./FormattedUniversity";
 import {UserProfile, UserProfileStaff, UserProfileStudent} from "../model/user-profile";
-import {PARTNER_UNIVERSITIES} from "../constants/universities";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {StaffRole} from "../constants/profile-constants";
@@ -36,7 +35,6 @@ class ProfileView extends React.Component<ProfileViewProps> {
         const styles = themedStyles(theme);
 
         const fullName = profile ? profile.firstName + " " + profile.lastName : "";
-        const university = profile ? PARTNER_UNIVERSITIES.find((u) => u.key === profile.university) : undefined;
 
         const profileFieldComponents = (
             <>
@@ -171,7 +169,7 @@ class ProfileView extends React.Component<ProfileViewProps> {
                     <FormattedUniversity
                         containerStyle={styles.universityContainer}
                         style={styles.university}
-                        university={university || null}
+                        university={profile?.university || null}
                     />
                     {actionBar}
                 </WavyHeader>
