@@ -51,17 +51,19 @@ class OfferControl extends React.Component<OfferControlProps> {
         return (
             <View style={[styles.wrapper, style]}>
                 <View style={styles.titleWrapper}>
-                    <CheckBox
-                        checked={isSomethingSelected}
-                        onPress={() => this.setAllValues(!isSomethingSelected)}
-                        containerStyle={styles.checkboxContainer}
-                    />
-                    <TouchableOpacity
-                        style={styles.offerNameTouchable}
-                        onPress={() => this.setAllValues(!isSomethingSelected)}
-                    >
-                        <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.titleLeft}>
+                        <CheckBox
+                            checked={isSomethingSelected}
+                            onPress={() => this.setAllValues(!isSomethingSelected)}
+                            containerStyle={styles.checkboxContainer}
+                        />
+                        <TouchableOpacity
+                            style={styles.offerNameTouchable}
+                            onPress={() => this.setAllValues(!isSomethingSelected)}
+                        >
+                            <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
+                        </TouchableOpacity>
+                    </View>
                     <CustomTooltip text={i18n.t(`allOffers.${offer.id}.help`)}>
                         <MaterialIcons style={styles.helpIcon} name="help" />
                     </CustomTooltip>
@@ -107,8 +109,15 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "flex-start",
         },
         titleWrapper: {
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
+        titleLeft: {
             flexDirection: "row",
             alignItems: "center",
+            flex: 1,
         },
         offerNameTouchable: {
             flex: 1,

@@ -1,53 +1,52 @@
 import React from "react";
-import {Text} from "react-native";
-import {Tooltip, withTheme} from "react-native-elements";
-import {tooltipStyles} from "../styles/tooltips";
-import {ThemeProps} from "../types";
+import {Text, StyleSheet} from "react-native";
+import {withTheme} from "react-native-elements";
+import {preTheme} from "../styles/utils";
+import {Theme} from "../types";
+import CustomModal, {CustomModalClass} from "./modals/CustomModal";
+import {TouchableOpacity} from "react-native-gesture-handler";
+import {CustomTooltipProps} from "./CustomTooltip.native";
 
-// Component props
-export type CustomTooltipProps = {
-    text: string;
-} & ThemeProps;
-
-// Component state
-export type CustomTooltipState = {
-    height: number | undefined;
-};
-
-class CustomTooltip extends React.Component<CustomTooltipProps, CustomTooltipState> {
-    constructor(props: CustomTooltipProps) {
-        super(props);
-        this.state = {height: undefined};
-    }
+class CustomTooltip extends React.Component<CustomTooltipProps> {
+    modalRef = React.createRef<CustomModalClass>();
 
     render(): JSX.Element {
-        const {height} = this.state;
         const {theme, text} = this.props;
         const styles = tooltipStyles(theme);
 
         return (
-            <Tooltip
-                popover={
-                    <Text
-                        style={styles.text}
-                        onLayout={(e) => {
-                            this.setState({
-                                ...this.state,
-                                height: e.nativeEvent.layout.height,
-                            });
-                        }}
-                    >
-                        {text}
-                    </Text>
-                }
-                backgroundColor={theme.accentSlight}
-                containerStyle={styles.container}
-                height={height}
-            >
-                {this.props.children}
-            </Tooltip>
+            <>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => this.modalRef.current?.show()}>
+                    {this.props.children}
+                </TouchableOpacity>
+                <CustomModal
+                    ref={this.modalRef}
+                    onHide={() => this.setState({...this.state, shown: false})}
+                    modalViewStyle={styles.container}
+                    renderContent={() => <Text style={styles.text}>{text}</Text>}
+                />
+            </>
         );
     }
 }
+
+export const tooltipStyles = preTheme((theme: Theme) => {
+    return StyleSheet.create({
+        text: {
+            textAlign: "justify",
+            paddingVertical: 10,
+            fontSize: 14,
+            color: theme.textBlack,
+        },
+        container: {
+            alignContent: "center",
+            borderRadius: 4,
+            paddingHorizontal: 20,
+            width: 250,
+            paddingVertical: 0,
+            backgroundColor: theme.accentSlight,
+        },
+    });
+});
 
 export default withTheme(CustomTooltip);
