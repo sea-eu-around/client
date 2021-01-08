@@ -19,6 +19,7 @@ const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
     fetchingProfiles: state.matching.profilesPagination.fetching,
     currentPage: state.matching.profilesPagination.page,
+    isFirstLaunch: state.settings.isFirstLaunch,
 }));
 
 // Component props
@@ -30,7 +31,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     scrollerRef = React.createRef<InfiniteScroller<UserProfile>>();
 
     render(): JSX.Element {
-        const {profiles, theme, fetchingProfiles, currentPage, navigation, dispatch} = this.props;
+        const {profiles, theme, fetchingProfiles, isFirstLaunch, currentPage, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -62,7 +63,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
                             onHidden={() => hide()}
-                            showSwipeTip={profile.id == profiles[0].id}
+                            showSwipeTip={profile.id == profiles[0].id && isFirstLaunch}
                         />
                     )}
                     // Compensate for the header
