@@ -26,7 +26,8 @@ export function configureNotifications(): void {
 
     Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Notification response received:");
-        const data = response.notification.request.content.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = response.notification ? response.notification.request.content.data : (response as any).body;
 
         if (data.roomId) openChat(data.roomId as string);
     });
