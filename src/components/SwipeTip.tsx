@@ -2,29 +2,26 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import * as React from "react";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {StyleProp, TextStyle, View, ViewStyle} from "react-native";
-import {useFocusEffect} from "@react-navigation/native";
+import FocusAware from "./utility/FocusAware";
 
 const ANIMATION_AMPLITUDE = 25;
 const DURATION = 400; // the animation duration (ms)
 const PAUSE = 1000; // how much time to wait before looping the animation (ms)
 
 // Component props
-export type SwipeTipProps = {direction: "horizontal"; style?: StyleProp<ViewStyle>; iconStyle?: StyleProp<TextStyle>};
+export type SwipeTipProps = {
+    direction: "horizontal" | "left";
+    style?: StyleProp<ViewStyle>;
+    iconStyle?: StyleProp<TextStyle>;
+};
+
+const ICON_NAMES: {[key: string]: string} = {
+    horizontal: "gesture-swipe-horizontal",
+    left: "gesture-swipe-left",
+};
 
 // Component props
 export type SwipeTipState = {animating: boolean};
-
-function FocusAware({onFocus, onBlur}: {onFocus?: () => void; onBlur?: () => void}) {
-    useFocusEffect(
-        React.useCallback(() => {
-            if (onFocus) onFocus();
-            return () => {
-                if (onBlur) onBlur();
-            };
-        }, []),
-    );
-    return null;
-}
 
 class SwipeTip extends React.Component<SwipeTipProps, SwipeTipState> {
     offset = new ReAnimated.Value(0);
@@ -40,34 +37,56 @@ class SwipeTip extends React.Component<SwipeTipProps, SwipeTipState> {
         this.setState({...this.state, animating: b});
 
         if (b) {
-            const animate = (even: boolean): void => {
-                ReAnimated.timing(this.offset, {
-                    toValue: even ? ANIMATION_AMPLITUDE / 2 : -ANIMATION_AMPLITUDE / 2,
-                    duration: DURATION,
-                    easing: Easing.inOut(Easing.circle),
-                }).start(() => {
-                    // Come back to initial position
+            const dir = this.props.direction;
+            if (dir === "horizontal") {
+                const animate = (even: boolean): void => {
                     ReAnimated.timing(this.offset, {
-                        toValue: 0,
+                        toValue: even ? ANIMATION_AMPLITUDE / 2 : -ANIMATION_AMPLITUDE / 2,
                         duration: DURATION,
-                        easing: Easing.linear,
+                        easing: Easing.inOut(Easing.circle),
                     }).start(() => {
-                        // Pause before animating again
-                        if (this.state.animating) {
-                            if (even) setTimeout(() => animate(!even), PAUSE);
-                            else animate(!even);
-                        }
+                        // Come back to initial position
+                        ReAnimated.timing(this.offset, {
+                            toValue: 0,
+                            duration: DURATION,
+                            easing: Easing.linear,
+                        }).start(() => {
+                            // Pause before animating again
+                            if (this.state.animating) {
+                                if (even) setTimeout(() => animate(!even), PAUSE);
+                                else animate(!even);
+                            }
+                        });
                     });
-                });
-            };
-            animate(true);
+                };
+                animate(true);
+            } else if (dir === "left") {
+                const animate = (): void => {
+                    ReAnimated.timing(this.offset, {
+                        toValue: -ANIMATION_AMPLITUDE / 2,
+                        duration: DURATION,
+                        easing: Easing.inOut(Easing.circle),
+                    }).start(() => {
+                        // Come back to initial position
+                        ReAnimated.timing(this.offset, {
+                            toValue: 0,
+                            duration: DURATION,
+                            easing: Easing.linear,
+                        }).start(() => {
+                            // Pause before animating again
+                            if (this.state.animating) setTimeout(animate, PAUSE);
+                        });
+                    });
+                };
+                animate();
+            }
         }
     }
 
     render(): JSX.Element {
         const {direction, style, iconStyle} = this.props;
 
-        const iconName = direction === "horizontal" ? "gesture-swipe-horizontal" : undefined;
+        const iconName = ICON_NAMES[direction];
 
         return (
             <View style={[style]}>
