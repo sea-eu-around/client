@@ -25,6 +25,10 @@ const reduxConnector = connect((state: AppState) => ({
 type ChatRoomsScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackScreenProps<TabMessagingRoot>;
 
 class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
+    private fetchMore(): void {
+        (this.props.dispatch as MyThunkDispatch)(fetchMatchRooms());
+    }
+
     render(): JSX.Element {
         const {theme, rooms, roomIds, fetchingRooms, currentPage, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
@@ -34,13 +38,14 @@ class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={ROOMS_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchMatchRooms())}
+                    fetchMore={() => this.fetchMore()}
                     fetching={fetchingRooms}
                     currentPage={currentPage}
+                    refreshOnFocus={true}
+                    refresh={() => dispatch(refreshMatchRooms())}
                     items={roomIds}
                     id={(roomId: string): string => roomId}
                     noResultsComponent={<Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>}
-                    refresh={() => dispatch(refreshMatchRooms())}
                     renderItem={(roomId: string) => (
                         <ChatRoomCard key={`chat-room-card-${roomId}`} room={rooms[roomId]} />
                     )}
