@@ -94,6 +94,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                             key={`history-card-${item.id}-${item.status}`}
                             item={item}
                             onHidden={hide}
+                            showSwipeTip={item.id === historyItems[0].id}
                         />
                     )}
                 />

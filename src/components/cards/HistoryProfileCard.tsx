@@ -5,7 +5,6 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import FormattedUniversity from "../FormattedUniversity";
 import ProfileAvatar from "../ProfileAvatar";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
 import {MatchHistoryItem} from "../../model/matching";
 import FormattedMatchStatus from "../FormattedMatchStatus";
@@ -18,12 +17,14 @@ import {MatchActionStatus} from "../../api/dto";
 import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
 import {ReportEntityType} from "../../constants/reports";
 import {cancelMatchAction} from "../../state/matching/actions";
+import SwipeTip from "../SwipeTip";
 
 // Component props
 export type HistoryProfileCardProps = ThemeProps & {
     item: MatchHistoryItem;
     style?: ViewStyle;
     onHidden?: () => void;
+    showSwipeTip?: boolean;
 };
 
 const LOOKS = {
@@ -123,7 +124,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                                 iconStyle={styles.infoText}
                             />
                         </View>
-                        <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
+                        <SwipeTip direction="left" iconStyle={styles.swipeTipIcon} />
                     </View>
                 </SwipeableCard>
                 <QuickFormReport
@@ -173,10 +174,9 @@ const themedStyles = preTheme((theme: Theme) => {
             flexShrink: 1, // Ensures text wrapping
         },
 
-        swipeLeftIcon: {
-            color: theme.text,
-            opacity: 0.25,
-            fontSize: 20,
+        swipeTipIcon: {
+            color: theme.textLight,
+            fontSize: 18,
         },
 
         actionButton: {
