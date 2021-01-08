@@ -1,7 +1,7 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {AppState as RNAppState, AppStateStatus, StyleSheet, View} from "react-native";
+import {AppState as RNAppState, AppStateStatus, ScrollView, ScrollViewProps, StyleSheet, View} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -45,6 +45,7 @@ import {rootNavigationRef} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
+    rooms: state.messaging.matchRooms,
     activeRoom: state.messaging.activeRoom,
     localChatUser: state.messaging.localChatUser,
     connected: state.messaging.socketState.connected,
@@ -63,8 +64,24 @@ const INPUT_VERTICAL_MARGIN = 10;
 class ChatScreen extends React.Component<ChatScreenProps> {
     ref = React.createRef<GiftedChat>();
 
-    connectToRoom(): void {
+    private getRoomId(): string | null {
         const {route} = this.props;
+        // Get the room ID from the route parameters
+        if (route.params) {
+            const params = route.params as {[key: string]: string};
+            const {roomId} = params;
+            return roomId;
+        }
+        return null;
+    }
+
+    private getRoom(): ChatRoom | null {
+        const {rooms, activeRoom} = this.props;
+        const roomId = this.getRoomId();
+        return activeRoom || (roomId ? rooms[roomId] : null);
+    }
+
+    private connectToRoom(): void {
         const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const joinRoom = async (room: ChatRoom) => {
@@ -72,23 +89,19 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             this.ensureLatestMessages();
         };
 
-        // Get the room ID from the route parameters
-        if (route.params) {
-            const params = route.params as {[key: string]: string};
-            const {roomId} = params;
-
-            // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
-            if (roomId) {
-                const room = store.getState().messaging.matchRooms[roomId];
-                if (room) joinRoom(room);
-                else dispatch(fetchMatchRoom(roomId)).then((r) => r && joinRoom(r));
-            }
+        const roomId = this.getRoomId();
+        // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
+        if (roomId) {
+            const room = store.getState().messaging.matchRooms[roomId];
+            if (room) joinRoom(room);
+            else dispatch(fetchMatchRoom(roomId)).then((r) => r && joinRoom(r));
         }
     }
 
     componentDidMount(): void {
-        this.props.navigation.addListener("blur", () => this.onBlur());
-        this.props.navigation.addListener("focus", () => this.onFocus());
+        const {navigation} = this.props;
+        navigation.addListener("blur", () => this.onBlur());
+        navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
 
         // Handle app state changes (active / inactive)
@@ -100,6 +113,14 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             if (previousAppStatus === "active" && status !== "active") this.onAppInactive();
             previousAppStatus = status;
         });
+    }
+
+    componentDidUpdate(oldProps: ChatScreenProps): void {
+        const {activeRoom, connected} = this.props;
+        // If we've just connected to the chat, connect to the room
+        if (!oldProps.connected && connected) this.connectToRoom();
+        // If we're at the beginning of the messages pagination
+        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
     }
 
     /**
@@ -144,14 +165,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
     }
 
-    componentDidUpdate(oldProps: ChatScreenProps): void {
-        const {activeRoom, connected} = this.props;
-        // If we've just connected to the chat, connect to the room
-        if (!oldProps.connected && connected) this.connectToRoom();
-        // If we're at the beginning of the messages pagination
-        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
-    }
-
     fetchNewMessages(): void {
         const {dispatch, activeRoom, fetchingNewMessages} = this.props;
         if (activeRoom && !fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(activeRoom));
@@ -167,7 +180,8 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         const {theme, localChatUser, dispatch} = this.props;
         const styles = themedStyles(theme);
 
-        const room = this.props.activeRoom;
+        const room = this.getRoom();
+
         let chatComponent = <></>;
         if (room && localChatUser) {
             const isWritingId = Object.keys(room.writing).find((id: string) => room.writing[id] === true);
@@ -210,24 +224,8 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                         />
                     )}
                     renderMessage={(props: MessageProps<IMessage>) => {
-                        const lm = props.currentMessage ? lastMessageDict[props.currentMessage._id] : undefined;
-                        return lm ? (
-                            <View>
-                                <Message {...props} containerStyle={{right: {marginBottom: 0}, left: {}}} />
-                                <View style={styles.messageReadContainer}>
-                                    {lm.map((u: ChatRoomUser) => (
-                                        <GiftedAvatar
-                                            key={`read-message-${u._id}`}
-                                            user={u}
-                                            avatarStyle={styles.messageReadAvatar}
-                                            textStyle={styles.messageReadAvatarText}
-                                        />
-                                    ))}
-                                </View>
-                            </View>
-                        ) : (
-                            <Message {...props} />
-                        );
+                        const seenBy = props.currentMessage ? lastMessageDict[props.currentMessage._id] : [];
+                        return <ChatMessage theme={theme} seenBy={seenBy || []} messageProps={props} />;
                     }}
                     renderInputToolbar={(props: InputToolbarProps) => (
                         <InputToolbar
@@ -255,7 +253,17 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                     timeFormat={"HH:mm"}
                     listViewProps={{
                         onEndReached: () => this.fetchEarlier(),
-                        //onEndReachedThreshold: 1,
+                        renderScrollComponent: (props: ScrollViewProps) => (
+                            <ScrollView
+                                {...props}
+                                contentContainerStyle={[
+                                    props.contentContainerStyle,
+                                    // This is actually a paddingTop but gifted-chat flips the rendering.
+                                    // Compensates for the height of the transparent header.
+                                    {paddingBottom: 100},
+                                ]}
+                            />
+                        ),
                     }}
                     textInputProps={{autoFocus: false, style: styles.textInput, multiline: true}}
                     minInputToolbarHeight={MIN_INPUT_HEIGHT + INPUT_VERTICAL_MARGIN * 2}
@@ -274,7 +282,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
 function ChatFooter({userWriting, theme}: {userWriting?: ChatRoomUser; theme: Theme}): JSX.Element {
     if (userWriting) {
         return (
-            <View style={{height: 50, paddingTop: 10}}>
+            <View style={{height: 50, paddingTop: 10, marginBottom: 5}}>
                 <Message
                     key="isWriting"
                     user={userWriting}
@@ -305,6 +313,47 @@ function ChatFooter({userWriting, theme}: {userWriting?: ChatRoomUser; theme: Th
             </View>
         );
     } else return <></>;
+}
+
+function ChatMessage({
+    theme,
+    seenBy,
+    messageProps,
+}: {
+    theme: Theme;
+    seenBy: ChatRoomUser[];
+    messageProps: MessageProps<IMessage>;
+}): JSX.Element {
+    const styles = themedStyles(theme);
+    return (
+        <View style={messageProps.position === "left" ? styles.messageContainerLeft : styles.messageContainerRight}>
+            <Message
+                {...messageProps}
+                containerStyle={{
+                    left: [messageProps.containerStyle?.left],
+                    right: [messageProps.containerStyle?.right, {marginBottom: 2}],
+                }}
+            />
+            {seenBy.length > 0 && (
+                <View
+                    style={[
+                        messageProps.position === "left"
+                            ? styles.messageReadContainerLeft
+                            : styles.messageReadContainerRight,
+                    ]}
+                >
+                    {seenBy.map((u: ChatRoomUser) => (
+                        <GiftedAvatar
+                            key={`read-message-${u._id}`}
+                            user={u}
+                            avatarStyle={styles.messageReadAvatar}
+                            textStyle={styles.messageReadAvatarText}
+                        />
+                    ))}
+                </View>
+            )}
+        </View>
+    );
 }
 
 function ChatActions({actionsProps, theme}: {actionsProps: ActionsProps; theme: Theme}): JSX.Element {
@@ -412,12 +461,19 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         bubbleTextRight: {},
-        messageReadContainer: {
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            paddingRight: 8,
-            paddingTop: 2,
-            paddingBottom: 8,
+        messageContainerLeft: {},
+        messageContainerRight: {
+            paddingRight: 20,
+        },
+        messageReadContainerLeft: {
+            position: "absolute",
+            right: 5,
+            bottom: 3,
+        },
+        messageReadContainerRight: {
+            position: "absolute",
+            right: 5,
+            bottom: 3,
         },
         messageReadAvatar: {
             width: 20,

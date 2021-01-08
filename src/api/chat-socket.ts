@@ -1,13 +1,12 @@
 import io from "socket.io-client";
-import {BACKEND_URL} from "../constants/config";
+import {BACKEND_URL, DEBUG_MODE} from "../constants/config";
 import {ChatRoom} from "../model/chat-room";
 import {ResponseChatWritingDto, ResponseChatMessageDto, TokenDto, ResponseChatMessageReadDto} from "./dto";
 
 const SOCKET_LOCATION = `${BACKEND_URL}/chat`;
 
 const WRITING_STATE_DELAY = 1000;
-const CONNECT_TIMEOUT = 6500;
-const RECONNECT_DELAY = 2000;
+const CONNECT_TIMEOUT = 2000;
 const RECONNECT_ATTEMPTS = 3;
 
 export type ChatSocketEventListeners = {
@@ -23,82 +22,67 @@ class ChatSocket {
     private lastSentWritingState: boolean;
 
     private connectTimeout: NodeJS.Timeout | null;
-    private connecting: boolean;
-    private connected: boolean;
 
     constructor() {
         this.socket = null;
         this.connectCallbacks = [];
         this.writingTimeout = null;
         this.lastSentWritingState = false;
-
         this.connectTimeout = null;
-        this.connecting = false;
-        this.connected = false;
     }
 
-    private consumeConnectCallbacks(connectedState: boolean) {
+    private consumeConnectCallbacks(connectedState: boolean): void {
         this.connectCallbacks.forEach((f) => f(connectedState));
         this.connectCallbacks = [];
     }
 
-    private registerListeners(listeners: ChatSocketEventListeners) {
+    private registerListeners(listeners: ChatSocketEventListeners): void {
         if (!this.socket) return;
 
         this.socket.on("connect", () => {
-            console.log("[ChatSocket] connected");
-            if (this.connectTimeout) {
-                clearTimeout(this.connectTimeout);
-                this.connectTimeout = null;
-            }
+            this.log("connected");
+            if (this.connectTimeout) clearTimeout(this.connectTimeout);
+            this.connectTimeout = null;
             this.consumeConnectCallbacks(true);
-            this.connecting = false;
-            this.connected = true;
         });
-
-        this.socket.on("connect_failed", () => {
-            console.log("[ChatSocket] connect_failed");
-        });
-        this.socket.on("connect_error", () => {
-            console.log("[ChatSocket] connect_error");
-        });
-
         this.socket.on("close", () => {
-            this.connecting = false;
-            this.connected = false;
-            console.log("[ChatSocket] close");
+            this.log("close");
+            if (this.connectTimeout) clearTimeout(this.connectTimeout);
+            this.connectTimeout = null;
+            this.consumeConnectCallbacks(false);
         });
-
-        this.socket.on("error", () => {
-            console.log("[ChatSocket]", "Error.");
-        });
-
-        this.socket.on("exception", (e: unknown) => {
-            console.log("[ChatSocket] <----", "Exception", JSON.stringify(e));
-        });
-
         this.socket.on("disconnect", () => {
-            this.connecting = false;
-            this.connected = false;
-            console.log("[ChatSocket] disconnected");
+            this.log("disconnected");
+            if (this.connectTimeout) clearTimeout(this.connectTimeout);
+            this.connectTimeout = null;
+            this.consumeConnectCallbacks(false);
         });
+
+        /*this.socket.on("connect_failed", () => this.log("connect_failed"));
+        this.socket.on("connect_error", () => this.log("connect_error"));
+        this.socket.on("error", () => this.log("error"));
+        this.socket.on("exception", (e: unknown) => this.log("<---- Exception " + JSON.stringify(e)));*/
 
         this.socket.on("receiveMessage", (m: ResponseChatMessageDto) => listeners.onMessageReceived(m));
         this.socket.on("readMessage", (m: ResponseChatMessageReadDto) => listeners.onMessageRead(m));
         this.socket.on("isWriting", (m: ResponseChatWritingDto) => listeners.onWritingStateChange(m));
     }
 
-    private emit(msg: string, payload: unknown) {
-        console.log(`[ChatSocket] ----> '${msg}' - payload: ${JSON.stringify(payload)}`);
+    private log(msg: string): void {
+        if (DEBUG_MODE) console.log(`[ChatSocket] ${msg}`);
+    }
+
+    private emit(msg: string, payload: unknown): void {
+        this.log(`----> '${msg}' - payload: ${JSON.stringify(payload)}`);
         this.socket?.emit(msg, payload);
     }
 
-    private sendWritingState(room: ChatRoom, state: boolean) {
+    private sendWritingState(room: ChatRoom, state: boolean): void {
         this.lastSentWritingState = state;
         this.emit("isWriting", {roomId: room.id, state});
     }
 
-    private refreshWritingTimeout(room: ChatRoom) {
+    private refreshWritingTimeout(room: ChatRoom): void {
         if (this.writingTimeout !== null) {
             clearTimeout(this.writingTimeout);
             this.writingTimeout = null;
@@ -108,54 +92,86 @@ class ChatSocket {
         }, WRITING_STATE_DELAY);
     }
 
-    connect(authToken: TokenDto, listeners: ChatSocketEventListeners, callback?: (connected: boolean) => void) {
-        console.log("Connecting to", SOCKET_LOCATION);
+    addConnectCallback(callback: (connected: boolean) => void): void {
+        this.connectCallbacks.push(callback);
+    }
 
-        if (callback) this.connectCallbacks.push(callback);
+    connect(
+        authToken: TokenDto,
+        listeners: Partial<ChatSocketEventListeners> = {},
+        callback?: (connected: boolean) => void,
+        retry = RECONNECT_ATTEMPTS,
+    ): void {
+        /* eslint-disable @typescript-eslint/no-empty-function */
 
-        // Check if we're already attempting to connect
-        if (this.connecting) return;
-        this.connecting = true;
-
-        if (this.socket) this.socket.connect();
-        else {
-            console.log("[ChatSocket] ----> Authenticating - token =", authToken.accessToken);
-            this.socket = io(SOCKET_LOCATION, {
-                query: {authorization: authToken.accessToken},
-                reconnectionDelay: RECONNECT_DELAY,
-                reconnectionAttempts: RECONNECT_ATTEMPTS,
-            });
-            this.registerListeners(listeners);
+        // If we're already connected, callback and abort
+        if (this.isConnected()) {
+            if (callback) callback(true);
+            return;
         }
 
+        if (callback) this.addConnectCallback(callback);
+
+        // If we're already connecting, abort (the callback we be called whenever we're connected)
+        if (this.isConnecting()) return;
+
+        this.log("Connecting to " + SOCKET_LOCATION);
+
+        if (this.socket) {
+            this.socket.connect();
+            /*setTimeout(() => {
+                if (this.socket) this.socket.connect();
+            }, 100);*/
+        } else {
+            this.log("----> Authenticating - token = " + authToken.accessToken);
+            this.socket = io(SOCKET_LOCATION, {
+                query: {authorization: authToken.accessToken},
+                //reconnectionDelay: RECONNECT_DELAY,
+                //reconnectionAttempts: RECONNECT_ATTEMPTS,
+                reconnection: false,
+            });
+            this.registerListeners({
+                onMessageRead: () => {},
+                onMessageReceived: () => {},
+                onWritingStateChange: () => {},
+                ...listeners,
+            });
+        }
+
+        if (this.connectTimeout) clearTimeout(this.connectTimeout);
+
+        // Set a timeout to catch connection failure
         this.connectTimeout = setTimeout(() => {
             this.connectTimeout = null;
-            if (!this.connected) {
-                this.connecting = false;
-                this.consumeConnectCallbacks(false);
+            // If we're still not connected
+            if (!this.isConnected()) {
+                // Try again
+                if (retry > 0) this.connect(authToken, listeners, () => {}, retry - 1);
+                // Stop trying
+                else this.consumeConnectCallbacks(false);
             }
         }, CONNECT_TIMEOUT);
     }
 
-    joinRoom(room: ChatRoom) {
+    joinRoom(room: ChatRoom): void {
         this.emit("joinRoom", {roomId: room.id});
         // Inform the server that we have read the last message of the room
         if (room.lastMessage) this.readMessage(room.id, room.lastMessage._id, room.lastMessage.createdAt.toJSON());
     }
 
-    leaveRoom(room: ChatRoom) {
+    leaveRoom(room: ChatRoom): void {
         this.emit("leaveRoom", {roomId: room.id});
     }
 
-    sendMessage(roomId: string, id: string, text: string) {
+    sendMessage(roomId: string, id: string, text: string): void {
         this.emit("sendMessage", {roomId, id, text});
     }
 
-    readMessage(roomId: string, messageId: string, createdAt: string) {
+    readMessage(roomId: string, messageId: string, createdAt: string): void {
         this.emit("readMessage", {roomId, messageId, date: createdAt});
     }
 
-    setWriting(room: ChatRoom) {
+    setWriting(room: ChatRoom): void {
         // Refesh the timeout - in a fixed amount of time, this will tell the server we are no longer writing
         this.refreshWritingTimeout(room);
 
@@ -163,8 +179,25 @@ class ChatSocket {
         if (this.lastSentWritingState === false) this.sendWritingState(room, true);
     }
 
-    disconnect() {
-        if (this.socket) this.socket.disconnect();
+    disconnect(): void {
+        // If we were connecting
+        if (this.isConnecting()) {
+            if (this.connectTimeout) clearTimeout(this.connectTimeout);
+            this.connectTimeout = null;
+            this.consumeConnectCallbacks(false);
+        }
+        // If the socket was connected, disconnect it
+        if (this.isConnected()) {
+            if (this.socket) this.socket.disconnect();
+        }
+    }
+
+    isConnected(): boolean {
+        return this.socket !== null && this.socket.connected;
+    }
+
+    isConnecting(): boolean {
+        return this.connectTimeout !== null;
     }
 }
 

@@ -54,7 +54,7 @@ export type ConnectToChatFailureAction = {type: string};
 export type ConnectToChatSuccessAction = {type: string};
 
 export type JoinChatRoomBeginAction = {type: string; room: ChatRoom};
-export type JoinChatRoomFailureAction = {type: string};
+export type JoinChatRoomFailureAction = {type: string; room: ChatRoom};
 export type JoinChatRoomSuccessAction = {type: string; room: ChatRoom};
 export type LeaveChatRoomAction = {type: string};
 
@@ -160,23 +160,20 @@ const connectToChatSuccess = (): ConnectToChatSuccessAction => ({
     type: MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_SUCCESS,
 });
 
-export const connectToChat = (callback?: (connected: boolean) => void, retry = 3): AppThunk => async (
-    dispatch,
-    getState,
-) => {
-    const {connected, connecting} = getState().messaging.socketState;
+export const connectToChat = (callback?: (connected: boolean) => void): AppThunk => async (dispatch, getState) => {
     const authToken = getState().auth.token;
 
     const fail = () => {
         dispatch(connectToChatFailure());
-        if (retry > 0) connectToChat(callback, retry - 1);
-        else if (callback) callback(false);
+        if (callback) callback(false);
     };
 
-    if (connected) {
+    if (chatSocket.isConnected()) {
         if (callback) callback(true);
     } else if (authToken) {
-        if (!connecting) {
+        if (chatSocket.isConnecting()) {
+            if (callback) chatSocket.addConnectCallback(callback);
+        } else {
             dispatch(connectToChatBegin());
             chatSocket.connect(
                 authToken,
@@ -212,8 +209,9 @@ const joinChatRoomBegin = (room: ChatRoom): JoinChatRoomBeginAction => ({
     room,
 });
 
-const joinChatRoomFailure = (): JoinChatRoomFailureAction => ({
+const joinChatRoomFailure = (room: ChatRoom): JoinChatRoomFailureAction => ({
     type: MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_FAILURE,
+    room,
 });
 
 const joinChatRoomSuccess = (room: ChatRoom): JoinChatRoomSuccessAction => ({
@@ -221,17 +219,12 @@ const joinChatRoomSuccess = (room: ChatRoom): JoinChatRoomSuccessAction => ({
     room,
 });
 
-export const joinChatRoom = (room: ChatRoom): AppThunk => async (dispatch, getState) => {
-    const {
-        socketState: {connected},
-    } = getState().messaging;
-
-    if (!connected) dispatch(joinChatRoomFailure());
-    else {
+export const joinChatRoom = (room: ChatRoom): AppThunk => async (dispatch) => {
+    if (chatSocket.isConnected()) {
         dispatch(joinChatRoomBegin(room));
         chatSocket.joinRoom(room);
         dispatch(joinChatRoomSuccess(room));
-    }
+    } else dispatch(joinChatRoomFailure(room));
 };
 
 export const leaveChatRoom = (room: ChatRoom): LeaveChatRoomAction => {
@@ -326,19 +319,17 @@ const fetchNewMessagesSuccess = (room: ChatRoom, messages: ChatRoomMessage[]): F
  */
 export const fetchNewMessages = (room: ChatRoom): AppThunk => async (dispatch, getState) => {
     const state = getState();
-    const {
-        socketState: {connected},
-    } = state.messaging;
+    const {fetchingNewMessages} = state.messaging;
     const token = state.auth.token;
-    const pagination = room.messagePagination;
 
-    if (pagination.fetching || !pagination.canFetchMore) return;
+    if (fetchingNewMessages) return;
+    const lastMessage = room.lastMessage;
 
-    if (connected && room.lastMessage) {
+    if (chatSocket.isConnected() && lastMessage) {
         dispatch(fetchNewMessagesBegin(room));
 
         // Fetch messages only after the date of the latest message we have
-        const afterDate = room.lastMessage.createdAt.toJSON();
+        const afterDate = lastMessage.createdAt.toJSON();
 
         const fetchPage = async (page: number) => {
             const response = await requestBackend(
@@ -362,6 +353,10 @@ export const fetchNewMessages = (room: ChatRoom): AppThunk => async (dispatch, g
 
                 // Keep fetching if there are more messages to fetch
                 if (page < paginated.meta.totalPages) fetchPage(page + 1);
+                else if (messages.length > 0 && messages[0]) {
+                    // Inform the server that we've read the last message
+                    chatSocket.readMessage(room.id, messages[0]._id, messages[0].createdAt.toJSON());
+                }
                 dispatch(fetchNewMessagesSuccess(room, messages as ChatRoomMessage[]));
             } else dispatch(fetchNewMessagesFailure(room));
         };
@@ -392,7 +387,7 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
         const response = await requestBackend(
             `rooms/${room.id}/messages`,
             "GET",
-            {page: pagination.page, limit: MESSAGES_FETCH_LIMIT, beforeDate},
+            {page: 1, limit: MESSAGES_FETCH_LIMIT, beforeDate},
             {},
             token,
         );
@@ -408,6 +403,7 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
                 .map(convertDto)
                 .filter((m) => m !== undefined);
             const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+            console.log(canFetchMore);
             dispatch(fetchEarlierMessagesSuccess(room, messages as ChatRoomMessage[], canFetchMore));
         } else dispatch(fetchEarlierMessagesFailure(room));
     } else {
