@@ -64,17 +64,20 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
     }
 
     componentDidMount(): void {
-        const {items, navigation, id} = this.props;
-        const shown = items.filter((it) => !this.state.hiddenIds[id(it)]).length;
-        if (shown == 0) this.fetchMore();
+        const {navigation} = this.props;
         navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
     }
 
     onFocus(): void {
-        const {items, fetchLimit, fetching, refreshOnFocus, refresh} = this.props;
-        if (refreshOnFocus) refresh();
-        else if (items.length < fetchLimit && !fetching) this.fetchMore();
+        const {items, fetchLimit, fetching, refreshOnFocus, currentPage, refresh, id} = this.props;
+        const shown = items.filter((it) => !this.state.hiddenIds[id(it)]).length;
+
+        if (refreshOnFocus) {
+            // Fetch items if currentPage is 1 (because this won't be caught by 'justRefreshed' in componentDidUpdate)
+            if (currentPage === 1) this.fetchMore();
+            else refresh(); // We don't refresh if the current page is 1 because that means we haven't fetched anything yet
+        } else if (shown < fetchLimit && !fetching) this.fetchMore();
     }
 
     componentDidUpdate(oldProps: InfiniteScrollerProps<T>): void {
@@ -93,6 +96,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
         const {
             items,
             fetching,
+            currentPage,
             refresh,
             renderItem,
             noResultsComponent,
@@ -113,7 +117,9 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                 <RefreshControl
                                     progressViewOffset={progressViewOffset}
                                     refreshing={fetching}
-                                    onRefresh={() => refresh()}
+                                    onRefresh={() => {
+                                        if (!fetching) refresh();
+                                    }}
                                 />
                             }
                             onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -125,7 +131,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                         >
                             {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
                             <View style={styles.loadingIndicatorContainer}>
-                                {fetching && items.length > 0 && (
+                                {fetching && currentPage > 1 && items.length > 0 && (
                                     <ActivityIndicator size="large" color={theme.accentSecondary} />
                                 )}
                             </View>
