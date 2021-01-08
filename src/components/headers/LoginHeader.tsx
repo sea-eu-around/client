@@ -9,9 +9,16 @@ import {preTheme} from "../../styles/utils";
 import {getLocalSvg} from "../../assets";
 import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
 import i18n from "i18n-js";
+import {AppState} from "../../state/types";
+import {connect, ConnectedProps} from "react-redux";
+
+// Map props from store
+const reduxConnector = connect((state: AppState) => ({
+    isFirstLaunch: state.settings.isFirstLaunch,
+}));
 
 // Component props
-type LoginHeaderProps = ThemeProps & {insets: EdgeInsets};
+type LoginHeaderProps = ThemeProps & {insets: EdgeInsets} & ConnectedProps<typeof reduxConnector>;
 
 export const LOGIN_HEADER_WAVE_HEIGHT = 60;
 const SVG_VIEWBOX_W = 620;
@@ -74,7 +81,7 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, isFirstLaunch} = this.props;
 
         const styles = themedStyles(theme);
         const Image = getLocalSvg("login-header", () => this.forceUpdate());
@@ -90,7 +97,9 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
                     <TouchableOpacity style={styles.navigationButton} onPress={() => this.back()}>
                         <MaterialIcons name="chevron-left" style={styles.navigationIcon} />
                     </TouchableOpacity>
-                    <Text style={styles.title}>{i18n.t("loginForm.title")}</Text>
+                    <Text style={styles.title}>
+                        {i18n.t(isFirstLaunch ? "loginForm.titleFirstLaunch" : "loginForm.title")}
+                    </Text>
                 </ReAnimated.View>
             </>
         );
@@ -116,7 +125,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         title: {
             color: theme.textWhite,
             fontSize: 42,
-            maxWidth: 200,
+            maxWidth: 210,
             fontFamily: "RalewaySemiBold",
         },
         image: {
@@ -129,11 +138,13 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default function LoginHeader(): JSX.Element {
+function LoginHeader(props: ConnectedProps<typeof reduxConnector>): JSX.Element {
     const insets = useSafeAreaInsets();
     return (
         <ThemeConsumer>
-            {(themeProps: ThemeProps) => <LoginHeaderClass {...themeProps} insets={insets} />}
+            {(themeProps: ThemeProps) => <LoginHeaderClass {...themeProps} insets={insets} {...props} />}
         </ThemeConsumer>
     );
 }
+
+export default reduxConnector(LoginHeader);

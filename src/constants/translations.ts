@@ -701,6 +701,7 @@ export default {
         // Login
         loginForm: {
             title: "Welcome Back!",
+            titleFirstLaunch: "Welcome!",
             logIn: "Log in",
             signUp: "Sign up",
             or: "or",
