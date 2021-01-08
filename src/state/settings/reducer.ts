@@ -3,6 +3,7 @@ import {LANGUAGES_CODES} from "../../model/languages";
 import translations from "../../constants/translations";
 import {
     LoadCookiesPreferencesAction,
+    LoadVersionInfoAction,
     SaveCookiesPreferencesAction,
     SetLocaleAction,
     SetThemeAction,
@@ -31,6 +32,8 @@ export const initialState: SettingsState = {
         },
         cookieConsentDate: null,
     },
+    previousVersion: null,
+    isFirstLaunch: false,
     localizedLanguageItems: getLocalizedLanguageItems(getDefaultLocale()),
 };
 
@@ -64,6 +67,14 @@ export const settingsReducer = (state: SettingsState = initialState, action: Set
                 ...state,
                 localizedLanguageItems: getLocalizedLanguageItems(locale),
                 userSettings: {...state.userSettings, locale},
+            };
+        }
+        case SETTINGS_ACTION_TYPES.LOAD_VERSION_INFO: {
+            const {version} = action as LoadVersionInfoAction;
+            return {
+                ...state,
+                previousVersion: version,
+                isFirstLaunch: version === null,
             };
         }
         default:

@@ -2,14 +2,15 @@ import {FontAwesome} from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
+import {APP_VERSION} from "../constants/config";
 import {SupportedLocale} from "../localization";
 import {User} from "../model/user";
 import {CookiesPreferences} from "../model/user-settings";
 import {RootNavigatorScreens} from "../navigation/types";
 import {attemptLoginFromCache} from "../state/auth/actions";
-import {readCachedStaticData} from "../state/persistent-storage/static";
+import {readCachedStaticData, storeStaticData} from "../state/persistent-storage/static";
 import {loadProfileInterests, loadProfileOffers} from "../state/profile/actions";
-import {loadCookiesPreferences, setLocale, setTheme} from "../state/settings/actions";
+import {loadCookiesPreferences, loadVersionInfo, setLocale, setTheme} from "../state/settings/actions";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 import {ThemeKey} from "../types";
@@ -57,6 +58,12 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                             );
                         }
                     });
+                });
+
+                // Read previous version of the app, so we know if we are launching the app after an update
+                readCachedStaticData("version").then((version) => {
+                    store.dispatch(loadVersionInfo(version ? (version.data as string) : null));
+                    storeStaticData("version", APP_VERSION, true);
                 });
 
                 // Attempt to read the settings from persistent storage

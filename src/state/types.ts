@@ -55,6 +55,8 @@ export type AuthState = {
 export type SettingsState = {
     userSettings: UserSettings;
     localizedLanguageItems: {value: string; label: string}[];
+    previousVersion: string | null;
+    isFirstLaunch: boolean;
 };
 
 export type ProfileState = {
