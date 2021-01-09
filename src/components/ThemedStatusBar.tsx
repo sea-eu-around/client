@@ -1,7 +1,7 @@
 import {StatusBar} from "expo-status-bar";
 import * as React from "react";
 import {withTheme} from "react-native-elements";
-import {STATUS_BAR_THEME_OVERRIDES} from "../constants/status-bar-theming";
+import {STATUS_BAR_THEME_OVERRIDES} from "../constants/route-settings";
 import {NavigatorRoute} from "../navigation/types";
 import {rootNavigationRef} from "../navigation/utils";
 import {ThemeKey, ThemeProps} from "../types";

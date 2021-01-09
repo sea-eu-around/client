@@ -40,6 +40,10 @@ export function attemptRedirectToApp(routeName: string, fallbackRoute: Navigator
     } else fallback();
 }
 
+export function unauthorizedRedirect(): void {
+    rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
+}
+
 export function screenTitle(route: NavigatorRoute): string {
     return i18n.t(`screenTitles.${route}`) + i18n.t("screenTitles.suffix");
 }

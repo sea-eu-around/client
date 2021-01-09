@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Constants from "expo-constants";
-import {NavigatorRoute} from "../navigation/types";
 
 export enum Environment {
     Staging = "STAGING",
@@ -40,11 +39,6 @@ export const SEARCH_BUFFER_DELAY = 250;
  * The maximum number of spoken languages a user can select.
  */
 export const MAX_SPOKEN_LANGUAGES = 8;
-
-/**
- * The navigation routes that require a connection to the chat socket.
- */
-export const CHAT_CONNECTED_ROUTES: NavigatorRoute[] = ["ChatScreen", "ChatRoomsScreen"];
 
 /**
  * The time before we ask the user to consent for cookies again.

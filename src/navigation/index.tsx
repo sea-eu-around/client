@@ -5,12 +5,12 @@ import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
 import ValidationEmailSentScreen from "../screens/ValidationEmailSentScreen";
-import {RootNavigatorScreens} from "../navigation/types";
+import {NavigatorRoute, RootNavigatorScreens} from "../navigation/types";
 import LinkingConfiguration from "./linking-config";
 import LoginNavigator from "./LoginNavigator";
 import MainNavigator from "./MainNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
-import {rootNavigationRef, screenTitle} from "./utils";
+import {rootNavigationRef, screenTitle, unauthorizedRedirect} from "./utils";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
@@ -21,7 +21,7 @@ import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScr
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import {CHAT_CONNECTED_ROUTES} from "../constants/config";
+import {AUTHENTICATED_ROUTES, CHAT_CONNECTED_ROUTES} from "../constants/route-settings";
 import {MyThunkDispatch} from "../state/types";
 import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
 import store from "../state/store";
@@ -46,6 +46,10 @@ function onStateChange(state: NavigationState | undefined) {
     if (state) savedNavigationState = state;
     const route = rootNavigationRef.current?.getCurrentRoute();
     if (route) {
+        // Handle redirecting when not authenticated
+        if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route.name as NavigatorRoute))
+            unauthorizedRedirect();
+
         // Handle connecting / disconnecting from the chat depending on the focused route
         const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === route.name);
         const fromChat = previousRoute && CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
