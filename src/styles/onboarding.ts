@@ -56,8 +56,17 @@ export const onboardingStyle = preTheme((theme: Theme) => {
     });
 });
 
-export const onboardingOffersStyle = preTheme(() => {
+export const onboardingOffersStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
         categoryTitleText: {},
+        offerControl: {
+            marginVertical: 10,
+        },
+        offerControlPreText: {
+            fontSize: 18,
+            letterSpacing: 0.4,
+            color: theme.textLight,
+            marginVertical: 10,
+        },
     });
 });

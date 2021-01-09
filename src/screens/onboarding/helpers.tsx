@@ -15,24 +15,35 @@ import {setOnboardingOfferValue} from "../../state/auth/actions";
 import {createProfile} from "../../state/profile/actions";
 import store from "../../state/store";
 import {MyThunkDispatch, OnboardingState} from "../../state/types";
+import {onboardingOffersStyle} from "../../styles/onboarding";
+import {Theme} from "../../types";
+import i18n from "i18n-js";
+import {Text} from "react-native";
 
 export function createOfferControls(
     offers: OfferDto[],
     category: OfferCategory,
     onboardingState: OnboardingState,
     dispatch: React.Dispatch<AnyAction>,
-): JSX.Element[] {
-    return offers
-        .filter((offer: OfferDto) => offer.category == category)
-        .map((offer: OfferDto, i: number) => (
-            <OfferControl
-                key={i}
-                offer={offer}
-                value={onboardingState.offerValues[offer.id] || initOfferValue(offer)}
-                onChange={(value: OfferValueDto) => dispatch(setOnboardingOfferValue(offer.id, value))}
-                style={{marginVertical: 20}}
-            />
-        ));
+    theme: Theme,
+): JSX.Element {
+    const styles = onboardingOffersStyle(theme);
+    return (
+        <>
+            <Text style={styles.offerControlPreText}>{i18n.t("offersPreText")}</Text>
+            {offers
+                .filter((offer: OfferDto) => offer.category == category)
+                .map((offer: OfferDto, i: number) => (
+                    <OfferControl
+                        key={i}
+                        offer={offer}
+                        value={onboardingState.offerValues[offer.id] || initOfferValue(offer)}
+                        onChange={(value: OfferValueDto) => dispatch(setOnboardingOfferValue(offer.id, value))}
+                        style={styles.offerControl}
+                    />
+                ))}
+        </>
+    );
 }
 
 function onboardingStateToDto(onboardingState: OnboardingState): CreateProfileDto | null {

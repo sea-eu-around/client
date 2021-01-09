@@ -39,7 +39,7 @@ class OnboardingOfferScreen3 extends React.Component<OnboardingOfferScreen3Props
                 subtitle={i18n.t("onboarding.offersMeet.subtitle")}
                 {...this.props}
             >
-                {createOfferControls(offers, category, onboardingState, dispatch)}
+                {createOfferControls(offers, category, onboardingState, dispatch, theme)}
             </OnboardingSlide>
         );
     }
