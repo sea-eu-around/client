@@ -21,6 +21,7 @@ import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
 import {getLocalSvg} from "../../assets";
 import WavyHeader from "../../components/headers/WavyHeader";
+import FloatingThemeToggle from "../../components/FloatingThemeToggle";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -119,6 +120,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                         </TouchableOpacity>
                     )}
                 </View>
+                <FloatingThemeToggle />
             </ScreenWrapper>
         );
     }
