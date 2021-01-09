@@ -2,18 +2,18 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createStackNavigator, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import TabNotImplementedScreen from "../screens/TabNotImplementedScreen";
-import {MainNavigatorTabs, RootNavigatorScreens, TabHomeRoot, TabNotificationsRoot} from "../navigation/types";
+import {MainNavigatorTabs, RootNavigatorScreens, TabHomeRoot} from "../navigation/types";
 import {withTheme} from "react-native-elements";
 import MessagingNavigator from "./MessagingNavigator";
-import {BottomTabBarProps} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
+import {BottomTabBarButtonProps, BottomTabBarProps} from "@react-navigation/bottom-tabs/lib/typescript/src/types";
 import {ThemeProps} from "../types";
 import TabHomeScreen from "../screens/TabHomeScreen";
-import {screenTitle} from "./utils";
+import {rootNavigate, screenTitle} from "./utils";
 import MainHeader from "../components/headers/MainHeader";
 import {TabMatchingNavigator} from "./TabMatchingNavigator";
 import MainTabBar, {MainTabBarIcon} from "../components/tabs/MainTabBar";
 import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
+import {TouchableOpacity} from "react-native";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -30,7 +30,6 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabHome"
                 component={TabHomeNavigator}
                 options={{
-                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.home")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="home" {...props} />,
                 }}
             />
@@ -38,7 +37,6 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabMatching"
                 component={TabMatchingNavigator}
                 options={{
-                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.matching")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="contacts" {...props} />,
                 }}
             />
@@ -47,8 +45,15 @@ function MainNavigatorComponent(): JSX.Element {
                 component={MessagingNavigator}
                 options={({route}) => ({
                     tabBarVisible: getFocusedRouteNameFromRoute(route) !== "ChatScreen",
-                    //tabBarLabel: (props) => <MainTabBarLabel text={i18n.t("tabs.messaging")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
+                    // Override the button to make sure we redirect to the rooms screen instead of a previously open conversation
+                    tabBarButton: (props: BottomTabBarButtonProps) => (
+                        <TouchableOpacity
+                            {...props}
+                            activeOpacity={1}
+                            onPress={() => rootNavigate("TabMessaging", {screen: "ChatRoomsScreen"})}
+                        />
+                    ),
                 })}
             />
             {/*
@@ -56,7 +61,6 @@ function MainNavigatorComponent(): JSX.Element {
                 name="TabNotifications"
                 component={TabNotificationsNavigator}
                 options={{
-                    //tabBarLabel: (props)  => <MainTabBarLabel text={i18n.t("tabs.notifications")} {...props} />,
                     tabBarIcon: (props) => <MainTabBarIcon name="notifications" {...props} />,
                 }}
             />
@@ -77,6 +81,7 @@ const TabHomeNavigator = (): JSX.Element => (
     </TabHomeStack.Navigator>
 );
 
+/*
 const TabNotificationsStack = createStackNavigator<TabNotificationsRoot>();
 
 const TabNotificationsNavigator = (): JSX.Element => (
@@ -88,5 +93,6 @@ const TabNotificationsNavigator = (): JSX.Element => (
         />
     </TabNotificationsStack.Navigator>
 );
+*/
 
 export default withTheme(MainNavigatorComponent);
