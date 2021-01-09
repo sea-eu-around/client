@@ -1,7 +1,7 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
 import {MatchActionStatus} from "../api/dto";
 import {rootNavigate} from "../navigation/utils";
-import {AUTH_ACTION_TYPES, LogInSuccessAction} from "./auth/actions";
+import {AUTH_ACTION_TYPES, LogInSuccessAction, LogOutAction} from "./auth/actions";
 import {LikeProfileSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
 import {AppState} from "./types";
@@ -23,10 +23,13 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             break;
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
-            rootNavigate("LoginRoot", {
-                screen: "LoginScreens",
-                params: {screen: "SigninScreen"},
-            });
+            const {redirect} = action as LogOutAction;
+            if (redirect) {
+                rootNavigate("LoginRoot", {
+                    screen: "LoginScreens",
+                    params: {screen: "SigninScreen"},
+                });
+            }
             break;
         }
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
@@ -52,7 +55,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
             break;
         }
         case AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS: {
-            rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
+            rootNavigate("DeleteAccountSuccessScreen");
             break;
         }
     }

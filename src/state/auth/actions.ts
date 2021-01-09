@@ -43,7 +43,7 @@ export type LogInSuccessAction = {
     usingCachedCredentials: boolean;
 };
 
-export type LogOutAction = {type: string};
+export type LogOutAction = {type: string; redirect: boolean};
 
 export type LogInFailureAction = {type: string};
 
@@ -177,8 +177,9 @@ export const requestLogin = (email: string, password: string): ValidatedThunkAct
     }
 };
 
-export const logout = (): LogOutAction => ({
+export const logout = (redirect = true): LogOutAction => ({
     type: AUTH_ACTION_TYPES.LOG_OUT,
+    redirect,
 });
 
 // Account validation actions
@@ -247,6 +248,7 @@ export const deleteAccount = (password: string): ValidatedThunkAction => async (
     const response = await requestBackend("users", "DELETE", {}, {password}, token, true);
 
     if (response.status == HttpStatusCode.NO_CONTENT) {
+        dispatch(logout(false));
         dispatch(deleteAccountSuccess());
         return {success: true};
     } else {
