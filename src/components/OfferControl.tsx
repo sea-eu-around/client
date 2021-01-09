@@ -5,11 +5,14 @@ import {Gender, Role} from "../constants/profile-constants";
 import GenderToggleMulti from "./GenderToggleMulti";
 import RoleToggleMulti from "./RoleToggleMulti";
 import i18n from "i18n-js";
-import {MaterialIcons} from "@expo/vector-icons";
+import {FontAwesome, MaterialIcons} from "@expo/vector-icons";
 import CustomTooltip from "./CustomTooltip";
 import {Theme, ThemeProps} from "../types";
 import {CheckBox, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
+import CustomModal, {CustomModalClass} from "./modals/CustomModal";
+import InputLabel from "./InputLabel";
+import Button from "./Button";
 
 export type OfferControlProps = {
     offer: OfferDto;
@@ -19,6 +22,8 @@ export type OfferControlProps = {
 } & ThemeProps;
 
 class OfferControl extends React.Component<OfferControlProps> {
+    settingsModalRef = React.createRef<CustomModalClass>();
+
     offerValueChange(changed: Partial<OfferValueDto>): void {
         const {onChange} = this.props;
         if (onChange) onChange({...this.props.value, ...changed});
@@ -64,15 +69,23 @@ class OfferControl extends React.Component<OfferControlProps> {
                             <Text style={styles.offerName}>{i18n.t(`allOffers.${offer.id}.name`)}</Text>
                         </TouchableOpacity>
                     </View>
-                    <CustomTooltip text={i18n.t(`allOffers.${offer.id}.help`)}>
-                        <MaterialIcons style={styles.helpIcon} name="help" />
-                    </CustomTooltip>
+                    <View style={{flexDirection: "row"}}>
+                        <TouchableOpacity
+                            style={styles.sideButton}
+                            onPress={() => this.settingsModalRef.current?.show()}
+                        >
+                            <FontAwesome style={styles.sideButtonIcon} name="gear" />
+                        </TouchableOpacity>
+                        <CustomTooltip text={i18n.t(`allOffers.${offer.id}.help`)}>
+                            <MaterialIcons style={[styles.sideButton, styles.sideButtonIcon]} name="help" />
+                        </CustomTooltip>
+                    </View>
                 </View>
-                {isSomethingSelected && (
+                {/*isSomethingSelected && (
                     <View style={styles.buttonsWrapper}>
                         {offer.allowChooseGender && (
                             <GenderToggleMulti
-                                noButtonVariant={true}
+                                styleVariant="chips"
                                 genders={genders}
                                 onSelect={(selected: Gender[]) =>
                                     this.offerValueChange({
@@ -85,7 +98,7 @@ class OfferControl extends React.Component<OfferControlProps> {
                         )}
                         {offer.allowChooseProfileType && (
                             <RoleToggleMulti
-                                noButtonVariant={true}
+                                styleVariant="chips"
                                 roles={roles}
                                 onSelect={(selected: Role[]) =>
                                     this.offerValueChange({
@@ -96,7 +109,54 @@ class OfferControl extends React.Component<OfferControlProps> {
                             />
                         )}
                     </View>
-                )}
+                )*/}
+                <CustomModal
+                    ref={this.settingsModalRef}
+                    modalViewStyle={styles.settingsModal}
+                    renderContent={(hide: () => void) => (
+                        <>
+                            {offer.allowChooseGender && (
+                                <View style={styles.settingsModalTargetType}>
+                                    <InputLabel>{i18n.t("offerSettings.genders")}</InputLabel>
+                                    <GenderToggleMulti
+                                        styleVariant="classic-rounded"
+                                        genders={genders}
+                                        onSelect={(selected: Gender[]) =>
+                                            this.offerValueChange({
+                                                allowFemale: selected.indexOf("female") != -1,
+                                                allowMale: selected.indexOf("male") != -1,
+                                                allowOther: selected.indexOf("other") != -1,
+                                            })
+                                        }
+                                    />
+                                </View>
+                            )}
+
+                            {offer.allowChooseProfileType && (
+                                <View style={styles.settingsModalTargetType}>
+                                    <InputLabel>{i18n.t("offerSettings.roles")}</InputLabel>
+                                    <RoleToggleMulti
+                                        styleVariant="classic-rounded"
+                                        roles={roles}
+                                        onSelect={(selected: Role[]) =>
+                                            this.offerValueChange({
+                                                allowStaff: selected.indexOf("staff") != -1,
+                                                allowStudent: selected.indexOf("student") != -1,
+                                            })
+                                        }
+                                    />
+                                </View>
+                            )}
+                            <Button
+                                style={styles.settingsModalButton}
+                                textStyle={styles.settingsModalButtonText}
+                                skin="rounded-filled"
+                                text={i18n.t("ok")}
+                                onPress={hide}
+                            />
+                        </>
+                    )}
+                />
             </View>
         );
     }
@@ -127,13 +187,13 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 1,
             color: theme.text,
         },
-        helpIcon: {
-            fontSize: 20,
-            marginLeft: 5,
-            color: theme.textLight,
+        sideButton: {
+            paddingVertical: 10,
+            paddingHorizontal: 5,
         },
-        buttonsWrapper: {
-            width: "100%",
+        sideButtonIcon: {
+            fontSize: 20,
+            color: theme.textLight,
         },
         checkboxContainer: {
             padding: 0,
@@ -141,6 +201,25 @@ const themedStyles = preTheme((theme: Theme) => {
             marginBottom: 0,
             marginLeft: 0,
             marginRight: 5,
+        },
+
+        settingsModal: {
+            paddingVertical: 20,
+            paddingHorizontal: 15,
+            alignItems: "flex-start",
+        },
+        settingsModalTargetType: {
+            width: "100%",
+            marginBottom: 10,
+        },
+        settingsModalButton: {
+            height: 38,
+            marginHorizontal: 5,
+            marginVertical: 0,
+            marginTop: 20,
+        },
+        settingsModalButtonText: {
+            fontSize: 16,
         },
     });
 });
