@@ -1,10 +1,9 @@
 import React from "react";
-import {Text, StyleSheet} from "react-native";
+import {Text, StyleSheet, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {Theme} from "../types";
 import CustomModal, {CustomModalClass} from "./modals/CustomModal";
-import {TouchableOpacity} from "react-native-gesture-handler";
 import {CustomTooltipProps} from "./CustomTooltip.native";
 
 class CustomTooltip extends React.Component<CustomTooltipProps> {
