@@ -69,7 +69,6 @@ const config: LinkingOptions = {
                     OnboardingLegalScreen1: "onboarding/tos",
                     OnboardingLegalScreen2: "onboarding/data",
                     OnboardingLegalScreen3: "onboarding/cookies",
-                    OnboardingPrivacyScreen: "onboarding/privacy",
                 },
             },
             OnboardingSuccessfulScreen: "onboarding/success",
