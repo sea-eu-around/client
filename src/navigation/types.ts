@@ -72,11 +72,11 @@ export type OnboardingScreens = typeof ONBOARDING_SCREENS;
 
 export type NavigatorRoute =
     | keyof RootNavigatorScreens
-    | keyof MainNavigatorTabs
-    | keyof TabHomeRoot
     | keyof LoginRoot
     | keyof LoginScreens
+    | keyof MainNavigatorTabs
+    | keyof TabHomeRoot
     | keyof TabMatchingRoot
-    | keyof TabNotificationsRoot
     | keyof TabMessagingRoot
+    | keyof TabNotificationsRoot
     | keyof OnboardingScreens;
