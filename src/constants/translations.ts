@@ -7,29 +7,36 @@ export default {
             fr: "French",
         },
         appName: "SEA-EU Around",
-        welcome: "Welcome",
+        // General translations
+        search: "Search",
+        send: "Send",
+        cancel: "Cancel",
+        ok: "OK",
+        save: "Save",
+        noResultsFound: "No results found",
+        apply: "Apply",
+        logOut: "Log out",
         // Component-related
         picker: {
             callToAction: "Select (%d selected)",
         },
+        // Login and sign-up forms
         login: "Log in",
         emailAddress: "Email address",
         password: "Password",
         passwordRepeat: "Repeat password",
-        send: "Send",
         forgotPassword: "Forgot Password",
-        newPassword: "New Password",
         forgotPasswordExplanation:
             "Enter the email address associated with your account below. Instructions for choosing a new password will be sent shortly.",
-        cancel: "Cancel",
-        ok: "OK",
+        newPassword: "New Password",
         signupWelcome: "We can't wait for you to join our community!",
-        save: "Save",
-        firstname: "First name",
-        lastname: "Last name",
-        noResultsFound: "No results found",
-        apply: "Apply",
-        logOut: "Log out",
+        createAccount: "Create account",
+        // Email validation screen
+        emailValidation: {
+            validating: "Validating",
+            success: ["Your account has been validated! You may now ", "log in"],
+        },
+        // Legal disclaimers
         legal: {
             modal: {
                 disclaimer1:
@@ -40,15 +47,7 @@ export default {
             accept: "Accept",
             readMore: ["Read more about our terms & conditions ", "here", "."],
         },
-        privacy: {
-            readMore: ["Read more about our privacy policy ", "here", "."],
-        },
-        emailNotificationsLabel: "Send me useful notifications by email.",
-        emailValidation: {
-            validating: "Validating",
-            success: ["Your account has been validated! You may now ", "log in"],
-        },
-        createAccount: "Create account",
+        // Client-side validation strings
         validation: {
             required: "Required field.",
             atLeastOne: "Please select at least one.",
@@ -74,6 +73,7 @@ export default {
                 invalid: "Please enter a valid date.",
             },
         },
+        // Server-side errors
         error: {
             error_user_not_verified: "This account's email address has not been verified yet.",
             user_not_found: "User not found.",
@@ -90,19 +90,12 @@ export default {
                 },
             },
         },
-        tabs: {
-            home: "Home",
-            matching: "Matching",
-            messaging: "Messaging",
-            notifications: "Notifications",
-        },
-        search: "Search",
         // General translations related to the profile
         myProfile: "My Profile",
-        editProfile: "Edit profile",
+        firstname: "First name",
+        lastname: "Last name",
         nationality: "Nationality",
         university: "University",
-        selectCountry: "Select country",
         countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
         profileType: "Type",
         profileTypes: "Types",
@@ -137,6 +130,25 @@ export default {
             9: "October",
             10: "November",
             11: "December",
+        },
+        spokenLanguages: "Spoken languages",
+        languageLevels: {
+            a1: "A1",
+            a2: "A2",
+            b1: "B1",
+            b2: "B2",
+            c1: "C1",
+            c2: "C2",
+            native: "Native",
+        },
+        levelOfStudy: "Level of study",
+        degrees: {
+            bsc1: "BSc1",
+            bsc2: "BSc2",
+            bsc3: "BSc3",
+            m1: "M1",
+            m2: "M2",
+            phd: "PhD",
         },
         // Education fields
         fieldsOfEducation: "Fields of education",
@@ -237,16 +249,6 @@ export default {
             "protection-of-persons-property": "Protection of persons and property",
             "transport-services": "Transport services",
         },
-        // Level of study
-        levelOfStudy: "Level of study",
-        degrees: {
-            bsc1: "BSc1",
-            bsc2: "BSc2",
-            bsc3: "BSc3",
-            m1: "M1",
-            m2: "M2",
-            phd: "PhD",
-        },
         // 404 not found screen
         notFoundScreen: {
             title: "404: Page not found.",
@@ -331,8 +333,7 @@ export default {
                 yes: "Yes",
             },
         },
-        // Language-related
-        spokenLanguages: "Spoken languages",
+        // Language components
         languagePicker: {
             placeholderSingle: "Language",
             placeholderMultiple: "Select languages",
@@ -341,15 +342,6 @@ export default {
         },
         languageLevelPicker: {
             placeholder: "Level",
-        },
-        languageLevels: {
-            a1: "A1",
-            a2: "A2",
-            b1: "B1",
-            b2: "B2",
-            c1: "C1",
-            c2: "C2",
-            native: "Native",
         },
         languageNames: {
             aa: "Afar",
@@ -829,7 +821,8 @@ export default {
             OnboardingOffersScreen2: "Collaborate",
             OnboardingOffersScreen3: "Meet",
             OnboardingLegalScreen1: "Terms & Conditions",
-            OnboardingPrivacyScreen: "Privacy Policy",
+            OnboardingLegalScreen2: "Terms & Conditions",
+            OnboardingLegalScreen3: "Terms & Conditions",
             ChatRoomsScreen: "Messages",
             ChatScreen: "Chat",
             TabHomeScreen: "Home",
