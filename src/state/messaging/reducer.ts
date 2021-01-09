@@ -68,16 +68,11 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             const matchRooms = {...state.matchRooms};
             // Add entries in the rooms dictionary
             rooms.forEach((r: ChatRoom) => {
-                /*const old = matchRooms[r.id];
-                matchRooms[r.id] = {
-                    ...r,
-                    ...(old ? {
-                        messagePagination: old.messagePagination,
-                        messages: old.messages,
-                        lastMessage: old.lastMessage,
-                    } : {}),
-                };*/
-                if (!matchRooms[r.id]) matchRooms[r.id] = r;
+                if (matchRooms[r.id]) {
+                    matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage, users: r.users};
+                } else {
+                    matchRooms[r.id] = r;
+                }
             });
             const ids = rooms.map((r: ChatRoom) => r.id);
 
@@ -227,9 +222,23 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS: {
             const {room, messages} = action as FetchNewMessagesSuccessAction;
             const filteredMessages = messages.filter((ma) => !room.messages.some((mb) => mb._id === ma._id));
+            const users = room.users.concat(); // copy
+
+            // Update the last message seen for the user who sent it
+            if (filteredMessages.length > 0) {
+                const lastMessage = filteredMessages[0];
+                const i = users.findIndex((u) => u._id === lastMessage.user._id);
+                users[i] = {
+                    ...users[i],
+                    lastMessageSeenId: lastMessage._id,
+                    lastMessageSeenDate: lastMessage.createdAt,
+                };
+            }
+
             return updateRoom({...state, fetchingNewMessages: false}, false, {
                 ...room,
                 messages: filteredMessages.concat(room.messages),
+                users,
                 ...(filteredMessages.length > 0 ? {lastMessage: filteredMessages[0]} : {}),
             });
         }
