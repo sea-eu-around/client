@@ -139,7 +139,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             <RoleToggleMulti
                                 roles={filters.types}
                                 onSelect={(types: Role[]) => this.updateLocalFilters({types})}
-                                noButtonVariant={true}
+                                styleVariant="classic-rounded"
                             />
                         </View>
                         {filters.types.indexOf("student") != -1 && (
@@ -149,7 +149,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                                     degrees={filters.degrees}
                                     onSelect={(degrees: Degree[]) => this.updateLocalFilters({degrees})}
                                     style={{width: "100%"}}
-                                    noButtonVariant={true}
+                                    styleVariant="classic-rounded"
                                 />
                             </View>
                         )}
@@ -216,7 +216,7 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
             alignItems: "center",
             alignSelf: "center",
-            borderRadius: 10,
+            borderRadius: 50,
             elevation: 1,
         },
         resetButtonText: {
