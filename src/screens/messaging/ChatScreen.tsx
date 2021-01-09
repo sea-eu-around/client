@@ -123,17 +123,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
     }
 
-    /**
-     * Ensures that the latest n messages are loaded
-     */
-    private ensureLatestMessages(): void {
-        // Fetch all messages that are more recent than the last one we have
-        this.fetchNewMessages();
-        // Fetch earlier messages if we need to
-        const {activeRoom} = this.props;
-        if (activeRoom && activeRoom.messages.length < MESSAGES_FETCH_LIMIT) this.fetchEarlier();
-    }
-
     private onAppActive(): void {
         const {connected, dispatch} = this.props;
         // Reconnect to chat if needed
@@ -165,15 +154,24 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
     }
 
-    fetchNewMessages(): void {
-        const {dispatch, activeRoom, fetchingNewMessages} = this.props;
-        if (activeRoom && !fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(activeRoom));
+    /**
+     * Ensures that the latest n messages are loaded
+     */
+    private ensureLatestMessages(): void {
+        const {dispatch, fetchingNewMessages} = this.props;
+        const room = this.getRoom();
+
+        // Fetch all messages that are more recent than the last one we have
+        if (room && !fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(room));
+
+        // Fetch earlier messages if we need to
+        if (room && room.messages.length < MESSAGES_FETCH_LIMIT) this.fetchEarlier();
     }
 
-    fetchEarlier(): void {
-        const {dispatch, activeRoom} = this.props;
-        if (activeRoom && !activeRoom.messagePagination.fetching)
-            (dispatch as MyThunkDispatch)(fetchEarlierMessages(activeRoom));
+    private fetchEarlier(): void {
+        const {dispatch} = this.props;
+        const room = this.getRoom();
+        if (room && !room.messagePagination.fetching) (dispatch as MyThunkDispatch)(fetchEarlierMessages(room));
     }
 
     render(): JSX.Element {

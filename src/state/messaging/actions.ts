@@ -403,7 +403,6 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
                 .map(convertDto)
                 .filter((m) => m !== undefined);
             const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-            console.log(canFetchMore);
             dispatch(fetchEarlierMessagesSuccess(room, messages as ChatRoomMessage[], canFetchMore));
         } else dispatch(fetchEarlierMessagesFailure(room));
     } else {
