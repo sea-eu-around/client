@@ -20,6 +20,7 @@ class ChatSocket {
     private connectCallbacks: ((connected: boolean) => void)[];
     private writingTimeout: NodeJS.Timeout | null;
     private lastSentWritingState: boolean;
+    private lastSentWritingStateRoom: ChatRoom | null;
 
     private connectTimeout: NodeJS.Timeout | null;
 
@@ -28,6 +29,7 @@ class ChatSocket {
         this.connectCallbacks = [];
         this.writingTimeout = null;
         this.lastSentWritingState = false;
+        this.lastSentWritingStateRoom = null;
         this.connectTimeout = null;
     }
 
@@ -79,6 +81,7 @@ class ChatSocket {
 
     private sendWritingState(room: ChatRoom, state: boolean): void {
         this.lastSentWritingState = state;
+        this.lastSentWritingStateRoom = room;
         this.emit("isWriting", {roomId: room.id, state});
     }
 
@@ -188,6 +191,8 @@ class ChatSocket {
         }
         // If the socket was connected, disconnect it
         if (this.isConnected()) {
+            if (this.lastSentWritingStateRoom && this.lastSentWritingState === true)
+                this.sendWritingState(this.lastSentWritingStateRoom, false);
             if (this.socket) this.socket.disconnect();
         }
     }
