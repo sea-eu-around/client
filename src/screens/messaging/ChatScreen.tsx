@@ -1,7 +1,7 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {AppState as RNAppState, AppStateStatus, ScrollView, ScrollViewProps, StyleSheet, View} from "react-native";
+import {ScrollView, ScrollViewProps, StyleSheet, View} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -25,7 +25,6 @@ import chatSocket from "../../api/chat-socket";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {
     connectToChat,
-    disconnectFromChat,
     fetchEarlierMessages,
     fetchMatchRoom,
     fetchNewMessages,
@@ -39,9 +38,8 @@ import {Theme, ThemeProps} from "../../types";
 import {TypingAnimation} from "react-native-typing-animation";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import store from "../../state/store";
-import {CHAT_CONNECTED_ROUTES, DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
+import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
-import {rootNavigationRef} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -103,16 +101,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         navigation.addListener("blur", () => this.onBlur());
         navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
-
-        // Handle app state changes (active / inactive)
-        let previousAppStatus: AppStateStatus;
-        RNAppState.addEventListener("change", (status: AppStateStatus) => {
-            // If the app is now active
-            if (previousAppStatus !== "active" && status === "active") this.onAppActive();
-            // If the app is no longer active
-            if (previousAppStatus === "active" && status !== "active") this.onAppInactive();
-            previousAppStatus = status;
-        });
     }
 
     componentDidUpdate(oldProps: ChatScreenProps): void {
@@ -121,22 +109,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         if (!oldProps.connected && connected) this.connectToRoom();
         // If we're at the beginning of the messages pagination
         if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
-    }
-
-    private onAppActive(): void {
-        const {connected, dispatch} = this.props;
-        // Reconnect to chat if needed
-        if (!connected) {
-            const route = rootNavigationRef.current?.getCurrentRoute()?.name;
-            const isChat = CHAT_CONNECTED_ROUTES.find((r) => r === route);
-            if (isChat) (dispatch as MyThunkDispatch)(connectToChat());
-        }
-    }
-
-    private onAppInactive(): void {
-        const {connected, dispatch} = this.props;
-        // Disconnect from the chat if connected
-        if (connected) dispatch(disconnectFromChat());
     }
 
     private onBlur(): void {

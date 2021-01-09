@@ -21,14 +21,13 @@ import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScr
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import {AUTHENTICATED_ROUTES, CHAT_CONNECTED_ROUTES} from "../constants/route-settings";
-import {MyThunkDispatch} from "../state/types";
-import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
+import {AUTHENTICATED_ROUTES} from "../constants/route-settings";
 import store from "../state/store";
 import MainHeader from "../components/headers/MainHeader";
 import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
+import {handleRouteChangeForChat} from "./MessagingNavigator";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -38,25 +37,20 @@ type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
 let consumedInitialRoute = false;
-let previousRoute: string | undefined = undefined;
+let previousRoute: NavigatorRoute | undefined = undefined;
 let savedNavigationState: NavigationState | undefined = undefined;
 
 // Handle route changes
 function onStateChange(state: NavigationState | undefined) {
     if (state) savedNavigationState = state;
-    const route = rootNavigationRef.current?.getCurrentRoute();
+    const route = rootNavigationRef.current?.getCurrentRoute()?.name as NavigatorRoute | undefined;
     if (route) {
         // Handle redirecting when not authenticated
-        if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route.name as NavigatorRoute))
-            unauthorizedRedirect();
+        if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route)) unauthorizedRedirect();
 
-        // Handle connecting / disconnecting from the chat depending on the focused route
-        const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === route.name);
-        const fromChat = previousRoute && CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
-        if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
-        if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
+        handleRouteChangeForChat(route, previousRoute);
 
-        previousRoute = route.name;
+        previousRoute = route;
     }
 }
 
