@@ -8,6 +8,8 @@ import TextLink from "../../components/TextLink";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
+import {TERMS_AND_CONDITIONS_URL} from "../../constants/config";
+import {Linking} from "expo";
 
 // Component props
 type OnboardingLegalSlideProps = ThemeProps & OnboardingScreenProps & {title: string; text: string};
@@ -22,7 +24,10 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
                 <Text style={styles.legalText}>{text}</Text>
                 <Text style={styles.readMoreText}>
                     {i18n.t("legal.readMore")[0]}
-                    <TextLink onPress={() => console.log("press")} text={i18n.t("legal.readMore")[1]} />
+                    <TextLink
+                        onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
+                        text={i18n.t("legal.readMore")[1]}
+                    />
                     {i18n.t("legal.readMore")[2]}
                 </Text>
 
