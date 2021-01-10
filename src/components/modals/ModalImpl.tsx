@@ -1,7 +1,9 @@
+import {BlurView} from "expo-blur";
 import React from "react";
 import ReactDOM from "react-dom";
 import {StyleProp, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
+import {BLUR_MODAL_INTENSITY} from "../../styles/general";
 import {ModalImplProps} from "./ModalImpl.native";
 
 type ModalImplState = {
@@ -42,19 +44,27 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
             nonDismissable,
             noBackground,
             backdropOpacity,
+            backdropBlur,
         } = this.props;
         const {modalVisible} = this.state;
 
+        const fixedFullSize = {
+            position: "fixed",
+            width: "100%",
+            height: "100%",
+            left: 0,
+            top: 0,
+        };
+
         const modal = modalVisible ? (
             <>
+                {backdropBlur && (
+                    <BlurView style={{flex: 1, ...fixedFullSize}} tint={"dark"} intensity={BLUR_MODAL_INTENSITY} />
+                )}
                 <TouchableOpacity
                     style={
                         ({
-                            position: "fixed",
-                            width: "100%",
-                            height: "100%",
-                            left: 0,
-                            top: 0,
+                            ...fixedFullSize,
                             backgroundColor: `rgba(0,0,0,${backdropOpacity || 0.05})`,
                             cursor: "pointer",
                         } as unknown) as StyleProp<ViewStyle> // force typings to accept web-specific styling
