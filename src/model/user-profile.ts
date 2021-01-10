@@ -34,3 +34,7 @@ export type UserProfileWithMatchInfo = {
     isMatched: boolean;
     roomId: string | null;
 };
+
+export type SerializedProfile = Omit<UserProfile, "birthdate"> & {
+    birthdate: string;
+};
