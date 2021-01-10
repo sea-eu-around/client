@@ -14,6 +14,7 @@ import {TabMatchingRoot} from "../navigation/types";
 import {PROFILES_FETCH_LIMIT} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
 import InfiniteScroller from "../components/InfiniteScroller";
+import MatchSuccessModal, {MatchSuccessModalClass} from "./MatchSuccessModal";
 
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
@@ -29,6 +30,7 @@ type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
 
 class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     scrollerRef = React.createRef<InfiniteScroller<UserProfile>>();
+    successModalRef = React.createRef<MatchSuccessModalClass>();
 
     render(): JSX.Element {
         const {profiles, theme, fetchingProfiles, isFirstLaunch, currentPage, navigation, dispatch} = this.props;
@@ -57,11 +59,14 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             key={`match-profile-card-${profile.id}`}
                             profile={profile}
                             onExpand={(layout: LayoutRectangle) => {
-                                const scroll = this.scrollerRef.current?.scrollViewRef.current;
-                                if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
+                                // TODO temp
+                                //const scroll = this.scrollerRef.current?.scrollViewRef.current;
+                                //if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
+                                console.log("show");
+                                this.successModalRef.current?.show(profile);
                             }}
-                            onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
-                            onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
+                            onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile))}
+                            onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
                             onHidden={() => hide()}
                             showSwipeTip={profile.id == profiles[0].id && isFirstLaunch}
                         />
@@ -70,6 +75,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     itemsContainerStyle={{paddingTop: 100, paddingBottom: 25}}
                     progressViewOffset={100}
                 />
+                <MatchSuccessModal ref={this.successModalRef} />
             </ScreenWrapper>
         );
     }
