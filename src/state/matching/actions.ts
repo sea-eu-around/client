@@ -246,14 +246,19 @@ const likeProfileSuccess = (
     roomId,
 });
 
-export const likeProfile = (profile: UserProfile): AppThunk => async (dispatch, getState) => {
+export const likeProfile = (profile: UserProfile): AppThunk<Promise<MatchActionResponseDto | null>> => async (
+    dispatch,
+    getState,
+) => {
     const token = getState().auth.token;
     const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profile.id}, token, true);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const {status, roomId} = payload as MatchActionResponseDto;
         dispatch(likeProfileSuccess(profile, status, roomId));
+        return {status, roomId};
     }
+    return null;
 };
 
 const dislikeProfileSuccess = (profile: UserProfile): DislikeProfileSuccessAction => ({
