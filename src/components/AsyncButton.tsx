@@ -1,16 +1,14 @@
 import * as React from "react";
-import {ActivityIndicator, StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle} from "react-native";
+import {ActivityIndicator, StyleProp, Text, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
+import Button, {ButtonProps, BUTTON_SKINS} from "./Button";
 
 // Component props
-export type AsyncButtonProps = {
+export type AsyncButtonProps = Omit<ButtonProps, "onPress"> & {
     onPress: () => Promise<unknown>;
-    style?: StyleProp<ViewStyle>;
-    textStyle?: StyleProp<TextStyle>;
     loadingIndicatorStyle?: StyleProp<ViewStyle>;
-    color?: string;
-    text: string;
+    loadingIndicatorColor?: string;
 } & ThemeProps;
 
 // Component state
@@ -32,27 +30,29 @@ class AsyncButton extends React.Component<AsyncButtonProps, AsyncButtonState> {
     }
 
     render(): JSX.Element {
-        const {text, style, textStyle, loadingIndicatorStyle, color, theme} = this.props;
+        const {loadingIndicatorStyle, loadingIndicatorColor, theme, ...otherProps} = this.props;
         const {loading} = this.state;
 
+        const skinStyles = this.props.skin ? BUTTON_SKINS[this.props.skin](theme) : {button: {}, text: {}};
+
         return (
-            <TouchableOpacity
-                accessibilityRole="button"
-                accessibilityLabel={text}
-                {...{onPress: loading ? undefined : () => this.onPress()}}
-                style={style}
-            >
+            <Button {...otherProps} {...{onPress: loading ? undefined : () => this.onPress()}}>
                 {loading && (
-                    <ActivityIndicator
-                        color={color || theme.accentTernary}
-                        style={[
-                            {position: "absolute", top: 0, right: 0, bottom: 0, left: 0, margin: "auto"},
-                            loadingIndicatorStyle,
-                        ]}
-                    />
+                    <>
+                        <ActivityIndicator
+                            color={loadingIndicatorColor || theme.accentTernary}
+                            style={[
+                                {position: "absolute", top: 0, right: 0, bottom: 0, left: 0, margin: "auto"},
+                                loadingIndicatorStyle,
+                            ]}
+                        />
+                        <View style={{opacity: 0}}>
+                            <Text style={[skinStyles.text, this.props.textStyle]}>{this.props.text}</Text>
+                            {this.props.icon}
+                        </View>
+                    </>
                 )}
-                <Text style={[{opacity: loading ? 0 : 1}, textStyle]}>{text}</Text>
-            </TouchableOpacity>
+            </Button>
         );
     }
 }
