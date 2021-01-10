@@ -1,8 +1,6 @@
 import {AnyAction, Middleware, Dispatch} from "redux";
-import {MatchActionStatus} from "../api/dto";
 import {rootNavigate} from "../navigation/utils";
 import {AUTH_ACTION_TYPES, LogInSuccessAction, LogOutAction} from "./auth/actions";
-import {LikeProfileSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
 import {AppState} from "./types";
 
@@ -47,11 +45,6 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         }
         case AUTH_ACTION_TYPES.RESET_PASSWORD_SUCCESS: {
             rootNavigate("ResetPasswordSuccessScreen");
-            break;
-        }
-        case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
-            const {matchStatus, roomId} = action as LikeProfileSuccessAction;
-            if (matchStatus == MatchActionStatus.Matched) rootNavigate("MatchSuccessScreen", {roomId});
             break;
         }
         case AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS: {

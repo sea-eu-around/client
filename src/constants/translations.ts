@@ -848,7 +848,6 @@ export default {
             ResetPasswordSuccessScreen: "Password reset",
             OnboardingSuccessfulScreen: "Successful registration",
             NotFoundScreen: "Not Found",
-            MatchSuccessScreen: "Match!",
             ForgotPasswordEmailSentScreen: "Forgot password",
         },
         // Settings screen

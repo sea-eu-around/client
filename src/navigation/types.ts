@@ -37,7 +37,6 @@ export type TabMatchingRoot = {
     TabMatchingScreen: undefined;
     MatchFilteringScreen: undefined;
     MatchHistoryScreen: undefined;
-    MatchSuccessScreen: undefined;
 };
 
 // TAB: Messaging

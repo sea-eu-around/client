@@ -22,7 +22,6 @@ export const AUTHENTICATED_ROUTES: NavigatorRoute[] = ([
     "MainScreen",
     "MatchFilteringScreen",
     "MatchHistoryScreen",
-    "MatchSuccessScreen",
     "MyProfileScreen",
     "OnboardingSuccessfulScreen",
     "ProfileScreen",

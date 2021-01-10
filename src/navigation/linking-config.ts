@@ -31,7 +31,6 @@ const config: LinkingOptions = {
                         screens: {
                             TabMatchingScreen: "match",
                             MatchFilteringScren: "match/filters",
-                            MatchSuccessScreen: "match/success",
                         },
                     },
                     TabMessaging: {
