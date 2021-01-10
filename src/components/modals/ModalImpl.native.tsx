@@ -1,3 +1,4 @@
+import {BlurView} from "expo-blur";
 import React from "react";
 import {Modal, TouchableOpacity, ViewStyle, StyleSheet, StyleProp} from "react-native";
 import {withTheme} from "react-native-elements";
@@ -17,6 +18,7 @@ export type ModalImplProps = ThemeProps & {
     nonDismissable?: boolean;
     noBackground?: boolean;
     backdropOpacity?: number;
+    backdropBlur?: boolean;
 };
 
 type ModalImplState = {
@@ -51,41 +53,48 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
             nonDismissable,
             noBackground,
             backdropOpacity,
+            backdropBlur,
         } = this.props;
         const {modalVisible} = this.state;
+
         const styles = themedStyles(theme);
+        const backdropColor = `rgba(0,0,0,${backdropOpacity === undefined ? 0.05 : backdropOpacity})`;
+
+        const content = (
+            <TouchableOpacity
+                style={[styles.backdrop, {backgroundColor: backdropColor}]}
+                activeOpacity={1.0}
+                onPress={nonDismissable ? undefined : () => this.setModalVisible(false)}
+            >
+                <TouchableOpacity
+                    // This TouchableOpacity intercepts press events so the modal doesn't hide when pressed
+                    activeOpacity={1.0}
+                    style={[
+                        styles.modalView,
+                        bottom ? {position: "absolute", bottom: 0, margin: 0} : {},
+                        fullWidth ? {width: "100%", maxWidth: "100%"} : {},
+                        fullHeight ? {height: "100%"} : {},
+                        !noBackground
+                            ? {
+                                  backgroundColor: theme.cardBackground,
+                                  shadowColor: "#000",
+                                  shadowOffset: {width: 0, height: 1},
+                                  shadowOpacity: 0.22,
+                                  shadowRadius: 2.22,
+                                  elevation: 3,
+                              }
+                            : {elevation: 0, shadowRadius: 0},
+                        modalViewStyle,
+                    ]}
+                >
+                    {this.props.renderContent(() => this.setModalVisible(false))}
+                </TouchableOpacity>
+            </TouchableOpacity>
+        );
 
         return (
-            <Modal animationType={animationType} transparent={true} visible={modalVisible}>
-                <TouchableOpacity
-                    style={[styles.centeredView, {backgroundColor: `rgba(0,0,0,${backdropOpacity || 0.05})`}]}
-                    activeOpacity={1.0}
-                    onPress={nonDismissable ? undefined : () => this.setModalVisible(false)}
-                >
-                    <TouchableOpacity
-                        // This TouchableOpacity intercepts press events so the modal doesn't hide when pressed
-                        activeOpacity={1.0}
-                        style={[
-                            styles.modalView,
-                            bottom ? {position: "absolute", bottom: 0, margin: 0} : {},
-                            fullWidth ? {width: "100%", maxWidth: "100%"} : {},
-                            fullHeight ? {height: "100%"} : {},
-                            !noBackground
-                                ? {
-                                      backgroundColor: theme.cardBackground,
-                                      shadowColor: "#000",
-                                      shadowOffset: {width: 0, height: 1},
-                                      shadowOpacity: 0.22,
-                                      shadowRadius: 2.22,
-                                      elevation: 3,
-                                  }
-                                : {elevation: 0, shadowRadius: 0},
-                            modalViewStyle,
-                        ]}
-                    >
-                        {this.props.renderContent(() => this.setModalVisible(false))}
-                    </TouchableOpacity>
-                </TouchableOpacity>
+            <Modal animationType={animationType} transparent={true} statusBarTranslucent={true} visible={modalVisible}>
+                {backdropBlur ? <BlurView style={{flex: 1}}>{content}</BlurView> : content}
             </Modal>
         );
     }
@@ -93,7 +102,7 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
 
 export const themedStyles = preTheme(() => {
     return StyleSheet.create({
-        centeredView: {
+        backdrop: {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
