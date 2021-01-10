@@ -16,6 +16,7 @@ import {AppState} from "../state/types";
 import Button from "../components/Button";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import CustomModal, {CustomModalClass} from "../components/modals/CustomModal";
+import {getMatchingOffers} from "../model/utils";
 
 // Map props from store
 const reduxConnector = connect(
@@ -30,7 +31,7 @@ const reduxConnector = connect(
 // Component props
 export type MatchSuccessModalProps = ThemeProps & ConnectedProps<typeof reduxConnector>;
 
-type MatchSuccessModalState = {profile: UserProfile | null};
+type MatchSuccessModalState = {profile: UserProfile | null; roomId: string | null};
 
 const VERTICAL_SPACE_AROUND = 120;
 
@@ -39,12 +40,12 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
 
     constructor(props: MatchSuccessModalProps) {
         super(props);
-        this.state = {profile: null};
+        this.state = {profile: null, roomId: null};
     }
 
-    show(profile: UserProfile): void {
+    show(profile: UserProfile, roomId: string | null): void {
         this.modalRef.current?.show();
-        this.setState({...this.state, profile});
+        this.setState({...this.state, profile, roomId});
     }
 
     hide(): void {
@@ -52,30 +53,8 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
         this.setState({...this.state, profile: null});
     }
 
-    getRoomId(): string | null {
-        /*const params = this.props.route.params;
-        if (params) {
-            const {roomId} = params as {[key: string]: unknown};
-            if (roomId) return roomId as string;
-        }*/
-        return null;
-    }
-
-    getProfile(): UserProfile | null {
-        return JSON.parse(
-            '{"id":"58219076-60da-4616-ad1c-0ae76da6ff85","type":"staff","firstName":"Name","lastName":"Rippin","gender":"female","nationality":"PL","languages":[{"code":"pl","level":"native"},{"code":"ne","level":"b1"},{"code":"he","level":"c2"}],"profileOffers":[{"offerId":"provide-a-couch","allowMale":false,"allowFemale":true,"allowOther":false,"allowStaff":false,"allowStudent":true},{"offerId":"grab-a-drink","allowMale":true,"allowFemale":true,"allowOther":true,"allowStaff":false,"allowStudent":true},{"offerId":"answer-academic-questions","allowMale":true,"allowFemale":true,"allowOther":true,"allowStaff":true,"allowStudent":true}],"avatar":null,"score":0,"avatarUrl":null,"birthdate":"1993-09-18T02:59:24.853Z","educationFields":[],"interests":["fishing","soccer","cycling","surfing","tango","board-games"],"university":{"key":"univ-gdansk","country":"PL"},"staffRoles":[]}',
-        );
-        /*
-        const params = this.props.route.params;
-        if (params) {
-            const {profile} = params as {[key: string]: unknown};
-            if (profile) return unserializeProfile(profile as SerializedProfile);
-        }*/
-        return null;
-    }
-
     async chat(): Promise<void> {
-        const roomId = this.getRoomId();
+        const {roomId} = this.state;
         if (roomId) openChat(roomId);
         else rootNavigate("MainScreen", {screen: "TabMessaging"});
     }
@@ -103,31 +82,12 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                 renderContent={() => (
                     <>
                         <WavyHeader
-                            color={theme.okay}
+                            color={theme.greenModalBackground}
                             style={{marginTop: VERTICAL_SPACE_AROUND - 100}}
                             upsideDown
                             wavePatternIndex={9}
                         ></WavyHeader>
-                        {/*<WavyHeader color={theme.okay} style={{alignItems: "center", justifyContent: "center"}}>
-                        <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
-                        <View style={styles.separator} />
-                        <ProfileAvatar profile={profile || undefined} size={200} rounded avatarStyle={styles.avatar} />
-                        <Text style={styles.name}>
-                            {profile?.firstName} {profile?.lastName}
-                        </Text>
-                        <AsyncButton
-                            text={i18n.t("matching.success.chat")}
-                            textStyle={styles.actionText}
-                            style={styles.actionButton}
-                            onPress={async () => await this.chat()}
-                        />
-                        <TouchableOpacity
-                            style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
-                            onPress={() => rootNavigate("TabMatchingScreen")}
-                        >
-                            <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
-                        </TouchableOpacity>
-                    </WavyHeader>*/}
+
                         <View style={styles.container}>
                             <View style={styles.topContainer}>
                                 <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
@@ -163,9 +123,7 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                                 <AsyncButton
                                     text={i18n.t("matching.success.chat")}
                                     skin="rounded-filled"
-                                    //textStyle={styles.actionText}
                                     icon={<MaterialCommunityIcons name="chat" style={styles.actionIcon} />}
-                                    //style={styles.actionButton}
                                     onPress={async () => await this.chat()}
                                 />
                                 <Button
@@ -178,13 +136,13 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                                     }
                                     skin="rounded-filled"
                                     style={[{backgroundColor: theme.actionNeutral}]}
-                                    onPress={() => /*rootNavigate("TabMatchingScreen")*/ this.hide()}
+                                    onPress={() => this.hide()}
                                 />
                             </View>
                         </View>
-                        {/*<WavyHeader color={theme.okay} style={{height: 0, transform: [{rotate: "0deg"}]}}></WavyHeader>*/}
+
                         <WavyHeader
-                            color={theme.okay}
+                            color={theme.greenModalBackground}
                             style={{position: "absolute", bottom: VERTICAL_SPACE_AROUND}}
                             wavePatternIndex={5}
                         ></WavyHeader>
@@ -195,43 +153,6 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
     }
 }
 
-function getMatchingOffers(offers: OfferValueDto[], profile: UserProfile): OfferValueDto[] {
-    return offers.filter((o: OfferValueDto) => {
-        if (
-            (!o.allowFemale && profile.gender === "female") ||
-            (!o.allowMale && profile.gender === "male") ||
-            (!o.allowOther && profile.gender === "other") ||
-            (!o.allowStaff && profile.type === "staff") ||
-            (!o.allowStudent && profile.type === "student")
-        )
-            return false;
-        return true;
-    });
-}
-
-/*
-<View style={styles.container}>
-    <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
-    <View style={styles.separator} />
-    <ProfileAvatar profile={profile || undefined} size={200} rounded avatarStyle={styles.avatar} />
-    <Text style={styles.name}>
-        {profile?.firstName} {profile?.lastName}
-    </Text>
-    <AsyncButton
-        text={i18n.t("matching.success.chat")}
-        textStyle={styles.actionText}
-        style={styles.actionButton}
-        onPress={async () => await this.chat()}
-    />
-    <TouchableOpacity
-        style={[styles.actionButton, {backgroundColor: theme.actionNeutral}]}
-        onPress={() => rootNavigate("TabMatchingScreen")}
-    >
-        <Text style={styles.actionText}>{i18n.t("matching.success.continue")}</Text>
-    </TouchableOpacity>
-</View>
-*/
-
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
@@ -239,10 +160,9 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             alignItems: "center",
             justifyContent: "space-between",
-            backgroundColor: theme.okay,
+            backgroundColor: theme.greenModalBackground,
             marginTop: 100,
             marginBottom: VERTICAL_SPACE_AROUND,
-            //backgroundColor: "red",
         },
         topContainer: {
             alignItems: "center",
@@ -278,11 +198,6 @@ const themedStyles = preTheme((theme: Theme) => {
             borderWidth: 0.5,
         },
         name: {
-            /*backgroundColor: "#0001",
-            borderRadius: 20,
-            paddingVertical: 5,
-            paddingHorizontal: 20,*/
-
             color: theme.textWhite,
             fontSize: 22,
             marginTop: 5,
@@ -303,19 +218,6 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 22,
             color: theme.textWhite,
             marginLeft: 10,
-        },
-        actionButton: {
-            backgroundColor: theme.accent,
-            paddingHorizontal: 30,
-            paddingVertical: 10,
-            marginVertical: 10,
-            borderRadius: 20,
-        },
-        actionText: {
-            color: theme.textWhite,
-            fontSize: 18,
-            letterSpacing: 1,
-            textTransform: "uppercase",
         },
     });
 });
