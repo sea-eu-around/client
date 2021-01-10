@@ -11,4 +11,4 @@ export const webFontFamily =
 
 export const BLUR_HEADER_INTENSITY = Platform.OS === "ios" ? 100 : 320;
 export const BLUR_TAB_INTENSITY = Platform.OS === "ios" ? 100 : 320;
-export const BLUR_MODAL_INTENSITY = 90;
+export const BLUR_MODAL_INTENSITY = Platform.OS === "ios" ? 90 : 80;
