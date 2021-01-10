@@ -10,6 +10,7 @@ export type WavyHeaderProps = {
 };
 
 type WavyHeaderState = {
+    headerWidth: number;
     waveTop: number;
     wavePatternIdx: number;
 };
@@ -33,6 +34,7 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
     constructor(props: WavyHeaderProps) {
         super(props);
         this.state = {
+            headerWidth: 0,
             waveTop: -1,
             // Assign a random wave pattern if none is given
             wavePatternIdx:
@@ -44,7 +46,7 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
 
     render(): JSX.Element {
         const {style, color, upsideDown, children} = this.props;
-        const {waveTop, wavePatternIdx} = this.state;
+        const {headerWidth, waveTop, wavePatternIdx} = this.state;
 
         const wavePattern = WAVE_PATTERNS[wavePatternIdx];
 
@@ -53,8 +55,8 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
                 <View
                     style={[{backgroundColor: color, width: "100%", zIndex: 10}, style]}
                     onLayout={(layout) => {
-                        const {y, height} = layout.nativeEvent.layout;
-                        this.setState({...this.state, waveTop: y + height});
+                        const {y, height, width} = layout.nativeEvent.layout;
+                        this.setState({...this.state, headerWidth: width, waveTop: y + height});
                     }}
                 >
                     {children}
@@ -64,14 +66,14 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
                         style={{
                             position: "absolute",
                             top: waveTop,
-                            width: "100%",
+                            width: headerWidth,
                             minWidth: 400, // fix empty space above the wave on narrow screens
                             height: 100,
                             zIndex: 10,
                             ...(upsideDown ? {transform: [{rotate: "180deg"}]} : {}),
                         }}
                     >
-                        <Svg viewBox="0 40 1440 320">
+                        <Svg viewBox="0 40 1440 320" preserveAspectRatio="none">
                             <Path fill={color} d={wavePattern} />
                         </Svg>
                     </View>
