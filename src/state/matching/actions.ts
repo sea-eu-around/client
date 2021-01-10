@@ -59,14 +59,14 @@ export type SetMatchingFiltersAction = {
 
 export type LikeProfileSuccessAction = {
     type: string;
-    profileId: string;
+    profile: UserProfile;
     matchStatus: MatchActionStatus;
     roomId: string | null;
 };
 
 export type DislikeProfileSuccessAction = {
     type: string;
-    profileId: string;
+    profile: UserProfile;
 };
 
 export type BlockProfileSuccessAction = {
@@ -208,12 +208,15 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         },
         {},
         token,
+        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
         const profiles = (paginated.data as ResponseProfileDto[]).map(convertDtoToProfile);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+        console.log("fetched", profiles.length, "profiles");
+        console.log("meta", paginated.meta);
         dispatch(fetchProfilesSuccess(profiles, canFetchMore));
     } else dispatch(fetchProfilesFailure());
 };
@@ -233,35 +236,35 @@ export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
 });
 
 const likeProfileSuccess = (
-    profileId: string,
+    profile: UserProfile,
     matchStatus: MatchActionStatus,
     roomId: string | null,
 ): LikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS,
-    profileId,
+    profile,
     matchStatus,
     roomId,
 });
 
-export const likeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
+export const likeProfile = (profile: UserProfile): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, token, true);
+    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profile.id}, token, true);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const {status, roomId} = payload as MatchActionResponseDto;
-        dispatch(likeProfileSuccess(profileId, status, roomId));
+        dispatch(likeProfileSuccess(profile, status, roomId));
     }
 };
 
-const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction => ({
+const dislikeProfileSuccess = (profile: UserProfile): DislikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS,
-    profileId,
+    profile,
 });
 
-export const dislikeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
+export const dislikeProfile = (profile: UserProfile): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, token, true);
-    if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
+    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profile.id}, token, true);
+    if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profile));
 };
 
 const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({

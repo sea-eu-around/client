@@ -99,17 +99,17 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             };
         }
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
-            const {profileId} = <LikeProfileSuccessAction>action;
+            const {profile} = <LikeProfileSuccessAction>action;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profile.id),
             };
         }
         case MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS: {
-            const {profileId} = <DislikeProfileSuccessAction>action;
+            const {profile} = <DislikeProfileSuccessAction>action;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profile.id),
             };
         }
         case MATCHING_ACTION_TYPES.BLOCK_PROFILE_SUCCESS: {
