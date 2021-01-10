@@ -34,6 +34,7 @@ export type MatchSuccessModalProps = ThemeProps & ConnectedProps<typeof reduxCon
 type MatchSuccessModalState = {profile: UserProfile | null; roomId: string | null};
 
 const VERTICAL_SPACE_AROUND = 120;
+const MAX_WIDTH = 500;
 
 export class MatchSuccessModalClass extends React.Component<MatchSuccessModalProps, MatchSuccessModalState> {
     private modalRef = React.createRef<CustomModalClass>();
@@ -72,13 +73,12 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
         return (
             <CustomModal
                 ref={this.modalRef}
-                fullWidth
                 fullHeight
                 noBackground
                 backdropBlur
                 backdropOpacity={0}
                 animationType="fade"
-                modalViewStyle={{paddingHorizontal: 0, paddingVertical: 0}}
+                modalViewStyle={{paddingHorizontal: 0, paddingVertical: 0, width: "100%", maxWidth: MAX_WIDTH}}
                 renderContent={() => (
                     <>
                         <WavyHeader
@@ -99,7 +99,7 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                                     profile={profile || undefined}
                                     size={150}
                                     rounded
-                                    avatarStyle={styles.avatar}
+                                    containerStyle={styles.avatarContainer}
                                 />
                                 <Text style={styles.name}>
                                     {profile?.firstName} {profile?.lastName}
@@ -193,7 +193,7 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.cardBackground,
             opacity: 0.5,
         },
-        avatar: {
+        avatarContainer: {
             borderColor: theme.textWhite,
             borderWidth: 0.5,
         },
