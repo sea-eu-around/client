@@ -3,8 +3,10 @@ import {StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle} from "react-nat
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 
-const SKINS = {
-    "rounded-filled": (theme: Theme) => ({
+export type ButtonSkinStyle = {button: ViewStyle; text: TextStyle};
+
+export const BUTTON_SKINS = {
+    "rounded-filled": (theme: Theme): ButtonSkinStyle => ({
         button: {
             justifyContent: "center",
             alignItems: "center",
@@ -20,7 +22,7 @@ const SKINS = {
             color: theme.textWhite,
         },
     }),
-    "rounded-hollow": (theme: Theme) => ({
+    "rounded-hollow": (theme: Theme): ButtonSkinStyle => ({
         button: {
             justifyContent: "center",
             alignItems: "center",
@@ -39,10 +41,10 @@ const SKINS = {
     }),
 };
 
-export type ButtonSkin = keyof typeof SKINS;
+export type ButtonSkin = keyof typeof BUTTON_SKINS;
 
 // Component props
-type ButtonProps = {
+export type ButtonProps = {
     onPress?: () => void;
     text?: string;
     icon?: JSX.Element;
@@ -55,7 +57,7 @@ class Button extends React.Component<ButtonProps> {
     render(): JSX.Element {
         const {onPress, text, icon, skin, style, textStyle, children, theme} = this.props;
 
-        const skinStyles = skin ? SKINS[skin](theme) : {button: {}, text: {}};
+        const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
         return (
             <TouchableOpacity
