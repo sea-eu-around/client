@@ -3,9 +3,10 @@ import {StyleProp, View, ViewStyle} from "react-native";
 import Svg, {Path} from "react-native-svg";
 
 export type WavyHeaderProps = {
-    style: StyleProp<ViewStyle>;
+    style?: StyleProp<ViewStyle>;
     color: string;
-    wavePattern?: string;
+    wavePatternIndex?: number;
+    upsideDown?: boolean;
 };
 
 type WavyHeaderState = {
@@ -25,7 +26,6 @@ const WAVE_PATTERNS = [
     "M0,128L60,117.3C120,107,240,85,360,64C480,43,600,21,720,64C840,107,960,213,1080,250.7C1200,288,1320,256,1380,240L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
     "M0,288L60,245.3C120,203,240,117,360,101.3C480,85,600,139,720,176C840,213,960,235,1080,240C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
     "M0,96L60,117.3C120,139,240,181,360,181.3C480,181,600,139,720,138.7C840,139,960,181,1080,202.7C1200,224,1320,224,1380,224L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z",
-    // EditProfileForm
     "M0,160L48,181.3C96,203,192,245,288,261.3C384,277,480,267,576,224C672,181,768,107,864,106.7C960,107,1056,181,1152,202.7C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z",
 ];
 
@@ -34,16 +34,19 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
         super(props);
         this.state = {
             waveTop: -1,
-            // Assign a random wave pattern
-            wavePatternIdx: Math.floor(Math.random() * WAVE_PATTERNS.length),
+            // Assign a random wave pattern if none is given
+            wavePatternIdx:
+                props.wavePatternIndex === undefined
+                    ? Math.floor(Math.random() * WAVE_PATTERNS.length)
+                    : props.wavePatternIndex,
         };
     }
 
     render(): JSX.Element {
-        const {style, color, children} = this.props;
-        const {waveTop} = this.state;
+        const {style, color, upsideDown, children} = this.props;
+        const {waveTop, wavePatternIdx} = this.state;
 
-        const wavePattern = this.props.wavePattern || WAVE_PATTERNS[this.state.wavePatternIdx];
+        const wavePattern = WAVE_PATTERNS[wavePatternIdx];
 
         return (
             <>
@@ -65,6 +68,7 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
                             minWidth: 400, // fix empty space above the wave on narrow screens
                             height: 100,
                             zIndex: 10,
+                            ...(upsideDown ? {transform: [{rotate: "180deg"}]} : {}),
                         }}
                     >
                         <Svg viewBox="0 40 1440 320">
@@ -76,11 +80,3 @@ export default class WavyHeader extends React.Component<WavyHeaderProps, WavyHea
         );
     }
 }
-
-/*
-<View style={{position: "absolute", top: waveTop, width: "100%", height: 100, zIndex: 10}}>
-    <Svg viewBox="0 20 1440 320">
-        <Path fill={color} d={wavePattern} />
-    </Svg>
-</View>
-*/
