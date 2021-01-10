@@ -2,6 +2,7 @@ import {BlurView} from "expo-blur";
 import React from "react";
 import {Modal, TouchableOpacity, ViewStyle, StyleSheet, StyleProp} from "react-native";
 import {withTheme} from "react-native-elements";
+import {BLUR_MODAL_INTENSITY} from "../../styles/general";
 import {preTheme} from "../../styles/utils";
 import {ThemeProps} from "../../types";
 
@@ -94,7 +95,17 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
 
         return (
             <Modal animationType={animationType} transparent={true} statusBarTranslucent={true} visible={modalVisible}>
-                {backdropBlur ? <BlurView style={{flex: 1}}>{content}</BlurView> : content}
+                {backdropBlur ? (
+                    <BlurView
+                        style={{flex: 1}}
+                        tint={theme.id === "dark" ? "dark" : "default"}
+                        intensity={BLUR_MODAL_INTENSITY}
+                    >
+                        {content}
+                    </BlurView>
+                ) : (
+                    content
+                )}
             </Modal>
         );
     }
