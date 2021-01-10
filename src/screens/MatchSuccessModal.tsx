@@ -98,6 +98,7 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                 noBackground
                 backdropBlur
                 backdropOpacity={0}
+                animationType="fade"
                 modalViewStyle={{paddingHorizontal: 0, paddingVertical: 0}}
                 renderContent={() => (
                     <>
