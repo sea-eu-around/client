@@ -31,6 +31,7 @@ const config: LinkingOptions = {
                         screens: {
                             TabMatchingScreen: "match",
                             MatchFilteringScren: "match/filters",
+                            MatchSuccessScreen: "match/success",
                         },
                     },
                     TabMessaging: {
@@ -72,7 +73,6 @@ const config: LinkingOptions = {
                 },
             },
             OnboardingSuccessfulScreen: "onboarding/success",
-            MatchSuccessScreen: "match/success",
             NotFoundScreen: "*",
         },
     },

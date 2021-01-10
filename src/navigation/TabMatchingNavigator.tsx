@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import * as React from "react";
-import {createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
+import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import {TabMatchingRoot} from "./types";
 import TabMatchingScreen from "../screens/TabMatchingScreen";
 import {screenTitle} from "./utils";
@@ -9,6 +9,8 @@ import MatchFilteringScreen from "../screens/MatchFilteringScreen";
 import FilteringScreenHeader from "../components/headers/FilteringScreenHeader";
 import MatchHistoryScreen from "../screens/MatchHistoryScreen";
 import MainHeader from "../components/headers/MainHeader";
+import MatchSuccessScreen from "../screens/MatchSuccessScreen";
+import {Platform} from "react-native";
 
 const TabMatchingStack = createStackNavigator<TabMatchingRoot>();
 
@@ -44,6 +46,18 @@ export const TabMatchingNavigator = (): JSX.Element => (
                 headerShown: true,
                 title: screenTitle("MatchHistoryScreen"),
                 header: (props: StackHeaderProps) => <MainHeader backButton={true} {...props} />,
+            }}
+        />
+        <TabMatchingStack.Screen
+            name="MatchSuccessScreen"
+            component={MatchSuccessScreen}
+            options={{
+                headerShown: false,
+                cardStyleInterpolator:
+                    Platform.OS == "ios"
+                        ? CardStyleInterpolators.forVerticalIOS
+                        : CardStyleInterpolators.forFadeFromBottomAndroid,
+                title: screenTitle("MatchSuccessScreen"),
             }}
         />
     </TabMatchingStack.Navigator>

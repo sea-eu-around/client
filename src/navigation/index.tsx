@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import {NavigationContainer, DefaultTheme, DarkTheme, NavigationState} from "@react-navigation/native";
-import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
+import {createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
@@ -14,8 +14,6 @@ import {rootNavigationRef, screenTitle, unauthorizedRedirect} from "./utils";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
-import MatchSuccessScreen from "../screens/MatchSuccessScreen";
-import {Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
@@ -179,18 +177,6 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
                     name="NotFoundScreen"
                     component={NotFoundScreen}
                     options={{title: screenTitle("NotFoundScreen")}}
-                />
-                <Stack.Screen
-                    name="MatchSuccessScreen"
-                    component={MatchSuccessScreen}
-                    options={{
-                        headerShown: false,
-                        cardStyleInterpolator:
-                            Platform.OS == "ios"
-                                ? CardStyleInterpolators.forVerticalIOS
-                                : CardStyleInterpolators.forFadeFromBottomAndroid,
-                        title: screenTitle("MatchSuccessScreen"),
-                    }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

@@ -15,7 +15,6 @@ export type RootNavigatorScreens = {
     SettingsScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
-    MatchSuccessScreen: undefined;
     NotFoundScreen: undefined;
 };
 
@@ -38,6 +37,7 @@ export type TabMatchingRoot = {
     TabMatchingScreen: undefined;
     MatchFilteringScreen: undefined;
     MatchHistoryScreen: undefined;
+    MatchSuccessScreen: undefined;
 };
 
 // TAB: Messaging
