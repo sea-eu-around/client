@@ -99,6 +99,7 @@ export default {
         countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
         profileType: "Type",
         profileTypes: "Types",
+        offers: "Offers",
         allRoles: {
             student: "Student",
             staff: "Staff",
@@ -324,8 +325,10 @@ export default {
                     "I acknowledge that cookies might be used. The information is kept only for application purposes and does not permit to identify the Member except for the cookie enabling UBO to re-authenticate the Member on its arrival on SEA-EU Around, saving the Member from having to re-enter their password at each connection.",
             },
             submit: "Submit",
-            getStarted: "Get Started",
-            profileCreated: "Welcome! Your profile is now created.",
+            success: {
+                title: "Congratulations! Your profile is now created.",
+                button: "Get Started",
+            },
             quit: {
                 title: "Quit on-boarding",
                 text: "Do you really wish to leave? You can resume later.",
@@ -636,12 +639,16 @@ export default {
             "cat-lover": "Cat Lover",
         },
         // Offer-related
+        offersPreText: "I am open to...",
         offerCategories: {
             meet: "Meet",
             discover: "Discover",
             collaborate: "Collaborate",
         },
-        offers: "Offers",
+        offerSettings: {
+            genders: "Target genders",
+            roles: "Target positions",
+        },
         allOffers: {
             "grab-a-drink": {
                 name: "Grab a drink",
@@ -668,7 +675,7 @@ export default {
                 help: "I would like to chat with other users about common interests.",
             },
             "language-tandem": {
-                name: "Language tandem",
+                name: "Join a language tandem",
                 help: "I am willing to join a language tandem to help others learn one of my languages.",
             },
         },
@@ -771,9 +778,9 @@ export default {
             actionLike: "Like",
             actionHide: "Hide",
             success: {
-                title: "It's a match !",
-                chat: "Start chatting",
-                continue: "Keep scrolling",
+                title: "It's a match!",
+                chat: "Start Chatting",
+                continue: "Keep Scrolling",
             },
             history: {
                 status: {
