@@ -14,7 +14,8 @@ import {TabMatchingRoot} from "../navigation/types";
 import {PROFILES_FETCH_LIMIT} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
 import InfiniteScroller from "../components/InfiniteScroller";
-import MatchSuccessModal, {MatchSuccessModalClass} from "./MatchSuccessModal";
+import MatchSuccessModal, {MatchSuccessModalClass} from "../components/modals/MatchSuccessModal";
+import {MatchActionStatus} from "../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
@@ -37,7 +38,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
         const styles = themedStyles(theme);
 
         return (
-            <ScreenWrapper>
+            <ScreenWrapper forceFullWidth>
                 <InfiniteScroller
                     ref={this.scrollerRef}
                     navigation={navigation}
@@ -59,20 +60,21 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             key={`match-profile-card-${profile.id}`}
                             profile={profile}
                             onExpand={(layout: LayoutRectangle) => {
-                                // TODO temp
-                                //const scroll = this.scrollerRef.current?.scrollViewRef.current;
-                                //if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
-                                console.log("show");
-                                this.successModalRef.current?.show(profile);
+                                const scroll = this.scrollerRef.current?.scrollViewRef.current;
+                                if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
                             }}
-                            onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile))}
+                            onSwipeRight={async () => {
+                                const response = await (dispatch as MyThunkDispatch)(likeProfile(profile));
+                                if (response && response.status === MatchActionStatus.Matched)
+                                    this.successModalRef.current?.show(profile, response.roomId);
+                            }}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
                             onHidden={() => hide()}
                             showSwipeTip={profile.id == profiles[0].id && isFirstLaunch}
                         />
                     )}
                     // Compensate for the header
-                    itemsContainerStyle={{paddingTop: 100, paddingBottom: 25}}
+                    itemsContainerStyle={styles.itemsContainer}
                     progressViewOffset={100}
                 />
                 <MatchSuccessModal ref={this.successModalRef} />
@@ -93,6 +95,13 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             letterSpacing: 0.5,
             color: theme.text,
+        },
+        itemsContainer: {
+            width: "100%",
+            maxWidth: 600,
+            alignSelf: "center",
+            paddingTop: 100,
+            paddingBottom: 25,
         },
     });
 });
