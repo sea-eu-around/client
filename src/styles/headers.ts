@@ -9,8 +9,8 @@ export const headerStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: 15,
-            paddingBottom: 10,
-            height: 100,
+            height: 90,
+            paddingBottom: 5,
         },
         wrapperBlur: {
             backgroundColor: "transparent",
