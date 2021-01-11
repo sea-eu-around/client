@@ -349,7 +349,7 @@ export const fetchHistory = (search?: string): AppThunk => async (dispatch, getS
             page: historyPagination.page,
             limit: HISTORY_FETCH_LIMIT,
             status: Object.keys(historyFilters).filter((k) => historyFilters[k]),
-            search,
+            search: search && search.length > 0 ? search : undefined,
         },
         {},
         token,
