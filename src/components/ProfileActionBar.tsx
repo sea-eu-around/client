@@ -127,7 +127,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             flexDirection: "row",
             justifyContent: "center",
-            marginTop: 20,
+            marginVertical: 15,
         },
         button: {
             width: 75,
