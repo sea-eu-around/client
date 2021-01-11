@@ -1,19 +1,21 @@
 import * as React from "react";
-import {Platform, StyleSheet, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 
-type ScreenWrapperProps = ThemeProps;
+type ScreenWrapperProps = ThemeProps & {forceFullWidth?: boolean};
 
 class ScreenWrapper extends React.Component<ScreenWrapperProps> {
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, forceFullWidth} = this.props;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.wrapper}>
-                <View style={styles.container}>{this.props.children}</View>
+                <View style={[styles.container, forceFullWidth ? {maxWidth: undefined} : {}]}>
+                    {this.props.children}
+                </View>
             </View>
         );
     }
@@ -29,7 +31,7 @@ const themedStyles = preTheme(() => {
         container: {
             flex: 1,
             alignItems: "center",
-            ...(Platform.OS === "web" ? {maxWidth: 1000} : {}),
+            maxWidth: 1000,
         },
     });
 });
