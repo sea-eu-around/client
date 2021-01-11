@@ -97,6 +97,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                             showSwipeTip={item.id === historyItems[0].id}
                         />
                     )}
+                    itemsContainerStyle={styles.itemsContainer}
                 />
             </ScreenWrapper>
         );
@@ -144,10 +145,10 @@ const themedStyles = preTheme((theme: Theme) => {
             height: 1,
             width: "100%",
         },
-        filtersIcon: {
-            paddingHorizontal: 5,
-            fontSize: 26,
-            color: theme.textLight,
+        itemsContainer: {
+            width: "100%",
+            maxWidth: 600,
+            alignSelf: "center",
         },
         headerContainer: {
             flexDirection: "row",
@@ -164,6 +165,7 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.5,
             color: theme.text,
         },
+        // Filters
         filtersContainer: {
             width: "100%",
             marginVertical: 10,

@@ -49,6 +49,7 @@ class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
                     renderItem={(roomId: string) => (
                         <ChatRoomCard key={`chat-room-card-${roomId}`} room={rooms[roomId]} />
                     )}
+                    itemsContainerStyle={styles.itemsContainer}
                 />
             </ScreenWrapper>
         );
@@ -64,6 +65,11 @@ export const themedStyles = preTheme((theme: Theme) => {
             lineHeight: 24,
             textAlign: "center",
             paddingHorizontal: 50,
+        },
+        itemsContainer: {
+            width: "100%",
+            maxWidth: 600,
+            alignSelf: "center",
         },
     });
 });
