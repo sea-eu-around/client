@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, ScrollView} from "react-native";
 import {withTheme} from "react-native-elements";
 import {openChat, rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
@@ -89,7 +89,11 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                             wavePatternIndex={9}
                         ></WavyHeader>
 
-                        <View style={styles.container}>
+                        <ScrollView
+                            style={styles.scroll}
+                            contentContainerStyle={styles.container}
+                            overScrollMode="never"
+                        >
                             <View style={styles.topContainer}>
                                 <Text style={styles.title}>{i18n.t("matching.success.title")}</Text>
                                 <View style={styles.separator} />
@@ -140,7 +144,7 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                                     onPress={() => this.hide()}
                                 />
                             </View>
-                        </View>
+                        </ScrollView>
 
                         <WavyHeader
                             color={theme.greenModalBackground}
@@ -156,14 +160,19 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
-            flex: 1,
+        scroll: {
             width: "100%",
-            alignItems: "center",
-            justifyContent: "space-between",
-            backgroundColor: theme.greenModalBackground,
+            flexGrow: 1,
             marginTop: 100,
             marginBottom: VERTICAL_SPACE_AROUND,
+            backgroundColor: theme.greenModalBackground,
+        },
+        container: {
+            width: "100%",
+            flexGrow: 1,
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingVertical: 10,
         },
         topContainer: {
             alignItems: "center",
