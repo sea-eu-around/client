@@ -34,7 +34,7 @@ import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
 import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
-import ScrollFormWrapper from "./ScrollFormWrapper";
+import {ScrollView} from "react-native-gesture-handler";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
@@ -61,185 +61,8 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 
         const profile = user?.profile;
 
-        const profileFieldComponents = (
-            <>
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("emailAddress")}
-                    initialValue={user?.email}
-                    display={(user && <Text style={styles.cardText}>{user.email}</Text>) || undefined}
-                    locked={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("dateOfBirth")}
-                    initialValue={profile?.birthdate}
-                    display={profile && <FormattedDate style={styles.cardText} date={profile.birthdate} />}
-                    renderInput={(value: Date, _error, onChange) => (
-                        <BirthDateInput
-                            ref={this.birthDateInputRef}
-                            date={value}
-                            containerStyle={styles.birthdateInputContainer}
-                            inputStyle={styles.birthdateInput}
-                            onChange={(birthdate?: Date, inputError?: string) => {
-                                onChange(birthdate || value, inputError || null);
-                            }}
-                        />
-                    )}
-                    onModalShown={() => this.birthDateInputRef.current?.focus()}
-                    apply={(birthdate: Date) => this.onFieldChanged({birthdate})}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("nationality")}
-                    initialValue={profile?.nationality}
-                    display={
-                        profile && <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
-                    }
-                    overrideModal={
-                        profile &&
-                        ((hide: () => void) => (
-                            <NationalityPicker
-                                nationality={profile.nationality}
-                                onSelect={(cc: CountryCode) => this.onFieldChanged({nationality: cc})}
-                                onHide={hide}
-                            />
-                        ))
-                    }
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("gender")}
-                    initialValue={profile?.gender}
-                    display={
-                        profile && (
-                            <GenderToggle
-                                gender={profile.gender}
-                                onSelect={(gender: Gender) => this.onFieldChanged({gender})}
-                            />
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("profileType")}
-                    initialValue={profile?.type}
-                    display={
-                        profile && (
-                            <>
-                                <RoleToggle role={profile.type} disabled={true} />
-                                {profile.type == "staff" && (
-                                    <StaffRolePicker
-                                        staffRoles={(profile as UserProfileStaff).staffRoles}
-                                        onChange={(staffRoles: StaffRole[]) => this.onFieldChanged({staffRoles})}
-                                        multiple={true}
-                                        atLeastOne={true}
-                                        buttonStyle={styles.staffRoleButton}
-                                    />
-                                )}
-                                {profile.type == "student" && (
-                                    <DegreeToggle
-                                        degree={(profile as UserProfileStudent).degree}
-                                        onUpdate={(degree?: Degree) => this.onFieldChanged({degree})}
-                                    />
-                                )}
-                            </>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("fieldsOfEducation")}
-                    initialValue={profile?.educationFields}
-                    display={
-                        <EducationFieldPicker
-                            fields={profile?.educationFields}
-                            onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
-                            showChips={true}
-                        />
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("interests")}
-                    initialValue={profile?.interests}
-                    display={
-                        profile && (
-                            <InterestsPicker
-                                interests={profile.interests}
-                                onChange={(interests: string[]) => this.onFieldChanged({interests})}
-                                showChips={true}
-                            />
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!user}
-                    label={i18n.t("spokenLanguages")}
-                    initialValue={profile?.languages}
-                    validator={VALIDATOR_ONBOARDING_LANGUAGES}
-                    display={
-                        profile && (
-                            <Chips
-                                items={profile?.languages}
-                                label={(item: SpokenLanguageDto) =>
-                                    `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
-                                        `languageLevels.${item.level}`,
-                                    )})`
-                                }
-                            />
-                        )
-                    }
-                    renderInput={(
-                        value: SpokenLanguageDto[],
-                        error: string | null,
-                        onChange: (value: SpokenLanguageDto[]) => void,
-                    ) => (
-                        <SpokenLanguagesInput
-                            languages={value}
-                            onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
-                            style={{width: "100%"}}
-                        />
-                    )}
-                    apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
-                />
-                <Spacer />
-                <OfferCategoryRow
-                    category={OfferCategory.Discover}
-                    profileOffers={profile?.profileOffers}
-                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    theme={theme}
-                />
-                <Spacer />
-                <OfferCategoryRow
-                    category={OfferCategory.Collaborate}
-                    profileOffers={profile?.profileOffers}
-                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    theme={theme}
-                />
-                <Spacer />
-                <OfferCategoryRow
-                    category={OfferCategory.Meet}
-                    profileOffers={profile?.profileOffers}
-                    onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
-                    theme={theme}
-                />
-            </>
-        );
-
         return (
-            <>
+            <ScrollView style={styles.rootScroll} contentContainerStyle={styles.scrollContent} overScrollMode="never">
                 <WavyHeader style={styles.header} color={theme.accent}>
                     <EnlargeableAvatar
                         profile={user?.profile}
@@ -265,12 +88,187 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         />
                     )}
                 </WavyHeader>
-                <ScrollFormWrapper contentStyle={styles.content}>
+
+                <View style={styles.body}>
                     <Text style={styles.title}>{i18n.t("myProfile")}</Text>
-                    {profileFieldComponents}
-                    {!user && <ActivityIndicator size="large" color={theme.accent} />}
-                </ScrollFormWrapper>
-            </>
+                    {!user && <ActivityIndicator size="large" style={styles.loadingIndicator} color={theme.accent} />}
+
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("emailAddress")}
+                        initialValue={user?.email}
+                        display={(user && <Text style={styles.cardText}>{user.email}</Text>) || undefined}
+                        locked={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("dateOfBirth")}
+                        initialValue={profile?.birthdate}
+                        display={profile && <FormattedDate style={styles.cardText} date={profile.birthdate} />}
+                        renderInput={(value: Date, _error, onChange) => (
+                            <BirthDateInput
+                                ref={this.birthDateInputRef}
+                                date={value}
+                                containerStyle={styles.birthdateInputContainer}
+                                inputStyle={styles.birthdateInput}
+                                onChange={(birthdate?: Date, inputError?: string) => {
+                                    onChange(birthdate || value, inputError || null);
+                                }}
+                            />
+                        )}
+                        onModalShown={() => this.birthDateInputRef.current?.focus()}
+                        apply={(birthdate: Date) => this.onFieldChanged({birthdate})}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("nationality")}
+                        initialValue={profile?.nationality}
+                        display={
+                            profile && (
+                                <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
+                            )
+                        }
+                        overrideModal={
+                            profile &&
+                            ((hide: () => void) => (
+                                <NationalityPicker
+                                    nationality={profile.nationality}
+                                    onSelect={(cc: CountryCode) => this.onFieldChanged({nationality: cc})}
+                                    onHide={hide}
+                                />
+                            ))
+                        }
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("gender")}
+                        initialValue={profile?.gender}
+                        display={
+                            profile && (
+                                <GenderToggle
+                                    gender={profile.gender}
+                                    onSelect={(gender: Gender) => this.onFieldChanged({gender})}
+                                />
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("profileType")}
+                        initialValue={profile?.type}
+                        display={
+                            profile && (
+                                <>
+                                    <RoleToggle role={profile.type} disabled={true} />
+                                    {profile.type == "staff" && (
+                                        <StaffRolePicker
+                                            staffRoles={(profile as UserProfileStaff).staffRoles}
+                                            onChange={(staffRoles: StaffRole[]) => this.onFieldChanged({staffRoles})}
+                                            multiple={true}
+                                            atLeastOne={true}
+                                            buttonStyle={styles.staffRoleButton}
+                                        />
+                                    )}
+                                    {profile.type == "student" && (
+                                        <DegreeToggle
+                                            degree={(profile as UserProfileStudent).degree}
+                                            onUpdate={(degree?: Degree) => this.onFieldChanged({degree})}
+                                        />
+                                    )}
+                                </>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("fieldsOfEducation")}
+                        initialValue={profile?.educationFields}
+                        display={
+                            <EducationFieldPicker
+                                fields={profile?.educationFields}
+                                onChange={(educationFields: string[]) => this.onFieldChanged({educationFields})}
+                                showChips={true}
+                            />
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("interests")}
+                        initialValue={profile?.interests}
+                        display={
+                            profile && (
+                                <InterestsPicker
+                                    interests={profile.interests}
+                                    onChange={(interests: string[]) => this.onFieldChanged({interests})}
+                                    showChips={true}
+                                />
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!user}
+                        label={i18n.t("spokenLanguages")}
+                        initialValue={profile?.languages}
+                        validator={VALIDATOR_ONBOARDING_LANGUAGES}
+                        display={
+                            profile && (
+                                <Chips
+                                    items={profile?.languages}
+                                    label={(item: SpokenLanguageDto) =>
+                                        `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
+                                            `languageLevels.${item.level}`,
+                                        )})`
+                                    }
+                                />
+                            )
+                        }
+                        renderInput={(
+                            value: SpokenLanguageDto[],
+                            error: string | null,
+                            onChange: (value: SpokenLanguageDto[]) => void,
+                        ) => (
+                            <SpokenLanguagesInput
+                                languages={value}
+                                onChange={(languages: SpokenLanguageDto[]) => onChange(languages)}
+                                style={{width: "100%"}}
+                            />
+                        )}
+                        apply={(languages: SpokenLanguageDto[]) => this.onFieldChanged({languages})}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Discover}
+                        profileOffers={profile?.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Collaborate}
+                        profileOffers={profile?.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Meet}
+                        profileOffers={profile?.profileOffers}
+                        onApply={(profileOffers: OfferValueDto[]) => this.onFieldChanged({profileOffers})}
+                        theme={theme}
+                    />
+                </View>
+            </ScrollView>
         );
     }
 }
@@ -334,14 +332,23 @@ const OfferCategoryRow = reduxConnector(
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        rootScroll: {
+            width: "100%",
+        },
+        scrollContent: {
+            width: "100%",
+            alignItems: "center",
+        },
+
         // Header-related styles
         header: {
             alignItems: "center",
+            paddingBottom: 10,
         },
         name: {
-            fontSize: 30,
+            fontSize: 28,
             color: theme.textWhite,
-            marginTop: 15,
+            marginTop: 10,
         },
         university: {
             fontSize: 14,
@@ -367,10 +374,17 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
 
         // Content-related style
-        content: {
+        body: {
             width: "90%",
-            paddingTop: 85,
-            marginBottom: 40,
+            maxWidth: 600,
+            paddingTop: 90,
+            paddingBottom: 50,
+        },
+        loadingIndicator: {
+            position: "absolute",
+            top: 70,
+            left: 0,
+            right: 0,
         },
         title: {
             fontSize: 22,

@@ -36,124 +36,8 @@ class ProfileView extends React.Component<ProfileViewProps> {
 
         const fullName = profile ? profile.firstName + " " + profile.lastName : "";
 
-        const profileFieldComponents = (
-            <>
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("dateOfBirth")}
-                    display={profile ? <FormattedDate style={styles.cardText} date={profile.birthdate} /> : <></>}
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("nationality")}
-                    display={
-                        profile ? (
-                            <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("gender")}
-                    display={profile ? <FormattedGender style={styles.cardText} gender={profile.gender} /> : <></>}
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("profileType")}
-                    display={
-                        profile ? (
-                            <>
-                                <Text style={styles.cardText}>{i18n.t(`allRoles.${profile.type}`)}</Text>
-                                {profile.type == "staff" && (
-                                    <>
-                                        {(profile as UserProfileStaff).staffRoles.map((sr: StaffRole) => (
-                                            <Text key={`profile-staff-role-${sr}`}>{i18n.t(`staffRoles.${sr}`)}</Text>
-                                        ))}
-                                    </>
-                                )}
-                                {profile.type == "student" && (
-                                    <Text style={styles.cardText}>
-                                        {i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}
-                                    </Text>
-                                )}
-                            </>
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("fieldsOfEducation")}
-                    display={
-                        profile ? (
-                            <Chips
-                                items={profile.educationFields}
-                                label={(item: string) => i18n.t(`educationFields.${item}`)}
-                            />
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("interests")}
-                    display={
-                        profile ? (
-                            <Chips
-                                items={profile.interests}
-                                label={(item: string) => i18n.t(`interestNames.${item}`)}
-                            />
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <ValueCard
-                    blank={!profile}
-                    label={i18n.t("spokenLanguages")}
-                    display={
-                        profile ? (
-                            <Chips
-                                items={profile.languages}
-                                label={(item: SpokenLanguageDto) =>
-                                    `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
-                                        `languageLevels.${item.level}`,
-                                    )})`
-                                }
-                            />
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noModal={true}
-                />
-                <Spacer />
-                <OfferCategoryRow category={OfferCategory.Discover} profileOffers={profile?.profileOffers || null} />
-                <Spacer />
-                <OfferCategoryRow category={OfferCategory.Collaborate} profileOffers={profile?.profileOffers || null} />
-                <Spacer />
-                <OfferCategoryRow category={OfferCategory.Meet} profileOffers={profile?.profileOffers || null} />
-            </>
-        );
-
         return (
-            <>
+            <ScrollView style={styles.rootScroll} contentContainerStyle={styles.scrollContent} overScrollMode="never">
                 <WavyHeader style={styles.header} color={theme.accent}>
                     <EnlargeableAvatar
                         profile={profile || undefined}
@@ -173,14 +57,248 @@ class ProfileView extends React.Component<ProfileViewProps> {
                     />
                     {actionBar}
                 </WavyHeader>
-                <ScrollView
-                    style={styles.scrollWrapper}
-                    contentContainerStyle={styles.formWrapper}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    {profileFieldComponents}
-                </ScrollView>
-            </>
+
+                <View style={styles.body}>
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("dateOfBirth")}
+                        display={profile ? <FormattedDate style={styles.cardText} date={profile.birthdate} /> : <></>}
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("nationality")}
+                        display={
+                            profile ? (
+                                <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("gender")}
+                        display={profile ? <FormattedGender style={styles.cardText} gender={profile.gender} /> : <></>}
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("profileType")}
+                        display={
+                            profile ? (
+                                <>
+                                    <Text style={styles.cardText}>{i18n.t(`allRoles.${profile.type}`)}</Text>
+                                    {profile.type == "staff" && (
+                                        <>
+                                            {(profile as UserProfileStaff).staffRoles.map((sr: StaffRole) => (
+                                                <Text key={`profile-staff-role-${sr}`}>
+                                                    {i18n.t(`staffRoles.${sr}`)}
+                                                </Text>
+                                            ))}
+                                        </>
+                                    )}
+                                    {profile.type == "student" && (
+                                        <Text style={styles.cardText}>
+                                            {i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}
+                                        </Text>
+                                    )}
+                                </>
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("fieldsOfEducation")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.educationFields}
+                                    label={(item: string) => i18n.t(`educationFields.${item}`)}
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("interests")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.interests}
+                                    label={(item: string) => i18n.t(`interestNames.${item}`)}
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("spokenLanguages")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.languages}
+                                    label={(item: SpokenLanguageDto) =>
+                                        `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
+                                            `languageLevels.${item.level}`,
+                                        )})`
+                                    }
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Discover}
+                        profileOffers={profile?.profileOffers || null}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Collaborate}
+                        profileOffers={profile?.profileOffers || null}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow category={OfferCategory.Meet} profileOffers={profile?.profileOffers || null} />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("dateOfBirth")}
+                        display={profile ? <FormattedDate style={styles.cardText} date={profile.birthdate} /> : <></>}
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("nationality")}
+                        display={
+                            profile ? (
+                                <FormattedNationality style={styles.cardText} countryCode={profile.nationality} />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("gender")}
+                        display={profile ? <FormattedGender style={styles.cardText} gender={profile.gender} /> : <></>}
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("profileType")}
+                        display={
+                            profile ? (
+                                <>
+                                    <Text style={styles.cardText}>{i18n.t(`allRoles.${profile.type}`)}</Text>
+                                    {profile.type == "staff" && (
+                                        <>
+                                            {(profile as UserProfileStaff).staffRoles.map((sr: StaffRole) => (
+                                                <Text key={`profile-staff-role-${sr}`}>
+                                                    {i18n.t(`staffRoles.${sr}`)}
+                                                </Text>
+                                            ))}
+                                        </>
+                                    )}
+                                    {profile.type == "student" && (
+                                        <Text style={styles.cardText}>
+                                            {i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)}
+                                        </Text>
+                                    )}
+                                </>
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("fieldsOfEducation")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.educationFields}
+                                    label={(item: string) => i18n.t(`educationFields.${item}`)}
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("interests")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.interests}
+                                    label={(item: string) => i18n.t(`interestNames.${item}`)}
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <ValueCard
+                        blank={!profile}
+                        label={i18n.t("spokenLanguages")}
+                        display={
+                            profile ? (
+                                <Chips
+                                    items={profile.languages}
+                                    label={(item: SpokenLanguageDto) =>
+                                        `${i18n.t(`languageNames.${item.code}`)} (${i18n.t(
+                                            `languageLevels.${item.level}`,
+                                        )})`
+                                    }
+                                />
+                            ) : (
+                                <></>
+                            )
+                        }
+                        noModal={true}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Discover}
+                        profileOffers={profile?.profileOffers || null}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow
+                        category={OfferCategory.Collaborate}
+                        profileOffers={profile?.profileOffers || null}
+                    />
+                    <Spacer />
+                    <OfferCategoryRow category={OfferCategory.Meet} profileOffers={profile?.profileOffers || null} />
+                </View>
+            </ScrollView>
         );
     }
 }
@@ -225,6 +343,14 @@ const OfferCategoryRow = reduxConnector(
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        rootScroll: {
+            width: "100%",
+        },
+        scrollContent: {
+            width: "100%",
+            alignItems: "center",
+        },
+
         titleWrapper: {
             width: "100%",
             flexDirection: "column",
@@ -243,8 +369,12 @@ export const themedStyles = preTheme((theme: Theme) => {
         header: {
             alignItems: "center",
         },
-        scrollWrapper: {
-            width: "100%",
+        // Content-related style
+        body: {
+            width: "90%",
+            maxWidth: 600,
+            paddingTop: 90,
+            paddingBottom: 50,
         },
         formWrapper: {
             width: "90%",
@@ -271,6 +401,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         universityContainer: {
             height: 25,
+            marginTop: 5,
         },
         avatarContainer: {
             borderColor: theme.cardBackground,
