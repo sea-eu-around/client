@@ -151,9 +151,7 @@ const themedStyles = preTheme((/*theme: Theme*/) => {
         scroller: {
             width: "100%",
         },
-        itemsContainer: {
-            //flex: 1,
-        },
+        itemsContainer: {},
         loadingIndicatorContainer: {
             marginVertical: 10,
             height: 50,
