@@ -110,35 +110,52 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             else this.collapse();
         };
 
-        return (
-            // Use flexBasis, acting as minHeight
-            <ReAnimated.View
-                style={[styles.wrapper, style, {flexBasis: minHeight, right}, hidden ? {display: "none"} : {}]}
-                {...wrapperProps}
+        const container = (
+            <Swipeable
+                ref={this.swipeableRef}
+                containerStyle={[
+                    styles.swipeableContainer,
+                    {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
+                ]}
+                childrenContainerStyle={[styles.swipeable, {borderRadius}]}
+                useNativeAnimations={Platform.OS !== "web"}
+                friction={1}
+                renderLeftActions={leftActions ? () => leftActions(hideCard) : swipeableProps.renderLeftActions}
+                renderRightActions={rightActions ? () => rightActions(hideCard) : swipeableProps.renderRightActions}
+                {...swipeableProps}
             >
-                <ReAnimated.View style={{}}>
-                    <Swipeable
-                        ref={this.swipeableRef}
-                        containerStyle={[
-                            styles.swipeableContainer,
-                            {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
-                        ]}
-                        childrenContainerStyle={[styles.swipeable, {borderRadius}]}
-                        useNativeAnimations={Platform.OS !== "web"}
-                        friction={1}
-                        renderLeftActions={leftActions ? () => leftActions(hideCard) : swipeableProps.renderLeftActions}
-                        renderRightActions={
-                            rightActions ? () => rightActions(hideCard) : swipeableProps.renderRightActions
-                        }
-                        {...swipeableProps}
-                    >
-                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable} {...(onPress ? {onPress} : {})}>
-                            {children}
-                        </TouchableOpacity>
-                    </Swipeable>
-                </ReAnimated.View>
-            </ReAnimated.View>
+                <TouchableOpacity activeOpacity={0.75} style={styles.touchable} {...(onPress ? {onPress} : {})}>
+                    {children}
+                </TouchableOpacity>
+            </Swipeable>
         );
+
+        if (Platform.OS === "web") {
+            return (
+                // Use flexBasis, acting as minHeight
+                <View
+                    style={[
+                        styles.wrapper,
+                        style,
+                        {flexBasis: minHeight[" __value"], right: right[" __value"]},
+                        hidden ? {display: "none"} : {},
+                    ]}
+                    {...wrapperProps}
+                >
+                    {container}
+                </View>
+            );
+        } else {
+            return (
+                // Use flexBasis, acting as minHeight
+                <ReAnimated.View
+                    style={[styles.wrapper, style, {flexBasis: minHeight, right}, hidden ? {display: "none"} : {}]}
+                    {...wrapperProps}
+                >
+                    {container}
+                </ReAnimated.View>
+            );
+        }
     }
 }
 
