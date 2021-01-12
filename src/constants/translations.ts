@@ -834,7 +834,7 @@ export default {
             ChatScreen: "Chat",
             TabHomeScreen: "Home",
             TabMatchingScreen: "Match",
-            MatchFilteringScreen: "Filters",
+            MatchFilteringScreen: "Add Filters",
             MatchHistoryScreen: "History",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
