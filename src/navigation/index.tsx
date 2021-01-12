@@ -26,6 +26,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 import {handleRouteChangeForChat} from "./MessagingNavigator";
+import {DEBUG_MODE} from "../constants/config";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -44,7 +45,9 @@ function onStateChange(state: NavigationState | undefined) {
     const route = rootNavigationRef.current?.getCurrentRoute()?.name as NavigatorRoute | undefined;
     if (route) {
         // Handle redirecting when not authenticated
-        if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route)) unauthorizedRedirect();
+        if (!DEBUG_MODE) {
+            if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route)) unauthorizedRedirect();
+        }
 
         handleRouteChangeForChat(route, previousRoute);
 
