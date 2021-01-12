@@ -57,13 +57,14 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
     }
 
     submit(values: OnboardingPersonalInfoFormState) {
-        if (values.birthdate && values.gender && values.nationality) {
+        if (values.birthdate && values.gender && values.nationality && values.educationFields) {
             this.props.next();
             this.props.dispatch(
                 setOnboardingValues({
                     birthdate: values.birthdate,
                     gender: values.gender,
                     nationality: values.nationality,
+                    educationFields: values.educationFields,
                 }),
             );
         }
