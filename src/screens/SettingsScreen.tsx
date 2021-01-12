@@ -131,15 +131,18 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
+                        {/*
+                        // TODO Implement bug reports
                         <ValueCard
                             style={styles.card}
                             label={i18n.t("settings.reportABug")}
                             icon={<MaterialIcons name="bug-report" style={styles.cardIcon} />}
                             oneLine={true}
-                            onPress={() => Alert.alert("Not implemented")} // TODO Implement bug reports
+                            onPress={() => Alert.alert("Not implemented")} 
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
+                        */}
                     </Section>
                     <Section
                         theme={theme}
