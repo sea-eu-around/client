@@ -38,12 +38,14 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
     }
 
     getCollapsedHeight(): number {
-        return 280 + this.props.insets.top;
+        const minHeightBelow = 550;
+        return Dimensions.get("window").height - minHeightBelow + this.props.insets.top;
     }
 
     getFullHeight(): number {
         const maxHeight = 530;
-        return Math.min(Dimensions.get("window").height - 420 + this.props.insets.top, maxHeight);
+        const minHeightBelow = 420;
+        return Math.min(Dimensions.get("window").height - minHeightBelow + this.props.insets.top, maxHeight);
     }
 
     componentDidMount() {
@@ -112,7 +114,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             padding: 40,
             zIndex: 2,
-            //overflow: "hidden",
         },
         navigationButton: {
             width: 50,
@@ -124,7 +125,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         title: {
             color: theme.textWhite,
-            fontSize: 42,
+            fontSize: 38,
             maxWidth: 210,
             fontFamily: "RalewaySemiBold",
         },
