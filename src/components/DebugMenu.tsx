@@ -84,7 +84,7 @@ class DebugMenu extends React.Component<DebugMenuProps, DebugMenuState> {
                 <TouchableOpacity
                     style={{
                         position: "absolute",
-                        bottom: 50,
+                        bottom: 10,
                         right: 10,
                         width: 36,
                         height: 36,

@@ -9,7 +9,6 @@ import LoginHeader from "../components/headers/LoginHeader";
 import DebugMenu from "../components/DebugMenu";
 import {DEBUG_MODE} from "../constants/config";
 import VersionInfo from "../components/VersionInfo";
-import FloatingThemeToggle from "../components/FloatingThemeToggle";
 
 const SigninRoot = createMaterialTopTabNavigator<LoginScreens>();
 const Tab = createMaterialTopTabNavigator<LoginRoot>();
@@ -21,6 +20,7 @@ const LoginNavigator = (): JSX.Element => (
             {() => (
                 <>
                     <LoginHeader />
+
                     <SigninRoot.Navigator tabBar={() => <></>} initialRouteName="SigninScreen" swipeEnabled={false}>
                         <SigninRoot.Screen
                             name="ForgotPasswordScreen"
@@ -42,7 +42,6 @@ const LoginNavigator = (): JSX.Element => (
                     </SigninRoot.Navigator>
 
                     <VersionInfo />
-                    <FloatingThemeToggle />
                     {DEBUG_MODE && <DebugMenu />}
                 </>
             )}
