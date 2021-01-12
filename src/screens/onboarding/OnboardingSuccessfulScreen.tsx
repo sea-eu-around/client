@@ -6,7 +6,8 @@ import {rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import i18n from "i18n-js";
-import {styleTextThin} from "../../styles/general";
+import {styleTextLight} from "../../styles/general";
+import ScreenWrapper from "../ScreenWrapper";
 
 export type OnboardingSuccessfulScreenProps = ThemeProps;
 
@@ -16,14 +17,16 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.container}>
-                <FontAwesome style={styles.icon} name="home"></FontAwesome>
-                <Text style={styles.title}>{i18n.t("onboarding.profileCreated")}</Text>
-                <View style={styles.separator} />
-                <TouchableOpacity style={styles.button} onPress={() => rootNavigate("MainScreen")}>
-                    <Text style={styles.buttonText}>{i18n.t("onboarding.getStarted")}</Text>
-                </TouchableOpacity>
-            </View>
+            <ScreenWrapper>
+                <View style={styles.container}>
+                    <FontAwesome style={styles.icon} name="home"></FontAwesome>
+                    <Text style={styles.title}>{i18n.t("onboarding.success.title")}</Text>
+                    <View style={styles.separator} />
+                    <TouchableOpacity style={styles.button} onPress={() => rootNavigate("MainScreen")}>
+                        <Text style={styles.buttonText}>{i18n.t("onboarding.success.button")}</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScreenWrapper>
         );
     }
 }
@@ -32,13 +35,11 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            width: "100%",
+            paddingHorizontal: 50,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: theme.background,
         },
         title: {
-            width: "85%",
             textAlign: "center",
             fontSize: 20,
             letterSpacing: 0.5,
@@ -58,11 +59,11 @@ const themedStyles = preTheme((theme: Theme) => {
         button: {
             marginVertical: 20,
             padding: 5,
-            borderBottomWidth: 0.75,
+            borderBottomWidth: 0.6,
             borderBottomColor: theme.textLight,
         },
         buttonText: {
-            ...styleTextThin,
+            ...styleTextLight,
             fontSize: 20,
             letterSpacing: 1.5,
             textTransform: "uppercase",
