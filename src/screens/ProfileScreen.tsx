@@ -6,7 +6,7 @@ import {RootNavigatorScreens} from "../navigation/types";
 import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import ProfileView from "../components/ProfileView";
-import {UserProfile} from "../model/user-profile";
+import {UserProfile, UserProfileWithMatchInfo} from "../model/user-profile";
 import {fetchProfile} from "../state/profile/actions";
 import ScreenWrapper from "./ScreenWrapper";
 import ProfileActionBar from "../components/ProfileActionBar";
@@ -31,17 +31,19 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
     }
 
     componentDidMount() {
-        const {dispatch} = this.props;
+        const {dispatch, navigation} = this.props;
 
-        this.props.navigation.addListener("focus", () => {
+        navigation.addListener("focus", () => {
             const {id} = this.getRouteParams();
             if (id && (!this.state.profile || this.state.profile.id !== id)) {
-                (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then((profileWithMatchInfo) => {
-                    if (profileWithMatchInfo) {
-                        const {profile, isMatched, roomId} = profileWithMatchInfo;
-                        this.setState({...this.state, profile, isMatched, roomId});
-                    } else this.setState({...this.state, profile: null, isMatched: false, roomId: null});
-                });
+                (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then(
+                    (profileWithMatchInfo: UserProfileWithMatchInfo | null) => {
+                        if (profileWithMatchInfo) {
+                            const {profile, isMatched, roomId} = profileWithMatchInfo;
+                            this.setState({...this.state, profile, isMatched, roomId});
+                        } else this.setState({...this.state, profile: null, isMatched: false, roomId: null});
+                    },
+                );
             }
         });
     }
@@ -50,7 +52,7 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
         const {profile, isMatched, roomId} = this.state;
 
         return (
-            <ScreenWrapper>
+            <ScreenWrapper forceFullWidth>
                 <ProfileView
                     profile={profile}
                     actionBar={<ProfileActionBar profile={profile} isMatched={isMatched} roomId={roomId} />}
