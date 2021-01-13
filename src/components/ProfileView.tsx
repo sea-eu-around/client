@@ -404,8 +404,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             marginTop: 5,
         },
         avatarContainer: {
-            borderColor: theme.cardBackground,
-            borderWidth: 2,
+            borderColor: theme.textWhite,
+            borderWidth: 1,
             backgroundColor: theme.accentSecondary,
         },
         cardText: {
