@@ -30,7 +30,7 @@ class FilteringScreenHeaderClass extends React.Component<FilteringScreenHeaderPr
 
         return (
             <View style={[{paddingTop: insets.top}, hstyles.wrapper]}>
-                <TouchableOpacity style={{paddingVertical: 10}} onPress={() => this.back()}>
+                <TouchableOpacity style={{}} onPress={() => this.back()}>
                     <MaterialIcons name="close" style={styles.actionIcon} />
                 </TouchableOpacity>
                 <Text style={[hstyles.title, {textAlign: "center"}]} numberOfLines={1}>
@@ -54,7 +54,7 @@ class FilteringScreenHeaderClass extends React.Component<FilteringScreenHeaderPr
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         actionIcon: {
-            fontSize: 32,
+            fontSize: 28,
             color: theme.text,
         },
     });
