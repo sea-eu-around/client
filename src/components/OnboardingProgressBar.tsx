@@ -61,7 +61,7 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         background: {
             width: "100%",
-            height: 15,
+            height: 12,
             backgroundColor: theme.accentSlight,
         },
         foreground: {
