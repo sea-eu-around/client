@@ -28,10 +28,10 @@ export const ONBOARDING_SCREENS = {
 };
 
 export const ONBOARDING_ORDER: (keyof OnboardingScreens)[] = [
-    "OnboardingNameScreen",
     "OnboardingLegalScreen1",
     "OnboardingLegalScreen2",
     "OnboardingLegalScreen3",
+    "OnboardingNameScreen",
     "OnboardingPersonalInfoScreen",
     "OnboardingLanguageScreen",
     "OnboardingInterestsScreen",
