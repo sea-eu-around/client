@@ -326,7 +326,8 @@ export default {
             },
             submit: "Submit",
             success: {
-                title: "Congratulations! Your profile is now created.",
+                title: "Nice to meet you!",
+                subtitle: "Your profile is now created.",
                 button: "Get Started",
             },
             quit: {
