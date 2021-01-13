@@ -767,8 +767,10 @@ export default {
             actionHide: "Hide",
             success: {
                 title: "It's a match!",
-                chat: "Start Chatting",
-                continue: "Keep Scrolling",
+                offersTitle: "Open to:",
+                offersMore: "more:",
+                chat: "Chat",
+                continue: "Continue",
             },
             history: {
                 status: {
