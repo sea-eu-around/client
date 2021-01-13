@@ -7,11 +7,16 @@ import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
-import store from "../../state/store";
 import {preTheme} from "../../styles/utils";
 import {styleTextThin} from "../../styles/general";
+import {connect, ConnectedProps} from "react-redux";
+import {AppState} from "../../state/types";
 
-type OnboardingRoleScreenProps = ThemeProps & OnboardingScreenProps;
+const reduxConnector = connect((state: AppState) => ({
+    onboardingState: state.auth.onboarding,
+}));
+
+type OnboardingRoleScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
 type OnboardingRoleFormState = {
     type: Role;
@@ -19,7 +24,7 @@ type OnboardingRoleFormState = {
 
 class OnboardingRoleScreen extends React.Component<OnboardingRoleScreenProps> {
     submit(values: OnboardingRoleFormState) {
-        store.dispatch(setOnboardingValues(values));
+        this.props.dispatch(setOnboardingValues(values));
         this.props.next();
     }
 
@@ -83,4 +88,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(OnboardingRoleScreen);
+export default reduxConnector(withTheme(OnboardingRoleScreen));
