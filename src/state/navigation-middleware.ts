@@ -1,10 +1,11 @@
-import {AnyAction, Middleware, Dispatch} from "redux";
+import {AnyAction, Middleware, Dispatch, MiddlewareAPI} from "redux";
 import {rootNavigate} from "../navigation/utils";
-import {AUTH_ACTION_TYPES, LogInSuccessAction, LogOutAction} from "./auth/actions";
+import {ONBOARDING_ORDER} from "../screens/onboarding";
+import {AUTH_ACTION_TYPES, beginOnboarding, LogInSuccessAction, LogOutAction} from "./auth/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
 import {AppState} from "./types";
 
-export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: MiddlewareAPI<Dispatch, AppState>*/) => (
+export const navigationMiddleware: Middleware<unknown, AppState> = (store: MiddlewareAPI<Dispatch, AppState>) => (
     next: Dispatch<AnyAction>,
 ) => (action: AnyAction) => {
     // TEMP action printing
@@ -17,7 +18,8 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {user} = action as LogInSuccessAction;
-            rootNavigate(user.onboarded ? "MainScreen" : "OnboardingScreen");
+            if (user.onboarded) rootNavigate("MainScreen");
+            else store.dispatch(beginOnboarding());
             break;
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
@@ -37,6 +39,18 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (/*store: Mid
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
             // Let the user click
             // attemptRedirectToApp("login", "SigninScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.BEGIN_ONBOARDING: {
+            rootNavigate("OnboardingScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE: {
+            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex - 1]);
+            break;
+        }
+        case AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE: {
+            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex + 1]);
             break;
         }
         case AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS: {

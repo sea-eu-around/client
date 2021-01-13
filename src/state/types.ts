@@ -50,6 +50,7 @@ export type AuthState = {
     verificationToken?: string;
     onboarded: boolean;
     onboarding: OnboardingState;
+    onboardingIndex: number;
 };
 
 export type SettingsState = {

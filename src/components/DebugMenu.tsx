@@ -3,7 +3,7 @@ import * as React from "react";
 import {TouchableOpacity, Platform} from "react-native";
 import {BottomSheet, ListItem, withTheme} from "react-native-elements";
 import {rootNavigate} from "../navigation/utils";
-import {debugConnect} from "../state/auth/actions";
+import {beginOnboarding, debugConnect} from "../state/auth/actions";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 import {ThemeProps} from "../types";
@@ -24,7 +24,7 @@ class DebugMenu extends React.Component<DebugMenuProps, DebugMenuState> {
         {
             title: "Access OnBoardingScreen",
             onPress: () => {
-                rootNavigate("OnboardingScreen");
+                store.dispatch(beginOnboarding());
                 this.hide();
             },
         },

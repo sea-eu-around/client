@@ -18,6 +18,9 @@ export enum AUTH_ACTION_TYPES {
     VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    BEGIN_ONBOARDING = "AUTH/BEGIN_ONBOARDING",
+    NEXT_ONBOARDING_SLIDE = "AUTH/NEXT_ONBOARDING_SLIDE",
+    PREVIOUS_ONBOARDING_SLIDE = "AUTH/PREVIOUS_ONBOARDING_SLIDE",
     SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
     SET_ONBOARDING_OFFER_VALUE = "AUTH/SET_ONBOARDING_OFFER_VALUE",
     FORGOT_PASSWORD_FAILURE = "AUTH/FORGOT_PASSWORD_FAILURE",
@@ -53,6 +56,18 @@ export type ValidateAccountSuccessAction = {
 };
 
 export type ValidateAccountFailureAction = {type: string};
+
+export type BeginOnboardingAction = {
+    type: string;
+};
+
+export type NextOnboardingSlideAction = {
+    type: string;
+};
+
+export type PreviousOnboardingSlideAction = {
+    type: string;
+};
 
 export type SetOnboardingValuesAction = {
     type: string;
@@ -261,6 +276,18 @@ const deleteAccountSuccess = (): DeleteAccountSuccessAction => ({
 });
 
 // Onboarding actions
+
+export const beginOnboarding = (): BeginOnboardingAction => ({
+    type: AUTH_ACTION_TYPES.BEGIN_ONBOARDING,
+});
+
+export const nextOnboardingSlide = (): NextOnboardingSlideAction => ({
+    type: AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE,
+});
+
+export const previousOnboardingSlide = (): PreviousOnboardingSlideAction => ({
+    type: AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE,
+});
 
 export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboardingValuesAction => ({
     type: AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES,

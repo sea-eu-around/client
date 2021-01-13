@@ -35,6 +35,7 @@ export const initialState: AuthState = {
     validatedEmail: null,
     onboarded: false,
     onboarding: initialOnboardingState(),
+    onboardingIndex: 0,
 };
 
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
@@ -96,6 +97,15 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
                 validatedEmail: null,
                 onboarded: false,
             };
+        }
+        case AUTH_ACTION_TYPES.BEGIN_ONBOARDING: {
+            return {...state, onboardingIndex: 0};
+        }
+        case AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE: {
+            return {...state, onboardingIndex: state.onboardingIndex - 1};
+        }
+        case AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE: {
+            return {...state, onboardingIndex: state.onboardingIndex + 1};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
             const {values} = <SetOnboardingValuesAction>action;
