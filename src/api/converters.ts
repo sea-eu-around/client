@@ -94,7 +94,7 @@ export function convertPartialProfileToCreateDto(
     let complete: Partial<CreateProfileDto>;
     if (type === "staff") {
         const staff = profile as Partial<UserProfileStaff>;
-        complete = {...common, staffRoles: (staff.staffRoles || []).map((id: string) => ({id}))};
+        complete = {...common, staffRoles: staff.staffRoles ? staff.staffRoles.map((id: string) => ({id})) : undefined};
     } else {
         const student = profile as Partial<UserProfileStudent>;
         complete = {...common, degree: student.degree};
