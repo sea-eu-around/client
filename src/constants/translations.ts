@@ -759,7 +759,8 @@ export default {
         // Matching tab
         matching: {
             noResults: "No results found",
-            noResultsAdvice: "Perhaps try removing some filters",
+            noMoreItems: "No more profiles to show",
+            noItemsAdvice: "Perhaps try removing some filters",
             filtering: {
                 sectionGeneral: "General",
                 buttonReset: "Reset",

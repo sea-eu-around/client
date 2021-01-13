@@ -20,6 +20,7 @@ import {MatchActionStatus} from "../api/dto";
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.fetchedProfiles,
     fetchingProfiles: state.matching.profilesPagination.fetching,
+    canFetchMore: state.matching.profilesPagination.canFetchMore,
     currentPage: state.matching.profilesPagination.page,
     isFirstLaunch: state.settings.isFirstLaunch,
 }));
@@ -34,7 +35,16 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     successModalRef = React.createRef<MatchSuccessModalClass>();
 
     render(): JSX.Element {
-        const {profiles, theme, fetchingProfiles, isFirstLaunch, currentPage, navigation, dispatch} = this.props;
+        const {
+            profiles,
+            theme,
+            fetchingProfiles,
+            canFetchMore,
+            isFirstLaunch,
+            currentPage,
+            navigation,
+            dispatch,
+        } = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -45,13 +55,21 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     fetchLimit={PROFILES_FETCH_LIMIT}
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchProfiles())}
                     fetching={fetchingProfiles}
+                    canFetchMore={canFetchMore}
+                    refreshOnFocus={true}
                     currentPage={currentPage}
                     items={profiles}
                     id={(profile: UserProfile): string => profile.id}
                     noResultsComponent={
                         <>
                             <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                            <Text style={styles.noResultsText2}>{i18n.t("matching.noResultsAdvice")}</Text>
+                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
+                        </>
+                    }
+                    endOfItemsComponent={
+                        <>
+                            <Text style={styles.noResultsText1}>{i18n.t("matching.noMoreItems")}</Text>
+                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
                         </>
                     }
                     refresh={() => dispatch(refreshFetchedProfiles())}
