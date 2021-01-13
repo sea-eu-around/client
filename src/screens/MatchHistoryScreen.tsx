@@ -20,6 +20,7 @@ import BufferedSearchBar from "../components/BufferedSearchBar";
 const reduxConnector = connect((state: AppState) => ({
     historyItems: state.matching.historyItems,
     fetchingHistory: state.matching.historyPagination.fetching,
+    canFetchMore: state.matching.historyPagination.canFetchMore,
     currentPage: state.matching.historyPagination.page,
     historyFilters: state.matching.historyFilters,
 }));
@@ -41,7 +42,16 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
     }
 
     render(): JSX.Element {
-        const {historyItems, theme, historyFilters, fetchingHistory, currentPage, navigation, dispatch} = this.props;
+        const {
+            historyItems,
+            theme,
+            historyFilters,
+            fetchingHistory,
+            canFetchMore,
+            currentPage,
+            navigation,
+            dispatch,
+        } = this.props;
         const {search} = this.state;
         const styles = themedStyles(theme);
 
@@ -78,6 +88,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                     fetchLimit={HISTORY_FETCH_LIMIT}
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchHistory(search))}
                     fetching={fetchingHistory}
+                    canFetchMore={canFetchMore}
                     currentPage={currentPage}
                     items={historyItems}
                     id={(it: MatchHistoryItem): string => it.id}

@@ -21,9 +21,11 @@ export type InfiniteScrollerProps<T> = {
     fetchMore: () => void;
     refresh: () => void;
     fetching: boolean;
+    canFetchMore: boolean;
     fetchLimit: number;
     renderItem: (item: T, hide: () => void) => JSX.Element;
     noResultsComponent: JSX.Element;
+    endOfItemsComponent?: JSX.Element;
     currentPage: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     navigation: {isFocused: () => boolean; addListener: (k: any, l: () => void) => void};
@@ -48,8 +50,8 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
     }
 
     fetchMore(): void {
-        const {fetching, fetchMore, navigation} = this.props;
-        if (!fetching && navigation.isFocused()) fetchMore();
+        const {fetching, canFetchMore, fetchMore, navigation} = this.props;
+        if (!fetching && canFetchMore && navigation.isFocused()) fetchMore();
     }
 
     getShownItems(): T[] {
@@ -58,9 +60,9 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
     }
 
     hideItem(item: T): void {
-        const {fetchLimit, id} = this.props;
+        const {fetchLimit, canFetchMore, id} = this.props;
         this.setState({...this.state, hiddenIds: {...this.state.hiddenIds, [id(item)]: true}});
-        if (this.getShownItems().length < fetchLimit) this.fetchMore();
+        if (this.getShownItems().length < fetchLimit && canFetchMore) this.fetchMore();
     }
 
     componentDidMount(): void {
@@ -96,10 +98,12 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
         const {
             items,
             fetching,
+            canFetchMore,
             currentPage,
             refresh,
             renderItem,
             noResultsComponent,
+            endOfItemsComponent,
             itemsContainerStyle,
             progressViewOffset,
         } = this.props;
@@ -130,14 +134,17 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                             }}
                         >
                             {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
+                            {!fetching && items.length > 0 && !canFetchMore && (
+                                <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
+                            )}
+                            {!fetching && items.length == 0 && (
+                                <View style={styles.noResultsContainer}>{noResultsComponent}</View>
+                            )}
                             <View style={styles.loadingIndicatorContainer}>
                                 {fetching && currentPage > 1 && items.length > 0 && (
                                     <ActivityIndicator size="large" color={theme.accentSecondary} />
                                 )}
                             </View>
-                            {!fetching && items.length == 0 && (
-                                <View style={styles.noResultsContainer}>{noResultsComponent}</View>
-                            )}
                         </ScrollView>
                     );
                 }}
@@ -158,6 +165,11 @@ const themedStyles = preTheme((/*theme: Theme*/) => {
         },
         noResultsContainer: {
             flex: 1,
+            alignItems: "center",
+        },
+        endOfItemsContainer: {
+            marginTop: 20,
+            marginBottom: 50, // compensate for bottom tab bar
             alignItems: "center",
         },
     });

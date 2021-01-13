@@ -19,6 +19,7 @@ const reduxConnector = connect((state: AppState) => ({
     rooms: state.messaging.matchRooms,
     roomIds: state.messaging.matchRoomsOrdered,
     fetchingRooms: state.messaging.matchRoomsPagination.fetching,
+    canFetchMore: state.messaging.matchRoomsPagination.canFetchMore,
     currentPage: state.messaging.matchRoomsPagination.page,
 }));
 
@@ -30,7 +31,7 @@ class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
     }
 
     render(): JSX.Element {
-        const {theme, rooms, roomIds, fetchingRooms, currentPage, navigation, dispatch} = this.props;
+        const {theme, rooms, roomIds, fetchingRooms, canFetchMore, currentPage, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -40,6 +41,7 @@ class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
                     fetchLimit={ROOMS_FETCH_LIMIT}
                     fetchMore={() => this.fetchMore()}
                     fetching={fetchingRooms}
+                    canFetchMore={canFetchMore}
                     currentPage={currentPage}
                     refreshOnFocus={true}
                     refresh={() => dispatch(refreshMatchRooms())}
