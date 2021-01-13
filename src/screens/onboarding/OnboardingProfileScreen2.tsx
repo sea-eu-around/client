@@ -3,7 +3,7 @@ import * as React from "react";
 import OnboardingSlide, {OnboardingScreenProps} from "./OnboardingSlide";
 import i18n from "i18n-js";
 import * as Yup from "yup";
-import {VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
+import {VALIDATOR_ONBOARDING_INTERESTS, VALIDATOR_ONBOARDING_LANGUAGES} from "../../validators";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import {setOnboardingValues} from "../../state/auth/actions";
@@ -11,6 +11,7 @@ import InputLabel from "../../components/InputLabel";
 import InputErrorText from "../../components/InputErrorText";
 import SpokenLanguagesInput from "../../components/SpokenLanguagesInput";
 import {SpokenLanguageDto} from "../../api/dto";
+import InterestsPicker from "../../components/InterestsPicker";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -18,27 +19,29 @@ const reduxConnector = connect((state: AppState) => ({
 
 const VALIDATION_SCHEMA = Yup.object().shape({
     languages: VALIDATOR_ONBOARDING_LANGUAGES,
+    interestIds: VALIDATOR_ONBOARDING_INTERESTS,
 });
 
-type OnboardingLanguageScreenProps = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
+type OnboardingProfileScreen2Props = ConnectedProps<typeof reduxConnector> & OnboardingScreenProps;
 
-type OnboardingLanguageScreenState = {
+type OnboardingProfileScreen2State = {
     hasErrors: boolean;
 };
 
-type OnboardingLanguageFormState = {
+type OnboardingProfile2FormState = {
     languages: SpokenLanguageDto[];
+    interestIds: string[];
 };
 
-class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenProps, OnboardingLanguageScreenState> {
-    constructor(props: OnboardingLanguageScreenProps) {
+class OnboardingProfileScreen2 extends React.Component<OnboardingProfileScreen2Props, OnboardingProfileScreen2State> {
+    constructor(props: OnboardingProfileScreen2Props) {
         super(props);
         this.state = {hasErrors: false};
     }
 
-    submit(values: OnboardingLanguageFormState) {
+    submit(values: OnboardingProfile2FormState) {
         if (!this.state.hasErrors) {
-            this.props.dispatch(setOnboardingValues({languages: values.languages}));
+            this.props.dispatch(setOnboardingValues({languages: values.languages, interestIds: values.interestIds}));
             this.props.next();
         }
     }
@@ -46,16 +49,19 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
     render(): JSX.Element {
         const {onboardingState} = this.props;
         const {hasErrors} = this.state;
+
+        const spacing = 30;
+
         return (
             <Formik
-                initialValues={onboardingState as OnboardingLanguageFormState}
+                initialValues={onboardingState as OnboardingProfile2FormState}
                 validationSchema={VALIDATION_SCHEMA}
                 validateOnChange={true}
                 validateOnBlur={false}
-                onSubmit={(values: OnboardingLanguageFormState) => this.submit(values)}
+                onSubmit={(values: OnboardingProfile2FormState) => this.submit(values)}
             >
-                {(formikProps: FormikProps<OnboardingLanguageFormState>) => {
-                    const {handleSubmit, values, touched, setFieldValue} = formikProps;
+                {(formikProps: FormikProps<OnboardingProfile2FormState>) => {
+                    const {handleSubmit, values, touched, setFieldValue, errors} = formikProps;
 
                     return (
                         <OnboardingSlide
@@ -83,6 +89,18 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
                                     style={{marginBottom: 0, marginTop: 10}}
                                 />
                             )}
+
+                            <InputLabel style={{marginBottom: 6, marginTop: spacing}}>
+                                {i18n.t("chooseInterests")}
+                            </InputLabel>
+                            <InterestsPicker
+                                interests={values.interestIds}
+                                onChange={(interestIds: string[]) => {
+                                    setFieldValue("interestIds", interestIds);
+                                }}
+                                showChips={true}
+                            />
+                            {touched.interestIds && <InputErrorText error={errors.interestIds} />}
                         </OnboardingSlide>
                     );
                 }}
@@ -91,4 +109,4 @@ class OnboardingLanguageScreen extends React.Component<OnboardingLanguageScreenP
     }
 }
 
-export default reduxConnector(OnboardingLanguageScreen);
+export default reduxConnector(OnboardingProfileScreen2);

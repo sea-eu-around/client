@@ -1,4 +1,4 @@
-import {ONBOARDING_SCREENS} from "../screens/onboarding";
+import {ONBOARDING_SCREENS} from "../screens/onboarding/screens";
 
 export type RootNavigatorScreens = {
     MainScreen: undefined;

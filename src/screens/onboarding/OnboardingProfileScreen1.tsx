@@ -35,17 +35,17 @@ const VALIDATION_SCHEMA = Yup.object().shape({
     nationality: VALIDATOR_ONBOARDING_NATIONALITY,
 });
 
-type OnboardingPersonalInfoScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
+type OnboardingProfileScreen1Props = ConnectedProps<typeof reduxConnector> & ThemeProps & OnboardingScreenProps;
 
-type OnboardingPersonalInfoFormState = {
+type OnboardingProfile1FormState = {
     birthdate: Date | null;
     gender: Gender | null;
     nationality: CountryCode | null;
     educationFields: string[];
 };
 
-class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInfoScreenProps> {
-    shouldComponentUpdate(nextProps: Readonly<OnboardingPersonalInfoScreenProps>) {
+class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1Props> {
+    shouldComponentUpdate(nextProps: Readonly<OnboardingProfileScreen1Props>) {
         const prev = this.props.onboardingState;
         const next = nextProps.onboardingState;
         return (
@@ -56,7 +56,7 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
         );
     }
 
-    submit(values: OnboardingPersonalInfoFormState) {
+    submit(values: OnboardingProfile1FormState) {
         if (values.birthdate && values.gender && values.nationality && values.educationFields) {
             this.props.next();
             this.props.dispatch(
@@ -78,13 +78,13 @@ class OnboardingPersonalInfoScreen extends React.Component<OnboardingPersonalInf
 
         return (
             <Formik
-                initialValues={onboardingState as OnboardingPersonalInfoFormState}
+                initialValues={onboardingState as OnboardingProfile1FormState}
                 validationSchema={VALIDATION_SCHEMA}
                 validateOnChange={true}
                 validateOnBlur={false}
-                onSubmit={(values: OnboardingPersonalInfoFormState) => this.submit(values)}
+                onSubmit={(values: OnboardingProfile1FormState) => this.submit(values)}
             >
-                {(formikProps: FormikProps<OnboardingPersonalInfoFormState>) => {
+                {(formikProps: FormikProps<OnboardingProfile1FormState>) => {
                     const {
                         handleSubmit,
                         values,
@@ -168,4 +168,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(OnboardingPersonalInfoScreen));
+export default reduxConnector(withTheme(OnboardingProfileScreen1));

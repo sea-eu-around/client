@@ -58,9 +58,8 @@ const config: LinkingOptions = {
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",
-                    OnboardingPersonalInfoScreen: "onboarding/info",
-                    OnboardingLanguageScreen: "onboarding/language",
-                    OnboardingInterestsScreen: "onboarding/interests",
+                    OnboardingProfileScreen1: "onboarding/profile/1",
+                    OnboardingProfileScreen2: "onboarding/profile/2",
                     OnboardingRoleScreen: "onboarding/role/1",
                     OnboardingRoleSpecificScreen: "onboarding/role/2",
                     OnboardingOffersScreen1: "onboarding/offers/1",
