@@ -6,7 +6,8 @@ export type SupportedLocale = "en" | "fr";
 export const SUPPORTED_LOCALES: SupportedLocale[] = ["en", "fr"];
 
 export function getDefaultLocale(): SupportedLocale {
-    return SUPPORTED_LOCALES.find((l: SupportedLocale) => l == Localization.locale) || "en";
+    const loc = Localization.locale.substr(0, 2);
+    return loc === "fr" ? "fr" : "en";
 }
 
 export default function configureLocalization(): void {
