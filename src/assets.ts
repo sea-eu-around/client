@@ -22,10 +22,10 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
             return import("@assets/images/offers/collaborate.svg");
         case "background.onboarding":
             return import("@assets/images/background.svg");
-        case "logos.junior-atlantique":
-            return theme === "light"
-                ? import("@assets/images/logos/junior-atlantique-light.png")
-                : import("@assets/images/logos/junior-atlantique-dark.png");
+        case "large-wave-bg":
+            return import("@assets/images/large-wave-bg.svg");
+        case "woman-holding-phone":
+            return import("@assets/images/woman-holding-phone.svg");
         case "logos.sea-eu-around.small":
             return import("@assets/images/logos/sea-eu-around.small.png");
         default:
