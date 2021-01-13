@@ -324,6 +324,9 @@ export default {
                 text:
                     "I acknowledge that cookies might be used. The information is kept only for application purposes and does not permit to identify the Member except for the cookie enabling UBO to re-authenticate the Member on its arrival on SEA-EU Around, saving the Member from having to re-enter their password at each connection.",
             },
+            back: "Back",
+            next: "Next",
+            leave: "Leave",
             submit: "Submit",
             success: {
                 title: "Nice to meet you!",
@@ -811,9 +814,8 @@ export default {
             ForgotPasswordScreen: "Forgot Password",
             SignupScreen: "Sign up",
             OnboardingNameScreen: "Welcome",
-            OnboardingPersonalInfoScreen: "Profile",
-            OnboardingLanguageScreen: "Profile",
-            OnboardingInterestsScreen: "Profile",
+            OnboardingProfileScreen1: "Profile",
+            OnboardingProfileScreen2: "Profile",
             OnboardingRoleScreen: "Profile",
             OnboardingRoleSpecificScreen: "Profile",
             OnboardingOffersScreen1: "Discover",

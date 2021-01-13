@@ -5,32 +5,40 @@ import {styleTextThin} from "./general";
 
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        wavyHeader: {
-            height: 200,
+        wrapper: {
+            width: "100%",
+            height: "100%",
+            alignItems: "center",
         },
         header: {
             marginBottom: 20,
         },
         slideScrollView: {
             width: "100%",
-            marginBottom: 80, // leave some space for the navigation controls
         },
         slideContentWrapper: {
             width: "75%",
             flexDirection: "column",
             alignSelf: "center",
             paddingTop: 150,
+            paddingBottom: 20,
         },
         slideNavWrapper: {
+            width: "75%",
+            alignItems: "center",
+            marginTop: 20,
+            marginBottom: 40,
+        },
+        slideNavButtons: {
             width: "100%",
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "center",
-            position: "absolute",
-            bottom: 20,
         },
         navButton: {
-            padding: 10,
+            flex: 1,
+            marginHorizontal: 0,
+            marginVertical: 0,
+            maxWidth: 200,
         },
         navButtonIcon: {
             fontSize: 40,
