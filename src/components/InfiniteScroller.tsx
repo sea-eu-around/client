@@ -88,9 +88,10 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
         const justRefreshed = oldProps.currentPage > 1 && currentPage === 1;
 
         if (navigation.isFocused()) {
-            if (this.getShownItems().length < fetchLimit) this.fetchMore();
+            const moreIfNeeded = () => this.getShownItems().length < fetchLimit && this.fetchMore();
             // Reset the hidden profiles when the user purposedly refreshes
-            if (justRefreshed) this.setState({...this.state, hiddenIds: {}});
+            if (justRefreshed) this.setState({...this.state, hiddenIds: {}}, moreIfNeeded);
+            else moreIfNeeded();
         }
     }
 
@@ -160,16 +161,17 @@ const themedStyles = preTheme((/*theme: Theme*/) => {
         },
         itemsContainer: {},
         loadingIndicatorContainer: {
-            marginVertical: 10,
+            marginTop: 10,
+            marginBottom: 20, // compensate for bottom tab bar
             height: 50,
         },
         noResultsContainer: {
             flex: 1,
             alignItems: "center",
+            marginTop: 20,
         },
         endOfItemsContainer: {
             marginTop: 20,
-            marginBottom: 50, // compensate for bottom tab bar
             alignItems: "center",
         },
     });
