@@ -1,7 +1,8 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInputProps, TextInput, ViewStyle} from "react-native";
+import {TextStyle, StyleProp, View, TextInputProps, TextInput, ViewStyle, TouchableOpacity} from "react-native";
 import InputLabel from "./InputLabel";
 import InputErrorText from "./InputErrorText";
+import {FontAwesome} from "@expo/vector-icons";
 
 export type TextInputStyleProps = {
     style?: StyleProp<ViewStyle>;
@@ -13,6 +14,8 @@ export type TextInputStyleProps = {
     labelStyle?: StyleProp<TextStyle>;
     inputStyle?: StyleProp<TextStyle>;
     inputFocusedStyle?: StyleProp<TextStyle>;
+    showPasswordButtonStyle?: StyleProp<TextStyle>;
+    showPasswordIconStyle?: StyleProp<TextStyle>;
     placeholderTextColor?: string;
 };
 
@@ -28,6 +31,7 @@ export type ValidatedTextInputProps = {
 
 type ValidatedTextInputState = {
     focused: boolean;
+    showSecureEntry: boolean;
 };
 
 /**
@@ -49,7 +53,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
 
     constructor(props: ValidatedTextInputProps) {
         super(props);
-        this.state = {focused: false} as ValidatedTextInputState;
+        this.state = {focused: false, showSecureEntry: false} as ValidatedTextInputState;
     }
 
     focus(): void {
@@ -64,6 +68,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
             label,
             icon,
             untouched,
+            secureTextEntry,
             style,
             wrapperStyle,
             inputStyle,
@@ -73,13 +78,18 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
             focusedStyle,
             errorTextStyle,
             labelStyle,
+            showPasswordButtonStyle,
+            showPasswordIconStyle,
             placeholderTextColor,
             onBlur,
             onFocus,
             ...otherProps
         } = this.props;
 
+        const {showSecureEntry} = this.state;
+
         const showError = showErrorText && !untouched && error;
+        const isSecureEntry = secureTextEntry === true;
 
         return (
             <View
@@ -116,8 +126,17 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                         }}
                         value={value}
                         placeholderTextColor={placeholderTextColor}
+                        {...(isSecureEntry ? {secureTextEntry: !showSecureEntry} : {})}
                         {...otherProps}
                     />
+                    {isSecureEntry && (
+                        <TouchableOpacity
+                            style={showPasswordButtonStyle}
+                            onPress={() => this.setState({...this.state, showSecureEntry: !showSecureEntry})}
+                        >
+                            <FontAwesome name={showSecureEntry ? "eye-slash" : "eye"} style={showPasswordIconStyle} />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {showError && <InputErrorText style={errorTextStyle} error={error} />}
             </View>

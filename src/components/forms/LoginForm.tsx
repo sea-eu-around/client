@@ -181,12 +181,13 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         <View style={styles.separatorHbar} />
                                     </View>
                                     <Button
-                                        onPress={() =>
+                                        onPress={() => {
+                                            Keyboard.dismiss();
                                             rootNavigate("LoginRoot", {
                                                 screen: "LoginScreens",
                                                 params: {screen: "SignupScreen"},
-                                            })
-                                        }
+                                            });
+                                        }}
                                         skin="rounded-hollow"
                                         text={i18n.t("loginForm.signUp")}
                                     />

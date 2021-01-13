@@ -48,6 +48,13 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             color: theme.accent,
         },
         inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
+        showPasswordButtonStyle: {
+            padding: 8,
+        },
+        showPasswordIconStyle: {
+            fontSize: 22,
+            color: theme.textLight,
+        },
         placeholderTextColor: theme.inputPlaceholder,
     };
 }
