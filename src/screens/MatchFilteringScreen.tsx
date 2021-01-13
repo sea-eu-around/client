@@ -59,6 +59,10 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
 
     updateLocalFilters(filters: Partial<MatchingFiltersState>) {
         this.haveFiltersChanged = true;
+
+        // Remove the "degrees" filters when not filtering for students
+        if (filters.types && filters.types.indexOf("student") === -1) filters.degrees = [];
+
         this.setState({...this.state, localFilters: {...this.state.localFilters, ...filters}});
     }
 
