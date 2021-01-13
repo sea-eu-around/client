@@ -9,6 +9,7 @@ import ScreenWrapper from "../ScreenWrapper";
 import {getLocalSvg} from "../../assets";
 import Button from "../../components/Button";
 import layout from "../../constants/layout";
+import {DEBUG_MODE} from "../../constants/config";
 
 export type OnboardingSuccessfulScreenProps = ThemeProps;
 
@@ -58,6 +59,10 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
                         <View>
                             <Text style={styles.title}>{i18n.t("onboarding.success.title")}</Text>
                             <Text style={styles.subtitle}>{i18n.t("onboarding.success.subtitle")}</Text>
+                            {layout.isWideDevice && (
+                                /* Hey, you have found an easter egg...plant */
+                                <Text style={styles.wideDeviceIcon}>{DEBUG_MODE ? "🍆" : "🚀"}</Text>
+                            )}
                         </View>
                         <Button
                             text={i18n.t("onboarding.success.button")}
@@ -87,7 +92,7 @@ const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
         container: {
             width: wideDevice ? "50%" : "100%",
             height: "100%",
-            paddingTop: wideDevice ? 200 : 100,
+            paddingTop: wideDevice ? 150 : 100,
             paddingBottom: 100,
             paddingHorizontal: 60,
             justifyContent: "space-between",
@@ -107,6 +112,11 @@ const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
             marginTop: 20,
             color: theme.text,
             textAlign: wideDevice ? "center" : "left",
+        },
+        wideDeviceIcon: {
+            fontSize: 80,
+            textAlign: "center",
+            marginVertical: 100,
         },
     });
 });
