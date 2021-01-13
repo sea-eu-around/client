@@ -31,6 +31,6 @@ export const VALIDATOR_LASTNAME = Yup.string().trim().required("validation.requi
 export const VALIDATOR_ONBOARDING_BIRTHDATE = Yup.date().nullable().required("validation.required"); // make it nullable so we can use null to represent a non given value (will fail the 'required' test anyway)
 export const VALIDATOR_ONBOARDING_GENDER = Yup.string().nullable().required("validation.required");
 export const VALIDATOR_ONBOARDING_NATIONALITY = Yup.string().nullable().required("validation.required");
-export const VALIDATOR_ONBOARDING_DEGREE = Yup.string().oneOf(DEGREES, "validation.required");
+export const VALIDATOR_ONBOARDING_DEGREE = Yup.string().nullable().oneOf(DEGREES, "validation.required");
 export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.addAtLeastOne");
 export const VALIDATOR_ONBOARDING_INTERESTS = Yup.array().required("validation.addAtLeastOne");
