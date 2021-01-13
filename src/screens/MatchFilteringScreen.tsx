@@ -168,7 +168,9 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         scrollContainer: {
             flexDirection: "column",
-            padding: 40,
+            paddingHorizontal: 40,
+            paddingTop: 10,
+            paddingBottom: 70,
             width: "100%",
         },
         sectionContainer: {
