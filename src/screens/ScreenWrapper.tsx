@@ -27,6 +27,7 @@ const themedStyles = preTheme(() => {
             flex: 1,
             justifyContent: "center",
             flexDirection: "row",
+            overflow: "hidden",
         },
         container: {
             flex: 1,
