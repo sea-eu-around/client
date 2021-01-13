@@ -58,6 +58,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             open: false,
             dropdownWrapperHeight: 0,
         };
+        if (props.selected) this.tempSelected = props.selected;
     }
 
     updateItems() {
@@ -83,10 +84,10 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
         if (oldProps.locale != this.props.locale || oldProps.values.length != this.props.values.length) {
             this.updateItems();
         }
+        this.tempSelected = this.props.selected || [];
     }
 
     open() {
-        this.tempSelected = this.props.selected || [];
         this.setState({...this.state, open: true});
     }
 
@@ -139,16 +140,6 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
                             }}
                         />
                     )}
-                    <View>
-                        {/*showChips &&
-                            selectedItems.map((val: string, i: number) => (
-                                <View key={i} style={styles.selectedItemView}>
-                                    <Text style={styles.selectedItemText} numberOfLines={1}>
-                                        {genLabel ? i18n.t(genLabel(val)) : val}
-                                    </Text>
-                                </View>
-                            ))*/}
-                    </View>
                 </View>
                 {this.state.open && (
                     <CustomModal
