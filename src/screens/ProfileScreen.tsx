@@ -17,12 +17,17 @@ const reduxConnector = connect(() => ({}));
 type ProfileScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
 // Component state
-type ProfileScreenState = {profile: UserProfile | null; isMatched: boolean; roomId: string | null};
+type ProfileScreenState = {
+    profile: UserProfile | null;
+    isMatched: boolean;
+    roomId: string | null;
+    matchId: string | null;
+};
 
 class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
     constructor(props: ProfileScreenProps) {
         super(props);
-        this.state = {profile: null, isMatched: false, roomId: null};
+        this.state = {profile: null, isMatched: false, roomId: null, matchId: null};
     }
 
     getRouteParams(): {[key: string]: string | boolean | number} {
@@ -39,9 +44,17 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
                 (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then(
                     (profileWithMatchInfo: UserProfileWithMatchInfo | null) => {
                         if (profileWithMatchInfo) {
-                            const {profile, isMatched, roomId} = profileWithMatchInfo;
-                            this.setState({...this.state, profile, isMatched, roomId});
-                        } else this.setState({...this.state, profile: null, isMatched: false, roomId: null});
+                            const {profile, isMatched, roomId, matchId} = profileWithMatchInfo;
+                            this.setState({...this.state, profile, isMatched, roomId, matchId});
+                        } else {
+                            this.setState({
+                                ...this.state,
+                                profile: null,
+                                isMatched: false,
+                                roomId: null,
+                                matchId: null,
+                            });
+                        }
                     },
                 );
             }
@@ -49,13 +62,15 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
     }
 
     render(): JSX.Element {
-        const {profile, isMatched, roomId} = this.state;
+        const {profile, isMatched, roomId, matchId} = this.state;
 
         return (
             <ScreenWrapper forceFullWidth>
                 <ProfileView
                     profile={profile}
-                    actionBar={<ProfileActionBar profile={profile} isMatched={isMatched} roomId={roomId} />}
+                    actionBar={
+                        <ProfileActionBar profile={profile} isMatched={isMatched} roomId={roomId} matchId={matchId} />
+                    }
                 />
             </ScreenWrapper>
         );

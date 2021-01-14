@@ -33,4 +33,5 @@ export type UserProfileWithMatchInfo = {
     profile: UserProfile;
     isMatched: boolean;
     roomId: string | null;
+    matchId: string | null;
 };

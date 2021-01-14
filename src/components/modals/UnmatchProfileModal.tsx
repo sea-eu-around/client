@@ -15,7 +15,7 @@ export type UnmatchProfileModalProps = ThemeProps &
     Partial<CustomModalProps> & {
         onSubmit?: (block: boolean) => void;
         profile: UserProfile | null;
-        roomId: string | null;
+        matchId: string | null;
     };
 
 type UnmatchProfileModalState = {block: boolean};
@@ -27,7 +27,7 @@ class UnmatchProfileModal extends React.Component<UnmatchProfileModalProps, Unma
     }
 
     render() {
-        const {theme, profile, roomId, onSubmit, ...otherProps} = this.props;
+        const {theme, profile, matchId, onSubmit, ...otherProps} = this.props;
         const {block} = this.state;
         const styles = themedStyles(theme);
 
@@ -69,7 +69,7 @@ class UnmatchProfileModal extends React.Component<UnmatchProfileModalProps, Unma
                                     text={i18n.t("unmatch.action")}
                                     onPress={() => {
                                         hide();
-                                        if (roomId) (store.dispatch as MyThunkDispatch)(cancelMatchAction(roomId));
+                                        if (matchId) (store.dispatch as MyThunkDispatch)(cancelMatchAction(matchId));
                                         if (block) (store.dispatch as MyThunkDispatch)(blockProfile(profile.id));
                                         if (onSubmit) onSubmit(block);
                                     }}

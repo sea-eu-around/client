@@ -17,10 +17,11 @@ export type ProfileActionBarProps = {
     profile: UserProfile | null;
     isMatched: boolean;
     roomId: string | null;
+    matchId: string | null;
 } & ThemeProps;
 
 function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
-    const {profile, isMatched, roomId, theme} = props;
+    const {profile, isMatched, roomId, matchId, theme} = props;
     const styles = themedStyles(theme);
 
     let buttons;
@@ -63,7 +64,7 @@ function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
         const buttonUnmatch = (
             <UnmatchProfileModal
                 profile={profile}
-                roomId={roomId}
+                matchId={matchId}
                 onSubmit={(block: boolean) => {
                     if (block) navigateBack();
                 }}
