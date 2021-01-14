@@ -1,19 +1,23 @@
 import * as React from "react";
-import {StyleSheet, View} from "react-native";
+import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 
-type ScreenWrapperProps = ThemeProps & {forceFullWidth?: boolean};
+type ScreenWrapperProps = ThemeProps & {
+    forceFullWidth?: boolean;
+    wrapperStyle?: StyleProp<ViewStyle>;
+    containerStyle?: StyleProp<ViewStyle>;
+};
 
 class ScreenWrapper extends React.Component<ScreenWrapperProps> {
     render(): JSX.Element {
-        const {theme, forceFullWidth} = this.props;
+        const {theme, forceFullWidth, wrapperStyle, containerStyle} = this.props;
         const styles = themedStyles(theme);
 
         return (
-            <View style={styles.wrapper}>
-                <View style={[styles.container, forceFullWidth ? {maxWidth: undefined} : {}]}>
+            <View style={[styles.wrapper, wrapperStyle]}>
+                <View style={[styles.container, forceFullWidth ? {maxWidth: undefined} : {}, containerStyle]}>
                     {this.props.children}
                 </View>
             </View>
