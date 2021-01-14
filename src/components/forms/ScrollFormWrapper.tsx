@@ -47,11 +47,21 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
                 onLayout={(e: LayoutChangeEvent) => {
                     if (!notKeyboardReactive || this.state.height == 0) {
                         // Manually give a minimum height to the content
-                        if (!this.keyboardShown) this.setState({...this.state, height: e.nativeEvent.layout.height});
+                        // (-5 is to prevent an unnecessary scrollbar from showing on web)
+                        if (!this.keyboardShown)
+                            this.setState({...this.state, height: e.nativeEvent.layout.height - 5});
                     }
                 }}
             >
-                <KeyboardAvoidingView behavior="padding" style={[styles.keyboardAvoidingView, contentStyle]}>
+                <KeyboardAvoidingView
+                    behavior="padding"
+                    style={[
+                        styles.keyboardAvoidingView,
+                        // Avoid showing the content until we have the height computed
+                        !notKeyboardReactive && this.state.height === 0 ? {opacity: 0} : {},
+                        contentStyle,
+                    ]}
+                >
                     {this.props.children}
                 </KeyboardAvoidingView>
             </ScrollView>
@@ -62,8 +72,7 @@ class ScrollFormWrapper extends React.Component<ScrollFormWrapperProps, ScrollFo
 const themedStyles = preTheme(() => ({
     keyboardAvoidingView: {
         flex: 1,
-        width: "80%",
-        maxWidth: 400,
+        width: "100%",
         justifyContent: "center",
         alignItems: "center",
     },

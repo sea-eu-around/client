@@ -14,7 +14,7 @@ class DeleteAccountScreen extends React.Component<DeleteAccountScreenProps> {
         return (
             <ScreenWrapper>
                 <ScrollFormWrapper>
-                    <DeleteAccountForm />
+                    <DeleteAccountForm containerStyle={{width: "80%", maxWidth: 400}} />
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );

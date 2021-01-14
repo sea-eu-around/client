@@ -28,7 +28,7 @@ class ResetPasswordScreen extends React.Component<ResetPasswordScreenProps, Rese
         return (
             <ScreenWrapper>
                 <ScrollFormWrapper>
-                    <ResetPasswordForm token={token} />
+                    <ResetPasswordForm token={token} containerStyle={{width: "80%", maxWidth: 400}} />
                 </ScrollFormWrapper>
             </ScreenWrapper>
         );

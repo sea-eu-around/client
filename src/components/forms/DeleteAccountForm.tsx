@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -28,7 +28,7 @@ const DeleteAccountFormSchema = Yup.object().shape({
 });
 
 // Component props
-type DeleteAccountFormProps = FormProps<FormState> & ThemeProps;
+type DeleteAccountFormProps = FormProps<FormState> & ThemeProps & {containerStyle?: StyleProp<ViewStyle>};
 
 // Component state
 type DeleteAccountFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
@@ -57,12 +57,12 @@ class DeleteAccountForm extends React.Component<DeleteAccountFormProps, DeleteAc
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
 
         return (
-            <>
+            <View style={containerStyle}>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("deleteAccount.title")}</Text>
                     <MaterialIcons name="warning" style={styles.warningIcon} />
@@ -114,7 +114,7 @@ class DeleteAccountForm extends React.Component<DeleteAccountFormProps, DeleteAc
                         );
                     }}
                 </Formik>
-            </>
+            </View>
         );
     }
 }
