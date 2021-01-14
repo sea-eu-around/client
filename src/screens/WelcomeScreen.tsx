@@ -24,14 +24,16 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
-                    <View style={styles.imageContainer}>
-                        <WelcomeImage />
-                    </View>
-                    <View style={styles.textContainer}>
-                        <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
-                        <Text style={styles.subtitle} numberOfLines={2}>
-                            {i18n.t("welcomeScreen.subtitle")}
-                        </Text>
+                    <View style={styles.imageAndTextContainer}>
+                        <View style={styles.imageContainer}>
+                            <WelcomeImage />
+                        </View>
+                        <View style={styles.textContainer}>
+                            <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
+                            <Text style={styles.subtitle} numberOfLines={2}>
+                                {i18n.t("welcomeScreen.subtitle")}
+                            </Text>
+                        </View>
                     </View>
                     <View style={styles.actionsContainer}>
                         <Button
@@ -66,15 +68,22 @@ const themedStyles = preTheme((theme: Theme) => {
         container: {
             flex: 1,
             width: "85%",
-            alignItems: "center",
             justifyContent: "space-between",
-            paddingTop: "20%",
+            alignItems: "center",
+        },
+        imageAndTextContainer: {
+            flex: 1,
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
         },
         imageContainer: {
             width: "100%",
             height: 300,
         },
-        textContainer: {},
+        textContainer: {
+            marginVertical: 20,
+        },
         appName: {
             color: theme.accent,
             fontFamily: "RalewayBold",
