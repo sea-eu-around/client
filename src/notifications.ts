@@ -8,6 +8,10 @@ function areNotificationsSupported(): boolean {
     return Constants.isDevice && Platform.OS !== "web";
 }
 
+function getNotificationData(notif: Notifications.Notification) {
+    return notif.request.content.data;
+}
+
 export function configureNotifications(): void {
     if (!areNotificationsSupported()) return;
 
@@ -27,7 +31,17 @@ export function configureNotifications(): void {
     Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Notification response received:");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = response.notification ? response.notification.request.content.data : (response as any).body;
+        const data = response.notification ? getNotificationData(response.notification) : (response as any).body;
+
+        Notifications.getPresentedNotificationsAsync().then((notifs: Notifications.Notification[]) => {
+            if (data.roomId) {
+                // Dismiss all notifications of the same room
+                notifs
+                    .filter((n) => getNotificationData(n).roomId === data.roomId)
+                    .map((n) => n.request.identifier)
+                    .forEach(Notifications.dismissNotificationAsync);
+            }
+        });
 
         if (data.roomId) openChat(data.roomId as string);
     });
