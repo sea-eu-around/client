@@ -75,7 +75,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
     }
 
     render() {
-        const {theme, item} = this.props;
+        const {theme, item, showSwipeTip} = this.props;
         const styles = themedStyles(theme);
 
         const profile = item.profile;
@@ -124,7 +124,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                                 iconStyle={styles.infoText}
                             />
                         </View>
-                        <SwipeTip direction="left" iconStyle={styles.swipeTipIcon} />
+                        {showSwipeTip && <SwipeTip direction="left" iconStyle={styles.swipeTipIcon} />}
                     </View>
                 </SwipeableCard>
                 <QuickFormReport
