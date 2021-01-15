@@ -23,16 +23,16 @@ export type MainNavigatorProps = ThemeProps & StackScreenProps<RootNavigatorScre
 function MainNavigatorComponent(): JSX.Element {
     return (
         <TabNavigator.Navigator
-            initialRouteName="TabHome"
+            initialRouteName="TabMatching"
             tabBar={(props: BottomTabBarProps) => <MainTabBar {...props} />}
         >
-            <TabNavigator.Screen
+            {/*<TabNavigator.Screen
                 name="TabHome"
                 component={TabHomeNavigator}
                 options={{
                     tabBarIcon: (props) => <MainTabBarIcon name="home" {...props} />,
                 }}
-            />
+            />*/}
             <TabNavigator.Screen
                 name="TabMatching"
                 component={TabMatchingNavigator}
