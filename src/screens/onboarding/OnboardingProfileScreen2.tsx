@@ -65,7 +65,7 @@ class OnboardingProfileScreen2 extends React.Component<OnboardingProfileScreen2P
 
                     return (
                         <OnboardingSlide
-                            title={i18n.t("onboarding.language.title")}
+                            title={i18n.t("onboarding.profile2.title")}
                             handleSubmit={handleSubmit}
                             {...this.props}
                         >

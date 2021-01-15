@@ -97,7 +97,7 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
 
                     return (
                         <OnboardingSlide
-                            title={i18n.t("onboarding.personalInfo.title")}
+                            title={i18n.t("onboarding.profile1.title")}
                             handleSubmit={handleSubmit}
                             noKeyboardAvoidance={true}
                             {...this.props}
