@@ -131,6 +131,7 @@ export type SetHistoryFiltersAction = {
 export type ActionCancelSuccessAction = {
     type: string;
     historyItemId: string;
+    isMatch: boolean;
 };
 
 export type ActionCancelFailureAction = {
@@ -176,6 +177,11 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         auth: {token},
         matching: {filters, profilesPagination},
     } = getState();
+
+    if (!token) {
+        dispatch(fetchProfilesFailure());
+        return;
+    }
 
     if (!profilesPagination.canFetchMore) console.log("Cannot fetch more profiles");
 
@@ -374,12 +380,16 @@ const cancelActionFailure = (historyItemId: string): ActionCancelFailureAction =
     historyItemId,
 });
 
-const cancelActionSuccess = (historyItemId: string): ActionCancelSuccessAction => ({
+const cancelActionSuccess = (historyItemId: string, isMatch: boolean): ActionCancelSuccessAction => ({
     type: MATCHING_ACTION_TYPES.ACTION_CANCEL_SUCCESS,
     historyItemId,
+    isMatch,
 });
 
-export const cancelMatchAction = (historyItemId: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+export const cancelMatchAction = (historyItemId: string, isMatch = false): AppThunk<Promise<boolean>> => async (
+    dispatch,
+    getState,
+) => {
     const token = getState().auth.token;
     const response = await requestBackend(
         "matching/cancel",
@@ -391,7 +401,7 @@ export const cancelMatchAction = (historyItemId: string): AppThunk<Promise<boole
     );
 
     if (response.status === HttpStatusCode.OK) {
-        dispatch(cancelActionSuccess(historyItemId));
+        dispatch(cancelActionSuccess(historyItemId, isMatch));
         return true;
     } else {
         dispatch(cancelActionFailure(historyItemId));

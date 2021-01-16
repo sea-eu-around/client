@@ -2,6 +2,7 @@ import {AnyAction, Middleware, Dispatch, MiddlewareAPI} from "redux";
 import {rootNavigate} from "../navigation/utils";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 import {AUTH_ACTION_TYPES, beginOnboarding, LogInSuccessAction, LogOutAction} from "./auth/actions";
+import {ActionCancelSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
 import {AppState} from "./types";
 
@@ -63,6 +64,12 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
         }
         case AUTH_ACTION_TYPES.DELETE_ACCOUNT_SUCCESS: {
             rootNavigate("DeleteAccountSuccessScreen");
+            break;
+        }
+        case MATCHING_ACTION_TYPES.ACTION_CANCEL_SUCCESS: {
+            const {isMatch} = action as ActionCancelSuccessAction;
+            // When un-matching someone, navigate back from their profile to MainScreen
+            if (isMatch) rootNavigate("MainScreen", {screen: "TabMatching"});
             break;
         }
     }

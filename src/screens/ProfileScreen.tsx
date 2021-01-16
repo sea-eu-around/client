@@ -44,8 +44,8 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
                 (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then(
                     (profileWithMatchInfo: UserProfileWithMatchInfo | null) => {
                         if (profileWithMatchInfo) {
-                            const {profile, isMatched, roomId, matchId} = profileWithMatchInfo;
-                            this.setState({...this.state, profile, isMatched, roomId, matchId});
+                            const {profile, isMatched, roomId, matchingId} = profileWithMatchInfo;
+                            this.setState({...this.state, profile, isMatched, roomId, matchId: matchingId});
                         } else {
                             this.setState({
                                 ...this.state,

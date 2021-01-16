@@ -69,7 +69,8 @@ class UnmatchProfileModal extends React.Component<UnmatchProfileModalProps, Unma
                                     text={i18n.t("unmatch.action")}
                                     onPress={() => {
                                         hide();
-                                        if (matchId) (store.dispatch as MyThunkDispatch)(cancelMatchAction(matchId));
+                                        if (matchId)
+                                            (store.dispatch as MyThunkDispatch)(cancelMatchAction(matchId, true));
                                         if (block) (store.dispatch as MyThunkDispatch)(blockProfile(profile.id));
                                         if (onSubmit) onSubmit(block);
                                     }}
