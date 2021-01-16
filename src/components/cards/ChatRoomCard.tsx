@@ -11,6 +11,7 @@ import {openChat} from "../../navigation/utils";
 import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
 import {ReportEntityType} from "../../constants/reports";
+import i18n from "i18n-js";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -82,7 +83,7 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
         } else {
             lastMessageComponent = (
                 <Text style={styles.noMessageText} numberOfLines={1}>
-                    {room.users.length === 2 ? `Say hi to ${user.name}!` : "Say hi"}
+                    {room.users.length === 2 ? i18n.t("messaging.sayHiTo", {name: user.name}) : i18n.t("sayHi")}
                 </Text>
             );
         }
