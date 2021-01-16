@@ -21,6 +21,7 @@ import {logout} from "../../state/auth/actions";
 import {getLocalSvg} from "../../assets";
 import FloatingThemeToggle from "../../components/FloatingThemeToggle";
 import Button from "../../components/Button";
+import layout from "../../constants/layout";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -70,13 +71,15 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
         const {width, height} = Dimensions.get("screen");
         return (
             <ScreenWrapper>
-                <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
-                    <Background
-                        preserveAspectRatio={"true"}
-                        viewBox={`${50} ${50} ${width * 1.25} ${height * 1.25}`}
-                        style={{width, height}}
-                    />
-                </View>
+                {!layout.isWideDevice && (
+                    <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
+                        <Background
+                            preserveAspectRatio={"true"}
+                            viewBox={`${50} ${50} ${width * 1.25} ${height * 1.25}`}
+                            style={{width, height}}
+                        />
+                    </View>
+                )}
                 <View style={styles.wrapper}>
                     <ScrollView
                         style={styles.slideScrollView}
