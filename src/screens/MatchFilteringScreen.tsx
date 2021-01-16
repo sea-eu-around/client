@@ -195,6 +195,7 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "column",
         },
         entryLabel: {
+            flex: 1,
             fontSize: 16,
             marginVertical: 7,
             marginRight: 10,

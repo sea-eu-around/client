@@ -13,6 +13,7 @@ import {
 import {ThemeConsumer} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {ThemeProps} from "../types";
+import LocaleAware from "./utility/LocaleAware";
 
 // Component props
 export type InfiniteScrollerProps<T> = {
@@ -110,46 +111,49 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
         } = this.props;
 
         return (
-            <ThemeConsumer>
-                {({theme}: ThemeProps) => {
-                    const styles = themedStyles(theme);
-                    return (
-                        <ScrollView
-                            ref={this.scrollViewRef}
-                            style={styles.scroller}
-                            contentContainerStyle={[styles.itemsContainer, itemsContainerStyle]}
-                            refreshControl={
-                                <RefreshControl
-                                    progressViewOffset={progressViewOffset}
-                                    refreshing={fetching}
-                                    onRefresh={() => {
-                                        if (!fetching) refresh();
-                                    }}
-                                />
-                            }
-                            onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
-                                const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
-                                const distanceToBottom =
-                                    contentSize.height - contentOffset.y - layoutMeasurement.height;
-                                if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
-                            }}
-                        >
-                            {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
-                            {!fetching && items.length > 0 && !canFetchMore && (
-                                <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
-                            )}
-                            {!fetching && items.length == 0 && (
-                                <View style={styles.noResultsContainer}>{noResultsComponent}</View>
-                            )}
-                            <View style={styles.loadingIndicatorContainer}>
-                                {fetching && currentPage > 1 && items.length > 0 && (
-                                    <ActivityIndicator size="large" color={theme.accentSecondary} />
+            <>
+                <ThemeConsumer>
+                    {({theme}: ThemeProps) => {
+                        const styles = themedStyles(theme);
+                        return (
+                            <ScrollView
+                                ref={this.scrollViewRef}
+                                style={styles.scroller}
+                                contentContainerStyle={[styles.itemsContainer, itemsContainerStyle]}
+                                refreshControl={
+                                    <RefreshControl
+                                        progressViewOffset={progressViewOffset}
+                                        refreshing={fetching}
+                                        onRefresh={() => {
+                                            if (!fetching) refresh();
+                                        }}
+                                    />
+                                }
+                                onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+                                    const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
+                                    const distanceToBottom =
+                                        contentSize.height - contentOffset.y - layoutMeasurement.height;
+                                    if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+                                }}
+                            >
+                                {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
+                                {!fetching && items.length > 0 && !canFetchMore && (
+                                    <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
                                 )}
-                            </View>
-                        </ScrollView>
-                    );
-                }}
-            </ThemeConsumer>
+                                {!fetching && items.length == 0 && (
+                                    <View style={styles.noResultsContainer}>{noResultsComponent}</View>
+                                )}
+                                <View style={styles.loadingIndicatorContainer}>
+                                    {fetching && currentPage > 1 && items.length > 0 && (
+                                        <ActivityIndicator size="large" color={theme.accentSecondary} />
+                                    )}
+                                </View>
+                            </ScrollView>
+                        );
+                    }}
+                </ThemeConsumer>
+                <LocaleAware onLocaleChange={() => this.props.refresh()} />
+            </>
         );
     }
 }

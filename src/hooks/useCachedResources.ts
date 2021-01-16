@@ -72,6 +72,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 });
                 readCachedStaticData("locale").then((locale) => {
                     if (locale) store.dispatch(setLocale(locale.data as SupportedLocale, true));
+                    else store.dispatch(setLocale("en" as SupportedLocale, true));
                 });
 
                 // Attempt to authenticate using cached data
