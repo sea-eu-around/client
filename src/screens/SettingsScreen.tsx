@@ -48,16 +48,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             display={
                                 <LocalePicker
                                     locale={settings.locale}
-                                    onChange={(l: SupportedLocale) => {
-                                        if (l == "fr") {
-                                            // TEMP FR Translation disclaimer
-                                            Alert.alert(
-                                                "Disclaimer",
-                                                "The application has not been translated to french yet.",
-                                            );
-                                        }
-                                        dispatch(setLocale(l));
-                                    }}
+                                    onChange={(l: SupportedLocale) => dispatch(setLocale(l))}
                                     buttonStyle={styles.localeButton}
                                     valueStyle={styles.localButtonValue}
                                 />
