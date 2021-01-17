@@ -1,1 +1,0 @@
-{"version":3,"sources":["assets/images/logos/junior-atlantique-light.png"],"names":["module","exports"],"mappings":"0EAAAA,EAAOC,QAAU,IAA0B","file":"static/js/10.c771b298.chunk.js","sourcesContent":["module.exports = __webpack_public_path__ + \"static/media/junior-atlantique-light.a4ee071f.png\";"],"sourceRoot":""}
