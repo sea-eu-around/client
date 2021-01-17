@@ -1,7 +1,7 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {ScrollView, ScrollViewProps, StyleSheet, View} from "react-native";
+import {Platform, ScrollView, ScrollViewProps, StyleSheet, TextStyle, View, FlatList} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -9,6 +9,8 @@ import {
     ActionsProps,
     Bubble,
     BubbleProps,
+    Composer,
+    ComposerProps,
     GiftedAvatar,
     GiftedAvatarProps,
     GiftedChat,
@@ -40,6 +42,7 @@ import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import store from "../../state/store";
 import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
+import {normalizeWheelEvent} from "../../polyfills";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -61,6 +64,9 @@ const INPUT_VERTICAL_MARGIN = 10;
 
 class ChatScreen extends React.Component<ChatScreenProps> {
     ref = React.createRef<GiftedChat>();
+    listRef: FlatList | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    removeScrollListener: () => void = () => {};
 
     private getRoomId(): string | null {
         const {route} = this.props;
@@ -146,6 +152,25 @@ class ChatScreen extends React.Component<ChatScreenProps> {
         if (room && !room.messagePagination.fetching) (dispatch as MyThunkDispatch)(fetchEarlierMessages(room));
     }
 
+    private setListRef(listRef: FlatList | null): void {
+        if (Platform.OS === "web") {
+            if (listRef === null) this.removeScrollListener();
+            else if (this.listRef === null) {
+                // fix scrolling being reversed with the mouse wheel
+                // taken from https://www.gitmemory.com/issue/necolas/react-native-web/995/511242048
+                const scrollNode = listRef.getScrollableNode();
+                const listener = scrollNode.addEventListener("wheel", (e: WheelEvent) => {
+                    const r = normalizeWheelEvent(e);
+                    scrollNode.scrollTop -= r.pixelY * 0.15;
+                    e.preventDefault();
+                });
+                this.removeScrollListener = () => scrollNode.removeEventListener("wheel", listener);
+                listRef.setNativeProps({style: {transform: "translate3d(0,0,0) scaleY(-1)"}});
+            }
+            this.listRef = listRef;
+        }
+    }
+
     render(): JSX.Element {
         const {theme, localChatUser, dispatch} = this.props;
         const styles = themedStyles(theme);
@@ -222,6 +247,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                     }}
                     timeFormat={"HH:mm"}
                     listViewProps={{
+                        ref: (el: unknown) => this.setListRef(el as FlatList | null),
                         onEndReached: () => this.fetchEarlier(),
                         renderScrollComponent: (props: ScrollViewProps) => (
                             <ScrollView
@@ -229,13 +255,38 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                                 contentContainerStyle={[
                                     props.contentContainerStyle,
                                     // This is actually a paddingTop but gifted-chat flips the rendering.
-                                    // Compensates for the height of the transparent header.
+                                    // (compensates for the height of the transparent header)
                                     {paddingBottom: 100},
                                 ]}
                             />
                         ),
                     }}
-                    textInputProps={{autoFocus: false, style: styles.textInput, multiline: true}}
+                    renderComposer={(props: ComposerProps) => (
+                        <Composer
+                            {...props}
+                            textInputProps={{
+                                ...props.textInputProps,
+                                autoFocus: false,
+                                style: [
+                                    styles.textInput,
+                                    Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
+                                ],
+                                multiline: true,
+                                ...(Platform.OS === "web"
+                                    ? {
+                                          onFocus: () => this.forceUpdate(), // workaround to get the ugly outline on web to disappear properly
+                                          onKeyPress: (ev) => {
+                                              const e = (ev as unknown) as KeyboardEvent;
+                                              if (e.key === "Enter" && !e.altKey && !e.shiftKey && props.text) {
+                                                  // The typing expects _id, createdAt and user properties, but gifted-chat creates them itself if not given
+                                                  this.ref.current?.onSend([{text: props.text.trim()} as never], true);
+                                              }
+                                          },
+                                      }
+                                    : {}),
+                            }}
+                        />
+                    )}
                     minInputToolbarHeight={MIN_INPUT_HEIGHT + INPUT_VERTICAL_MARGIN * 2}
                 />
             );
@@ -327,6 +378,8 @@ function ChatMessage({
 }
 
 function ChatActions({actionsProps, theme}: {actionsProps: ActionsProps; theme: Theme}): JSX.Element {
+    return <></>;
+
     const styles = themedStyles(theme);
     return (
         <>
@@ -426,11 +479,15 @@ const themedStyles = preTheme((theme: Theme) => {
         bubbleWrapperLeft: {
             backgroundColor: theme.chatBubble,
         },
-        bubbleWrapperRight: {},
+        bubbleWrapperRight: {
+            paddingLeft: 10,
+        },
         bubbleTextLeft: {
             color: theme.text,
         },
-        bubbleTextRight: {},
+        bubbleTextRight: {
+            marginLeft: 0,
+        },
         messageContainerLeft: {},
         messageContainerRight: {
             paddingRight: 20,
