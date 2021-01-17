@@ -1,7 +1,7 @@
 const TARGET = process.env.TARGET || "STAGING";
 
-const VERSION = "0.3.2";
-const ANDROID_VERSION_CODE = 9;
+const VERSION = "1.0.0";
+const ANDROID_VERSION_CODE = 10;
 
 const CLIENT_HTTP = "https";
 
@@ -9,8 +9,8 @@ let CLIENT_HOST;
 let EXTRAS = {};
 
 if (TARGET === "PRODUCTION") {
-    CLIENT_HOST = "sea-eu-around.lad-dev.team";
-    const SERVER_HOST = "api.sea-eu-around.lad-dev.team";
+    CLIENT_HOST = "sea-eu-around.univ-brest.fr";
+    const SERVER_HOST = "api.sea-eu-around.univ-brest.fr";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_HOST,
@@ -19,7 +19,7 @@ if (TARGET === "PRODUCTION") {
     };
 } else {
     CLIENT_HOST = "staging.sea-eu-around.lad-dev.team";
-    const SERVER_HOST = "api-staging.sea-eu-around.lad-dev.team";
+    const SERVER_HOST = "api-staging.sea-eu-around.univ-brest.fr";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_HOST,
