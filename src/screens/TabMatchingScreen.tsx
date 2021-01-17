@@ -56,7 +56,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchProfiles())}
                     fetching={fetchingProfiles}
                     canFetchMore={canFetchMore}
-                    refreshOnFocus={true}
+                    // refreshOnFocus={true}
                     currentPage={currentPage}
                     items={profiles}
                     id={(profile: UserProfile): string => profile.id}
