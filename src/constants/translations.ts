@@ -1140,7 +1140,7 @@ export default {
         },
         universitiesPicker: {
             placeholder: "Sélectionner",
-            searchPlaceholder: "",
+            searchPlaceholder: "Rechercher",
             multiple: "%d éléments",
         },
         // On-boarding slides
@@ -1540,7 +1540,7 @@ export default {
                 help: "J'aimerais discuter avec d'autres utilisateurs à propos de centres d'intérêts communs.",
             },
             "language-tandem": {
-                name: "Rejoindre un landem d'apprentissage de langue",
+                name: "Rejoindre un tandem d'apprentissage de langue",
                 help:
                     "Je cherche à rejoindre un tandem de langue afin d'aider d'autres utilisateurs à apprendre une de mes langues.",
             },
