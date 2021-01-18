@@ -27,6 +27,7 @@ import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 import {handleRouteChangeForChat} from "./MessagingNavigator";
 import {DEBUG_MODE} from "../constants/config";
+import {BackHandler} from "react-native";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -37,6 +38,7 @@ const Stack = createStackNavigator<RootNavigatorScreens>();
 
 let consumedInitialRoute = false;
 let previousRoute: NavigatorRoute | undefined = undefined;
+let prePreviousRoute: NavigatorRoute | undefined = undefined;
 let savedNavigationState: NavigationState | undefined = undefined;
 
 // Handle route changes
@@ -51,6 +53,7 @@ function onStateChange(state: NavigationState | undefined) {
 
         handleRouteChangeForChat(route, previousRoute);
 
+        prePreviousRoute = previousRoute;
         previousRoute = route;
     }
 }
@@ -76,6 +79,16 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
             theme={reactNavigationTheme}
             onReady={() => {
                 onStateChange(undefined);
+                // Prevent going back to a screen where the user shouldn't go
+                BackHandler.addEventListener("hardwareBackPress", () => {
+                    if (prePreviousRoute) {
+                        const toAuthRoute = AUTHENTICATED_ROUTES.indexOf(prePreviousRoute) !== -1;
+                        const authenticated = store.getState().auth.authenticated;
+                        if (toAuthRoute && !authenticated) return true;
+                        if (!toAuthRoute && authenticated) return true;
+                    }
+                    return false;
+                });
                 if (onReady) onReady();
             }}
             onStateChange={onStateChange}
