@@ -15,7 +15,6 @@ function VersionInfo(props: VersionInfoProps): JSX.Element {
     return (
         <View style={styles.versionInfoContainer}>
             <Text style={styles.versionText}>{APP_VERSION} </Text>
-            <Text style={[styles.versionText, styles.versionAlphaText]}> (Alpha)</Text>
         </View>
     );
 }
@@ -30,7 +29,6 @@ const themedStyles = preTheme((theme: Theme) => {
             left: 5,
         },
         versionText: {color: theme.textLight, fontSize: 12},
-        versionAlphaText: {color: theme.error},
         versionDisclaimerIcon: {color: theme.error, fontSize: 13},
     });
 });
