@@ -28,6 +28,10 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
             return import("@assets/images/woman-holding-phone.svg");
         case "logos.sea-eu-around.small":
             return import("@assets/images/logos/sea-eu-around.small.png");
+        case "store-button.android":
+            return import("@assets/images/store-android.png");
+        case "store-button.ios":
+            return import("@assets/images/store-ios.svg");
         default:
             return import("@assets/images/placeholder.png");
     }
