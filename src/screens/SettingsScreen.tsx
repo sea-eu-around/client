@@ -11,7 +11,7 @@ import ValueCard from "../components/cards/ValueCard";
 import i18n from "i18n-js";
 import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {AppState} from "../state/types";
-import {setLocale, toggleTheme} from "../state/settings/actions";
+import {setLocale, setTheme} from "../state/settings/actions";
 import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
 import {APP_VERSION, TERMS_AND_CONDITIONS_URL} from "../constants/config";
@@ -60,11 +60,13 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             label={i18n.t("settings.darkTheme")}
                             icon={<MaterialCommunityIcons name="theme-light-dark" style={styles.cardIcon} />}
                             oneLine={true}
-                            onPress={() => dispatch(toggleTheme())}
+                            onPress={() => dispatch(setTheme(settings.theme === "dark" ? "light" : "dark"))}
                             display={
                                 <Switch
                                     value={settings.theme === "dark"}
-                                    onValueChange={() => dispatch(toggleTheme())}
+                                    onValueChange={() =>
+                                        dispatch(setTheme(settings.theme === "dark" ? "light" : "dark"))
+                                    }
                                 />
                             }
                             noModal={true}
