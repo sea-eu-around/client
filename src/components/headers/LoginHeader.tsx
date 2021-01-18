@@ -39,7 +39,7 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
     }
 
     getCollapsedHeight(): number {
-        const minHeightBelow = 550;
+        const minHeightBelow = /*550*/ 650;
         return Dimensions.get("window").height - minHeightBelow + this.props.insets.top;
     }
 
@@ -158,6 +158,7 @@ export const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
             width: "100%",
             padding: 40,
             zIndex: 2,
+            overflow: "hidden",
         },
         navigationButton: {
             width: 50,
