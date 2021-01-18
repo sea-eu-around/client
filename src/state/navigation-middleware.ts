@@ -1,4 +1,5 @@
 import {AnyAction, Middleware, Dispatch, MiddlewareAPI} from "redux";
+import {DEBUG_MODE} from "../constants/config";
 import {rootNavigate} from "../navigation/utils";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 import {AUTH_ACTION_TYPES, beginOnboarding, LogInSuccessAction, LogOutAction} from "./auth/actions";
@@ -9,8 +10,7 @@ import {AppState} from "./types";
 export const navigationMiddleware: Middleware<unknown, AppState> = (store: MiddlewareAPI<Dispatch, AppState>) => (
     next: Dispatch<AnyAction>,
 ) => (action: AnyAction) => {
-    // TEMP action printing
-    console.log(action.type);
+    if (DEBUG_MODE) console.log(action.type);
 
     switch (action.type) {
         case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
