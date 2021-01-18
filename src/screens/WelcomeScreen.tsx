@@ -30,9 +30,7 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                         </View>
                         <View style={styles.textContainer}>
                             <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
-                            <Text style={styles.subtitle} numberOfLines={2}>
-                                {i18n.t("welcomeScreen.subtitle")}
-                            </Text>
+                            <Text style={styles.subtitle}>{i18n.t("welcomeScreen.subtitle")}</Text>
                         </View>
                     </View>
                     <View style={styles.actionsContainer}>
