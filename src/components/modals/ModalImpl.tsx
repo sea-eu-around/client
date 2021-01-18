@@ -83,7 +83,7 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
                             bottom: 0,
                             margin: "auto",
                             // Actual styling
-                            width: "50%",
+                            width: "80%",
                             height: "fit-content",
                             maxWidth: 300,
                             borderRadius: 3,
