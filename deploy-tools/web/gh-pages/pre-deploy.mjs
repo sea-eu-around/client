@@ -16,7 +16,7 @@ async function predeploy() {
     }
 
     const TARGET = production ? "PRODUCTION" : "STAGING";
-    const domain = production ? "sea-eu-around.lad-dev.team" : "staging.sea-eu-around.lad-dev.team";
+    const domain = production ? "sea-eu-around.univ-brest.fr" : "staging.sea-eu-around.lad-dev.team";
 
     // Build app into the web-build directory
     console.log("# Building app");
