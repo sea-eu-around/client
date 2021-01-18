@@ -142,6 +142,7 @@ const themedStyles = preTheme((theme: Theme) => {
             textTransform: "uppercase",
             letterSpacing: 0.5,
             color: theme.textWhite,
+            textAlign: "center",
             ...styleTextLight,
         },
         buttonTop: {
