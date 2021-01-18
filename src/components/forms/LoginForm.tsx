@@ -63,7 +63,11 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
         this.setState({...this.state, submitting: true});
         (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password)).then(
             ({success, errors}: ValidatedActionReturn) => {
-                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                if (success) {
+                    if (this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                    // Clear password input
+                    if (this.setFieldValue) this.setFieldValue("password", "", false);
+                }
                 if (errors && errors.fields) {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
