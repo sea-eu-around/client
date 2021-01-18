@@ -699,11 +699,14 @@ export default {
         },
         // Cookies
         cookies: {
+            title: "Cookies",
             bannerText:
                 "We use cookies to provide you with the best possible user experience.\nOur usage of cookies includes caching data for faster loading, storing your preferences and authentication. We do not collect any information that could be used for tracking or advertising.",
             acceptAll: "Accept cookies",
             customize: "Customize",
             preferences: {
+                text:
+                    "We offer you the ability to choose what information will be stored on your device when using SEA-EU Around.",
                 auth: {
                     name: "Authentication",
                     description: "Store information used to sign-in automatically when starting the app.",
@@ -714,6 +717,11 @@ export default {
                 },
                 settings: {name: "Settings", description: "Store your settings (e.g. theme and locale)."},
             },
+        },
+        // Bug report
+        bugReport: {
+            mailSubject: "Bug report from the app",
+            mailTitle: "Description of the bug (with steps to reproduce it if possible):",
         },
         // Report
         report: {
@@ -1581,7 +1589,7 @@ export default {
             customize: "Personnaliser",
             preferences: {
                 text:
-                    "We offer you the ability to choose what information will be stored on your device when using SEA-EU Around.",
+                    "Nous offrons la possibilité de choisir les informations qui sont stockées sur votre appareil par SEA-EU Around.",
                 auth: {
                     name: "Authentification",
                     description:
@@ -1593,6 +1601,11 @@ export default {
                 },
                 settings: {name: "Paramètres", description: "Stockage des paramètres (thème, langue, etc)."},
             },
+        },
+        // Bug report
+        bugReport: {
+            mailSubject: "Signalement de bug depuis l'app",
+            mailTitle: "Description du bug (inclure si possible les étapes pour le reproduire) :",
         },
         // Report
         report: {
