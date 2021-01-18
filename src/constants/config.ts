@@ -56,3 +56,8 @@ export const WEB_TO_APP_TIMEOUT = 5000;
  */
 export const TERMS_AND_CONDITIONS_URL =
     "https://sea-eu.org/wp-content/uploads/2021/01/SEA-EU-Around_Termsconditions-v2.pdf";
+
+/**
+ * The email address to which bug reports should be sent.
+ */
+export const BUG_REPORT_EMAIL_ADDRESS = "sea-eu.around@univ-brest.fr";

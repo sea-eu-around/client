@@ -1,6 +1,6 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {Alert, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
+import {Alert, Dimensions, Platform, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {RootNavigatorScreens} from "../navigation/types";
 import {preTheme} from "../styles/utils";
@@ -14,13 +14,14 @@ import {AppState} from "../state/types";
 import {setLocale, setTheme} from "../state/settings/actions";
 import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
-import {APP_VERSION, TERMS_AND_CONDITIONS_URL} from "../constants/config";
+import {APP_VERSION, BUG_REPORT_EMAIL_ADDRESS, TERMS_AND_CONDITIONS_URL} from "../constants/config";
 import LocalImage from "../components/LocalImage";
 import {logout} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import CustomizeCookiesModal from "../components/modals/CustomizeCookiesModal";
 import Button from "../components/Button";
 import * as Linking from "expo-linking";
+import store from "../state/store";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -124,18 +125,28 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
-                        {/*
-                        // TODO Implement bug reports
                         <ValueCard
                             style={styles.card}
                             label={i18n.t("settings.reportABug")}
                             icon={<MaterialIcons name="bug-report" style={styles.cardIcon} />}
                             oneLine={true}
-                            onPress={() => Alert.alert("Not implemented")} 
+                            onPress={() => {
+                                const {width, height} = Dimensions.get("window");
+                                const fromEmail = store.getState().profile.user?.email;
+                                let text = "";
+                                text += `Platform: ${Platform.OS} (${Platform.Version})\n`;
+                                text += `Dimensions: ${Math.round(width)} x ${Math.round(height)}\n`;
+                                text += `App version: ${APP_VERSION}\n`;
+                                text += `User: ${fromEmail}\n`;
+                                text += `_______________________\n\n`;
+                                text += `${i18n.t("bugReport.mailTitle")}\n\n`;
+
+                                const subject = i18n.t("bugReport.mailSubject");
+                                Linking.openURL(`mailto:${BUG_REPORT_EMAIL_ADDRESS}?subject=${subject}&body=${text}`);
+                            }}
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
-                        */}
                     </Section>
                     <Section
                         theme={theme}
