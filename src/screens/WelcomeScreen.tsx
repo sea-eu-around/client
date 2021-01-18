@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Dimensions, Platform, StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
@@ -11,6 +11,7 @@ import ScreenWrapper from "./ScreenWrapper";
 import SemiHighlightedText from "../components/SemiHighlightedText";
 import {getLocalSvg} from "../assets";
 import Button from "../components/Button";
+import MobileStoreButton from "../components/MobileStoreButton";
 
 export type WelcomeScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -20,6 +21,7 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
         const styles = themedStyles(theme);
 
         const WelcomeImage = getLocalSvg("welcome", () => this.forceUpdate());
+        const storeButtonWidth = Math.min(Dimensions.get("window").width * 0.4, 200);
 
         return (
             <ScreenWrapper>
@@ -33,6 +35,21 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                             <Text style={styles.subtitle}>{i18n.t("welcomeScreen.subtitle")}</Text>
                         </View>
                     </View>
+                    {Platform.OS === "web" && (
+                        <View style={styles.mobileStoresContainer}>
+                            <MobileStoreButton
+                                store="android"
+                                url="https://play.google.com/store/apps/details?id=com.sea_eu.around"
+                                width={storeButtonWidth}
+                            />
+                            <MobileStoreButton
+                                store="ios"
+                                // TODO change iOS link
+                                url="https: //play.google.com/store/apps/details?id=com.sea_eu.around"
+                                width={storeButtonWidth}
+                            />
+                        </View>
+                    )}
                     <View style={styles.actionsContainer}>
                         <Button
                             text={i18n.t("welcomeScreen.signIn")}
@@ -94,6 +111,11 @@ const themedStyles = preTheme((theme: Theme) => {
             alignSelf: "center",
             maxWidth: 250,
             marginTop: 10,
+        },
+
+        mobileStoresContainer: {
+            flexDirection: "row",
+            marginVertical: 20,
         },
 
         actionsContainer: {
