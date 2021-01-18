@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Text, View} from "react-native";
+import {ActivityIndicator, Text, View, ScrollView} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import EducationFieldPicker from "../EducationFieldPicker";
@@ -34,7 +34,6 @@ import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
 import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
-import {ScrollView} from "react-native-gesture-handler";
 
 // Component props
 export type EditProfileFormProps = ThemeProps & {
