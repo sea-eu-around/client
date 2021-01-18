@@ -58,11 +58,8 @@ class CustomizeCookiesModal extends React.Component<CustomizeCookiesModalProps, 
                 }}
                 renderContent={(hide: () => void) => (
                     <>
-                        <Text style={styles.title}>Cookies</Text>
-                        <Text style={styles.text}>
-                            We offer you the ability to choose what information will be stored on your device when using
-                            SEA-EU Around.
-                        </Text>
+                        <Text style={styles.title}>{i18n.t("cookies.title")}</Text>
+                        <Text style={styles.text}>{i18n.t("cookies.preferences.text")}</Text>
                         {COOKIES_PREFERENCES_KEYS.map((k) => (
                             <View style={styles.preferenceRow} key={`cookie-preference-${k}`}>
                                 <TouchableOpacity style={styles.preferenceRowButton} onPress={() => toggleCookie(k)}>

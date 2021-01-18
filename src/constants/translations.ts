@@ -887,7 +887,7 @@ export default {
         logOut: "Déconnexion",
         // Component-related
         picker: {
-            callToAction: "Sélectionner (%d éléments)",
+            callToAction: "%d éléments",
         },
         // Login and sign-up forms
         login: "Connexion",
@@ -1523,8 +1523,8 @@ export default {
                 help: "Je suis ouvert à laisser quelqu'un dormir sur mon canapé.",
             },
             "get-into-campus-life": {
-                name: "Rentrer dans la vie de campus",
-                help: "Je suis ouvert à l'idée de présenter à quelqu'un la vie de mon campus.",
+                name: "Intégrer la vie du campus",
+                help: "Je suis motivé.e à l'idée de présenter à quelqu'un la vie de mon campus.",
             },
             "cowork-on-a-project": {
                 name: "Collaborer sur un projet",
@@ -1574,11 +1574,14 @@ export default {
         },
         // Cookies
         cookies: {
+            title: "Cookies",
             bannerText:
                 "Nous utilisons des cookies afin de vous fournir la meilleure expérience utilisateur possible.\nNotre utilisation des cookies inclut notamment le stockage de données pour des chargements plus rapides, le stockage de vos paramètres et l'authentification. Nous ne collectons aucune information qui pourrait être utilisée pour du traçage ou de la publicité.",
             acceptAll: "Accepter les cookies",
             customize: "Personnaliser",
             preferences: {
+                text:
+                    "We offer you the ability to choose what information will be stored on your device when using SEA-EU Around.",
                 auth: {
                     name: "Authentification",
                     description:
