@@ -1182,17 +1182,17 @@ export default {
             legal1: {
                 title: "Conditions d'utilisation",
                 text:
-                    "En accord avec nos Conditions d'Utilisation, vous acceptez d'utiliser «SEA-EU Around» et ses services seulement pour être mis en contact, sur une base non lucrative, avec d'autres utilisateurs qui souhaitent rencontrer, collaborer et interagir en ligne ou dans le contexte d'une mobilité. Vous vous engagez à échanger respectueusement avec les autres membres. Votre nom et prénom seront visible par les autres membres.",
+                    "Comme précisé dans les conditions d’usage, vous acceptez d’utiliser « SEA-EU Around » et ses services pour être mis en relation avec d’autres personnes souhaitant se rencontrer, collaborer, ou interagir en ligne ou dans le cadre d’une mobilité, sur un principe non-commercial et non lucratif. Vous vous engagez à des échanges respectueux avec les autres membres. Vos noms et prénoms seront visibles des autres membres.",
             },
             legal2: {
                 title: "Politique des données",
                 text:
-                    "Dans le contexte de votre utilisation de SEA-EU Around, vous devrez fournir quelques données personnelles afin de créer votre profil comme expliqué dans nos Conditions d'Utilisation. Ces données sont collectées et utilisées par l'UBO à travers SEA-EU Around afin d'associer les profils des Membres, selon les besoins / offres et intérêts définis par les utilisateurs de SEA-EU Around. Vos données seront visibles uniquement par d'autres Membres.",
+                    "Dans le cadre de votre utilisation de SEA-EU Around, vous allez fournir des données personnelles afin de créer votre profil selon les conditions précisées dans les Conditions d’utilisation. Ces données sont collectées et traitées par l’UBO via l'application pour permettre la mise en relation entre membres, en fonctions des besoins, offres et intérêts qu’ils auront définis. Vos données ne seront visibles que par les autres membres.",
             },
             legal3: {
                 title: "Cookies",
                 text:
-                    "Je conviens que des cookies peuvent être utilisés. L'information est conservée seulement à des fins applicatives et permet pas d'identifier le Membre, à part pour le cookie permettant à UBO de re-authentifier l'Utilisateur lors de son arrivée sur SEA-EU Around sans avoir à entrer son mot de passe à chaque connexion.",
+                    "L’application peut utiliser les cookies. L’information est utilisée exclusivement dans le cadre du fonctionnement de l’application et ne permet pas d’identifier le membre, à l’exception du cookie permettant une réauthentification sans avoir à ressaisir son mot de passe.",
             },
             back: "Retour",
             next: "Suivant",
