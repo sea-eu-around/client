@@ -12,6 +12,8 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
 ) => (action: AnyAction) => {
     if (DEBUG_MODE) console.log(action.type);
 
+    next(action);
+
     switch (action.type) {
         case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
             rootNavigate("OnboardingSuccessfulScreen");
@@ -73,6 +75,4 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             break;
         }
     }
-
-    next(action);
 };
