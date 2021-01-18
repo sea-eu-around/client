@@ -152,7 +152,7 @@ export const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
                       backgroundColor: theme.accent,
                       zIndex: 1,
                   }
-                : {}),
+                : {zIndex: 1}),
         },
         container: {
             width: "100%",
