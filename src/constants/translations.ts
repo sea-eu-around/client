@@ -965,7 +965,7 @@ export default {
         lastname: "Nom",
         nationality: "Nationalité",
         university: "Université",
-        countryPickerLanguageCode: "common", // see TranslationLanguageCode from react-native-country-picker-modal
+        countryPickerLanguageCode: "fra", // see TranslationLanguageCode from react-native-country-picker-modal
         profileType: "Type",
         profileTypes: "Types",
         offers: "Offres",
@@ -1182,17 +1182,17 @@ export default {
             legal1: {
                 title: "Conditions d'utilisation",
                 text:
-                    "As explained in details in our Terms & Conditions, you agree to use «SEA-EU Around» and its services only to be put into contact, on a non-business and non-profit basis, with people wishing to meet, collaborate and interact online or in the frame of a mobility. You commit to carry out respectful exchanges with other members. Your name and surname will be visible by other members.",
+                    "En accord avec nos Conditions d'Utilisation, vous acceptez d'utiliser «SEA-EU Around» et ses services seulement pour être mis en contact, sur une base non lucrative, avec d'autres utilisateurs qui souhaitent rencontrer, collaborer et interagir en ligne ou dans le contexte d'une mobilité. Vous vous engagez à échanger respectueusement avec les autres membres. Votre nom et prénom seront visible par les autres membres.",
             },
             legal2: {
                 title: "Politique des données",
                 text:
-                    "In the context of your use of SEA-EU Around, you will provide some personal data to create your profile as further explained in our Terms & Conditions. This data is collected and processed by UBO through SEA-EU Around in order to enable matching among Members, according to needs/offers and interests defined by Members of SEA-EU Around. Your data will be visible only by other Members.",
+                    "Dans le contexte de votre utilisation de SEA-EU Around, vous devrez fournir quelques données personnelles afin de créer votre profil comme expliqué dans nos Conditions d'Utilisation. Ces données sont collectées et utilisées par l'UBO à travers SEA-EU Around afin d'associer les profils des Membres, selon les besoins / offres et intérêts définis par les utilisateurs de SEA-EU Around. Vos données seront visibles uniquement par d'autres Membres.",
             },
             legal3: {
                 title: "Cookies",
                 text:
-                    "I acknowledge that cookies might be used. The information is kept only for application purposes and does not permit to identify the Member except for the cookie enabling UBO to re-authenticate the Member on its arrival on SEA-EU Around, saving the Member from having to re-enter their password at each connection.",
+                    "Je conviens que des cookies peuvent être utilisés. L'information est conservée seulement à des fins applicatives et permet pas d'identifier le Membre, à part pour le cookie permettant à UBO de re-authentifier l'Utilisateur lors de son arrivée sur SEA-EU Around sans avoir à entrer son mot de passe à chaque connexion.",
             },
             back: "Retour",
             next: "Suivant",
