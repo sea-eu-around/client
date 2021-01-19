@@ -4,8 +4,8 @@
     "app.js.map": "/static/js/app.5dae61c4.chunk.js.map",
     "runtime~app.js": "/static/js/runtime~app.0d21cc99.js",
     "runtime~app.js.map": "/static/js/runtime~app.0d21cc99.js.map",
-    "static/js/2.d96338b7.chunk.js": "/static/js/2.d96338b7.chunk.js",
-    "static/js/2.d96338b7.chunk.js.map": "/static/js/2.d96338b7.chunk.js.map",
+    "static/js/2.b3324431.chunk.js": "/static/js/2.b3324431.chunk.js",
+    "static/js/2.b3324431.chunk.js.map": "/static/js/2.b3324431.chunk.js.map",
     "static/js/3.d0f75a45.chunk.js": "/static/js/3.d0f75a45.chunk.js",
     "static/js/3.d0f75a45.chunk.js.map": "/static/js/3.d0f75a45.chunk.js.map",
     "static/js/4.3ef6d4ab.chunk.js": "/static/js/4.3ef6d4ab.chunk.js",
@@ -57,7 +57,7 @@
     "index.html": "/index.html",
     "manifest.json": "/manifest.json",
     "serve.json": "/serve.json",
-    "static/js/2.d96338b7.chunk.js.LICENSE.txt": "/static/js/2.d96338b7.chunk.js.LICENSE.txt",
+    "static/js/2.b3324431.chunk.js.LICENSE.txt": "/static/js/2.b3324431.chunk.js.LICENSE.txt",
     "static/media/airbnb-star-selected.png": "/static/media/airbnb-star-selected.5dd75081.png",
     "static/media/airbnb-star.png": "/static/media/airbnb-star.f5730e12.png",
     "static/media/back-icon-mask.png": "/static/media/back-icon-mask.fae3c934.png",
@@ -76,7 +76,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.0d21cc99.js",
-    "static/js/2.d96338b7.chunk.js",
+    "static/js/2.b3324431.chunk.js",
     "static/js/app.5dae61c4.chunk.js"
   ]
 }
