@@ -94,7 +94,15 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
         );
 
         return (
-            <Modal animationType={animationType} transparent={true} statusBarTranslucent={true} visible={modalVisible}>
+            <Modal
+                animationType={animationType}
+                transparent={true}
+                statusBarTranslucent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    if (!nonDismissable) this.setModalVisible(false);
+                }}
+            >
                 {backdropBlur ? (
                     <BlurView style={{flex: 1}} tint={"dark"} intensity={BLUR_MODAL_INTENSITY}>
                         {content}
