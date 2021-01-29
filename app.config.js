@@ -19,7 +19,7 @@ if (TARGET === "PRODUCTION") {
     };
 } else {
     CLIENT_HOST = "staging.sea-eu-around.lad-dev.team";
-    const SERVER_HOST = "api-staging.sea-eu-around.univ-brest.fr";
+    const SERVER_HOST = "api-staging.sea-eu-around.lad-dev.team";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_HOST,
