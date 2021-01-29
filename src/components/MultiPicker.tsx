@@ -5,7 +5,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {withTheme} from "react-native-elements";
-import {pickerStyles} from "../styles/picker";
+import {getPickerButtonStyleProps, PickerButtonStyleVariant, pickerStyles} from "../styles/picker";
 import {ThemeProps} from "../types";
 import {SupportedLocale} from "../localization";
 import Chips from "./Chips";
@@ -32,6 +32,7 @@ export type MultiPickerProps = ConnectedProps<typeof reduxConnector> & {
     searchablePlaceholder?: string;
     showChips?: boolean;
     single?: boolean;
+    buttonStyleVariant?: PickerButtonStyleVariant;
 } & ViewProps &
     ThemeProps;
 
@@ -113,9 +114,11 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             searchablePlaceholder,
             showChips,
             single,
+            buttonStyleVariant,
             ...viewProps
         } = this.props;
         const styles = pickerStyles(theme);
+        const buttonStyle = {...getPickerButtonStyleProps(buttonStyleVariant, theme)};
 
         const selectedItems = selected || [];
         const items = this.state.items.get(locale) || [];
@@ -123,8 +126,8 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
         return (
             <View {...viewProps}>
                 <View>
-                    <TouchableOpacity onPress={() => this.open()} style={styles.openButton}>
-                        <Text style={styles.openButtonText}>
+                    <TouchableOpacity onPress={() => this.open()} style={buttonStyle.button}>
+                        <Text style={[buttonStyle.text, selectedItems.length == 0 ? buttonStyle.textNoneSelected : {}]}>
                             {i18n.t("picker.callToAction").replace("%d", selectedItems.length.toString())}
                         </Text>
                     </TouchableOpacity>

@@ -4,7 +4,7 @@ import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {withTheme} from "react-native-elements";
-import {pickerStyles} from "../styles/picker";
+import {getPickerButtonStyleProps, PickerButtonStyleVariant, pickerStyles} from "../styles/picker";
 import {Theme, ThemeProps} from "../types";
 import {SupportedLocale} from "../localization";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
@@ -40,6 +40,7 @@ export type SectionedMultiPickerProps = ConnectedProps<typeof reduxConnector> & 
     selected?: string[];
     searchablePlaceholder?: string;
     showChips?: boolean;
+    buttonStyleVariant?: PickerButtonStyleVariant;
 } & ViewProps &
     ThemeProps;
 
@@ -127,6 +128,7 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             genLabel,
             searchablePlaceholder,
             showChips,
+            buttonStyleVariant,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onChange,
             ...viewProps
@@ -135,6 +137,7 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
         const styles = pickerStyles(theme);
         const multiSelectStyles = sectionedMultiSelectStyles(theme);
         const miscStyles = themedStyles(theme);
+        const buttonStyle = {...getPickerButtonStyleProps(buttonStyleVariant, theme)};
 
         const selectedItems = selected || [];
 
@@ -205,8 +208,8 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                 onLayout={(e: LayoutChangeEvent) => this.setState({...this.state, width: e.nativeEvent.layout.width})}
             >
                 <View>
-                    <TouchableOpacity onPress={() => this.open()} style={styles.openButton}>
-                        <Text style={styles.openButtonText}>
+                    <TouchableOpacity onPress={() => this.open()} style={buttonStyle.button}>
+                        <Text style={[buttonStyle.text, selectedItems.length == 0 ? buttonStyle.textNoneSelected : {}]}>
                             {i18n.t("picker.callToAction").replace("%d", selectedItems.length.toString())}
                         </Text>
                     </TouchableOpacity>
