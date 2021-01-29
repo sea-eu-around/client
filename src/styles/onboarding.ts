@@ -3,6 +3,8 @@ import {Theme} from "../types";
 import {preTheme} from "./utils";
 import {styleTextThin} from "./general";
 
+export const ONBOARDING_INPUT_BORDER_RADIUS = 12;
+
 export const onboardingStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapper: {
@@ -40,6 +42,9 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             marginVertical: 0,
             maxWidth: 200,
         },
+        navButtonBack: {
+            backgroundColor: "#fff",
+        },
         navButtonIcon: {
             fontSize: 40,
             color: theme.text,
@@ -51,7 +56,6 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             ...styleTextThin,
             fontSize: 40,
             letterSpacing: 1.75,
-            marginBottom: 20,
             color: theme.text,
         } as TextStyle,
         subtitle: {
