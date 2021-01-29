@@ -763,6 +763,13 @@ export default {
             leave: "Leave",
             inputLabel: "Enter password to confirm",
         },
+        // Recover account
+        recoverAccount: {
+            title: "Recover Account",
+            text:
+                "You account is currently inactive and set for deletion. If you continue, the deletion process will be cancelled.",
+            yes: "Recover",
+        },
         // Messaging tab
         messaging: {
             noMatches: "It appears that you haven't matched with anyone yet. :(",
@@ -1647,6 +1654,13 @@ export default {
             success2: "Nous sommes désolés de vous voir partir.",
             leave: "Quitter",
             inputLabel: "Entrez votre mot de passe pour confirmer",
+        },
+        // Recover account
+        recoverAccount: {
+            title: "Récupération du Compte",
+            text:
+                "Ce compte est actuellement inactif et en attente d'être supprimé. Si vous continuez, la suppression sera annulée.",
+            yes: "Récupérer",
         },
         // Messaging tab
         messaging: {

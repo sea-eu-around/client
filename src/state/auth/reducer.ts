@@ -10,6 +10,7 @@ import {
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
+    LogInFailureAction,
 } from "./actions";
 
 const initialOnboardingState = (): OnboardingState => ({
@@ -33,6 +34,7 @@ export const initialState: AuthState = {
     validated: false,
     registerEmail: "",
     validatedEmail: null,
+    accountNeedsRecovery: false,
     onboarded: false,
     onboarding: initialOnboardingState(),
     onboardingIndex: 0,
@@ -83,16 +85,28 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             return {
                 ...state,
                 authenticated: true,
+                accountNeedsRecovery: false,
                 token,
                 onboarded,
                 onboarding,
             };
+        }
+        case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
+            const {needsRecovery} = action as LogInFailureAction;
+            return {
+                ...state,
+                accountNeedsRecovery: needsRecovery,
+            };
+        }
+        case AUTH_ACTION_TYPES.LOG_IN_RECOVER_CANCEL: {
+            return {...state, accountNeedsRecovery: false};
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,
                 token: null,
                 authenticated: false,
+                accountNeedsRecovery: false,
                 validated: false,
                 validatedEmail: null,
                 onboarded: false,

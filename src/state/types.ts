@@ -46,6 +46,7 @@ export type AuthState = {
     token: null | TokenDto;
     registerEmail: string;
     validatedEmail: string | null;
+    accountNeedsRecovery: boolean;
     // This is available only in DEBUG_MODE on the staging server
     verificationToken?: string;
     onboarded: boolean;

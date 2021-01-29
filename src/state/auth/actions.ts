@@ -14,6 +14,7 @@ export enum AUTH_ACTION_TYPES {
     REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
     LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
     LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
+    LOG_IN_RECOVER_CANCEL = "AUTH/LOG_IN_RECOVER_CANCEL",
     LOG_OUT = "AUTH/LOG_OUT",
     VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
@@ -48,7 +49,9 @@ export type LogInSuccessAction = {
 
 export type LogOutAction = {type: string; redirect: boolean};
 
-export type LogInFailureAction = {type: string};
+export type LogInFailureAction = {type: string; needsRecovery: boolean};
+
+export type LogInRecoverCancelAction = {type: string};
 
 export type ValidateAccountSuccessAction = {
     type: string;
@@ -97,6 +100,7 @@ export type AuthAction =
     | RegisterFailureAction
     | LogInSuccessAction
     | LogInFailureAction
+    | LogInRecoverCancelAction
     | LogOutAction
     | ValidateAccountSuccessAction
     | ValidateAccountFailureAction
@@ -153,8 +157,9 @@ const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boole
     usingCachedCredentials,
 });
 
-const loginFailure = (): LogInFailureAction => ({
+const loginFailure = (needsRecovery = false): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
+    needsRecovery,
 });
 
 export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => async (
@@ -179,18 +184,26 @@ export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => 
     return undefined;
 };
 
-export const requestLogin = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
-    const response = await requestBackend("auth/login", "POST", {}, {email, password});
+export const requestLogin = (email: string, password: string, recover = false): ValidatedThunkAction => async (
+    dispatch,
+) => {
+    const response = await requestBackend("auth/login", "POST", {}, {email, password, recover});
 
     if (response.status == HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as LoginDto;
         dispatch(loginSuccess(payload.token, convertDtoToUser(payload.user), false));
         return {success: true};
     } else {
-        dispatch(loginFailure());
+        const needsRecovery =
+            response.status === HttpStatusCode.FORBIDDEN && response.errorType === "error.user_being_deleted";
+        dispatch(loginFailure(needsRecovery));
         return {success: false, errors: gatherValidationErrors(response)};
     }
 };
+
+export const cancelLoginRecovery = (): LogInRecoverCancelAction => ({
+    type: AUTH_ACTION_TYPES.LOG_IN_RECOVER_CANCEL,
+});
 
 export const logout = (redirect = true): LogOutAction => ({
     type: AUTH_ACTION_TYPES.LOG_OUT,

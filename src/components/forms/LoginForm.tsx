@@ -19,6 +19,7 @@ import {RemoteValidationErrors} from "../../api/dto";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
 import Button from "../Button";
+import RecoverAccountModal from "../modals/RecoverAccountModal";
 
 type FormState = {
     email: string;
@@ -34,6 +35,7 @@ const LoginFormSchema = Yup.object().shape({
 // Map props from the store
 const reduxConnector = connect((state: AppState) => ({
     validatedEmail: state.auth.validatedEmail,
+    needsRecovery: state.auth.accountNeedsRecovery,
 }));
 
 // Component props
@@ -78,7 +80,7 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
     }
 
     render(): JSX.Element {
-        const {theme, containerStyle} = this.props;
+        const {theme, containerStyle, needsRecovery} = this.props;
         const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
@@ -196,6 +198,11 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         text={i18n.t("loginForm.signUp")}
                                     />
                                 </View>
+                                <RecoverAccountModal
+                                    visible={needsRecovery}
+                                    email={values.email}
+                                    password={values.password}
+                                />
                             </View>
                         );
                     }}
