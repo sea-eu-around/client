@@ -49,11 +49,11 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             break;
         }
         case AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE: {
-            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex - 1]);
+            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex]);
             break;
         }
         case AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE: {
-            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex + 1]);
+            rootNavigate(ONBOARDING_ORDER[store.getState().auth.onboardingIndex]);
             break;
         }
         case AUTH_ACTION_TYPES.FORGOT_PASSWORD_SUCCESS: {
