@@ -20,6 +20,11 @@ export default {
         picker: {
             callToAction: "Select (%d selected)",
         },
+        dateInput: {
+            dayPlaceholder: "DD",
+            monthPlaceholder: "MM",
+            yearPlaceholder: "YYYY",
+        },
         // Login and sign-up forms
         login: "Log in",
         emailAddress: "Email address",
@@ -903,6 +908,11 @@ export default {
         // Component-related
         picker: {
             callToAction: "%d éléments",
+        },
+        dateInput: {
+            dayPlaceholder: "JJ",
+            monthPlaceholder: "MM",
+            yearPlaceholder: "AAAA",
         },
         // Login and sign-up forms
         login: "Connexion",
