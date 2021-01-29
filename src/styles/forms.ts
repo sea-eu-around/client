@@ -3,6 +3,7 @@ import {Theme} from "../types";
 import {FormCheckBoxProps} from "../components/forms/FormCheckBox";
 import {preTheme} from "./utils";
 import {TextInputStyleProps} from "../components/ValidatedTextInput";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
 
 export const formStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -77,7 +78,7 @@ export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxPr
 }
 
 export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleProps {
-    return {
+    /*return {
         wrapperStyle: {
             width: "100%",
             marginVertical: 10,
@@ -109,5 +110,34 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleP
                       outline: "none",
                   } as TextStyle)
                 : {},
+    };*/
+    return {
+        wrapperStyle: {
+            width: "100%",
+            marginVertical: 10,
+        },
+        style: {
+            width: "100%",
+            height: 55,
+            borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            borderWidth: 0,
+            backgroundColor: theme.onboardingInputBackground,
+        },
+        focusedStyle: {
+            backgroundColor: theme.onboardingInputFocusedBackground,
+        },
+        errorStyle: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.error,
+        },
+        validStyle: {},
+        inputStyle: {
+            fontSize: 18,
+            color: theme.text,
+            marginHorizontal: 15,
+        },
+        inputFocusedStyle: {
+            ...(Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {}),
+        },
     };
 }
