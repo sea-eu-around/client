@@ -15,6 +15,7 @@ export const BUTTON_SKINS = {
             marginVertical: 10,
             borderRadius: 100,
             backgroundColor: theme.accent,
+            paddingHorizontal: 10,
         },
         text: {
             fontSize: 18,
@@ -32,6 +33,7 @@ export const BUTTON_SKINS = {
             borderRadius: 100,
             borderColor: theme.accent,
             borderWidth: 1,
+            paddingHorizontal: 10,
         },
         text: {
             fontSize: 18,
