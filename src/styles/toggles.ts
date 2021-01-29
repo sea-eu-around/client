@@ -1,7 +1,8 @@
 import {ButtonGroupProps} from "react-native-elements";
 import {Theme} from "../types";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
 
-export type ToggleStyleVariant = "classic" | "classic-rounded" | "no-buttons" | "chips";
+export type ToggleStyleVariant = "classic" | "classic-rounded" | "no-buttons" | "chips" | "onboarding";
 
 export function getToggleStyleProps(variant: ToggleStyleVariant = "classic", theme: Theme): Partial<ButtonGroupProps> {
     if (variant === "no-buttons") {
@@ -99,6 +100,40 @@ export function getToggleStyleProps(variant: ToggleStyleVariant = "classic", the
             },
             selectedButtonStyle: {
                 backgroundColor: theme.accent,
+            },
+            disabledStyle: {
+                backgroundColor: theme.cardBackground,
+            },
+            disabledSelectedStyle: {
+                backgroundColor: theme.background,
+            },
+            disabledSelectedTextStyle: {
+                fontWeight: "bold",
+            },
+        };
+    } else if (variant === "onboarding") {
+        return {
+            containerStyle: {
+                height: 48,
+                marginLeft: 0,
+                marginRight: 0,
+                borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            },
+            innerBorderStyle: {
+                color: theme.buttonGroupBorder,
+                width: 1,
+            },
+            buttonStyle: {
+                backgroundColor: theme.onboardingInputBackground,
+            },
+            textStyle: {
+                color: theme.textLight,
+            },
+            selectedTextStyle: {
+                color: theme.text,
+            },
+            selectedButtonStyle: {
+                backgroundColor: theme.onboardingInputFocusedBackground,
             },
             disabledStyle: {
                 backgroundColor: theme.cardBackground,
