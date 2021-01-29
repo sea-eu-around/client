@@ -27,6 +27,7 @@ const themedStyles = preTheme((theme: Theme) => {
             textTransform: "uppercase",
             letterSpacing: 1,
             fontSize: 12,
+            marginBottom: 5,
         },
     });
 });
