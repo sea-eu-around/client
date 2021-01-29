@@ -63,6 +63,7 @@ class OnboardingRoleSpecificScreen extends React.Component<OnboardingRoleSpecifi
                             <DegreeToggle
                                 degree={values.degree}
                                 onUpdate={(degree?: Degree) => setFieldValue("degree", degree)}
+                                styleVariant="onboarding"
                             />
                             {touched.degree && <InputErrorText error={errors.degree}></InputErrorText>}
                         </OnboardingSlide>

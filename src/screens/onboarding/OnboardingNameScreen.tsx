@@ -77,6 +77,7 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
                             <FormTextInput
                                 {...textInputProps("firstname")}
                                 label={i18n.t("firstname")}
+                                placeholder={i18n.t("firstname")}
                                 autoCompleteType="name"
                                 enablesReturnKeyAutomatically={true}
                                 returnKeyType="next"
@@ -88,6 +89,7 @@ class OnboardingNameScreen extends React.Component<OnboardingNameScreenProps> {
                                 {...textInputProps("lastname")}
                                 ref={this.lastNameInputRef}
                                 label={i18n.t("lastname")}
+                                placeholder={i18n.t("lastname")}
                                 autoCompleteType="name"
                                 enablesReturnKeyAutomatically={true}
                                 returnKeyType="done"

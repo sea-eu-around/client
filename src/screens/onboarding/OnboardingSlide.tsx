@@ -1,15 +1,5 @@
 import * as React from "react";
-import {
-    Text,
-    View,
-    ScrollView,
-    KeyboardAvoidingView,
-    ViewStyle,
-    StyleProp,
-    Alert,
-    Dimensions,
-    Platform,
-} from "react-native";
+import {Text, View, ScrollView, KeyboardAvoidingView, ViewStyle, StyleProp, Alert, Platform} from "react-native";
 import {withTheme} from "react-native-elements";
 import {onboardingStyle} from "../../styles/onboarding";
 import {ThemeProps} from "../../types";
@@ -18,10 +8,7 @@ import i18n from "i18n-js";
 import store from "../../state/store";
 import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
-import {getLocalSvg} from "../../assets";
-import FloatingThemeToggle from "../../components/FloatingThemeToggle";
 import Button from "../../components/Button";
-import layout from "../../constants/layout";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -37,6 +24,8 @@ export type OnboardingSlideProps = {
     handleSubmit?: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
     hideNavNext?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
+    background?: JSX.Element;
+    textColor?: string;
 } & OnboardingScreenProps &
     ThemeProps;
 
@@ -55,6 +44,8 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             handleSubmit,
             next,
             containerStyle,
+            background,
+            textColor,
             noKeyboardAvoidance,
             theme,
         } = this.props;
@@ -67,11 +58,12 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             else if (hasNext) next();
         };
 
-        const Background = getLocalSvg("background.onboarding", () => this.forceUpdate());
-        const {width, height} = Dimensions.get("screen");
+        // const Background = getLocalSvg("background.onboarding", () => this.forceUpdate());
+        // const {width, height} = Dimensions.get("screen");
         return (
             <ScreenWrapper>
-                {!layout.isWideDevice && (
+                {background}
+                {/*!layout.isWideDevice && (
                     <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
                         <Background
                             preserveAspectRatio={"true"}
@@ -79,7 +71,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             style={{width, height}}
                         />
                     </View>
-                )}
+                )*/}
                 <View style={styles.wrapper}>
                     <ScrollView
                         style={styles.slideScrollView}
@@ -91,9 +83,15 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             enabled={!noKeyboardAvoidance}
                         >
                             <View style={styles.header}>
-                                {title && typeof title === "string" && <Text style={styles.title}>{title}</Text>}
+                                {title && typeof title === "string" && (
+                                    <Text style={[styles.title, textColor ? {color: textColor} : {}]}>{title}</Text>
+                                )}
                                 {title && typeof title !== "string" && title}
-                                {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+                                {subtitle && (
+                                    <Text style={[styles.subtitle, textColor ? {color: textColor} : {}]}>
+                                        {subtitle}
+                                    </Text>
+                                )}
                             </View>
                             {this.props.children}
                         </KeyboardAvoidingView>
@@ -102,7 +100,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                         <View style={styles.slideNavButtons}>
                             {hasPrevious && (
                                 <Button
-                                    style={styles.navButton}
+                                    style={[styles.navButton, styles.navButtonBack]}
                                     skin="rounded-hollow"
                                     text={i18n.t("onboarding.back")}
                                     onPress={() => this.props.previous()}
@@ -110,7 +108,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             )}
                             {!hasPrevious && (
                                 <Button
-                                    style={styles.navButton}
+                                    style={[styles.navButton, styles.navButtonBack]}
                                     skin="rounded-hollow"
                                     text={i18n.t("onboarding.leave")}
                                     onPress={() => this.quitOnboarding()}
@@ -144,7 +142,6 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                         </View>
                     </View>
                 </View>
-                <FloatingThemeToggle />
             </ScreenWrapper>
         );
     }

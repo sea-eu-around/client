@@ -10,23 +10,39 @@ import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {TERMS_AND_CONDITIONS_URL} from "../../constants/config";
 import {Linking} from "expo";
+import {LinearGradient} from "expo-linear-gradient";
 
 // Component props
-type OnboardingLegalSlideProps = ThemeProps & OnboardingScreenProps & {title: string; text: string};
+type OnboardingLegalSlideProps = ThemeProps &
+    OnboardingScreenProps & {title: string; text: string; specialBackground?: boolean};
 
 class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
     render(): JSX.Element {
-        const {theme, title, text, next, ...otherProps} = this.props;
+        const {theme, title, text, specialBackground, next, ...otherProps} = this.props;
         const styles = themedStyles(theme);
 
+        const textColor = specialBackground ? theme.textWhite : theme.textLight;
+
         return (
-            <OnboardingSlide title={title} hideNavNext={true} next={next} {...otherProps}>
-                <Text style={styles.legalText}>{text}</Text>
-                <Text style={styles.readMoreText}>
+            <OnboardingSlide
+                title={title}
+                hideNavNext={true}
+                next={next}
+                {...(specialBackground
+                    ? {
+                          background: <LinearGradient style={styles.background} colors={[theme.accent, "#862ADF"]} />,
+                          textColor: theme.textWhite,
+                      }
+                    : {})}
+                {...otherProps}
+            >
+                <Text style={[styles.legalText, {color: textColor}]}>{text}</Text>
+                <Text style={[styles.readMoreText, {color: textColor}]}>
                     {i18n.t("legal.readMore")[0]}
                     <TextLink
                         onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
                         text={i18n.t("legal.readMore")[1]}
+                        style={{fontWeight: "bold"}}
                     />
                     {i18n.t("legal.readMore")[2]}
                 </Text>
@@ -34,15 +50,15 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
                 <View style={styles.actionsWrapper}>
                     <TOSDeclinedModal
                         activator={(show) => (
-                            <TouchableOpacity style={styles.actionButton} onPress={show}>
-                                <Text style={styles.actionButtonTextDecline}>{i18n.t("legal.decline")}</Text>
-                                <MaterialIcons name="close" style={styles.actionButtonTextDecline} />
+                            <TouchableOpacity style={[styles.actionButton, styles.actionButtonDecline]} onPress={show}>
+                                <Text style={styles.actionButtonText}>{i18n.t("legal.decline")}</Text>
+                                <MaterialIcons name="close" style={styles.actionButtonText} />
                             </TouchableOpacity>
                         )}
                     />
-                    <TouchableOpacity style={styles.actionButton} onPress={() => next()}>
-                        <Text style={styles.actionButtonTextAccept}>{i18n.t("legal.accept")}</Text>
-                        <MaterialIcons name="check" style={styles.actionButtonTextAccept} />
+                    <TouchableOpacity style={[styles.actionButton, styles.actionButtonAccept]} onPress={() => next()}>
+                        <Text style={styles.actionButtonText}>{i18n.t("legal.accept")}</Text>
+                        <MaterialIcons name="check" style={styles.actionButtonText} />
                     </TouchableOpacity>
                 </View>
             </OnboardingSlide>
@@ -50,31 +66,49 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
     }
 }
 
+const buttonsRadius = 100;
+
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        background: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+        },
         actionsWrapper: {
             flexDirection: "row",
             justifyContent: "space-around",
+            borderRadius: buttonsRadius,
+
+            shadowColor: "#000",
+            shadowOffset: {width: 0, height: 5},
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
+            elevation: 10,
         },
         actionButton: {
+            flex: 1,
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            padding: 20,
+            padding: 14,
         },
-        actionButtonTextDecline: {
-            fontSize: 16,
-            paddingHorizontal: 2,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            color: theme.error,
+        actionButtonDecline: {
+            backgroundColor: theme.error,
+            borderTopLeftRadius: buttonsRadius,
+            borderBottomLeftRadius: buttonsRadius,
         },
-        actionButtonTextAccept: {
-            fontSize: 16,
+        actionButtonAccept: {
+            backgroundColor: theme.okay,
+            borderTopRightRadius: buttonsRadius,
+            borderBottomRightRadius: buttonsRadius,
+        },
+        actionButtonText: {
+            fontSize: 18,
             paddingHorizontal: 2,
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            color: theme.okay,
+            color: theme.textWhite,
         },
         readMoreText: {
             fontSize: 16,
@@ -82,13 +116,11 @@ export const themedStyles = preTheme((theme: Theme) => {
             textAlign: "justify",
             marginVertical: 30,
             letterSpacing: 0.4,
-            color: theme.textLight,
         },
         legalText: {
             textAlign: "justify",
             fontSize: 16,
             lineHeight: 22,
-            color: theme.text,
         },
     });
 });

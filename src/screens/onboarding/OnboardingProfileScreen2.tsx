@@ -69,13 +69,14 @@ class OnboardingProfileScreen2 extends React.Component<OnboardingProfileScreen2P
                             handleSubmit={handleSubmit}
                             {...this.props}
                         >
-                            <InputLabel style={{marginBottom: 6}}>{i18n.t("spokenLanguages")}</InputLabel>
+                            <InputLabel>{i18n.t("spokenLanguages")}</InputLabel>
                             <SpokenLanguagesInput
                                 languages={values.languages}
                                 onChange={(languages: SpokenLanguageDto[], hasErrors: boolean) => {
                                     setFieldValue("languages", languages);
                                     this.setState({...this.state, hasErrors});
                                 }}
+                                pickerButtonStyleVariant="onboarding"
                             />
                             {touched.languages && hasErrors && (
                                 <InputErrorText
@@ -90,15 +91,14 @@ class OnboardingProfileScreen2 extends React.Component<OnboardingProfileScreen2P
                                 />
                             )}
 
-                            <InputLabel style={{marginBottom: 6, marginTop: spacing}}>
-                                {i18n.t("chooseInterests")}
-                            </InputLabel>
+                            <InputLabel style={{marginTop: spacing}}>{i18n.t("chooseInterests")}</InputLabel>
                             <InterestsPicker
                                 interests={values.interestIds}
                                 onChange={(interestIds: string[]) => {
                                     setFieldValue("interestIds", interestIds);
                                 }}
                                 showChips={true}
+                                buttonStyleVariant="onboarding"
                             />
                             {touched.interestIds && <InputErrorText error={errors.interestIds} />}
                         </OnboardingSlide>

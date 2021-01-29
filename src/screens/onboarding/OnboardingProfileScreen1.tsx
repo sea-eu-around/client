@@ -24,6 +24,7 @@ import BirthDateInput from "../../components/BirthDateInput";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "../../styles/onboarding";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -105,6 +106,7 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
                             <InputLabel>{i18n.t("dateOfBirth")}</InputLabel>
                             <BirthDateInput
                                 inputStyle={styles.dateTextInput}
+                                inputStyleFocused={styles.dateTextInputFocused}
                                 inputStyleValid={styles.dateTextInputValid}
                                 onChange={(date, error) => {
                                     if (error) setFieldError("birthdate", error);
@@ -119,6 +121,8 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
 
                             <InputLabel style={{marginTop: spacing}}>{i18n.t("nationality")}</InputLabel>
                             <NationalityControl
+                                buttonStyle={styles.nationalityButton}
+                                buttonValidStyle={styles.nationalityButtonValid}
                                 nationality={values.nationality || undefined}
                                 onSelect={(nationality: CountryCode) => setFieldValue("nationality", nationality)}
                             />
@@ -128,6 +132,7 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
                             <GenderToggle
                                 gender={values.gender}
                                 onSelect={(gender: Gender) => setFieldValue("gender", gender)}
+                                styleVariant="onboarding"
                             />
                             {touched.gender && <InputErrorText error={errors.gender}></InputErrorText>}
 
@@ -136,6 +141,7 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
                                 fields={values.educationFields}
                                 onChange={(fields: string[]) => setFieldValue("educationFields", fields)}
                                 showChips={true}
+                                buttonStyleVariant="onboarding"
                             />
                         </OnboardingSlide>
                     );
@@ -148,16 +154,19 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         dateTextInput: {
-            height: 44,
-            borderRadius: 0,
+            height: 48,
+            borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            paddingHorizontal: 10,
             borderWidth: 0,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.accentTernary,
-            backgroundColor: "transparent",
-            fontSize: 18,
+            backgroundColor: theme.onboardingInputBackground,
+            fontSize: 16,
             color: theme.text,
         },
+        dateTextInputFocused: {
+            backgroundColor: theme.onboardingInputFocusedBackground,
+        },
         dateTextInputValid: {
+            borderBottomWidth: 1,
             borderBottomColor: theme.okay,
         },
         birthdateText: {
@@ -165,6 +174,14 @@ export const themedStyles = preTheme((theme: Theme) => {
             marginTop: 4,
             fontSize: 12,
         },
+        nationalityButton: {
+            height: 48,
+            borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            backgroundColor: theme.onboardingInputBackground,
+            paddingHorizontal: 10,
+            borderBottomWidth: 0,
+        },
+        nationalityButtonValid: {},
     });
 });
 
