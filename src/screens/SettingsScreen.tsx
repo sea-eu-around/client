@@ -264,7 +264,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginVertical: 0,
         },
         oneLineCardButton: {
-            width: 120,
+            width: 140,
             height: 40,
             marginVertical: 0,
         },
