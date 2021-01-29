@@ -26,6 +26,8 @@ export default {
         greenModalBackground: "rgb(60, 175, 130)",
         chatBubble: "#ededed",
         inputPlaceholder: "#999",
+        onboardingInputBackground: "#F2F2F7",
+        onboardingInputFocusedBackground: "#E0E8F4",
     },
     dark: {
         id: "dark" as ThemeKey,
@@ -49,5 +51,7 @@ export default {
         greenModalBackground: "rgb(60, 175, 130)",
         chatBubble: "#333",
         inputPlaceholder: "#bbb",
+        onboardingInputBackground: "#F2F2F7",
+        onboardingInputFocusedBackground: "#E0E8F4",
     },
 };
