@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, StyleSheet, ViewStyle, Text, Alert} from "react-native";
+import {View, StyleSheet, ViewStyle, Text, Alert, TouchableOpacity} from "react-native";
 import LanguagePicker from "./LanguagePicker";
 import LanguageLevelPicker from "./LanguageLevelPicker";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -10,12 +10,15 @@ import {withTheme} from "react-native-elements";
 import {SpokenLanguageDto} from "../api/dto";
 import {MAX_SPOKEN_LANGUAGES} from "../constants/config";
 import i18n from "i18n-js";
+import {PickerButtonStyleVariant} from "../styles/picker";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "../styles/onboarding";
 
 // Component props
 export type SpokenLanguagesInputProps = ThemeProps & {
     languages: SpokenLanguageDto[];
     onChange?: (languages: SpokenLanguageDto[], hasErrors: boolean) => void;
     style?: ViewStyle;
+    pickerButtonStyleVariant?: PickerButtonStyleVariant;
 };
 
 // Component state
@@ -66,20 +69,29 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
     }
 
     render(): JSX.Element {
-        const {theme, style} = this.props;
+        const {theme, style, pickerButtonStyleVariant} = this.props;
         const {languages} = this.state;
         const styles = themedStyles(theme);
 
         const rows = languages.map((sl: Partial<SpokenLanguageDto>, i: number) => {
             return (
-                <View key={`spoken-languages-input-${sl.code}`} style={styles.rowContainer}>
-                    <Text style={styles.languageLabel}>{i18n.t(`languageNames.${sl.code}`)}</Text>
+                <View
+                    key={`spoken-languages-input-${sl.code}`}
+                    style={[styles.rowContainer, i === 0 ? styles.firstRowContainer : {}]}
+                >
+                    <View style={styles.languageLabelContainer}>
+                        <Text style={styles.languageLabel} numberOfLines={1}>
+                            {i18n.t(`languageNames.${sl.code}`)}
+                        </Text>
+                    </View>
                     <LanguageLevelPicker
                         level={sl.level}
                         buttonStyle={styles.levelPicker}
                         onChange={(level: LanguageLevel) => this.setLanguageLevel(i, level)}
                     />
-                    <MaterialIcons onPress={() => this.removeRow(i)} style={styles.deleteIcon} name="delete" />
+                    <TouchableOpacity style={styles.deleteIconContainer} onPress={() => this.removeRow(i)}>
+                        <MaterialIcons style={styles.deleteIcon} name="close" />
+                    </TouchableOpacity>
                 </View>
             );
         });
@@ -96,6 +108,7 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
                         this.setLanguages(languageCodes.slice(0, MAX_SPOKEN_LANGUAGES));
                     }}
                     showChips={false}
+                    buttonStyleVariant={pickerButtonStyleVariant}
                 />
                 {rows}
             </View>
@@ -109,17 +122,37 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
+            height: 32,
+            marginVertical: 3,
+        },
+        firstRowContainer: {
+            marginTop: 10,
+        },
+        deleteIconContainer: {
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.error,
+            borderRadius: 100,
         },
         deleteIcon: {
-            fontSize: 24,
-            color: theme.error,
-            paddingHorizontal: 4,
+            fontSize: 16,
+            color: theme.textWhite,
         },
         languagePicker: {},
+        languageLabelContainer: {
+            flex: 1,
+            paddingHorizontal: 10,
+            backgroundColor: theme.onboardingInputBackground,
+            borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+        },
         languageLabel: {
-            fontSize: 16,
+            fontSize: 14,
             color: theme.text,
-            flexGrow: 1,
         },
         levelPicker: {
             marginHorizontal: 5,

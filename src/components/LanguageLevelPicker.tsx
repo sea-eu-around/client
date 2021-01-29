@@ -23,6 +23,7 @@ class LanguageLevelPicker extends React.Component<LanguageLevelPickerProps> {
             <PopUpSelector
                 values={LANGUAGE_LEVELS}
                 label={(l: string) => i18n.t(`languageLevels.${l}`)}
+                placeholder={i18n.t("languageLevelPicker.placeholder")}
                 selected={level ? [level] : []}
                 valueStyle={styles.value}
                 buttonStyle={[styles.button, buttonStyle]}
@@ -37,13 +38,13 @@ class LanguageLevelPicker extends React.Component<LanguageLevelPickerProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         button: {
-            width: 75,
-            height: 40,
+            width: 70,
+            height: 32,
             alignItems: "center",
         },
         value: {
             letterSpacing: 0.5,
-            fontSize: 16,
+            fontSize: 14,
             color: theme.text,
         },
     });
