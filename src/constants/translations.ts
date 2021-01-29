@@ -970,7 +970,7 @@ export default {
             validation: {
                 email: {
                     is_email: "Adresse mail invalide.",
-                    is_sea_email_constraint: "L'adresse mail doit corresoindre à une de nos universités partenaires.",
+                    is_sea_email_constraint: "L'adresse mail doit correspondre à l'une de nos universités partenaires.",
                 },
             },
         },
