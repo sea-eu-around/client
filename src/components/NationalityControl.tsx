@@ -1,5 +1,5 @@
 import * as React from "react";
-import {TouchableOpacity, View, StyleSheet} from "react-native";
+import {TouchableOpacity, View, StyleSheet, StyleProp, ViewStyle} from "react-native";
 import NationalityPicker from "./NationalityPicker";
 import FormattedNationality from "./FormattedNationality";
 import {CountryCode} from "../model/country-codes";
@@ -12,6 +12,8 @@ export type NationalityControlProps = ThemeProps & {
     nationality?: CountryCode;
     onSelect?: (countryCode: CountryCode) => void;
     onHide?: () => void;
+    buttonStyle?: StyleProp<ViewStyle>;
+    buttonValidStyle?: StyleProp<ViewStyle>;
 };
 
 // Component state
@@ -39,14 +41,14 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
     }
 
     render(): JSX.Element {
-        const {onSelect, onHide, nationality, theme} = this.props;
+        const {onSelect, onHide, nationality, buttonStyle, buttonValidStyle, theme} = this.props;
         const {open} = this.state;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.wrapper}>
                 <TouchableOpacity
-                    style={[styles.button, nationality ? styles.buttonOk : {}]}
+                    style={[styles.button, buttonStyle, nationality ? [styles.buttonOk, buttonValidStyle] : {}]}
                     onPress={() => this.showModal()}
                 >
                     {nationality && <FormattedNationality countryCode={nationality} style={styles.nationality} />}
@@ -84,10 +86,11 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
         },
         buttonOk: {
+            borderBottomWidth: 1,
             borderBottomColor: theme.okay,
         },
         nationality: {
-            fontSize: 20,
+            fontSize: 16,
             color: theme.text,
         },
     });
