@@ -27,7 +27,7 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
             <ScreenWrapper forceFullWidth>
                 <View style={styles.root}>
                     {layout.isWideDevice ? (
-                        <View style={styles.largeDeviceLeftPanel}>
+                        <View style={styles.wideDeviceLeftPanel}>
                             <View style={{position: "absolute", bottom: -150, left: -100, width: "100%"}}>
                                 <ForegroundSvg />
                             </View>
@@ -85,7 +85,7 @@ const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
             flexDirection: "row",
             justifyContent: "center",
         },
-        largeDeviceLeftPanel: {
+        wideDeviceLeftPanel: {
             width: "50%",
             backgroundColor: "#0071BB",
         },
