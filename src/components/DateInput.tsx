@@ -1,7 +1,7 @@
 import * as React from "react";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
-import {TextInput, TextInputProps, View, StyleSheet, StyleProp, TextStyle, ViewStyle} from "react-native";
+import {TextInput, TextInputProps, View, StyleSheet, StyleProp, TextStyle, ViewStyle, Platform} from "react-native";
 import {preTheme} from "../styles/utils";
 import i18n from "i18n-js";
 
@@ -139,63 +139,70 @@ export class DateInputClass extends React.Component<DateInputProps, DateInputSta
     }
 
     render(): JSX.Element {
-        const {inputStyle, containerStyle, inputStyleFocused, autoFocus, theme} = this.props;
+        const {inputStyle, containerStyle, autoFocus, theme} = this.props;
         const {year, month, day, touched, error, focused1, focused2, focused3} = this.state;
         const styles = themedStyles(theme);
         const valid = touched && !error;
         const inputStyleValid = valid ? this.props.inputStyleValid : {};
+        const inputStyleFocused = [Platform.OS === "web" ? {outline: "none"} : {}, this.props.inputStyleFocused];
 
         return (
             <View style={[styles.container, containerStyle]}>
-                <TextInput
-                    {...dateInputProps(this.input1Ref, day, 2, this.input2Ref, (day) => this.set({day}))}
-                    ref={this.input1Ref}
-                    style={[
-                        styles.input,
-                        styles.inputDay,
-                        inputStyle,
-                        focused1 ? inputStyleFocused : {},
-                        inputStyleValid,
-                    ]}
-                    blurOnSubmit={false}
-                    returnKeyType="next"
-                    placeholder={i18n.t("dateInput.dayPlaceholder")}
-                    autoFocus={autoFocus}
-                    onBlur={() => this.setState({focused1: false})}
-                    onFocus={() => this.setState({focused1: true})}
-                />
-                <TextInput
-                    {...dateInputProps(this.input2Ref, month, 2, this.input3Ref, (month) => this.set({month}))}
-                    ref={this.input2Ref}
-                    style={[
-                        styles.input,
-                        styles.inputMonth,
-                        inputStyle,
-                        focused2 ? inputStyleFocused : {},
-                        inputStyleValid,
-                    ]}
-                    blurOnSubmit={false}
-                    onSubmitEditing={() => this.input3Ref.current?.focus()}
-                    returnKeyType="next"
-                    placeholder={i18n.t("dateInput.monthPlaceholder")}
-                    onBlur={() => this.setState({focused2: false})}
-                    onFocus={() => this.setState({focused2: true})}
-                />
-                <TextInput
-                    {...dateInputProps(this.input3Ref, year, 4, undefined, (year) => this.set({year}))}
-                    ref={this.input3Ref}
-                    style={[
-                        styles.input,
-                        styles.inputYear,
-                        inputStyle,
-                        focused3 ? inputStyleFocused : {},
-                        inputStyleValid,
-                    ]}
-                    returnKeyType="done"
-                    placeholder={i18n.t("dateInput.yearPlaceholder")}
-                    onBlur={() => this.setState({focused3: false})}
-                    onFocus={() => this.setState({focused3: true})}
-                />
+                <View style={styles.containerDay}>
+                    <TextInput
+                        {...dateInputProps(this.input1Ref, day, 2, this.input2Ref, (day) => this.set({day}))}
+                        ref={this.input1Ref}
+                        style={[
+                            styles.input,
+                            styles.inputDay,
+                            inputStyle,
+                            focused1 ? inputStyleFocused : {},
+                            inputStyleValid,
+                        ]}
+                        blurOnSubmit={false}
+                        returnKeyType="next"
+                        placeholder={i18n.t("dateInput.dayPlaceholder")}
+                        autoFocus={autoFocus}
+                        onBlur={() => this.setState({focused1: false})}
+                        onFocus={() => this.setState({focused1: true})}
+                    />
+                </View>
+                <View style={styles.containerMonth}>
+                    <TextInput
+                        {...dateInputProps(this.input2Ref, month, 2, this.input3Ref, (month) => this.set({month}))}
+                        ref={this.input2Ref}
+                        style={[
+                            styles.input,
+                            styles.inputMonth,
+                            inputStyle,
+                            focused2 ? inputStyleFocused : {},
+                            inputStyleValid,
+                        ]}
+                        blurOnSubmit={false}
+                        onSubmitEditing={() => this.input3Ref.current?.focus()}
+                        returnKeyType="next"
+                        placeholder={i18n.t("dateInput.monthPlaceholder")}
+                        onBlur={() => this.setState({focused2: false})}
+                        onFocus={() => this.setState({focused2: true})}
+                    />
+                </View>
+                <View style={styles.containerYear}>
+                    <TextInput
+                        {...dateInputProps(this.input3Ref, year, 4, undefined, (year) => this.set({year}))}
+                        ref={this.input3Ref}
+                        style={[
+                            styles.input,
+                            styles.inputYear,
+                            inputStyle,
+                            focused3 ? inputStyleFocused : {},
+                            inputStyleValid,
+                        ]}
+                        returnKeyType="done"
+                        placeholder={i18n.t("dateInput.yearPlaceholder")}
+                        onBlur={() => this.setState({focused3: false})}
+                        onFocus={() => this.setState({focused3: true})}
+                    />
+                </View>
             </View>
         );
     }
@@ -214,9 +221,12 @@ export const themedStyles = preTheme((theme: Theme) => {
             paddingHorizontal: 6,
             textAlign: "center",
         },
-        inputDay: {flex: 1},
-        inputMonth: {flex: 1, marginLeft: 10},
-        inputYear: {flex: 2, marginLeft: 10},
+        containerDay: {flex: 1},
+        containerMonth: {flex: 1, paddingLeft: 10},
+        containerYear: {flex: 2, paddingLeft: 10},
+        inputDay: {},
+        inputMonth: {},
+        inputYear: {},
     });
 });
 
