@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, ViewProps, TouchableOpacity, Text, StyleSheet, Platform, LayoutChangeEvent} from "react-native";
+import {View, ViewProps, TouchableOpacity, Text, StyleSheet, Platform} from "react-native";
 import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
@@ -12,6 +12,7 @@ import {preTheme} from "../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import {styleTextLight, webFontFamily} from "../styles/general";
 import Chips from "./Chips";
+import CustomModal from "./modals/CustomModal";
 
 type PickerItem = {
     id: string;
@@ -49,7 +50,6 @@ export type SectionedMultiPickerState = {
     items: Map<SupportedLocale, PickerItemSection[]>;
     open: boolean;
     tempSelected: string[];
-    width: number;
 };
 
 class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, SectionedMultiPickerState> {
@@ -68,7 +68,6 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             items: new Map(),
             open: false,
             tempSelected: props.selected || [],
-            width: 0,
         };
     }
 
@@ -103,6 +102,13 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
 
     open() {
         if (this.selectRef.current) this.selectRef.current._toggleSelector();
+        else {
+            // This is useful for the web version; the ref won't be set because
+            // the element isn't mounted before opening
+            setTimeout(() => {
+                if (this.selectRef.current) this.selectRef.current._toggleSelector();
+            }, 250);
+        }
         this.setState({...this.state, open: true, tempSelected: this.props.selected || this.state.tempSelected});
     }
 
@@ -133,7 +139,7 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
             onChange,
             ...viewProps
         } = this.props;
-        const {tempSelected, width} = this.state;
+        const {tempSelected} = this.state;
         const styles = pickerStyles(theme);
         const multiSelectStyles = sectionedMultiSelectStyles(theme);
         const miscStyles = themedStyles(theme);
@@ -187,26 +193,14 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                 itemFontFamily={webFontFamily}
                 searchTextFontFamily={webFontFamily}
                 subItemFontFamily={webFontFamily}
-                styles={{
-                    ...multiSelectStyles,
-                    ...(Platform.OS === "web"
-                        ? {
-                              modalWrapper: {width},
-                              container: [multiSelectStyles.container, {width}],
-                          }
-                        : {}),
-                }}
+                styles={multiSelectStyles}
             />
         ) : (
             <></>
         );
 
         return (
-            <View
-                {...viewProps}
-                style={{position: "relative"}}
-                onLayout={(e: LayoutChangeEvent) => this.setState({...this.state, width: e.nativeEvent.layout.width})}
-            >
+            <View {...viewProps} style={{position: "relative"}}>
                 <View>
                     <TouchableOpacity onPress={() => this.open()} style={buttonStyle.button}>
                         <Text style={[buttonStyle.text, selectedItems.length == 0 ? buttonStyle.textNoneSelected : {}]}>
@@ -228,7 +222,15 @@ class SectionedMultiPicker extends React.Component<SectionedMultiPickerProps, Se
                     )}
                 </View>
                 {(Platform.OS === "android" || Platform.OS === "ios") && <View>{select}</View>}
-                {Platform.OS === "web" && this.state.open && select}
+                {Platform.OS === "web" && (
+                    <CustomModal
+                        visible={this.state.open}
+                        noBackground
+                        fullWidth
+                        fullHeight
+                        renderContent={() => select}
+                    />
+                )}
             </View>
         );
     }
@@ -252,18 +254,18 @@ const themedStyles = preTheme((theme: Theme) => {
 
 const sectionedMultiSelectStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
+        modalWrapper: {
+            justifyContent: "center",
+        },
         container: {
             backgroundColor: theme.cardBackground,
             ...(Platform.OS === "web"
                 ? {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      position: "fixed" as any,
-                      top: 50,
-                      bottom: 50,
+                      marginVertical: 0,
+                      marginHorizontal: 0,
                       alignSelf: "center",
-                      borderWidth: 0,
                       maxWidth: 700,
-                      maxHeight: 600,
+                      maxHeight: "90%",
                       boxShadow: "0px 0px 8px 0px rgba(0,0,0,0.1)",
                   }
                 : {}),
