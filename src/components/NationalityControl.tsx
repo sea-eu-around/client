@@ -1,11 +1,12 @@
 import * as React from "react";
-import {TouchableOpacity, View, StyleSheet, StyleProp, ViewStyle} from "react-native";
+import {TouchableOpacity, View, StyleSheet, StyleProp, ViewStyle, Text} from "react-native";
 import NationalityPicker from "./NationalityPicker";
 import FormattedNationality from "./FormattedNationality";
 import {CountryCode} from "../model/country-codes";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import i18n from "i18n-js";
 
 // Component props
 export type NationalityControlProps = ThemeProps & {
@@ -52,7 +53,7 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
                     onPress={() => this.showModal()}
                 >
                     {nationality && <FormattedNationality countryCode={nationality} style={styles.nationality} />}
-                    {/*!date && <Text>Click to change value</Text>*/}
+                    {!nationality && <Text style={styles.placeholder}>{i18n.t("nationalityPicker.placeholder")}</Text>}
                 </TouchableOpacity>
                 <NationalityPicker
                     nationality={this.props.nationality}
@@ -64,7 +65,7 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
                         this.hideModal();
                         if (onHide) onHide();
                     }}
-                ></NationalityPicker>
+                />
             </View>
         );
     }
@@ -92,6 +93,11 @@ const themedStyles = preTheme((theme: Theme) => {
         nationality: {
             fontSize: 16,
             color: theme.text,
+        },
+        placeholder: {
+            fontSize: 16,
+            color: theme.textLight,
+            paddingHorizontal: 10,
         },
     });
 });

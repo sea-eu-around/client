@@ -25,6 +25,9 @@ export default {
             monthPlaceholder: "MM",
             yearPlaceholder: "YYYY",
         },
+        nationalityPicker: {
+            placeholder: "Select a nationality",
+        },
         // Login and sign-up forms
         login: "Log in",
         emailAddress: "Email address",
@@ -913,6 +916,9 @@ export default {
             dayPlaceholder: "JJ",
             monthPlaceholder: "MM",
             yearPlaceholder: "AAAA",
+        },
+        nationalityPicker: {
+            placeholder: "Nationalité",
         },
         // Login and sign-up forms
         login: "Connexion",
