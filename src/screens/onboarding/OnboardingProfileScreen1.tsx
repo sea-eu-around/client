@@ -18,13 +18,16 @@ import GenderToggle from "../../components/GenderToggle";
 import NationalityControl from "../../components/NationalityControl";
 import {CountryCode} from "../../model/country-codes";
 import EducationFieldPicker from "../../components/EducationFieldPicker";
-import {StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {FormattedDate} from "../../components/FormattedDate";
 import BirthDateInput from "../../components/BirthDateInput";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {ONBOARDING_INPUT_BORDER_RADIUS} from "../../styles/onboarding";
+import {getLocalSvg} from "../../assets";
+import layout from "../../constants/layout";
+import {useState} from "react";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -99,6 +102,7 @@ class OnboardingProfileScreen1 extends React.Component<OnboardingProfileScreen1P
                     return (
                         <OnboardingSlide
                             title={i18n.t("onboarding.profile1.title")}
+                            illustration={<Illustration />}
                             handleSubmit={handleSubmit}
                             noKeyboardAvoidance={true}
                             {...this.props}
@@ -184,5 +188,42 @@ export const themedStyles = preTheme((theme: Theme) => {
         nationalityButtonValid: {},
     });
 });
+
+function Illustration(): JSX.Element {
+    const wide = layout.isWideDevice;
+    const svgHeight = wide ? 400 : 300;
+
+    const [value, setValue] = useState(0);
+    const forceUpdate = () => setValue(value + 1);
+
+    const Svg = getLocalSvg("woman-holding-phone-3", forceUpdate);
+    const Blob = getLocalSvg("blob-6", forceUpdate);
+
+    return (
+        <View
+            style={[
+                {height: svgHeight, zIndex: -1},
+                !wide && {
+                    position: "absolute",
+                    top: -190,
+                    right: -150,
+                },
+            ]}
+        >
+            <Blob width={svgHeight * (350 / 360)} height={svgHeight} viewBox="0 0 350 360" />
+            <Svg
+                style={{
+                    position: "absolute",
+                    ...(wide
+                        ? {left: svgHeight * 0.075, top: svgHeight * 0.1}
+                        : {left: svgHeight * 0.1, top: svgHeight * 0.28}),
+                }}
+                width={svgHeight * (wide ? 0.9 : 0.7) * (275 / 385)}
+                height={svgHeight * (wide ? 0.9 : 0.7)}
+                viewBox="0 0 275 385"
+            />
+        </View>
+    );
+}
 
 export default reduxConnector(withTheme(OnboardingProfileScreen1));

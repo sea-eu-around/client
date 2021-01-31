@@ -5,10 +5,20 @@ import {styleTextThin} from "./general";
 
 export const ONBOARDING_INPUT_BORDER_RADIUS = 12;
 
-export const onboardingStyle = preTheme((theme: Theme) => {
+export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
     return StyleSheet.create({
-        wrapper: {
-            width: "100%",
+        root: {
+            flexDirection: "row",
+            justifyContent: "center",
+        },
+        wideDeviceLeftPanel: {
+            width: "50%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        slideWrapper: {
+            width: wideDevice ? "50%" : "100%",
             height: "100%",
             alignItems: "center",
         },
@@ -19,14 +29,18 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             width: "100%",
         },
         slideContentWrapper: {
-            width: "75%",
+            width: "100%",
             flexDirection: "column",
+            alignItems: "center",
             alignSelf: "center",
-            paddingTop: 150,
+            paddingTop: 100,
             paddingBottom: 20,
         },
+        slideContentContainer: {
+            width: "80%",
+        },
         slideNavWrapper: {
-            width: "75%",
+            width: "80%",
             alignItems: "center",
             marginTop: 20,
             marginBottom: 40,

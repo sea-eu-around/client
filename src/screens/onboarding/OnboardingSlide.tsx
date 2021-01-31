@@ -9,6 +9,7 @@ import store from "../../state/store";
 import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
 import Button from "../../components/Button";
+import layout from "../../constants/layout";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -25,6 +26,7 @@ export type OnboardingSlideProps = {
     hideNavNext?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
     background?: JSX.Element;
+    illustration?: JSX.Element;
     textColor?: string;
 } & OnboardingScreenProps &
     ThemeProps;
@@ -45,6 +47,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             next,
             containerStyle,
             background,
+            illustration,
             textColor,
             noKeyboardAvoidance,
             theme,
@@ -58,21 +61,13 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             else if (hasNext) next();
         };
 
-        // const Background = getLocalSvg("background.onboarding", () => this.forceUpdate());
-        // const {width, height} = Dimensions.get("screen");
+        const wide = layout.isWideDevice;
+
         return (
-            <ScreenWrapper>
-                {background}
-                {/*!layout.isWideDevice && (
-                    <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
-                        <Background
-                            preserveAspectRatio={"true"}
-                            viewBox={`${50} ${50} ${width * 1.25} ${height * 1.25}`}
-                            style={{width, height}}
-                        />
-                    </View>
-                )*/}
-                <View style={styles.wrapper}>
+            <ScreenWrapper forceFullWidth containerStyle={styles.root}>
+                {wide ? <View style={styles.wideDeviceLeftPanel}>{illustration}</View> : <></>}
+                <View style={styles.slideWrapper}>
+                    {background}
                     <ScrollView
                         style={styles.slideScrollView}
                         contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
@@ -81,6 +76,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             behavior="position"
                             keyboardVerticalOffset={70}
                             enabled={!noKeyboardAvoidance}
+                            style={styles.slideContentContainer}
                         >
                             <View style={styles.header}>
                                 {title && typeof title === "string" && (
@@ -93,6 +89,7 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                                     </Text>
                                 )}
                             </View>
+                            {!wide && illustration}
                             {this.props.children}
                         </KeyboardAvoidingView>
                     </ScrollView>
