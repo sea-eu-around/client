@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="299px" height="280px" viewBox="0 0 299 280" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>blob-9</title>
+    <defs>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" gradientTransform="translate(0.500000,0.000000),scale(0.936455,1.000000),rotate(90.000000),translate(-0.500000,-0.000000)" id="radialGradient-1">
+            <stop stop-color="#02C3FF" offset="0%"></stop>
+            <stop stop-color="#0071BB" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="blob-9" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M266.988333,34.0124519 C292.332977,62.0358017 284.665507,112.553008 294.013941,150.540215 C303.570118,188.735003 300.453973,236.063327 275.317073,259.312329 C249.972429,282.76891 202.60703,281.938589 159.39649,277.579401 C116.393694,273.220213 77.5457564,265.124579 47.6307674,241.875578 C17.7157784,218.626576 -3.47400552,179.809047 0.47311109,145.143126 C4.4202277,110.477204 33.5042448,79.7553098 63.6269768,51.73196 C93.5419658,23.9161906 124.287927,-1.20103396 153.995173,0.0444482482 C183.702419,1.08235009 241.64369,6.19668251 266.988333,34.0124519 Z" id="Path" fill="url(#radialGradient-1)" fill-rule="nonzero"></path>
+    </g>
+</svg>
