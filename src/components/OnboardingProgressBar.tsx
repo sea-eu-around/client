@@ -5,6 +5,7 @@ import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 import ReAnimated, {Easing} from "react-native-reanimated";
+import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 
 export type OnboardingProgressBarProps = {
     index: number;
@@ -44,15 +45,19 @@ class OnboardingProgressBar extends React.Component<OnboardingProgressBarProps> 
         const styles = themedStyles(theme);
 
         return (
-            <View
-                style={[styles.background, style]}
-                onLayout={(layout) => {
-                    this.containerWidth = layout.nativeEvent.layout.width;
-                    this.setIndex(this.props.index);
-                }}
-            >
-                <ReAnimated.View style={[styles.foreground, {width: this.width}, foregroundStyle]} />
-            </View>
+            <SafeAreaInsetsContext.Consumer>
+                {(insets) => (
+                    <View
+                        style={[styles.background, {bottom: insets?.bottom}, style]}
+                        onLayout={(layout) => {
+                            this.containerWidth = layout.nativeEvent.layout.width;
+                            this.setIndex(this.props.index);
+                        }}
+                    >
+                        <ReAnimated.View style={[styles.foreground, {width: this.width}, foregroundStyle]} />
+                    </View>
+                )}
+            </SafeAreaInsetsContext.Consumer>
         );
     }
 }
@@ -60,6 +65,9 @@ class OnboardingProgressBar extends React.Component<OnboardingProgressBarProps> 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         background: {
+            position: "absolute",
+            left: 0,
+
             width: "100%",
             height: 12,
             backgroundColor: theme.accentSlight,
