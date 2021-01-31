@@ -90,7 +90,12 @@ export type ResponseProfileDtoStudent = ResponseProfileDtoCommon & CreateProfile
 export type ResponseProfileDtoStaff = ResponseProfileDtoCommon & CreateProfileDtoStaff;
 export type ResponseProfileDto = ResponseProfileDtoStudent | ResponseProfileDtoStaff;
 
-export type ResponseProfileWithMatchInfoDto = {isMatched: boolean; roomId: string | null; profile: ResponseProfileDto};
+export type ResponseProfileWithMatchInfoDto = {
+    isMatched: boolean;
+    roomId: string | null;
+    matchingId: string | null;
+    profile: ResponseProfileDto;
+};
 
 export enum OfferCategory {
     Discover = "discover",
@@ -208,4 +213,18 @@ export type MatchHistoryItemDto = {
     status: MatchActionStatus;
     date: string;
     id: string;
+};
+
+export type CreateGroupDto = {
+    name: string;
+    description: string;
+    visible: boolean;
+    requireApproval: boolean;
+};
+
+export type ResponseGroupDto = {
+    name: string;
+    description: string;
+    visible: boolean;
+    requireApproval: boolean;
 };

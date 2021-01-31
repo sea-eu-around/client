@@ -103,6 +103,8 @@ export type NotificationsState = {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ReportsState = {};
 
+export type GroupsState = {pagination: PaginatedState};
+
 export type AppState = {
     auth: AuthState;
     settings: SettingsState;
@@ -110,6 +112,8 @@ export type AppState = {
     matching: MatchingState;
     messaging: MessagingState;
     notifications: NotificationsState;
+    reports: ReportsState;
+    groups: GroupsState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)

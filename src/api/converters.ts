@@ -12,6 +12,7 @@ import {
     ResponseRoomDto,
     ResponseUserDto,
     ResponseProfileWithMatchInfoDto,
+    ResponseGroupDto,
 } from "./dto";
 import {
     UserProfile,
@@ -26,6 +27,7 @@ import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
 import {PARTNER_UNIVERSITIES} from "../constants/universities";
+import {Group} from "../model/groups";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -159,5 +161,11 @@ export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchIn
     return {
         ...dto,
         profile: convertDtoToProfile(dto.profile),
+    };
+}
+
+export function convertDtoToGroup(dto: ResponseGroupDto): Group {
+    return {
+        ...dto,
     };
 }
