@@ -43,6 +43,8 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                     RalewayLight: require("@assets/fonts/Raleway-Light.ttf"),
                     RalewaySemiBold: require("@assets/fonts/Raleway-SemiBold.ttf"),
                     RalewayBold: require("@assets/fonts/Raleway-Bold.ttf"),
+                    "ComicSansMS-Bold": require("@assets/fonts/ComicBold.ttf"),
+                    //ComicSansMS: require("@assets/fonts/ComicSansMS-Bold.ttf"),
                 });
 
                 // Read cookie consent information from persistent storage
