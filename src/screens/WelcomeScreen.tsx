@@ -44,8 +44,7 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                             />
                             <MobileStoreButton
                                 store="ios"
-                                // TODO change iOS link
-                                url="https: //play.google.com/store/apps/details?id=com.sea_eu.around"
+                                url="https://apps.apple.com/fr/app/sea-eu-around/id1543605955"
                                 width={storeButtonWidth}
                             />
                         </View>
