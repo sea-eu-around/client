@@ -222,7 +222,7 @@ const OfferCategoryRow = reduxConnector(
     ),
 );
 
-export const themedStyles = preTheme((theme: Theme) => {
+const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         rootScroll: {
             width: "100%",
@@ -232,21 +232,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
         },
 
-        titleWrapper: {
-            width: "100%",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            marginBottom: 20,
-        },
-        title: {
-            fontSize: 22,
-            color: theme.text,
-        },
-        buttonSend: {
-            flex: 1,
-            backgroundColor: theme.accent,
-            marginLeft: 6,
-        },
         header: {
             alignItems: "center",
         },
@@ -256,13 +241,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             maxWidth: 600,
             paddingTop: 90,
             paddingBottom: 50,
-        },
-        formWrapper: {
-            width: "90%",
-            maxWidth: 600,
-            alignSelf: "center",
-            paddingTop: 80,
-            paddingBottom: 20,
         },
         loadingIndicator: {
             position: "absolute",
