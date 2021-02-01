@@ -48,7 +48,7 @@ class OnboardingProgressBar extends React.Component<OnboardingProgressBarProps> 
             <SafeAreaInsetsContext.Consumer>
                 {(insets) => (
                     <View
-                        style={[styles.background, {bottom: insets?.bottom}, style]}
+                        style={[styles.background, {bottom: (insets?.bottom || 0) + 100}, style]}
                         onLayout={(layout) => {
                             this.containerWidth = layout.nativeEvent.layout.width;
                             this.setIndex(this.props.index);
@@ -66,13 +66,15 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         background: {
             position: "absolute",
-            left: 0,
+            left: "10%",
 
-            width: "100%",
-            height: 12,
+            width: "80%",
+            height: 8,
+            borderRadius: 8,
             backgroundColor: theme.accentSlight,
         },
         foreground: {
+            borderRadius: 8,
             backgroundColor: theme.accent,
             height: "100%",
         },
