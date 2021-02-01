@@ -1,10 +1,11 @@
 import {requestBackend} from "../../api/utils";
-import {AppThunk} from "../types";
+import {AppThunk, ValidatedThunkAction} from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {GROUPS_FETCH_LIMIT} from "../../constants/config";
 import {CreateGroupDto, PaginatedRequestResponse, ResponseGroupDto} from "../../api/dto";
 import {Group} from "../../model/groups";
 import {convertDtoToGroup} from "../../api/converters";
+import {gatherValidationErrors} from "../../api/errors";
 
 export enum GROUP_ACTION_TYPES {
     CREATE_SUCCESS = "GROUP/CREATE_SUCCESS",
@@ -88,20 +89,20 @@ const deleteGroupFailure = (): DeleteGroupFailureAction => ({
     type: GROUP_ACTION_TYPES.DELETE_FAILURE,
 });
 
-export const createGroup = (group: CreateGroupDto): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+export const createGroup = (group: CreateGroupDto): ValidatedThunkAction => async (dispatch, getState) => {
     const token = getState().auth.token;
 
     const response = await requestBackend("groups", "POST", {}, group, token, true);
     if (response.status === HttpStatusCode.CREATED) {
         dispatch(createGroupSuccess());
-        return true;
+        return {success: true};
     } else {
         dispatch(createGroupFailure());
-        return false;
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
-export const updateGroup = (id: string, group: Partial<CreateGroupDto>): AppThunk<Promise<boolean>> => async (
+export const updateGroup = (id: string, group: Partial<CreateGroupDto>): ValidatedThunkAction => async (
     dispatch,
     getState,
 ) => {
@@ -110,23 +111,23 @@ export const updateGroup = (id: string, group: Partial<CreateGroupDto>): AppThun
     const response = await requestBackend(`groups/${id}`, "PATCH", {}, group, token, true);
     if (response.status === HttpStatusCode.OK) {
         dispatch(updateGroupSuccess());
-        return true;
+        return {success: true};
     } else {
         dispatch(updateGroupFailure());
-        return false;
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
-export const deleteGroup = (id: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+export const deleteGroup = (id: string): ValidatedThunkAction => async (dispatch, getState) => {
     const token = getState().auth.token;
 
     const response = await requestBackend(`groups/${id}`, "DELETE", {}, {}, token, true);
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(deleteGroupSuccess());
-        return true;
+        return {success: true};
     } else {
         dispatch(deleteGroupFailure());
-        return false;
+        return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 

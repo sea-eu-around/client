@@ -784,6 +784,19 @@ export default {
             sayHi: "Say hi",
             sayHiTo: "Say hi to {{name}}!",
         },
+        // Groups tab
+        groups: {
+            create: {
+                title: "Create Group",
+                name: "Name",
+                visible: "Visible",
+                requireApproval: "Requires approval",
+                visibleDescription: "Whether or not everyone will be able to find your group.",
+                requireApprovalDescription:
+                    "If checked, a group moderator will have to manually approve requests to join this group.",
+                submit: "Create",
+            },
+        },
         // Matching tab
         matching: {
             noResults: "No results found",
@@ -821,7 +834,7 @@ export default {
                 noResultsAdvice: "Perhaps try removing some filters",
             },
         },
-        // Profile tab
+        // Profile screen
         profile: {
             action: {
                 chat: "Chat",
@@ -855,6 +868,7 @@ export default {
             TabMatchingScreen: "Match",
             MatchFilteringScreen: "Add Filters",
             MatchHistoryScreen: "History",
+            TabGroupsScreen: "Groups",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
             ProfileScreen: "Profile",
@@ -1684,6 +1698,19 @@ export default {
             sayHi: "Envoyez un message",
             sayHiTo: "Envoyez un message à {{name}}",
         },
+        // Groups tab
+        groups: {
+            create: {
+                title: "Créer un groupe",
+                name: "Nom",
+                visible: "Visible",
+                requireApproval: "Approbation requise",
+                visibleDescription: "Si coché, tout le monde pourra voir votre groupe.",
+                requireApprovalDescription:
+                    "Si coché, un modérateur de votre groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
+                submit: "Créer",
+            },
+        },
         // Matching tab
         matching: {
             noResults: "Aucun résultat",
@@ -1721,7 +1748,7 @@ export default {
                 noResultsAdvice: "Éssayez de supprimer des filtres",
             },
         },
-        // Profile tab
+        // Profile screen
         profile: {
             action: {
                 chat: "Ouvrir le chat",
@@ -1755,6 +1782,7 @@ export default {
             TabMatchingScreen: "Match",
             MatchFilteringScreen: "Ajouter des Filtres",
             MatchHistoryScreen: "Historique",
+            TabGroupsScreen: "Groupes",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profil",
             ProfileScreen: "Profil",

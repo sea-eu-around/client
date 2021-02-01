@@ -21,6 +21,7 @@ export type RootNavigatorScreens = {
 export type MainNavigatorTabs = {
     TabHome: undefined;
     TabMatching: undefined;
+    TabGroups: undefined;
     TabMessaging: undefined;
     TabNotifications: undefined;
 };
@@ -37,6 +38,12 @@ export type TabMatchingRoot = {
     TabMatchingScreen: undefined;
     MatchFilteringScreen: undefined;
     MatchHistoryScreen: undefined;
+};
+
+// TAB: Groups
+
+export type TabGroupsRoot = {
+    TabGroupsScreen: undefined;
 };
 
 // TAB: Messaging
@@ -76,6 +83,7 @@ export type NavigatorRoute =
     | keyof MainNavigatorTabs
     | keyof TabHomeRoot
     | keyof TabMatchingRoot
+    | keyof TabGroupsRoot
     | keyof TabMessagingRoot
     | keyof TabNotificationsRoot
     | keyof OnboardingScreens;

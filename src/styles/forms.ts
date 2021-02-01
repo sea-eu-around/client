@@ -60,23 +60,6 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
     };
 }
 
-export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxProps> {
-    const commonStyle = StyleSheet.create({
-        checkboxWrapper: {
-            width: "100%",
-            marginVertical: 5,
-        },
-        checkboxLabel: {
-            fontSize: 14,
-        },
-    });
-
-    return {
-        wrapperStyle: commonStyle.checkboxWrapper,
-        labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
-    };
-}
-
 export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleProps {
     /*return {
         wrapperStyle: {
@@ -139,5 +122,31 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleP
         inputFocusedStyle: {
             ...(Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {}),
         },
+    };
+}
+
+export function getFormCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxProps> {
+    const commonStyle = StyleSheet.create({
+        checkboxWrapper: {
+            width: "100%",
+            marginVertical: 5,
+        },
+        checkboxContainer: {
+            padding: 0,
+            marginTop: 0,
+            marginBottom: 0,
+            marginLeft: 0,
+            marginRight: 5,
+        },
+        checkboxLabel: {
+            fontSize: 16,
+            marginLeft: 5,
+        },
+    });
+
+    return {
+        wrapperStyle: commonStyle.checkboxWrapper,
+        containerStyle: commonStyle.checkboxContainer,
+        labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
     };
 }

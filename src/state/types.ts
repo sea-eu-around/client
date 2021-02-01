@@ -16,6 +16,7 @@ import {CountryCode} from "../model/country-codes";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 import {UserSettings} from "../model/user-settings";
 import {MatchHistoryItem} from "../model/matching";
+import {Group} from "../model/groups";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
@@ -103,7 +104,7 @@ export type NotificationsState = {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ReportsState = {};
 
-export type GroupsState = {pagination: PaginatedState};
+export type GroupsState = {pagination: PaginatedState; myGroups: Group[]};
 
 export type AppState = {
     auth: AuthState;

@@ -33,6 +33,11 @@ const config: LinkingOptions = {
                             MatchFilteringScren: "match/filters",
                         },
                     },
+                    TabGroups: {
+                        screens: {
+                            TabGroupsScreen: "groups",
+                        },
+                    },
                     TabMessaging: {
                         screens: {
                             ChatRoomsScreen: "messaging",

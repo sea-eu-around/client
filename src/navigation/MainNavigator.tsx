@@ -14,6 +14,7 @@ import {TabMatchingNavigator} from "./TabMatchingNavigator";
 import MainTabBar, {MainTabBarIcon} from "../components/tabs/MainTabBar";
 import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
 import {TouchableOpacity} from "react-native";
+import {GroupsNavigator} from "./GroupsNavigator";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -38,6 +39,13 @@ function MainNavigatorComponent(): JSX.Element {
                 component={TabMatchingNavigator}
                 options={{
                     tabBarIcon: (props) => <MainTabBarIcon name="contacts" {...props} />,
+                }}
+            />
+            <TabNavigator.Screen
+                name="TabGroups"
+                component={GroupsNavigator}
+                options={{
+                    tabBarIcon: (props) => <MainTabBarIcon name="group" {...props} />,
                 }}
             />
             <TabNavigator.Screen
@@ -71,6 +79,7 @@ function MainNavigatorComponent(): JSX.Element {
 
 const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TabHomeNavigator = (): JSX.Element => (
     <TabHomeStack.Navigator screenOptions={{header: MainHeader}}>
         <TabHomeStack.Screen
