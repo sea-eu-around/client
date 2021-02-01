@@ -88,6 +88,7 @@ class SpokenLanguagesInput extends React.Component<SpokenLanguagesInputProps, Sp
                         level={sl.level}
                         buttonStyle={styles.levelPicker}
                         onChange={(level: LanguageLevel) => this.setLanguageLevel(i, level)}
+                        buttonStyleVariant={pickerButtonStyleVariant}
                     />
                     <TouchableOpacity style={styles.deleteIconContainer} onPress={() => this.removeRow(i)}>
                         <MaterialIcons style={styles.deleteIcon} name="close" />
