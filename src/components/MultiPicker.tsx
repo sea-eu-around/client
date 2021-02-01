@@ -118,7 +118,7 @@ class MultiPicker extends React.Component<MultiPickerProps, MultiPickerState> {
             ...viewProps
         } = this.props;
         const styles = pickerStyles(theme);
-        const buttonStyle = {...getPickerButtonStyleProps(buttonStyleVariant, theme)};
+        const buttonStyle = getPickerButtonStyleProps(buttonStyleVariant, theme);
 
         const selectedItems = selected || [];
         const items = this.state.items.get(locale) || [];
