@@ -12,6 +12,7 @@ import {navigationMiddleware} from "./navigation-middleware";
 import {authStorageMiddleware} from "./auth-storage-middleware";
 import {staticStorageMiddleware} from "./static-storage-middleware";
 import {notificationsMiddleware} from "./notifications-middleware";
+import {messagingMiddleware} from "./messaging-middleware";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -30,6 +31,7 @@ const combinedMiddleware = applyMiddleware(
     staticStorageMiddleware,
     navigationMiddleware,
     notificationsMiddleware,
+    messagingMiddleware,
 );
 
 export default createStore(rootReducer, combinedMiddleware);
