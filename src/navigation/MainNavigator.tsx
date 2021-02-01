@@ -14,6 +14,7 @@ import {TabMatchingNavigator} from "./TabMatchingNavigator";
 import MainTabBar, {MainTabBarIcon} from "../components/tabs/MainTabBar";
 import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
 import {TouchableOpacity} from "react-native";
+import MessagingTabIcon from "../components/tabs/MessagingTabIcon";
 
 const TabNavigator = createBottomTabNavigator<MainNavigatorTabs>();
 
@@ -45,7 +46,7 @@ function MainNavigatorComponent(): JSX.Element {
                 component={MessagingNavigator}
                 options={({route}) => ({
                     tabBarVisible: getFocusedRouteNameFromRoute(route) !== "ChatScreen",
-                    tabBarIcon: (props) => <MainTabBarIcon name="message" {...props} />,
+                    tabBarIcon: (props) => <MessagingTabIcon {...props} />,
                     // Override the button to make sure we redirect to the rooms screen instead of a previously open conversation
                     tabBarButton: (props: BottomTabBarButtonProps) => (
                         <TouchableOpacity
@@ -71,6 +72,7 @@ function MainNavigatorComponent(): JSX.Element {
 
 const TabHomeStack = createStackNavigator<TabHomeRoot>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TabHomeNavigator = (): JSX.Element => (
     <TabHomeStack.Navigator screenOptions={{header: MainHeader}}>
         <TabHomeStack.Screen
