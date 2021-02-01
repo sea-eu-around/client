@@ -11,7 +11,7 @@ import {
 } from "../api/dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
-import {Degree, Gender, Role} from "../constants/profile-constants";
+import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 import {UserSettings} from "../model/user-settings";
@@ -73,6 +73,8 @@ export type MatchingFiltersState = {
     universities: string[];
     degrees: Degree[];
     languages: string[];
+    educationFields: string[];
+    staffRoles: StaffRole[];
     types: Role[];
 };
 

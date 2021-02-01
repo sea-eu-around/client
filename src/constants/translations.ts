@@ -108,6 +108,7 @@ export default {
         profileType: "Type",
         profileTypes: "Types",
         offers: "Offers",
+        positions: "Positions",
         allRoles: {
             student: "Student",
             staff: "Staff",
@@ -1000,6 +1001,7 @@ export default {
         profileType: "Type",
         profileTypes: "Types",
         offers: "Offres",
+        positions: "Postes",
         allRoles: {
             student: "Étudiant",
             staff: "Staff",
@@ -1724,7 +1726,7 @@ export default {
         // Profile tab
         profile: {
             action: {
-                chat: "Ouvrir le chat",
+                chat: "Chat",
                 mute: "Mettre en sourdine",
                 block: "Bloquer",
                 unmatch: "Unmatch",
