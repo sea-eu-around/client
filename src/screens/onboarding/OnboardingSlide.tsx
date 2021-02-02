@@ -10,6 +10,7 @@ import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
 import Button from "../../components/Button";
 import layout from "../../constants/layout";
+import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -93,51 +94,55 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
                             {this.props.children}
                         </KeyboardAvoidingView>
                     </ScrollView>
-                    <View style={styles.slideNavWrapper}>
-                        <View style={styles.slideNavButtons}>
-                            {hasPrevious && (
-                                <Button
-                                    style={[styles.navButton, styles.navButtonBack]}
-                                    skin="rounded-hollow"
-                                    text={i18n.t("onboarding.back")}
-                                    onPress={() => this.props.previous()}
-                                />
-                            )}
-                            {!hasPrevious && (
-                                <Button
-                                    style={[styles.navButton, styles.navButtonBack]}
-                                    skin="rounded-hollow"
-                                    text={i18n.t("onboarding.leave")}
-                                    onPress={() => this.quitOnboarding()}
-                                />
-                            )}
-                            {!hideNavNext && hasNext && (
-                                <>
-                                    <ButtonSpacer />
-                                    <Button
-                                        style={styles.navButton}
-                                        skin="rounded-filled"
-                                        text={i18n.t("onboarding.next")}
-                                        onPress={navigateRight}
-                                    />
-                                </>
-                            )}
-                            {!hasNext && (
-                                <>
-                                    <ButtonSpacer />
-                                    <Button
-                                        style={styles.navButton}
-                                        skin="rounded-filled"
-                                        text={i18n.t("onboarding.submit")}
-                                        onPress={() => {
-                                            if (handleSubmit) handleSubmit();
-                                            finishOnboarding(store.getState().auth.onboarding);
-                                        }}
-                                    />
-                                </>
-                            )}
-                        </View>
-                    </View>
+                    <SafeAreaInsetsContext.Consumer>
+                        {(insets) => (
+                            <View style={[styles.slideNavWrapper, {marginBottom: (insets?.bottom || 0) + 40}]}>
+                                <View style={styles.slideNavButtons}>
+                                    {hasPrevious && (
+                                        <Button
+                                            style={[styles.navButton, styles.navButtonBack]}
+                                            skin="rounded-hollow"
+                                            text={i18n.t("onboarding.back")}
+                                            onPress={() => this.props.previous()}
+                                        />
+                                    )}
+                                    {!hasPrevious && (
+                                        <Button
+                                            style={[styles.navButton, styles.navButtonBack]}
+                                            skin="rounded-hollow"
+                                            text={i18n.t("onboarding.leave")}
+                                            onPress={() => this.quitOnboarding()}
+                                        />
+                                    )}
+                                    {!hideNavNext && hasNext && (
+                                        <>
+                                            <ButtonSpacer />
+                                            <Button
+                                                style={styles.navButton}
+                                                skin="rounded-filled"
+                                                text={i18n.t("onboarding.next")}
+                                                onPress={navigateRight}
+                                            />
+                                        </>
+                                    )}
+                                    {!hasNext && (
+                                        <>
+                                            <ButtonSpacer />
+                                            <Button
+                                                style={styles.navButton}
+                                                skin="rounded-filled"
+                                                text={i18n.t("onboarding.submit")}
+                                                onPress={() => {
+                                                    if (handleSubmit) handleSubmit();
+                                                    finishOnboarding(store.getState().auth.onboarding);
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        )}
+                    </SafeAreaInsetsContext.Consumer>
                 </View>
             </ScreenWrapper>
         );

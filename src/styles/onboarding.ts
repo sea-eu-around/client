@@ -44,7 +44,6 @@ export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
             width: "80%",
             alignItems: "center",
             marginTop: 15,
-            marginBottom: 40,
         },
         slideNavButtons: {
             width: "100%",
