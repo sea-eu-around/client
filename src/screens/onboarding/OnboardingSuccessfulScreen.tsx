@@ -10,6 +10,7 @@ import {getLocalSvg} from "../../assets";
 import Button from "../../components/Button";
 import layout from "../../constants/layout";
 import {DEBUG_MODE} from "../../constants/config";
+import {LinearGradient} from "expo-linear-gradient";
 
 export type OnboardingSuccessfulScreenProps = ThemeProps;
 
@@ -28,6 +29,13 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
                 <View style={styles.root}>
                     {layout.isWideDevice ? (
                         <View style={styles.wideDeviceLeftPanel}>
+                            <LinearGradient
+                                style={styles.gradient}
+                                colors={["#32C5FF", "#B620E0", "#F7B500"]}
+                                locations={[0.0, 0.6, 1.0]}
+                                start={{x: 1, y: 0}}
+                                end={{x: 0.3, y: 0.6}}
+                            />
                             <View style={{position: "absolute", bottom: -150, left: -100, width: "100%"}}>
                                 <ForegroundSvg />
                             </View>
@@ -87,7 +95,10 @@ const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
         },
         wideDeviceLeftPanel: {
             width: "50%",
-            backgroundColor: "#0071BB",
+        },
+        gradient: {
+            width: "100%",
+            height: "100%",
         },
         container: {
             width: wideDevice ? "50%" : "100%",
