@@ -69,7 +69,8 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             // Add entries in the rooms dictionary
             rooms.forEach((r: ChatRoom) => {
                 if (matchRooms[r.id]) {
-                    matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage, users: r.users};
+                    // matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage, users: r.users};
+                    matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage};
                 } else {
                     matchRooms[r.id] = r;
                 }
