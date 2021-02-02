@@ -54,7 +54,6 @@ export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
             flex: 1,
             marginHorizontal: 0,
             marginVertical: 0,
-            maxWidth: 200,
         },
         navButtonBack: {
             backgroundColor: "#fff",
