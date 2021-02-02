@@ -44,6 +44,7 @@ const themedStyles = preTheme(() => {
             height: 32,
             alignItems: "center",
             paddingHorizontal: 0,
+            paddingVertical: 0,
         },
     });
 });
