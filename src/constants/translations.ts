@@ -942,7 +942,7 @@ export default {
             modal: {
                 disclaimer1:
                     "Vous ne pourrez pas utiliser nos services si vous choisissez de refuser les conditions d'utilisation.",
-                disclaimer2: "La création du profil sera annulé.",
+                disclaimer2: "La création du profil sera annulée.",
             },
             decline: "Refuser",
             accept: "Accepter",
