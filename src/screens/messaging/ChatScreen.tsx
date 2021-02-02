@@ -1,7 +1,16 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {Platform, ScrollView, ScrollViewProps, StyleSheet, TextStyle, View, FlatList} from "react-native";
+import {
+    Platform,
+    ScrollView,
+    ScrollViewProps,
+    StyleSheet,
+    TextStyle,
+    View,
+    FlatList,
+    KeyboardAvoidingView,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -196,6 +205,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             chatComponent = (
                 <GiftedChat
                     ref={this.ref}
+                    isKeyboardInternallyHandled={false}
                     messages={room.messages}
                     user={localChatUser}
                     renderSend={(props: SendProps<IMessage>) => (
@@ -294,7 +304,9 @@ class ChatScreen extends React.Component<ChatScreenProps> {
 
         return (
             <ScreenWrapper>
-                <View style={styles.container}>{chatComponent}</View>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.container}>
+                    {chatComponent}
+                </KeyboardAvoidingView>
             </ScreenWrapper>
         );
     }
