@@ -24,9 +24,8 @@ export function configureNotifications(): void {
         console.log(data);
 
         if (data.roomId && data.text) {
-            // TODO notifications to receiveChatMessage
-            //const message = data as ResponseChatMessageDto;
-            //store.dispatch(receiveChatMessage(message));
+            const message = data as ResponseChatMessageDto;
+            store.dispatch(receiveChatMessage(message));
         }
     });
 
