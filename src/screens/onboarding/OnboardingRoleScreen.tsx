@@ -10,6 +10,8 @@ import {preTheme} from "../../styles/utils";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import {getLocalSvg} from "../../assets";
+import layout from "../../constants/layout";
+import {LinearGradient} from "expo-linear-gradient";
 
 const reduxConnector = connect((state: AppState) => ({
     onboardingState: state.auth.onboarding,
@@ -36,10 +38,19 @@ class OnboardingRoleScreen extends React.Component<OnboardingRoleScreenProps> {
         const StaffBlob = getLocalSvg("blob-8", () => this.forceUpdate());
         const StaffSvg = getLocalSvg("staff", () => this.forceUpdate());
 
-        const svgHeight = (Dimensions.get("window").height - 300) / 2;
+        let illustration = <></>;
+        if (layout.isWideDevice)
+            illustration = <LinearGradient style={{width: "100%", height: "100%"}} colors={["#007AC2", "#18ADB5"]} />;
+
+        const svgHeight = (Dimensions.get("window").height - 280) / 2;
 
         return (
-            <OnboardingSlide title={i18n.t("onboarding.role.title")} hideNavNext={true} {...this.props}>
+            <OnboardingSlide
+                title={i18n.t("onboarding.role.title")}
+                hideNavNext={true}
+                illustration={illustration}
+                {...this.props}
+            >
                 <View style={[styles.buttonsContainer, {maxWidth: svgHeight * 1.3}]}>
                     <TouchableOpacity
                         style={{alignSelf: "flex-start"}}

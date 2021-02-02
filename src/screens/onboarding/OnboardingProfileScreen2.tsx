@@ -130,7 +130,7 @@ function Illustration(): JSX.Element {
                 {height: svgHeight, zIndex: -1},
                 !wide && {
                     position: "absolute",
-                    top: -190,
+                    top: -220,
                     right: -150,
                 },
             ]}

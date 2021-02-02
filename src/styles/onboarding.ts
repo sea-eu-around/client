@@ -31,10 +31,11 @@ export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
         slideContentWrapper: {
             width: "100%",
             flexDirection: "column",
-            alignItems: "center",
-            alignSelf: "center",
             paddingTop: 100,
             paddingBottom: 20,
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
         },
         slideContentContainer: {
             width: "80%",
@@ -42,7 +43,7 @@ export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
         slideNavWrapper: {
             width: "80%",
             alignItems: "center",
-            marginTop: 20,
+            marginTop: 15,
             marginBottom: 40,
         },
         slideNavButtons: {
