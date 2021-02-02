@@ -1,0 +1,1 @@
+{"version":3,"sources":["assets/images/placeholder.png"],"names":["module","exports"],"mappings":"0EAAAA,EAAOC,QAAU,IAA0B","file":"static/js/28.0b25adaa.chunk.js","sourcesContent":["module.exports = __webpack_public_path__ + \"static/media/placeholder.404e92f3.png\";"],"sourceRoot":""}
