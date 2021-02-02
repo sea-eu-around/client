@@ -14,7 +14,7 @@ export default {
         background: "#fff",
         cardBackground: "#f7f7f7", //"#f7f7f7",
         accent: "#003da5",
-        accentSlight: "#ccd8ea",
+        accentSlight: "#E0E8F4", //"#ccd8ea",
         accentSecondary: "#009ace",
         accentTernary: "#fbe122",
         error: "rgba(255,59,48,1)",
@@ -27,7 +27,6 @@ export default {
         chatBubble: "#ededed",
         inputPlaceholder: "#999",
         onboardingInputBackground: "#F2F2F7",
-        onboardingInputFocusedBackground: "#E0E8F4",
     },
     dark: {
         id: "dark" as ThemeKey,
@@ -52,6 +51,5 @@ export default {
         chatBubble: "#333",
         inputPlaceholder: "#bbb",
         onboardingInputBackground: "#F2F2F7",
-        onboardingInputFocusedBackground: "#E0E8F4",
     },
 };

@@ -167,7 +167,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         dateTextInputFocused: {
-            backgroundColor: theme.onboardingInputFocusedBackground,
+            backgroundColor: theme.accentSlight,
         },
         dateTextInputValid: {
             borderBottomWidth: 1,

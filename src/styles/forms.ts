@@ -124,7 +124,7 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleP
             backgroundColor: theme.onboardingInputBackground,
         },
         focusedStyle: {
-            backgroundColor: theme.onboardingInputFocusedBackground,
+            backgroundColor: theme.accentSlight,
         },
         errorStyle: {
             borderBottomWidth: 2,
