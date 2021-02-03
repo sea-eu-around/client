@@ -11,6 +11,7 @@ import {preTheme} from "../../styles/utils";
 import {TERMS_AND_CONDITIONS_URL} from "../../constants/config";
 import {Linking} from "expo";
 import {LinearGradient} from "expo-linear-gradient";
+import layout from "../../constants/layout";
 
 // Component props
 type OnboardingLegalSlideProps = ThemeProps &
@@ -21,19 +22,22 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
         const {theme, title, text, specialBackground, next, ...otherProps} = this.props;
         const styles = themedStyles(theme);
 
-        const textColor = specialBackground ? theme.textWhite : theme.textLight;
+        const wide = layout.isWideDevice;
+        const gradient = <LinearGradient style={styles.background} colors={[theme.accent, "#862ADF"]} />;
+        const textColor = specialBackground && !wide ? theme.textWhite : theme.textLight;
 
         return (
             <OnboardingSlide
                 title={title}
                 hideNavNext={true}
                 next={next}
-                {...(specialBackground
+                {...(specialBackground && !wide
                     ? {
-                          background: <LinearGradient style={styles.background} colors={[theme.accent, "#862ADF"]} />,
+                          background: gradient,
                           textColor: theme.textWhite,
                       }
                     : {})}
+                illustration={wide ? gradient : <></>}
                 {...otherProps}
             >
                 <Text style={[styles.legalText, {color: textColor}]}>{text}</Text>
@@ -72,10 +76,8 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         background: {
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            width: "100%",
+            height: "100%",
         },
         actionsWrapper: {
             flexDirection: "row",

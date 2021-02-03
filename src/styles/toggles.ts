@@ -133,7 +133,7 @@ export function getToggleStyleProps(variant: ToggleStyleVariant = "classic", the
                 color: theme.text,
             },
             selectedButtonStyle: {
-                backgroundColor: theme.onboardingInputFocusedBackground,
+                backgroundColor: theme.accentSlight,
             },
             disabledStyle: {
                 backgroundColor: theme.cardBackground,

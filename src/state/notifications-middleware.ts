@@ -1,7 +1,7 @@
 import {AnyAction, Middleware, Dispatch, MiddlewareAPI} from "redux";
 import {AppState, MyThunkDispatch} from "./types";
 import {AUTH_ACTION_TYPES} from "./auth/actions";
-import {askForPushNotificationToken} from "../notifications";
+import {askForPushNotificationToken} from "../notifications-utils";
 import {deleteNotificationToken, registerNotificationToken} from "./notifications/actions";
 
 export const notificationsMiddleware: Middleware<unknown, AppState> = (store: MiddlewareAPI<Dispatch, AppState>) => (

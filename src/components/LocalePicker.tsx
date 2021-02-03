@@ -1,11 +1,12 @@
 import * as React from "react";
 import i18n from "i18n-js";
 import {StyleProp, StyleSheet, TextStyle, ViewStyle} from "react-native";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import PopUpSelector from "./PopUpSelector";
 import {SupportedLocale, SUPPORTED_LOCALES} from "../localization";
+import {PickerButtonStyleVariant} from "../styles/picker";
 
 // Component props
 export type LocalePickerProps = {
@@ -13,11 +14,13 @@ export type LocalePickerProps = {
     onChange?: (locale: SupportedLocale) => void;
     buttonStyle?: StyleProp<ViewStyle>;
     valueStyle?: StyleProp<TextStyle>;
+    buttonStyleVariant?: PickerButtonStyleVariant;
 } & ThemeProps;
 
 class LocalePicker extends React.Component<LocalePickerProps> {
     render(): JSX.Element {
-        const {onChange, locale, theme, buttonStyle, valueStyle} = this.props;
+        const {onChange, locale, theme, buttonStyle, valueStyle, buttonStyleVariant} = this.props;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const styles = themedStyles(theme);
 
         return (
@@ -25,24 +28,20 @@ class LocalePicker extends React.Component<LocalePickerProps> {
                 values={SUPPORTED_LOCALES}
                 label={(l: string) => i18n.t(`locales.${l}`)}
                 selected={locale ? [locale] : []}
-                valueStyle={[styles.value, valueStyle]}
+                valueStyle={valueStyle}
                 buttonStyle={buttonStyle}
+                buttonStyleVariant={buttonStyleVariant}
                 onSelect={(values: string[]) => {
                     if (values.length > 0 && onChange) onChange(values[0] as SupportedLocale);
                 }}
+                noOkUnderline
             />
         );
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        value: {
-            letterSpacing: 0.5,
-            fontSize: 16,
-            color: theme.text,
-        },
-    });
+const themedStyles = preTheme(() => {
+    return StyleSheet.create({});
 });
 
 export default withTheme(LocalePicker);

@@ -23,6 +23,8 @@ export const defaultMatchingFilters = (): MatchingFiltersState => ({
     universities: [],
     degrees: [],
     languages: [],
+    educationFields: [],
+    staffRoles: [],
     types: [],
 });
 

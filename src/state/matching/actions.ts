@@ -195,11 +195,17 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
     }
 
     const offers = Object.keys(filters.offers).filter((k) => filters.offers[k] === true);
+    // Remove the "degrees" filters when not filtering for students
+    const degrees = filters.types && filters.types.indexOf("student") === -1 ? [] : filters.degrees;
+    // Same for staffRoles & staff
+    const staffRoles = filters.types && filters.types.indexOf("staff") === -1 ? [] : filters.staffRoles;
 
     const filterParams = {
         universities: notEmpty(filters.universities),
         spokenLanguages: notEmpty(filters.languages),
-        degrees: notEmpty(filters.degrees),
+        degrees: notEmpty(degrees),
+        educationFields: notEmpty(filters.educationFields),
+        staffRoles: notEmpty(staffRoles),
         types: notEmpty(filters.types),
         offers: notEmpty(offers),
     };

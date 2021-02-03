@@ -15,7 +15,7 @@ export const VALIDATOR_PASSWORD_SIGNUP = Yup.string()
     // At least one upper-case character
     .matches(/(?=.*[A-Z])/, "validation.password.noUpperCase")
     // At least one symbol
-    .matches(/(?=.*[#@$!%*?&])/, "validation.password.noSymbol");
+    .matches(/(?=.*[#@$!%*?&^\\/\-_+=()[\]|"'~<>:;§.])/, "validation.password.noSymbol");
 
 export const VALIDATOR_PASSWORD_REPEAT = Yup.string()
     .required("validation.required")

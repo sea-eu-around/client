@@ -116,6 +116,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                                 if (values.length > 0)
                                     this.setState({...this.state, selectedType: values[0] as ReportType});
                             }}
+                            buttonStyleVariant="onboarding"
                         />
                     </View>
                 </QuickForm>

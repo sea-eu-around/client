@@ -261,7 +261,7 @@ export const sendChatMessage = (id: string, text: string, createdAt: Date): AppT
     } else dispatch(sendChatMessageFailure());
 };
 
-const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
+export const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
     type: MESSAGING_ACTION_TYPES.RECEIVE_MESSAGE,
     message,
 });

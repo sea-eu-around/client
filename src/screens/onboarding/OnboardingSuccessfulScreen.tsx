@@ -10,6 +10,7 @@ import {getLocalSvg} from "../../assets";
 import Button from "../../components/Button";
 import layout from "../../constants/layout";
 import {DEBUG_MODE} from "../../constants/config";
+import {LinearGradient} from "expo-linear-gradient";
 
 export type OnboardingSuccessfulScreenProps = ThemeProps;
 
@@ -21,13 +22,23 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
         const BackgroundSvg = getLocalSvg("large-wave-bg", () => this.forceUpdate());
         const ForegroundSvg = getLocalSvg("woman-holding-phone", () => this.forceUpdate());
 
+        const width = Dimensions.get("window").width;
         const height = Dimensions.get("window").height;
+        const svgHeight = width * (700 / 450);
+        const offset = Math.max(250, height - svgHeight + 30);
 
         return (
             <ScreenWrapper forceFullWidth>
                 <View style={styles.root}>
                     {layout.isWideDevice ? (
                         <View style={styles.wideDeviceLeftPanel}>
+                            <LinearGradient
+                                style={styles.gradient}
+                                colors={["#32C5FF", "#B620E0", "#F7B500"]}
+                                locations={[0.0, 0.6, 1.0]}
+                                start={{x: 1, y: 0}}
+                                end={{x: 0.3, y: 0.6}}
+                            />
                             <View style={{position: "absolute", bottom: -150, left: -100, width: "100%"}}>
                                 <ForegroundSvg />
                             </View>
@@ -38,20 +49,20 @@ class OnboardingSuccessfulScreen extends React.Component<OnboardingSuccessfulScr
                                 style={{
                                     position: "absolute",
                                     width: "100%",
-                                    ...(height > 1000 ? {bottom: 0} : {top: 250}),
+                                    top: offset,
                                 }}
                             >
-                                <BackgroundSvg width="100%" />
+                                <BackgroundSvg width={width} height={width * (700 / 450)} viewBox="0 0 450 700" />
                             </View>
                             <View
                                 style={{
                                     position: "absolute",
                                     width: "100%",
-                                    ...(height > 1000 ? {bottom: -200} : {top: 350}),
+                                    top: offset + 100,
                                     left: -100,
                                 }}
                             >
-                                <ForegroundSvg />
+                                <ForegroundSvg width={width} height={width * (750 / 500)} viewBox="0 0 500 750" />
                             </View>
                         </>
                     )}
@@ -87,7 +98,10 @@ const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
         },
         wideDeviceLeftPanel: {
             width: "50%",
-            backgroundColor: "#0071BB",
+        },
+        gradient: {
+            width: "100%",
+            height: "100%",
         },
         container: {
             width: wideDevice ? "50%" : "100%",

@@ -266,6 +266,9 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getSta
             // PUT the image in the aws bucket
             await fetch(s3Url, {
                 method: "PUT",
+                headers: {
+                    "Content-Type": "application/octet-stream",
+                },
                 body: imageBlob,
             });
 

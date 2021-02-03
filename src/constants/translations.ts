@@ -108,6 +108,7 @@ export default {
         profileType: "Type",
         profileTypes: "Types",
         offers: "Offers",
+        positions: "Positions",
         allRoles: {
             student: "Student",
             staff: "Staff",
@@ -955,7 +956,7 @@ export default {
             modal: {
                 disclaimer1:
                     "Vous ne pourrez pas utiliser nos services si vous choisissez de refuser les conditions d'utilisation.",
-                disclaimer2: "La création du profil sera annulé.",
+                disclaimer2: "La création du profil sera annulée.",
             },
             decline: "Refuser",
             accept: "Accepter",
@@ -1014,6 +1015,7 @@ export default {
         profileType: "Type",
         profileTypes: "Types",
         offers: "Offres",
+        positions: "Postes",
         allRoles: {
             student: "Étudiant",
             staff: "Staff",
@@ -1751,7 +1753,7 @@ export default {
         // Profile screen
         profile: {
             action: {
-                chat: "Ouvrir le chat",
+                chat: "Chat",
                 mute: "Mettre en sourdine",
                 block: "Bloquer",
                 unmatch: "Unmatch",
