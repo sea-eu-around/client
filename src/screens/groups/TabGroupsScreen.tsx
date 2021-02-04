@@ -3,16 +3,19 @@ import * as React from "react";
 import {StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {UserProfile} from "../model/user-profile";
-import {AppState} from "../state/types";
-import {preTheme} from "../styles/utils";
-import {Theme, ThemeProps} from "../types";
-import {TabGroupsRoot} from "../navigation/types";
-import ScreenWrapper from "./ScreenWrapper";
-import InfiniteScroller from "../components/InfiniteScroller";
-import {MatchSuccessModalClass} from "../components/modals/MatchSuccessModal";
-import MyGroupsView from "../components/MyGroupsView";
+import {UserProfile} from "../../model/user-profile";
+import {AppState} from "../../state/types";
+import {preTheme} from "../../styles/utils";
+import {Theme, ThemeProps} from "../../types";
+import {TabGroupsRoot} from "../../navigation/types";
+import ScreenWrapper from "../ScreenWrapper";
+import InfiniteScroller from "../../components/InfiniteScroller";
+import {MatchSuccessModalClass} from "../../components/modals/MatchSuccessModal";
+import MyGroupsView from "../../components/MyGroupsView";
 import {NavigationProp} from "@react-navigation/native";
+import GroupInvitesView from "../../components/GroupInvitesView";
+import Button from "../../components/Button";
+import {rootNavigate} from "../../navigation/utils";
 
 const reduxConnector = connect((state: AppState) => ({}));
 
@@ -32,6 +35,8 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
         return (
             <ScreenWrapper>
                 <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
+                <GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />
+                <Button text="Explore" onPress={() => rootNavigate("GroupsExploreScreen")} />
             </ScreenWrapper>
         );
     }

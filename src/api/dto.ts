@@ -223,6 +223,7 @@ export type CreateGroupDto = {
 };
 
 export type ResponseGroupDto = {
+    id: string;
     name: string;
     description: string;
     visible: boolean;

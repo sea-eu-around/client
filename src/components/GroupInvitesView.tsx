@@ -15,23 +15,23 @@ import MyGroupCard from "./cards/MyGroupCard";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    myGroups: state.groups.myGroups,
+    groups: state.groups.myGroups,
     pagination: state.groups.pagination,
 }));
 
 // Component props
-export type MyGroupsViewProps = ThemeProps &
+export type GroupInvitesViewProps = ThemeProps &
     ConnectedProps<typeof reduxConnector> & {navigation: NavigationProp<never>};
 
-class MyGroupsView extends React.Component<MyGroupsViewProps> {
+class GroupInvitesView extends React.Component<GroupInvitesViewProps> {
     render() {
-        const {theme, myGroups, pagination, navigation, dispatch} = this.props;
+        const {theme, groups, pagination, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.container}>
                 <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{i18n.t("groups.myGroups")}</Text>
+                    <Text style={styles.title}>{i18n.t("groups.invites")}</Text>
                 </View>
                 <InfiniteScroller
                     //ref={this.scrollerRef}
@@ -42,7 +42,7 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     canFetchMore={pagination.canFetchMore}
                     // refreshOnFocus={true}
                     currentPage={pagination.page}
-                    items={myGroups}
+                    items={groups}
                     id={(group: Group): string => group.id}
                     horizontal
                     hideScrollIndicator
@@ -96,4 +96,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(MyGroupsView));
+export default reduxConnector(withTheme(GroupInvitesView));

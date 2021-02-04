@@ -106,7 +106,12 @@ export type NotificationsState = {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ReportsState = {};
 
-export type GroupsState = {pagination: PaginatedState; myGroups: Group[]};
+export type GroupsState = {
+    pagination: PaginatedState;
+    groups: Group[];
+    myGroupsPagination: PaginatedState;
+    myGroups: Group[];
+};
 
 export type AppState = {
     auth: AuthState;

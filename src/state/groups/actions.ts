@@ -17,6 +17,9 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUPS_BEGIN = "GROUP/FETCH_GROUPS_BEGIN",
     FETCH_GROUPS_FAILURE = "GROUP/FETCH_GROUPS_FAILURE",
     FETCH_GROUPS_SUCCESS = "GROUP/FETCH_GROUPS_SUCCESS",
+    FETCH_MYGROUPS_BEGIN = "GROUP/FETCH_GROUPS_BEGIN",
+    FETCH_MYGROUPS_FAILURE = "GROUP/FETCH_GROUPS_FAILURE",
+    FETCH_MYGROUPS_SUCCESS = "GROUP/FETCH_GROUPS_SUCCESS",
 }
 
 export type CreateGroupSuccessAction = {
@@ -180,4 +183,55 @@ export const fetchGroups = (): AppThunk => async (dispatch, getState) => {
         console.log("meta", paginated.meta);
         dispatch(fetchGroupsSuccess(groups, canFetchMore));
     } else dispatch(fetchGroupsFailure());
+};
+
+const beginFetchMyGroups = (): BeginFetchGroupsAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN,
+});
+
+const fetchMyGroupsSuccess = (groups: Group[], canFetchMore: boolean): FetchGroupsSuccessAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS,
+    groups,
+    canFetchMore,
+});
+
+const fetchMyGroupsFailure = (): FetchGroupsFailureAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_FAILURE,
+});
+
+export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
+    const {
+        auth: {token},
+        groups: {myGroupsPagination},
+    } = getState();
+
+    if (!token) {
+        dispatch(fetchMyGroupsFailure());
+        return;
+    }
+
+    if (myGroupsPagination.fetching || !myGroupsPagination.canFetchMore) return;
+
+    dispatch(beginFetchMyGroups());
+
+    const response = await requestBackend(
+        "groups",
+        "GET",
+        {
+            page: myGroupsPagination.page,
+            limit: GROUPS_FETCH_LIMIT,
+        },
+        {},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.OK) {
+        const paginated = response as PaginatedRequestResponse;
+        const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
+        const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+        console.log("fetched", groups.length, "groups");
+        console.log("meta", paginated.meta);
+        dispatch(fetchMyGroupsSuccess(groups, canFetchMore));
+    } else dispatch(fetchMyGroupsFailure());
 };

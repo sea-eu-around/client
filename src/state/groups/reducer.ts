@@ -3,6 +3,8 @@ import {FetchGroupsSuccessAction, GroupsAction, GROUP_ACTION_TYPES} from "./acti
 
 export const initialState: GroupsState = {
     pagination: initialPaginatedState(),
+    groups: [],
+    myGroupsPagination: initialPaginatedState(),
     myGroups: [],
 };
 
@@ -19,8 +21,23 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             const pagination = state.pagination;
             return {
                 ...state,
-                myGroups: state.myGroups.concat(groups),
+                groups: state.groups.concat(groups),
                 pagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            };
+        }
+        case GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN: {
+            return {...state, myGroupsPagination: {...state.myGroupsPagination, fetching: true}};
+        }
+        case GROUP_ACTION_TYPES.FETCH_MYGROUPS_FAILURE: {
+            return {...state, myGroupsPagination: {...state.myGroupsPagination, fetching: false, canFetchMore: false}};
+        }
+        case GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS: {
+            const {groups, canFetchMore} = action as FetchGroupsSuccessAction;
+            const pagination = state.myGroupsPagination;
+            return {
+                ...state,
+                myGroups: state.myGroups.concat(groups),
+                myGroupsPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
         default:

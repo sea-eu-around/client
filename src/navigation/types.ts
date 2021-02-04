@@ -44,6 +44,7 @@ export type TabMatchingRoot = {
 
 export type TabGroupsRoot = {
     TabGroupsScreen: undefined;
+    GroupsExploreScreen: undefined;
 };
 
 // TAB: Messaging

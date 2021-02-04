@@ -797,6 +797,9 @@ export default {
                     "If checked, a group moderator will have to manually approve requests to join this group.",
                 submit: "Create",
             },
+            join: "Join",
+            myGroups: "My groups",
+            invites: "Invites",
         },
         // Matching tab
         matching: {
@@ -870,6 +873,7 @@ export default {
             MatchFilteringScreen: "Add Filters",
             MatchHistoryScreen: "History",
             TabGroupsScreen: "Groups",
+            GroupsExploreScreen: "Explore Groups",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
             ProfileScreen: "Profile",
@@ -1712,6 +1716,9 @@ export default {
                     "Si coché, un modérateur de votre groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
                 submit: "Créer",
             },
+            join: "Rejoindre",
+            myGroups: "Mes groupes",
+            invites: "Invitations",
         },
         // Matching tab
         matching: {
@@ -1785,6 +1792,7 @@ export default {
             MatchFilteringScreen: "Ajouter des Filtres",
             MatchHistoryScreen: "Historique",
             TabGroupsScreen: "Groupes",
+            GroupsExploreScreen: "Explorer les groupes",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profil",
             ProfileScreen: "Profil",
