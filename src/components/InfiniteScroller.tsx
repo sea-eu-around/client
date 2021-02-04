@@ -33,6 +33,8 @@ export type InfiniteScrollerProps<T> = {
     itemsContainerStyle?: StyleProp<ViewStyle>;
     progressViewOffset?: number;
     refreshOnFocus?: boolean;
+    horizontal?: boolean;
+    hideScrollIndicator?: boolean;
 };
 
 // Component state
@@ -108,6 +110,8 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             endOfItemsComponent,
             itemsContainerStyle,
             progressViewOffset,
+            horizontal,
+            hideScrollIndicator,
         } = this.props;
 
         return (
@@ -135,6 +139,9 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                         contentSize.height - contentOffset.y - layoutMeasurement.height;
                                     if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                                 }}
+                                horizontal={horizontal}
+                                {...(horizontal && {showsHorizontalScrollIndicator: !hideScrollIndicator})}
+                                {...(!horizontal && {showsVerticalScrollIndicator: !hideScrollIndicator})}
                             >
                                 {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
                                 {!fetching && items.length > 0 && !canFetchMore && (
