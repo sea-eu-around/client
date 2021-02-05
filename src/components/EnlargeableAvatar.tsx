@@ -8,7 +8,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import CustomModal from "./modals/CustomModal";
 
 // Component props
-export type EnlargeableAvatarProps = {profile?: UserProfile} & AvatarProps & ThemeProps;
+export type EnlargeableAvatarProps = {profile?: UserProfile; loading?: boolean} & AvatarProps & ThemeProps;
 
 // Component state
 export type EnlargeableAvatarState = {
