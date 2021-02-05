@@ -10,6 +10,7 @@ import {UserProfile, UserProfileWithMatchInfo} from "../model/user-profile";
 import {fetchProfile} from "../state/profile/actions";
 import ScreenWrapper from "./ScreenWrapper";
 import ProfileActionBar from "../components/ProfileActionBar";
+import {getRouteParams} from "../navigation/utils";
 
 const reduxConnector = connect(() => ({}));
 
@@ -30,16 +31,11 @@ class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenSta
         this.state = {profile: null, isMatched: false, roomId: null, matchId: null};
     }
 
-    getRouteParams(): {[key: string]: string | boolean | number} {
-        const params = this.props.route.params;
-        return params ? (params as {[key: string]: string | boolean | number}) : {};
-    }
-
     componentDidMount() {
-        const {dispatch, navigation} = this.props;
+        const {dispatch, navigation, route} = this.props;
 
         navigation.addListener("focus", () => {
-            const {id} = this.getRouteParams();
+            const {id} = getRouteParams(route);
             if (id && (!this.state.profile || this.state.profile.id !== id)) {
                 (dispatch as MyThunkDispatch)(fetchProfile(id as string)).then(
                     (profileWithMatchInfo: UserProfileWithMatchInfo | null) => {

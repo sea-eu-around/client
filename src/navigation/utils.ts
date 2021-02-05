@@ -1,5 +1,5 @@
 import * as React from "react";
-import {NavigationContainerRef} from "@react-navigation/native";
+import {NavigationContainerRef, Route} from "@react-navigation/native";
 import {NavigatorRoute} from "./types";
 import {Platform} from "react-native";
 import {APP_SCHEME, WEB_TO_APP_TIMEOUT} from "../constants/config";
@@ -21,6 +21,11 @@ export function navigateBack(fallback?: NavigatorRoute): void {
         if (nav.canGoBack()) nav.goBack();
         else if (fallback) nav.navigate(fallback);
     }
+}
+
+export function getRouteParams(route: Route<string>): {[key: string]: unknown} {
+    const params = route.params;
+    return params ? (params as {[key: string]: unknown}) : {};
 }
 
 export function attemptRedirectToApp(routeName: string, fallbackRoute: NavigatorRoute): void {
