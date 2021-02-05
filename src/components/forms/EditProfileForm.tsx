@@ -35,11 +35,17 @@ import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
 import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
 
+// Map props from the store
+const reduxConnector = connect((state: AppState) => ({
+    uploadingAvatar: state.profile.uploadingAvatar,
+}));
+
 // Component props
-export type EditProfileFormProps = ThemeProps & {
-    user: User | null;
-    onChange?: (fields: Partial<UserProfile>) => void;
-};
+export type EditProfileFormProps = ThemeProps &
+    ConnectedProps<typeof reduxConnector> & {
+        user: User | null;
+        onChange?: (fields: Partial<UserProfile>) => void;
+    };
 
 function Spacer(): JSX.Element {
     return <View style={{height: 25}}></View>;
@@ -53,7 +59,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
     }
 
     render() {
-        const {theme, user} = this.props;
+        const {theme, user, uploadingAvatar} = this.props;
         const styles = themedStyles(theme);
 
         const fullName = user && user.profile ? user.profile.firstName + " " + user.profile.lastName : "";
@@ -69,6 +75,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         rounded
                         containerStyle={styles.avatarContainer}
                         activeOpacity={0.8}
+                        loading={uploadingAvatar}
                     >
                         {user && (
                             <AvatarEditButton
@@ -273,7 +280,7 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
 }
 
 // Map props from the store
-const reduxConnector = connect((state: AppState) => ({
+const offerReduxConnector = connect((state: AppState) => ({
     offers: state.profile.offers,
     offerIdToCategory: state.profile.offerIdToCategory,
 }));
@@ -283,9 +290,9 @@ type OfferCategoryRowProps = {
     profileOffers: OfferValueDto[] | undefined;
     onApply: (offerValues: OfferValueDto[]) => void;
     theme: Theme;
-} & ConnectedProps<typeof reduxConnector>;
+} & ConnectedProps<typeof offerReduxConnector>;
 
-const OfferCategoryRow = reduxConnector(
+const OfferCategoryRow = offerReduxConnector(
     ({category, profileOffers, onApply, offers, offerIdToCategory, theme}: OfferCategoryRowProps): JSX.Element => {
         const items = profileOffers?.filter((o) => offerIdToCategory.get(o.offerId) == category) || [];
         return (
@@ -412,4 +419,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(EditProfileForm);
+export default reduxConnector(withTheme(EditProfileForm));

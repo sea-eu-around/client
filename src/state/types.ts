@@ -66,6 +66,7 @@ export type ProfileState = {
     offers: OfferDto[];
     offerIdToCategory: Map<string, OfferCategory>;
     interests: InterestDto[];
+    uploadingAvatar: boolean;
 };
 
 export type MatchingFiltersState = {

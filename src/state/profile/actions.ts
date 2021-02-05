@@ -37,6 +37,7 @@ export enum PROFILE_ACTION_TYPES {
     FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
     FETCH_PROFILE_SUCCESS = "PROFILE/FETCH_PROFILE_SUCCESS",
     SET_AVATAR = "PROFILE/SET_AVATAR",
+    SET_AVATAR_BEGIN = "PROFILE/SET_AVATAR_BEGIN",
     SET_AVATAR_SUCCESS = "PROFILE/SET_AVATAR_SUCCESS",
     SET_AVATAR_FAILURE = "PROFILE/SET_AVATAR_FAILURE",
 }
@@ -100,6 +101,10 @@ export type FetchProfileSuccessAction = {
     profile: UserProfileWithMatchInfo;
 };
 
+export type SetAvatarBeginAction = {
+    type: string;
+};
+
 export type SetAvatarSuccessAction = {
     type: string;
     avatarUrl: string;
@@ -121,6 +126,7 @@ export type ProfileAction =
     | LoadProfileInterestsSuccessAction
     | FetchUserSuccessAction
     | FetchProfileSuccessAction
+    | SetAvatarBeginAction
     | SetAvatarSuccessAction
     | SetAvatarFailureAction;
 
@@ -240,6 +246,10 @@ const fetchProfileSuccess = (profile: UserProfileWithMatchInfo): FetchProfileSuc
     profile,
 });
 
+const setAvatarBegin = (): SetAvatarBeginAction => ({
+    type: PROFILE_ACTION_TYPES.SET_AVATAR_BEGIN,
+});
+
 const setAvatarSuccess = (avatarUrl: string): SetAvatarSuccessAction => ({
     type: PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS,
     avatarUrl,
@@ -250,10 +260,20 @@ const setAvatarFailure = (): SetAvatarFailureAction => ({
 });
 
 export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getState) => {
-    const token = getState().auth.token;
-    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, token);
-
+    const {
+        auth: {token},
+        profile: {uploadingAvatar},
+    } = getState();
     const fail = () => dispatch(setAvatarFailure());
+
+    if (!token || uploadingAvatar) {
+        fail();
+        return;
+    }
+
+    dispatch(setAvatarBegin());
+
+    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, token);
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
