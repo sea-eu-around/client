@@ -71,6 +71,7 @@ export function getPickerButtonStyleProps(
                 alignItems: "center",
                 justifyContent: "center",
                 paddingHorizontal: 20,
+                height: 40,
                 borderWidth: 1,
                 borderRadius: 2,
                 backgroundColor: theme.background,
