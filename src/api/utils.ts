@@ -4,7 +4,7 @@ import {HttpStatusCode} from "../constants/http-status";
 import {RequestResponse, TokenDto} from "./dto";
 
 // Request-related types
-type Primitive = string | number | boolean | Primitive[] | undefined;
+type Primitive = string | number | boolean | Primitive[] | undefined | null;
 type URLParams = {[key: string]: Primitive};
 type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 
