@@ -76,7 +76,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={GROUPS_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchGroups())}
+                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchGroups(search))}
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
@@ -127,31 +127,12 @@ function Filter({
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        topBar: {
-            flexBasis: 90,
-            paddingTop: 40,
-            paddingHorizontal: 20,
-            width: "100%",
-        },
-        title: {
-            fontSize: 20,
-            fontWeight: "bold",
-        },
-        separator: {
-            marginVertical: 20,
-            height: 1,
-            width: "100%",
-        },
         itemsContainer: {
             width: "100%",
             maxWidth: 600,
             alignSelf: "center",
             alignItems: "center",
             paddingHorizontal: 20,
-        },
-        headerContainer: {
-            flexDirection: "row",
-            paddingRight: 10,
         },
         noResultsText1: {
             fontSize: 20,

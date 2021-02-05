@@ -47,6 +47,14 @@ function MainNavigatorComponent(): JSX.Element {
                 component={GroupsNavigator}
                 options={{
                     tabBarIcon: (props) => <MainTabBarIcon name="group" {...props} />,
+                    // Override the button to make sure we redirect to the first screen instead of a nested one
+                    tabBarButton: (props: BottomTabBarButtonProps) => (
+                        <TouchableOpacity
+                            {...props}
+                            activeOpacity={1}
+                            onPress={() => rootNavigate("TabGroups", {screen: "TabGroupsScreen"})}
+                        />
+                    ),
                 }}
             />
             <TabNavigator.Screen

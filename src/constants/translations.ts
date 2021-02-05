@@ -797,9 +797,14 @@ export default {
                     "If checked, a group moderator will have to manually approve requests to join this group.",
                 submit: "Create",
             },
+            newPost: {
+                title: "New Post",
+                contentPlaceholder: "Content",
+            },
             join: "Join",
             myGroups: "My groups",
             invites: "Invites",
+            posts: "Posts",
         },
         // Matching tab
         matching: {
@@ -1716,9 +1721,14 @@ export default {
                     "Si coché, un modérateur de votre groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
                 submit: "Créer",
             },
+            newPost: {
+                title: "Nouveau Post",
+                contentPlaceholder: "Contenu",
+            },
             join: "Rejoindre",
             myGroups: "Mes groupes",
             invites: "Invitations",
+            posts: "Posts",
         },
         // Matching tab
         matching: {

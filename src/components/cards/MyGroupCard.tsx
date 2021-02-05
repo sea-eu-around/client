@@ -4,6 +4,7 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {Group} from "../../model/groups";
+import {rootNavigate} from "../../navigation/utils";
 
 // Component props
 type MyGroupCardProps = {
@@ -21,8 +22,9 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
             <TouchableOpacity
                 style={[styles.container, style]}
                 activeOpacity={0.9}
-                /*onPress={() => {
-                }}*/
+                onPress={() => {
+                    rootNavigate("TabGroups", {screen: "GroupScreen", params: group ? {groupId: group.id} : {}});
+                }}
                 {...otherProps}
             >
                 {group && (

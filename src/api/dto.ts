@@ -222,6 +222,10 @@ export type CreateGroupDto = {
     requireApproval: boolean;
 };
 
+export type CreatePostDto = {
+    text: string;
+};
+
 export type ResponseGroupDto = {
     id: string;
     name: string;

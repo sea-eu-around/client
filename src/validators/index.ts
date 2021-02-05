@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import {DEGREES} from "../constants/profile-constants";
 
 export const MIN_PASSWORD_LENGTH = 8;
+export const MAX_POST_LENGTH = 10000;
 
 export const VALIDATOR_EMAIL_SIGNUP = Yup.string().required("validation.required").email("validation.email.invalid");
 
@@ -34,3 +35,7 @@ export const VALIDATOR_ONBOARDING_NATIONALITY = Yup.string().nullable().required
 export const VALIDATOR_ONBOARDING_DEGREE = Yup.string().nullable().oneOf(DEGREES, "validation.required");
 export const VALIDATOR_ONBOARDING_LANGUAGES = Yup.array().required("validation.addAtLeastOne");
 export const VALIDATOR_ONBOARDING_INTERESTS = Yup.array().required("validation.addAtLeastOne");
+
+export const VALIDATOR_POST_TEXT = Yup.string()
+    .required("validation.required")
+    .max(MAX_POST_LENGTH, "validation.post.tooLong");

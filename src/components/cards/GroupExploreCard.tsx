@@ -6,6 +6,9 @@ import {withTheme} from "react-native-elements";
 import {Group} from "../../model/groups";
 import Button from "../Button";
 import i18n from "i18n-js";
+import store from "../../state/store";
+import {joinGroup} from "../../state/groups/actions";
+import {MyThunkDispatch} from "../../state/types";
 
 // Component props
 type GroupExploreCardProps = {
@@ -14,6 +17,14 @@ type GroupExploreCardProps = {
 } & ThemeProps;
 
 class GroupExploreCard extends React.Component<GroupExploreCardProps> {
+    private join(): void {
+        const {group} = this.props;
+
+        if (group) {
+            (store.dispatch as MyThunkDispatch)(joinGroup(group));
+        }
+    }
+
     render(): JSX.Element {
         const {theme, group, style, ...otherProps} = this.props;
 
@@ -25,10 +36,12 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
                     {group && (
                         <>
                             <Text style={styles.groupName} numberOfLines={2}>
-                                {group.name}{group.name.length % 2 === 0 && " Nom beaucoup trop long pour une ligne"}
+                                {group.name}
+                                {group.name.length % 2 === 0 && " Nom beaucoup trop long pour une ligne"}
                             </Text>
                             <Text style={styles.groupDescription} numberOfLines={1}>
-                                {group.description}{group.name.length % 2 === 0 && " Description un peu trop longue pour une ligne"}
+                                {group.description}
+                                {group.name.length % 2 === 0 && " Description un peu trop longue pour une ligne"}
                             </Text>
                         </>
                     )}
@@ -39,6 +52,7 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
                         textStyle={styles.joinButtonText}
                         skin="rounded-filled"
                         text={i18n.t("groups.join")}
+                        onPress={() => this.join()}
                     />
                 </View>
             </View>
