@@ -7,7 +7,6 @@ import {
     RequestResponse,
     ResponseProfileDto,
     ResponseUserDto,
-    SignedUrlResponseDto,
     SuccessfulRequestResponse,
     ResponseProfileWithMatchInfoDto,
 } from "../../api/dto";
@@ -23,6 +22,7 @@ import {
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {readCachedStaticData} from "../persistent-storage/static";
+import {uploadImage} from "../../api/media-upload";
 
 export enum PROFILE_ACTION_TYPES {
     LOAD_USER_PROFILE = "PROFILE/LOAD_USER_PROFILE",
@@ -264,6 +264,7 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getSta
         auth: {token},
         profile: {uploadingAvatar},
     } = getState();
+
     const fail = () => dispatch(setAvatarFailure());
 
     if (!token || uploadingAvatar) {
@@ -273,37 +274,15 @@ export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getSta
 
     dispatch(setAvatarBegin());
 
-    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, token);
+    const fileName = await uploadImage(token, image, fail);
 
-    if (response.status === HttpStatusCode.OK) {
-        const payload = (response as SuccessfulRequestResponse).data;
-        const {fileName, s3Url} = payload as SignedUrlResponseDto;
+    if (fileName) {
+        // Submit the filename to the server
+        const response = await requestBackend("profiles/avatar", "POST", {}, {fileName}, token);
 
-        try {
-            // Fetch the image from the device and convert it to a blob
-            const imageBlob = await (await fetch(image.uri)).blob();
-
-            // PUT the image in the aws bucket
-            await fetch(s3Url, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/octet-stream",
-                },
-                body: imageBlob,
-            });
-
-            // Submit the file name to the server
-            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, token);
-
-            if (response2.status === HttpStatusCode.OK) {
-                const payload2 = (response2 as SuccessfulRequestResponse).data;
-                const {avatar} = payload2 as AvatarSuccessfulUpdatedDto;
-                dispatch(setAvatarSuccess(avatar));
-            } else fail();
-        } catch (error) {
-            console.error(error);
-            console.error("An unexpected error occured with a request to the avatar bucket.");
-            fail();
-        }
-    } else fail();
+        if (response.status === HttpStatusCode.OK) {
+            const {avatar} = (response as SuccessfulRequestResponse).data as AvatarSuccessfulUpdatedDto;
+            dispatch(setAvatarSuccess(avatar));
+        } else fail();
+    }
 };

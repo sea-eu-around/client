@@ -21,6 +21,13 @@ export const BACKEND_URL: string = extra.SERVER_URL;
  * 0 means compress for small size, 1 means compress for maximum quality.
  */
 export const AVATAR_QUALITY = 0.75;
+export const GROUP_COVER_QUALITY = 0.8;
+
+/**
+ * Aspect ratios of various media.
+ */
+export const AVATAR_ASPECT: [number, number] = [1, 1];
+export const GROUP_COVER_ASPECT: [number, number] = [2, 1];
 
 /**
  * The number of resources fetched per request when scrolling in infinite scrolling containers.
