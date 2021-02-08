@@ -21,6 +21,8 @@ export type EditableTextProps = {
     placeholder?: string;
     containerStyle?: StyleProp<ViewStyle>;
     fontSize?: number;
+    numberOfLines?: number;
+    maxLength?: number;
     onSubmit?: (value: string) => void;
 } & ThemeProps;
 
@@ -51,7 +53,7 @@ class EditableText extends React.Component<EditableTextProps, EditableTextState>
     }
 
     render(): JSX.Element {
-        const {nonEditable, containerStyle, text, placeholder, fontSize, theme} = this.props;
+        const {nonEditable, containerStyle, text, placeholder, fontSize, numberOfLines, maxLength, theme} = this.props;
         const {editing, value} = this.state;
         const styles = themedStyles(theme);
 
@@ -60,7 +62,10 @@ class EditableText extends React.Component<EditableTextProps, EditableTextState>
         return (
             <View style={[styles.container, containerStyle]}>
                 {!editing && (
-                    <Text style={[styles.text, {fontSize}, text.length === 0 ? styles.textPlaceholder : {}]}>
+                    <Text
+                        numberOfLines={numberOfLines}
+                        style={[styles.text, {fontSize}, text.length === 0 ? styles.textPlaceholder : {}]}
+                    >
                         {submitting ? value : text.length === 0 ? placeholder : text}
                     </Text>
                 )}
@@ -73,6 +78,7 @@ class EditableText extends React.Component<EditableTextProps, EditableTextState>
                         onChangeText={(v: string) => this.setState({...this.state, value: v})}
                         onSubmitEditing={() => this.submit()}
                         onBlur={() => this.submit()}
+                        maxLength={maxLength}
                     />
                 )}
                 {submitting && (
