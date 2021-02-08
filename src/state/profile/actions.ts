@@ -231,7 +231,7 @@ export const fetchProfile = (id: string): AppThunk<Promise<UserProfileWithMatchI
     getState,
 ) => {
     const token = getState().auth.token;
-    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token, true);
+    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseProfileWithMatchInfoDto;
         const profileWithMatchInfo = convertDtoToProfileWithMatchInfo(payload);

@@ -82,7 +82,8 @@ export type MatchingFiltersState = {
 
 export type MatchingState = {
     filters: MatchingFiltersState;
-    fetchedProfiles: UserProfile[];
+    profiles: {[key: string]: UserProfile};
+    orderedProfileIds: string[];
     profilesPagination: PaginatedState;
     historyPagination: PaginatedState;
     historyFilters: {[key: string]: boolean};

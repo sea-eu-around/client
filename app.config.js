@@ -1,7 +1,7 @@
 const TARGET = process.env.TARGET || "STAGING";
 
-const VERSION = "1.0.3";
-const ANDROID_VERSION_CODE = 12;
+const VERSION = "1.0.4";
+const ANDROID_VERSION_CODE = 13;
 
 const CLIENT_HTTP = "https";
 

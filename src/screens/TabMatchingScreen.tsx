@@ -19,7 +19,8 @@ import {MatchActionStatus} from "../api/dto";
 import layout from "../constants/layout";
 
 const reduxConnector = connect((state: AppState) => ({
-    profiles: state.matching.fetchedProfiles,
+    profiles: state.matching.profiles,
+    profileIds: state.matching.orderedProfileIds,
     fetchingProfiles: state.matching.profilesPagination.fetching,
     canFetchMore: state.matching.profilesPagination.canFetchMore,
     currentPage: state.matching.profilesPagination.page,
@@ -37,6 +38,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
 
     render(): JSX.Element {
         const {
+            profileIds,
             profiles,
             theme,
             fetchingProfiles,
@@ -59,7 +61,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     canFetchMore={canFetchMore}
                     // refreshOnFocus={true}
                     currentPage={currentPage}
-                    items={profiles}
+                    items={profileIds.map((id) => profiles[id])}
                     id={(profile: UserProfile): string => profile.id}
                     noResultsComponent={
                         <>
@@ -89,7 +91,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             }}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
                             onHidden={() => hide()}
-                            showSwipeTip={profile.id == profiles[0].id && (isFirstLaunch || layout.isWideDevice)}
+                            showSwipeTip={profile.id == profileIds[0] && (isFirstLaunch || layout.isWideDevice)}
                         />
                     )}
                     // Compensate for the header
