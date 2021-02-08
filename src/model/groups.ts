@@ -1,4 +1,5 @@
 import {PaginatedState} from "../state/types";
+import {UserProfile} from "./user-profile";
 
 export type Group = {
     id: string;
@@ -6,6 +7,32 @@ export type Group = {
     description: string;
     visible: boolean;
     requireApproval: boolean;
-    members: [] | null;
+    cover: string | null;
+    uploadingCover: boolean;
+    members: GroupMember[] | null;
     membersPagination: PaginatedState;
+    posts: {[key: string]: GroupPost};
+    postIds: string[];
+    postsPagination: PaginatedState;
+};
+
+export type GroupMember = {
+    profile: UserProfile;
+};
+
+export type GroupPost = {
+    id: string;
+    type: string;
+    status: string;
+    text: string;
+    creator: UserProfile;
+    comments: {[key: string]: PostComment};
+    commentIds: string[];
+    commentsPagination: PaginatedState;
+};
+
+export type PostComment = {
+    id: string;
+    text: string;
+    creator: UserProfile;
 };

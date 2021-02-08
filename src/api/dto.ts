@@ -215,6 +215,16 @@ export type MatchHistoryItemDto = {
     id: string;
 };
 
+export type ResponseGroupDto = {
+    id: string;
+    name: string;
+    description: string;
+    cover: string | null;
+    visible: boolean;
+    requireApproval: boolean;
+    members: null;
+};
+
 export type CreateGroupDto = {
     name: string;
     description: string;
@@ -222,14 +232,36 @@ export type CreateGroupDto = {
     requireApproval: boolean;
 };
 
-export type CreatePostDto = {
+export type CreateGroupPostDto = {
+    type: string;
     text: string;
 };
 
-export type ResponseGroupDto = {
+export type ResponseGroupPostDto = {
     id: string;
-    name: string;
-    description: string;
-    visible: boolean;
-    requireApproval: boolean;
+    type: string;
+    status: string;
+    text: string;
+    creator: ResponseProfileDto;
+};
+
+export type ResponsePostCommentDto = {
+    id: string;
+    text: string;
+    creator: ResponseProfileDto;
+};
+
+export type CreatePostCommentDto = {
+    text: string;
+};
+
+export type ResponseGroupMemberDto = {
+    profile: ResponseProfileDto;
+    profileId: string;
+    role: "admin";
+    status: "approved";
+};
+
+export type GroupCoverSuccessfullyUpdatedDto = {
+    cover: string;
 };

@@ -13,6 +13,9 @@ import {
     ResponseUserDto,
     ResponseProfileWithMatchInfoDto,
     ResponseGroupDto,
+    ResponseGroupMemberDto,
+    ResponseGroupPostDto,
+    ResponsePostCommentDto,
 } from "./dto";
 import {
     UserProfile,
@@ -27,7 +30,7 @@ import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
 import {PARTNER_UNIVERSITIES} from "../constants/universities";
-import {Group} from "../model/groups";
+import {Group, GroupMember, GroupPost, PostComment} from "../model/groups";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -158,14 +161,37 @@ export function convertDtoToHistoryItem(dto: MatchHistoryItemDto): MatchHistoryI
 }
 
 export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchInfoDto): UserProfileWithMatchInfo {
-    return {
-        ...dto,
-        profile: convertDtoToProfile(dto.profile),
-    };
+    return {...dto, profile: convertDtoToProfile(dto.profile)};
 }
 
 export function convertDtoToGroup(dto: ResponseGroupDto): Group {
     return {
         ...dto,
+        membersPagination: initialPaginatedState(),
+        posts: {},
+        postIds: [],
+        postsPagination: initialPaginatedState(),
+        uploadingCover: false,
+    };
+}
+
+export function convertDtoToGroupMember(dto: ResponseGroupMemberDto): GroupMember {
+    return {...dto, profile: convertDtoToProfile(dto.profile)};
+}
+
+export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
+    return {
+        ...dto,
+        comments: {},
+        commentIds: [],
+        commentsPagination: initialPaginatedState(),
+        creator: convertDtoToProfile(dto.creator),
+    };
+}
+
+export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostComment {
+    return {
+        ...dto,
+        creator: convertDtoToProfile(dto.creator),
     };
 }
