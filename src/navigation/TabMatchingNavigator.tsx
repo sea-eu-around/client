@@ -46,18 +46,5 @@ export const TabMatchingNavigator = (): JSX.Element => (
                 header: (props: StackHeaderProps) => <MainHeader backButton={true} {...props} />,
             }}
         />
-        {/* TODO delete */}
-        {/*<TabMatchingStack.Screen
-            name="MatchSuccessScreen"
-            component={MatchSuccessScreen}
-            options={{
-                headerShown: false,
-                cardStyleInterpolator:
-                    Platform.OS == "ios"
-                        ? CardStyleInterpolators.forVerticalIOS
-                        : CardStyleInterpolators.forFadeFromBottomAndroid,
-                title: screenTitle("MatchSuccessScreen"),
-            }}
-        />*/}
     </TabMatchingStack.Navigator>
 );
