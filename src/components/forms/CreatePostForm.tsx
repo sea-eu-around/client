@@ -13,7 +13,7 @@ import {MyThunkDispatch, ValidatedActionReturn} from "../../state/types";
 import FormSubmitButton from "./FormSubmitButton";
 import FormError from "./FormError";
 import {generalError, localizeError} from "../../api/errors";
-import {CreatePostDto, RemoteValidationErrors} from "../../api/dto";
+import {CreateGroupPostDto, RemoteValidationErrors} from "../../api/dto";
 import {createGroupPost} from "../../state/groups/actions";
 import Button from "../Button";
 import {FormCheckBox} from "./FormCheckBox";
@@ -45,9 +45,9 @@ class CreatePostForm extends React.Component<CreatePostFormProps, CreatePostForm
         this.state = {submitting: false};
     }
 
-    private getCreationDto(values: FormState): CreatePostDto {
+    private getCreationDto(values: FormState): CreateGroupPostDto {
         const {text} = values;
-        return {text};
+        return {type: "simple", text};
     }
 
     submit(values: FormState) {

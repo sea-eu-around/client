@@ -16,7 +16,7 @@ import MyGroupCard from "./cards/MyGroupCard";
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
     myGroups: state.groups.myGroups,
-    pagination: state.groups.pagination,
+    pagination: state.groups.myGroupsPagination,
 }));
 
 // Component props
