@@ -42,7 +42,7 @@ type InfiniteScrollerState = {
     hiddenIds: {[key: string]: boolean};
 };
 
-const SCROLL_DISTANCE_TO_LOAD = 50;
+const SCROLL_DISTANCE_TO_LOAD = 150; //50;
 
 export default class InfiniteScroller<T> extends React.Component<InfiniteScrollerProps<T>, InfiniteScrollerState> {
     scrollViewRef: React.RefObject<ScrollView> = React.createRef<ScrollView>();
@@ -135,9 +135,10 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                 }
                                 onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
                                     const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
-                                    const distanceToBottom =
-                                        contentSize.height - contentOffset.y - layoutMeasurement.height;
-                                    if (distanceToBottom < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+                                    const distanceToEnd = horizontal
+                                        ? contentSize.width - contentOffset.x - layoutMeasurement.width
+                                        : contentSize.height - contentOffset.y - layoutMeasurement.height;
+                                    if (distanceToEnd < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                                 }}
                                 horizontal={horizontal}
                                 {...(horizontal && {showsHorizontalScrollIndicator: !hideScrollIndicator})}
