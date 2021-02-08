@@ -220,15 +220,12 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         },
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
         const profiles = (paginated.data as ResponseProfileDto[]).map(convertDtoToProfile);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        console.log("fetched", profiles.length, "profiles");
-        console.log("meta", paginated.meta);
         dispatch(fetchProfilesSuccess(profiles, canFetchMore));
     } else dispatch(fetchProfilesFailure());
 };
