@@ -1,3 +1,4 @@
+import {arrayWithIdsToDict} from "../../general-utils";
 import {Group, GroupPost} from "../../model/groups";
 import {GroupsState, initialPaginatedState} from "../types";
 import {
@@ -221,8 +222,4 @@ function updatePost(
         console.error("Anomaly: cannot update post (group not in memory).");
         return state;
     }
-}
-
-function arrayWithIdsToDict<T extends {id: string}>(arr: T[]): {[key: string]: T} {
-    return arr.reduce((dict, el) => ((dict[el.id] = el), dict), {} as {[key: string]: T});
 }
