@@ -114,7 +114,7 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                         />
                     ))}
                 <Text style={[styles.title, {marginLeft: 12, color: textColor}, titleStyle]} numberOfLines={1}>
-                    {overrideTitle || title}
+                    {overrideTitle === undefined ? title : overrideTitle}
                 </Text>
                 {rightButtons?.map((ButtonComponent, i) => (
                     <ButtonComponent
