@@ -13,6 +13,8 @@ import {AppState, MyThunkDispatch} from "../../state/types";
 import {fetchGroupMembers, updateGroup} from "../../state/groups/actions";
 import GroupPostsView from "../../components/GroupPostsView";
 import EditableText from "../../components/EditableText";
+import GroupCover from "../../components/GroupCover";
+import i18n from "i18n-js";
 
 const reduxConnector = connect((state: AppState) => ({
     groupsDict: state.groups.groupsDict,
@@ -39,10 +41,7 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
             const groupId = getRouteParams(route).groupId as string;
             this.setState({...this.state, groupId});
 
-            (dispatch as MyThunkDispatch)(fetchGroupMembers(groupId)).then((members) => {
-                console.log(members);
-                //this.setState({...this.state, members});
-            });
+            (dispatch as MyThunkDispatch)(fetchGroupMembers(groupId));
         });
     }
 
@@ -63,26 +62,45 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
         return (
             <ScreenWrapper forceFullWidth>
                 <View style={styles.top}>
-                    <EditableText
-                        text={group ? group.name : ""}
-                        nonEditable={!group || !isAdmin}
-                        fontSize={22}
-                        onSubmit={(name: string) => {
-                            if (group) (dispatch as MyThunkDispatch)(updateGroup(group.id, {name}));
-                        }}
-                    />
-                    <EditableText
-                        text={group ? group.description : ""}
-                        placeholder={isAdmin ? "Enter a description here" : "No description"}
-                        nonEditable={!group || !isAdmin}
-                        fontSize={16}
-                        onSubmit={(description: string) => {
-                            if (group) (dispatch as MyThunkDispatch)(updateGroup(group.id, {description}));
-                        }}
-                    />
-                    <Text style={styles.groupInfo}>
-                        {group && group.members ? group.members.length + " members" : ""}
-                    </Text>
+                    <GroupCover group={group} />
+                    <View style={styles.topInfo}>
+                        <EditableText
+                            text={group ? group.name : ""}
+                            nonEditable={!group || !isAdmin}
+                            fontSize={22}
+                            numberOfLines={1}
+                            maxLength={30}
+                            onSubmit={(name: string) => {
+                                if (group) (dispatch as MyThunkDispatch)(updateGroup(group.id, {name}));
+                            }}
+                        />
+                        <EditableText
+                            text={group ? group.description : ""}
+                            placeholder={
+                                group
+                                    ? isAdmin
+                                        ? i18n.t("groups.description.placeholder")
+                                        : i18n.t("groups.description.none")
+                                    : ""
+                            }
+                            nonEditable={!group || !isAdmin}
+                            fontSize={16}
+                            numberOfLines={4}
+                            maxLength={150}
+                            onSubmit={(description: string) => {
+                                if (group) (dispatch as MyThunkDispatch)(updateGroup(group.id, {description}));
+                            }}
+                        />
+                        <Text style={styles.groupInfo}>
+                            {group && group.members
+                                ? group.members.length === 0
+                                    ? i18n.t("groups.members.zero")
+                                    : group.members.length === 1
+                                    ? i18n.t("groups.members.singular")
+                                    : i18n.t("groups.members.plural", {num: group.members.length})
+                                : ""}
+                        </Text>
+                    </View>
                 </View>
                 <GroupPostsView group={group} containerStyle={styles.posts} />
             </ScreenWrapper>
@@ -94,10 +112,10 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         top: {
             width: "100%",
-            height: 150,
-            padding: 20,
             backgroundColor: theme.accentSlight,
-            justifyContent: "flex-end",
+        },
+        topInfo: {
+            padding: 15,
         },
         groupInfo: {
             width: "100%",

@@ -45,7 +45,8 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             backgroundColor: theme.accentSlight,
-            padding: 10,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
         },
         titleWrapper: {
             width: "100%",

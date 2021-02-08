@@ -12,6 +12,7 @@ export const STATUS_BAR_THEME_OVERRIDES: {[key in NavigatorRoute]?: ThemeKey} = 
     ForgotPasswordScreen: "light",
     ProfileScreen: "light",
     MyProfileScreen: "light",
+    GroupScreen: "light",
 };
 
 // Routes that will redirect when not authenticated

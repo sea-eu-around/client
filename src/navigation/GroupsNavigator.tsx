@@ -52,15 +52,22 @@ export const GroupsNavigator = (): JSX.Element => {
                 />
                 <GroupsStack.Screen
                     name="GroupScreen"
-                    options={(props) => {
+                    options={() => ({
+                        title: screenTitle("GroupScreen"),
+                        headerShown: false,
+                        //header: (headerProps) => <GroupScreenHeader groupId={groupId} {...headerProps} />,
+                    })}
+                >
+                    {(props) => {
                         const groupId = getRouteParams(props.route).groupId as string;
-                        return {
-                            title: screenTitle("GroupScreen"),
-                            header: (headerProps) => <GroupScreenHeader groupId={groupId} {...headerProps} />,
-                        };
+                        return (
+                            <>
+                                <GroupScreen {...props} />
+                                <GroupScreenHeader groupId={groupId} {...props} />
+                            </>
+                        );
                     }}
-                    component={GroupScreen}
-                />
+                </GroupsStack.Screen>
             </GroupsStack.Navigator>
             <CreateGroupModal ref={createGroupModalRef} />
         </>

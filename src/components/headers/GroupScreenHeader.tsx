@@ -16,7 +16,6 @@ const reduxConnector = connect((state: AppState) => ({
 export type GroupScreenHeaderProps = MainHeaderStackProps &
     ThemeProps &
     ConnectedProps<typeof reduxConnector> & {
-        blur?: boolean;
         groupId: string | null;
     };
 
@@ -27,18 +26,21 @@ class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
     }
 
     render(): JSX.Element {
-        const {blur, theme, ...stackProps} = this.props;
+        const {theme, ...stackProps} = this.props;
 
-        const group = this.getGroup();
+        // const group = this.getGroup();
 
         return (
             <MainHeader
                 {...stackProps}
                 backButton
-                blur={blur}
-                wrapperStyle={{backgroundColor: theme.accentSlight}}
-                color={theme.textBlack}
-                overrideTitle={group ? group.name : ""}
+                noAvatar
+                noShadow
+                wrapperStyle={{position: "absolute", backgroundColor: "transparent", top: 0, left: 0, right: 0}}
+                color={theme.textWhite}
+                buttonBackgroundColor="transparent"
+                // overrideTitle={group ? group.name : ""}
+                overrideTitle=""
                 rightButtons={[
                     ({buttonStyle, iconStyle}) => (
                         <TouchableOpacity style={buttonStyle} /*onPress={() => rootNavigate("MatchHistoryScreen")}*/>

@@ -805,6 +805,15 @@ export default {
             myGroups: "My groups",
             invites: "Invites",
             posts: "Posts",
+            members: {
+                zero: "No members",
+                singular: "1 member",
+                plural: "{{num}} members",
+            },
+            description: {
+                placeholder: "Enter a description here",
+                none: "No description",
+            },
         },
         // Matching tab
         matching: {
@@ -1729,6 +1738,15 @@ export default {
             myGroups: "Mes groupes",
             invites: "Invitations",
             posts: "Posts",
+            members: {
+                zero: "Aucun membre",
+                singular: "1 membre",
+                plural: "{{num}} membres",
+            },
+            description: {
+                placeholder: "Entrez une description ici",
+                none: "Pas de description",
+            },
         },
         // Matching tab
         matching: {
