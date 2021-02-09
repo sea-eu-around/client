@@ -20,6 +20,7 @@ export type ModalImplProps = ThemeProps & {
     noBackground?: boolean;
     backdropOpacity?: number;
     backdropBlur?: boolean;
+    statusBarTranslucent?: boolean;
 };
 
 type ModalImplState = {
@@ -55,6 +56,7 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
             noBackground,
             backdropOpacity,
             backdropBlur,
+            statusBarTranslucent,
         } = this.props;
         const {modalVisible} = this.state;
 
@@ -97,7 +99,7 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
             <Modal
                 animationType={animationType}
                 transparent={true}
-                statusBarTranslucent={true}
+                statusBarTranslucent={statusBarTranslucent === undefined ? true : statusBarTranslucent}
                 visible={modalVisible}
                 onRequestClose={() => {
                     if (!nonDismissable) this.setModalVisible(false);
