@@ -16,6 +16,7 @@ import MyGroupCard from "./cards/MyGroupCard";
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
     groups: state.groups.myGroups,
+    groupsDict: state.groups.groupsDict,
     pagination: state.groups.pagination,
 }));
 
@@ -25,7 +26,7 @@ export type GroupInvitesViewProps = ThemeProps &
 
 class GroupInvitesView extends React.Component<GroupInvitesViewProps> {
     render() {
-        const {theme, groups, pagination, navigation, dispatch} = this.props;
+        const {theme, groups, groupsDict, pagination, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -42,7 +43,7 @@ class GroupInvitesView extends React.Component<GroupInvitesViewProps> {
                     canFetchMore={pagination.canFetchMore}
                     // refreshOnFocus={true}
                     currentPage={pagination.page}
-                    items={groups}
+                    items={groups.map((id) => groupsDict[id])}
                     id={(group: Group): string => group.id}
                     horizontal
                     hideScrollIndicator
