@@ -35,6 +35,7 @@ export type InfiniteScrollerProps<T> = {
     refreshOnFocus?: boolean;
     horizontal?: boolean;
     hideScrollIndicator?: boolean;
+    top?: JSX.Element;
 };
 
 // Component state
@@ -112,6 +113,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             progressViewOffset,
             horizontal,
             hideScrollIndicator,
+            top,
         } = this.props;
 
         return (
@@ -123,7 +125,6 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                             <ScrollView
                                 ref={this.scrollViewRef}
                                 style={styles.scroller}
-                                contentContainerStyle={[styles.itemsContainer, itemsContainerStyle]}
                                 refreshControl={
                                     <RefreshControl
                                         progressViewOffset={progressViewOffset}
@@ -144,17 +145,20 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                 {...(horizontal && {showsHorizontalScrollIndicator: !hideScrollIndicator})}
                                 {...(!horizontal && {showsVerticalScrollIndicator: !hideScrollIndicator})}
                             >
-                                {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
-                                {!fetching && items.length > 0 && !canFetchMore && (
-                                    <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
-                                )}
-                                {!fetching && items.length == 0 && (
-                                    <View style={styles.noResultsContainer}>{noResultsComponent}</View>
-                                )}
-                                <View style={styles.loadingIndicatorContainer}>
-                                    {fetching && currentPage > 1 && items.length > 0 && (
-                                        <ActivityIndicator size="large" color={theme.accentSecondary} />
+                                {top}
+                                <View style={[{flexDirection: horizontal ? "row" : "column"}, itemsContainerStyle]}>
+                                    {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
+                                    {!fetching && items.length > 0 && !canFetchMore && (
+                                        <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
                                     )}
+                                    {!fetching && items.length == 0 && (
+                                        <View style={styles.noResultsContainer}>{noResultsComponent}</View>
+                                    )}
+                                    <View style={styles.loadingIndicatorContainer}>
+                                        {fetching && currentPage > 1 && items.length > 0 && (
+                                            <ActivityIndicator size="large" color={theme.accentSecondary} />
+                                        )}
+                                    </View>
                                 </View>
                             </ScrollView>
                         );
@@ -171,7 +175,6 @@ const themedStyles = preTheme((/*theme: Theme*/) => {
         scroller: {
             width: "100%",
         },
-        itemsContainer: {},
         loadingIndicatorContainer: {
             marginTop: 10,
             marginBottom: 20, // compensate for bottom tab bar
