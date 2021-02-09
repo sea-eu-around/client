@@ -42,6 +42,7 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUP_POSTS_BEGIN = "GROUP/FETCH_GROUP_POSTS_BEGIN",
     FETCH_GROUP_POSTS_SUCCESS = "GROUP/FETCH_GROUP_POSTS_SUCCESS",
     FETCH_GROUP_POSTS_FAILURE = "GROUP/FETCH_GROUP_POSTS_FAILURE",
+    FETCH_GROUP_POSTS_REFRESH = "GROUP/FETCH_GROUP_POSTS_REFRESH",
     FETCH_POST_COMMENTS_BEGIN = "GROUP/FETCH_POST_COMMENTS_BEGIN",
     FETCH_POST_COMMENTS_SUCCESS = "GROUP/FETCH_POST_COMMENTS_SUCCESS",
     FETCH_POST_COMMENTS_FAILURE = "GROUP/FETCH_POST_COMMENTS_FAILURE",
@@ -135,6 +136,11 @@ export type FetchGroupPostsSuccessAction = {
     canFetchMore: boolean;
 };
 
+export type FetchGroupPostsRefreshAction = {
+    type: string;
+    groupId: string;
+};
+
 export type FetchGroupPostsFailureAction = {
     type: string;
     groupId: string;
@@ -173,6 +179,7 @@ export type CreatePostBeginAction = {
 export type CreatePostSuccessAction = {
     type: string;
     group: Group;
+    post: GroupPost;
 };
 
 export type CreatePostFailureAction = {
@@ -238,6 +245,7 @@ export type GroupsAction = CreateGroupSuccessAction &
     FetchGroupPostsBeginAction &
     FetchGroupPostsFailureAction &
     FetchGroupPostsSuccessAction &
+    FetchGroupPostsRefreshAction &
     FetchPostCommentsBeginAction &
     FetchPostCommentsFailureAction &
     FetchPostCommentsSuccessAction &
@@ -395,7 +403,12 @@ const fetchGroupPostsSuccess = (
 });
 
 const fetchGroupPostsFailure = (groupId: string): FetchGroupPostsFailureAction => ({
-    type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_FAILURE,
+    type: GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_FAILURE,
+    groupId,
+});
+
+export const refreshFetchedGroupPosts = (groupId: string): FetchGroupPostsRefreshAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_REFRESH,
     groupId,
 });
 
@@ -618,9 +631,10 @@ const createGroupPostFailure = (): CreatePostFailureAction => ({
     type: GROUP_ACTION_TYPES.CREATE_POST_FAILURE,
 });
 
-const createGroupPostSuccess = (group: Group): CreatePostSuccessAction => ({
+const createGroupPostSuccess = (group: Group, post: GroupPost): CreatePostSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_POST_SUCCESS,
     group,
+    post,
 });
 
 export const createGroupPost = (group: Group, dto: CreateGroupPostDto): ValidatedThunkAction => async (
@@ -636,7 +650,9 @@ export const createGroupPost = (group: Group, dto: CreateGroupPostDto): Validate
     const response = await requestBackend(`groups/${group.id}/posts`, "POST", {}, dto, token, true);
 
     if (response.status === HttpStatusCode.CREATED) {
-        dispatch(createGroupPostSuccess(group));
+        const payload = (response as SuccessfulRequestResponse).data;
+        const post = convertDtoToGroupPost(payload as ResponseGroupPostDto);
+        dispatch(createGroupPostSuccess(group, post));
         return {success: true};
     } else {
         dispatch(createGroupPostFailure());

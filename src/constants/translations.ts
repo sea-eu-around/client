@@ -16,6 +16,8 @@ export default {
         noResultsFound: "No results found",
         apply: "Apply",
         logOut: "Log out",
+        showMore: "Show more",
+        showLess: "Show less",
         // Component-related
         picker: {
             callToAction: "Select (%d selected)",
@@ -804,6 +806,7 @@ export default {
             join: "Join",
             myGroups: "My groups",
             invites: "Invites",
+            inviteNew: "Invite new members",
             posts: "Posts",
             members: {
                 zero: "No members",
@@ -813,6 +816,9 @@ export default {
             description: {
                 placeholder: "Enter a description here",
                 none: "No description",
+            },
+            roles: {
+                admin: "Administrator",
             },
         },
         // Matching tab
@@ -888,6 +894,9 @@ export default {
             MatchHistoryScreen: "History",
             TabGroupsScreen: "Groups",
             GroupsExploreScreen: "Explore Groups",
+            GroupScreen: "Group",
+            GroupMembersScreen: "Group Members",
+            GroupInviteScreen: "Invite",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
             ProfileScreen: "Profile",
@@ -941,6 +950,8 @@ export default {
         noResultsFound: "Aucun résultat",
         apply: "Appliquer",
         logOut: "Déconnexion",
+        showMore: "Afficher plus",
+        showLess: "Afficher moins",
         // Component-related
         picker: {
             callToAction: "%d éléments",
@@ -1737,6 +1748,7 @@ export default {
             join: "Rejoindre",
             myGroups: "Mes groupes",
             invites: "Invitations",
+            inviteNew: "Invitations",
             posts: "Posts",
             members: {
                 zero: "Aucun membre",
@@ -1746,6 +1758,9 @@ export default {
             description: {
                 placeholder: "Entrez une description ici",
                 none: "Pas de description",
+            },
+            roles: {
+                admin: "Administrateur",
             },
         },
         // Matching tab
@@ -1821,6 +1836,9 @@ export default {
             MatchHistoryScreen: "Historique",
             TabGroupsScreen: "Groupes",
             GroupsExploreScreen: "Explorer les groupes",
+            GroupScreen: "Groupe",
+            GroupMembersScreen: "Membres du groupe",
+            GroupInviteScreen: "Inviter",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profil",
             ProfileScreen: "Profil",

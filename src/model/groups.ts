@@ -18,6 +18,7 @@ export type Group = {
 
 export type GroupMember = {
     profile: UserProfile;
+    role: "admin";
 };
 
 export type GroupPost = {

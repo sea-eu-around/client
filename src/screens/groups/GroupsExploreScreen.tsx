@@ -22,6 +22,7 @@ const reduxConnector = connect((state: AppState) => ({
     historyFilters: state.matching.historyFilters,
     pagination: state.groups.pagination,
     groups: state.groups.groups,
+    groupsDict: state.groups.groupsDict,
 }));
 
 // Component props
@@ -41,7 +42,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
     }
 
     render(): JSX.Element {
-        const {theme, groups, pagination, navigation, dispatch} = this.props;
+        const {theme, groups, groupsDict, pagination, navigation, dispatch} = this.props;
         const {search} = this.state;
         const styles = themedStyles(theme);
 
@@ -80,7 +81,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
-                    items={groups}
+                    items={groups.map((id) => groupsDict[id])}
                     id={(group: Group): string => group.id}
                     hideScrollIndicator
                     noResultsComponent={

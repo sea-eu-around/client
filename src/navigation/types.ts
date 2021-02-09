@@ -46,6 +46,8 @@ export type TabGroupsRoot = {
     TabGroupsScreen: undefined;
     GroupsExploreScreen: undefined;
     GroupScreen: undefined;
+    GroupMembersScreen: undefined;
+    GroupInviteScreen: undefined;
 };
 
 // TAB: Messaging

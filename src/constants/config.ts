@@ -37,6 +37,7 @@ export const ROOMS_FETCH_LIMIT = 10; // Messaging tab
 export const MESSAGES_FETCH_LIMIT = 15; // Chat
 export const HISTORY_FETCH_LIMIT = 12; // Match history tab
 export const GROUPS_FETCH_LIMIT = 8;
+export const GROUPS_POSTS_FETCH_LIMIT = 6;
 
 /**
  * The buffer delay before sending a remote request when typing in a search bar (ms).

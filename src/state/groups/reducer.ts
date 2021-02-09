@@ -2,11 +2,13 @@ import {arrayWithIdsToDict} from "../../general-utils";
 import {Group, GroupPost} from "../../model/groups";
 import {GroupsState, initialPaginatedState} from "../types";
 import {
+    CreatePostSuccessAction,
     FetchGroupMembersBeginAction,
     FetchGroupMembersFailureAction,
     FetchGroupMembersSuccessAction,
     FetchGroupPostsBeginAction,
     FetchGroupPostsFailureAction,
+    FetchGroupPostsRefreshAction,
     FetchGroupPostsSuccessAction,
     FetchGroupsSuccessAction,
     FetchPostCommentsBeginAction,
@@ -51,7 +53,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return {
                 ...state,
                 groupsDict,
-                groups: state.groups.concat(groups),
+                groups: state.groups.concat(groups.map((g: Group) => g.id)),
                 pagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
@@ -70,15 +72,31 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 postsPagination: {
                     ...postsPagination,
                     fetching: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_BEGIN,
+                    canFetchMore: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_BEGIN,
                 },
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_SUCCESS: {
             const {groupId, posts, canFetchMore} = action as FetchGroupPostsSuccessAction;
             return updateGroup(state, groupId, ({postsPagination: p, posts: gposts, postIds: gpostIds}) => ({
-                postIds: gpostIds.concat(posts.map((p) => p.id)),
+                postIds: gpostIds.concat(posts.map((p) => p.id).filter((id) => gpostIds.indexOf(id) === -1)),
                 posts: {...gposts, ...arrayWithIdsToDict(posts)},
                 postsPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
+            }));
+        }
+        case GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_REFRESH: {
+            const {groupId} = action as FetchGroupPostsRefreshAction;
+            return updateGroup(state, groupId, ({}) => ({
+                postIds: [],
+                postsPagination: initialPaginatedState(),
+            }));
+        }
+
+        case GROUP_ACTION_TYPES.CREATE_POST_SUCCESS: {
+            const {group, post} = action as CreatePostSuccessAction;
+            return updateGroup(state, group.id, ({posts, postIds}) => ({
+                posts: {...posts, [post.id]: post},
+                postIds: [post.id].concat(postIds),
             }));
         }
 
@@ -158,7 +176,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return {
                 ...state,
                 groupsDict,
-                myGroups: state.myGroups.concat(groups),
+                myGroups: state.myGroups.concat(groups.map((g: Group) => g.id)),
                 myGroupsPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }

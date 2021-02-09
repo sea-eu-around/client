@@ -111,9 +111,9 @@ export type ReportsState = {};
 export type GroupsState = {
     groupsDict: {[key: string]: Group};
     pagination: PaginatedState;
-    groups: Group[];
+    groups: string[];
     myGroupsPagination: PaginatedState;
-    myGroups: Group[];
+    myGroups: string[];
 };
 
 export type AppState = {

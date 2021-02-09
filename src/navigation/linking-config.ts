@@ -36,6 +36,10 @@ const config: LinkingOptions = {
                     TabGroups: {
                         screens: {
                             TabGroupsScreen: "groups",
+                            GroupsExploreScreen: "groups/explore",
+                            GroupScreen: "group/:groupId",
+                            GroupMembersScreen: "group/:groupId/members",
+                            GroupInviteScreen: "group/:groupId/invite",
                         },
                     },
                     TabMessaging: {
