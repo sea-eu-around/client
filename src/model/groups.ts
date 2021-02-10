@@ -38,3 +38,11 @@ export type PostComment = {
     text: string;
     creator: UserProfile;
 };
+
+export enum PostSortingOrder {
+    Newest = "newest",
+    Oldest = "oldest",
+    MostPopular = "most-popular",
+}
+
+export const POST_SORTING_ORDERS = [PostSortingOrder.Newest, PostSortingOrder.Oldest, PostSortingOrder.MostPopular];
