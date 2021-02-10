@@ -7,6 +7,8 @@ import CustomModal, {CustomModalClass} from "./modals/CustomModal";
 import {getPickerButtonStyleProps, PickerButtonStyleVariant, pickerStyles} from "../styles/picker";
 import i18n from "i18n-js";
 
+export type PopUpSelectorActivator = (show: () => void) => JSX.Element;
+
 // Component props
 export type PopUpSelectorProps = ThemeProps & {
     values: string[];
@@ -21,6 +23,7 @@ export type PopUpSelectorProps = ThemeProps & {
     buttonStyle?: StyleProp<ViewStyle>;
     valueStyle?: StyleProp<TextStyle>;
     buttonStyleVariant?: PickerButtonStyleVariant;
+    activator?: PopUpSelectorActivator;
 };
 
 // Component state
@@ -88,6 +91,7 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
             buttonStyle,
             valueStyle,
             buttonStyleVariant,
+            activator,
             theme,
         } = this.props;
         const {valueDict} = this.state;
@@ -97,28 +101,31 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
 
         return (
             <>
-                <TouchableOpacity
-                    style={[
-                        buttonStyleProps.button,
-                        selected.length > 0 && !noOkUnderline ? styles.buttonOk : {},
-                        buttonStyle,
-                    ]}
-                    onPress={() => this.show()}
-                >
-                    {selected.length === 0 && (
-                        <Text
-                            style={[buttonStyleProps.text, buttonStyleProps.textNoneSelected, valueStyle]}
-                            numberOfLines={2}
-                        >
-                            {placeholder}
-                        </Text>
-                    )}
-                    {selected.length > 0 && (
-                        <Text style={[buttonStyleProps.text, valueStyle]} numberOfLines={2}>
-                            {selected.map(label).join(", ")}
-                        </Text>
-                    )}
-                </TouchableOpacity>
+                {activator !== undefined && activator(() => this.show())}
+                {!activator && (
+                    <TouchableOpacity
+                        style={[
+                            buttonStyleProps.button,
+                            selected.length > 0 && !noOkUnderline ? styles.buttonOk : {},
+                            buttonStyle,
+                        ]}
+                        onPress={() => this.show()}
+                    >
+                        {selected.length === 0 && (
+                            <Text
+                                style={[buttonStyleProps.text, buttonStyleProps.textNoneSelected, valueStyle]}
+                                numberOfLines={2}
+                            >
+                                {placeholder}
+                            </Text>
+                        )}
+                        {selected.length > 0 && (
+                            <Text style={[buttonStyleProps.text, valueStyle]} numberOfLines={2}>
+                                {selected.map(label).join(", ")}
+                            </Text>
+                        )}
+                    </TouchableOpacity>
+                )}
                 <CustomModal
                     ref={this.modalRef}
                     modalViewStyle={{width: "100%", paddingHorizontal: 0, paddingVertical: 0}}
