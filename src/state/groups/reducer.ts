@@ -38,7 +38,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
     switch (action.type) {
         case GROUP_ACTION_TYPES.UPDATE_SUCCESS: {
             const {group} = action as UpdateGroupSuccessAction;
-            return {...state, groupsDict: {...state.groupsDict, [group.id]: {...state.groupsDict[group.id], ...group}}};
+            return updateGroup(state, group.id, () => group);
         }
 
         case GROUP_ACTION_TYPES.FETCH_GROUPS_BEGIN: {
@@ -215,7 +215,18 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
 function updateGroup(state: GroupsState, groupId: string, update: (g: Group) => Partial<Group>): GroupsState {
     const g = state.groupsDict[groupId];
     if (g) {
-        return {...state, groupsDict: {...state.groupsDict, [groupId]: {...g, ...update(g)}}};
+        const updated = update(g);
+        return {
+            ...state,
+            groupsDict: {
+                ...state.groupsDict,
+                [groupId]: {
+                    ...g,
+                    ...updated,
+                    members: updated.members || g.members, // prevents members from being replaced with null
+                },
+            },
+        };
     } else {
         console.error("Anomaly: cannot update group (not in memory).");
         return state;
