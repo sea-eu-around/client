@@ -53,11 +53,12 @@ export type ButtonProps = {
     style?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
     skin?: ButtonSkin;
+    iconLeft?: boolean;
 } & ThemeProps;
 
 class Button extends React.Component<ButtonProps> {
     render(): JSX.Element {
-        const {onPress, text, icon, skin, style, textStyle, children, theme} = this.props;
+        const {onPress, text, icon, skin, style, textStyle, iconLeft, children, theme} = this.props;
 
         const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
@@ -66,7 +67,11 @@ class Button extends React.Component<ButtonProps> {
                 accessibilityRole="button"
                 accessibilityLabel={text}
                 onPress={onPress}
-                style={[{flexDirection: "row", alignItems: "center"}, skinStyles.button, style]}
+                style={[
+                    {flexDirection: iconLeft ? "row-reverse" : "row", alignItems: "center"},
+                    skinStyles.button,
+                    style,
+                ]}
             >
                 {children || (
                     <>
