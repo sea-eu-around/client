@@ -14,7 +14,7 @@ import {
     ResponsePostCommentDto,
     SuccessfulRequestResponse,
 } from "../../api/dto";
-import {Group, GroupMember, GroupPost, PostComment} from "../../model/groups";
+import {Group, GroupMember, GroupPost, PostComment, PostSortingOrder} from "../../model/groups";
 import {
     convertDtoToGroup,
     convertDtoToGroupMember,
@@ -62,6 +62,7 @@ export enum GROUP_ACTION_TYPES {
     SET_COVER_BEGIN = "GROUP/SET_COVER_BEGIN",
     SET_COVER_SUCCESS = "GROUP/SET_COVER_SUCCESS",
     SET_COVER_FAILURE = "GROUP/SET_COVER_FAILURE",
+    SET_POST_SORTING_ORDER = "GROUP/SET_POST_SORTING_ORDER",
 }
 
 export type CreateGroupSuccessAction = {
@@ -231,6 +232,11 @@ export type SetGroupCoverFailureAction = {
     groupId: string;
 };
 
+export type SetPostSortingOrderAction = {
+    type: string;
+    order: PostSortingOrder;
+};
+
 export type GroupsAction = CreateGroupSuccessAction &
     CreateGroupFailureAction &
     UpdateGroupSuccessAction &
@@ -260,7 +266,8 @@ export type GroupsAction = CreateGroupSuccessAction &
     UpdateCommentSuccessAction &
     SetGroupCoverBeginAction &
     SetGroupCoverFailureAction &
-    SetGroupCoverSuccessAction;
+    SetGroupCoverSuccessAction &
+    SetPostSortingOrderAction;
 
 const createGroupSuccess = (): CreateGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_SUCCESS,
@@ -808,3 +815,8 @@ export const setGroupCover = (groupId: string, image: ImageInfo): AppThunk => as
         } else fail();
     }
 };
+
+export const setPostSortingOrder = (order: PostSortingOrder): SetPostSortingOrderAction => ({
+    type: GROUP_ACTION_TYPES.SET_POST_SORTING_ORDER,
+    order,
+});

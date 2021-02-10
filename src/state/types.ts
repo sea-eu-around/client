@@ -16,7 +16,7 @@ import {CountryCode} from "../model/country-codes";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 import {UserSettings} from "../model/user-settings";
 import {MatchHistoryItem} from "../model/matching";
-import {Group} from "../model/groups";
+import {Group, PostSortingOrder} from "../model/groups";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
@@ -114,6 +114,7 @@ export type GroupsState = {
     groups: string[];
     myGroupsPagination: PaginatedState;
     myGroups: string[];
+    postsSortOrder: PostSortingOrder;
 };
 
 export type AppState = {

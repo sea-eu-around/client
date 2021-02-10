@@ -1,5 +1,5 @@
 import {arrayWithIdsToDict} from "../../general-utils";
-import {Group, GroupPost} from "../../model/groups";
+import {Group, GroupPost, PostSortingOrder} from "../../model/groups";
 import {GroupsState, initialPaginatedState} from "../types";
 import {
     CreatePostSuccessAction,
@@ -19,6 +19,7 @@ import {
     SetGroupCoverBeginAction,
     SetGroupCoverFailureAction,
     SetGroupCoverSuccessAction,
+    SetPostSortingOrderAction,
     UpdateCommentSuccessAction,
     UpdateGroupSuccessAction,
     UpdatePostSuccessAction,
@@ -30,6 +31,7 @@ export const initialState: GroupsState = {
     groups: [],
     myGroupsPagination: initialPaginatedState(),
     myGroups: [],
+    postsSortOrder: PostSortingOrder.Newest,
 };
 
 export const groupsReducer = (state: GroupsState = initialState, action: GroupsAction): GroupsState => {
@@ -199,6 +201,11 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         case GROUP_ACTION_TYPES.SET_COVER_SUCCESS: {
             const {groupId, url} = action as SetGroupCoverSuccessAction;
             return updateGroup(state, groupId, () => ({uploadingCover: false, cover: url}));
+        }
+
+        case GROUP_ACTION_TYPES.SET_POST_SORTING_ORDER: {
+            const {order} = action as SetPostSortingOrderAction;
+            return {...state, postsSortOrder: order};
         }
         default:
             return state;
