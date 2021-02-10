@@ -1,3 +1,4 @@
+import {GroupRoleDto} from "../api/dto";
 import {PaginatedState} from "../state/types";
 import {UserProfile} from "./user-profile";
 
@@ -18,7 +19,7 @@ export type Group = {
 
 export type GroupMember = {
     profile: UserProfile;
-    role: "admin";
+    role: GroupRoleDto;
 };
 
 export type GroupPost = {

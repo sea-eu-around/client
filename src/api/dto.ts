@@ -255,10 +255,12 @@ export type CreatePostCommentDto = {
     text: string;
 };
 
+export type GroupRoleDto = "admin" | "basic";
+
 export type ResponseGroupMemberDto = {
     profile: ResponseProfileDto;
     profileId: string;
-    role: "admin";
+    role: GroupRoleDto;
     status: "approved";
 };
 
