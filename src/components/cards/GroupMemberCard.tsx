@@ -39,9 +39,11 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                             <Text style={styles.name} numberOfLines={2}>
                                 {member.profile.firstName} {member.profile.lastName}
                             </Text>
-                            {member.role !== "member" /* TODO */ && (
+                            {member.role !== "basic" && (
                                 <View style={{flexDirection: "row", alignItems: "center"}}>
-                                    <MaterialIcons name="verified-user" style={styles.roleIcon} />
+                                    {member.role === "admin" && (
+                                        <MaterialIcons name="verified-user" style={styles.roleIcon} />
+                                    )}
                                     <Text style={styles.role}>{i18n.t(`groups.roles.${member.role}`)}</Text>
                                 </View>
                             )}

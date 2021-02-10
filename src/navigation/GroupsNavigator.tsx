@@ -50,7 +50,7 @@ export const GroupsNavigator = (): JSX.Element => {
                     name="GroupsExploreScreen"
                     options={() => ({
                         title: screenTitle("GroupsExploreScreen"),
-                        header,
+                        header: (headerProps) => <MainHeader {...headerProps} noAvatar backButton />,
                     })}
                     component={GroupsExploreScreen}
                 />

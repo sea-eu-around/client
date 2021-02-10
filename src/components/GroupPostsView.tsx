@@ -4,31 +4,36 @@ import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
-import {Group, GroupPost} from "../model/groups";
+import {Group, GroupPost, PostSortingOrder} from "../model/groups";
 import {MaterialIcons} from "@expo/vector-icons";
-import CreatePostModal from "./modals/CreatePostModal";
+import EditPostModal from "./modals/EditPostModal";
 import InfiniteScroller from "./InfiniteScroller";
 import {NavigationProp} from "@react-navigation/native";
 import {GROUPS_POSTS_FETCH_LIMIT} from "../constants/config";
-import {MyThunkDispatch, PaginatedState} from "../state/types";
-import {fetchGroupPosts, refreshFetchedGroupPosts} from "../state/groups/actions";
-import store from "../state/store";
+import {AppState, MyThunkDispatch, PaginatedState} from "../state/types";
+import {fetchGroupPosts, refreshFetchedGroupPosts, setPostSortingOrder} from "../state/groups/actions";
 import GroupPostCard from "./cards/GroupPostCard";
+import PostSortingOrderPicker from "./PostSortingOrderPicker";
+import {connect, ConnectedProps} from "react-redux";
+
+// Map props from store
+const reduxConnector = connect((state: AppState) => ({
+    sortOrder: state.groups.postsSortOrder,
+}));
 
 // Component props
-export type GroupPostsViewProps = ThemeProps & {
-    group: Group | null;
-    titleContainerStyle?: StyleProp<ViewStyle>;
-    navigation: NavigationProp<never>;
-    top?: JSX.Element;
-};
+export type GroupPostsViewProps = ThemeProps &
+    ConnectedProps<typeof reduxConnector> & {
+        group: Group | null;
+        titleContainerStyle?: StyleProp<ViewStyle>;
+        navigation: NavigationProp<never>;
+        top?: JSX.Element;
+    };
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
     render() {
-        const {theme, group, top, navigation, titleContainerStyle} = this.props;
+        const {group, top, navigation, titleContainerStyle, sortOrder, dispatch, theme} = this.props;
         const styles = themedStyles(theme);
-        console.log("group", group);
-        console.log(group && group.postIds.map((id) => group.posts[id]));
 
         const pagination: PaginatedState = group
             ? group.postsPagination
@@ -43,7 +48,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                             <Text style={styles.title}>{i18n.t("groups.posts")}</Text>
                             <View style={styles.buttons}>
                                 {group && (
-                                    <CreatePostModal
+                                    <EditPostModal
                                         group={group}
                                         activator={(show) => (
                                             <TouchableOpacity style={styles.button} onPress={show}>
@@ -52,9 +57,18 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                                         )}
                                     />
                                 )}
-                                <TouchableOpacity style={styles.button}>
-                                    <MaterialIcons style={styles.buttonIcon} name="sort" />
-                                </TouchableOpacity>
+                                <PostSortingOrderPicker
+                                    order={sortOrder}
+                                    activator={(show) => (
+                                        <TouchableOpacity style={styles.button} onPress={show}>
+                                            <MaterialIcons style={styles.buttonIcon} name="sort" />
+                                        </TouchableOpacity>
+                                    )}
+                                    onChange={(order: PostSortingOrder) => {
+                                        dispatch(setPostSortingOrder(order));
+                                        if (group) dispatch(refreshFetchedGroupPosts(group.id));
+                                    }}
+                                />
                             </View>
                         </View>
                     </>
@@ -62,7 +76,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 navigation={navigation}
                 fetchLimit={GROUPS_POSTS_FETCH_LIMIT}
                 fetchMore={() => {
-                    if (group) (store.dispatch as MyThunkDispatch)(fetchGroupPosts(group.id));
+                    if (group) (dispatch as MyThunkDispatch)(fetchGroupPosts(group.id));
                 }}
                 fetching={pagination.fetching}
                 canFetchMore={pagination.canFetchMore}
@@ -71,16 +85,12 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 items={group ? group.postIds.map((id) => group.posts[id]) : []}
                 id={(post: GroupPost): string => post.id}
                 hideScrollIndicator
-                noResultsComponent={
-                    <>
-                        <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                        <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
-                    </>
-                }
+                endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
+                noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
                 refresh={() => {
-                    if (group) store.dispatch(refreshFetchedGroupPosts(group.id));
+                    if (group) dispatch(refreshFetchedGroupPosts(group.id));
                 }}
-                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} />}
+                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} group={group} post={post} />}
                 // Compensate for the header
                 itemsContainerStyle={styles.itemsContainer}
                 progressViewOffset={350}
@@ -92,7 +102,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         itemsContainer: {
-            backgroundColor: theme.accentSlight,
+            //backgroundColor: theme.accentSlight,
         },
         titleWrapper: {
             width: "100%",
@@ -101,7 +111,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             paddingHorizontal: 15,
             paddingVertical: 10,
-            backgroundColor: theme.accentSlight,
+            //backgroundColor: theme.accentSlight,
         },
         title: {
             fontSize: 20,
@@ -120,9 +130,11 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontSize: 24,
             color: theme.text,
         },
-        noResultsText1: {},
-        noResultsText2: {},
+        noResultsText: {
+            color: theme.text,
+            fontSize: 16,
+        },
     });
 });
 
-export default withTheme(GroupPostsView);
+export default reduxConnector(withTheme(GroupPostsView));

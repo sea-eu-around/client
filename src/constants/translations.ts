@@ -801,7 +801,12 @@ export default {
             },
             newPost: {
                 title: "New Post",
+                submit: "Create",
+            },
+            editPost: {
+                title: "Edit Post",
                 contentPlaceholder: "Content",
+                submit: "Send",
             },
             join: "Join",
             myGroups: "My groups",
@@ -819,6 +824,14 @@ export default {
             },
             roles: {
                 admin: "Administrator",
+                basic: "Member",
+            },
+            noMorePosts: "No more posts to show.",
+            noPosts: "No posts to show.",
+            postsSorting: {
+                newest: "Newest",
+                oldest: "Oldest",
+                "most-popular": "Popular",
             },
         },
         // Matching tab
@@ -1743,7 +1756,12 @@ export default {
             },
             newPost: {
                 title: "Nouveau Post",
+                submit: "Créer",
+            },
+            editPost: {
+                title: "Éditer le post",
                 contentPlaceholder: "Contenu",
+                submit: "Envoyer",
             },
             join: "Rejoindre",
             myGroups: "Mes groupes",
@@ -1761,6 +1779,14 @@ export default {
             },
             roles: {
                 admin: "Administrateur",
+                basic: "Membre",
+            },
+            noMorePosts: "Aucun autre post à afficher.",
+            noPosts: "Aucun post à afficher.",
+            postsSorting: {
+                newest: "Récent",
+                oldest: "Ancien",
+                "most-popular": "Populaire",
             },
         },
         // Matching tab

@@ -55,7 +55,7 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     refresh={() => dispatch(refreshFetchedMyGroups())}
                     renderItem={(group: Group) => <MyGroupCard key={group.id} group={group} />}
                     // Compensate for the header
-                    //itemsContainerStyle={styles.itemsContainer}
+                    itemsContainerStyle={styles.itemsContainer}
                     progressViewOffset={100}
                 />
             </View>
@@ -66,22 +66,21 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
-            width: "95%",
-            marginVertical: 15,
-            paddingHorizontal: 15,
+            width: "100%",
             paddingTop: 10,
             paddingBottom: 20,
             backgroundColor: theme.cardBackground,
-            borderRadius: 20,
         },
         titleWrapper: {
             width: "100%",
             marginBottom: 20,
+            paddingHorizontal: 15,
         },
         title: {
             fontSize: 22,
             color: theme.text,
         },
+        itemsContainer: {paddingHorizontal: 15},
 
         noResultsText1: {},
         noResultsText2: {},

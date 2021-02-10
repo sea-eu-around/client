@@ -1,6 +1,5 @@
 import * as React from "react";
 import i18n from "i18n-js";
-import {ThemeProps} from "../types";
 import PopUpSelector, {PopUpSelectorActivator} from "./PopUpSelector";
 import {PostSortingOrder, POST_SORTING_ORDERS} from "../model/groups";
 
@@ -9,7 +8,7 @@ export type PostSortingOrderPickerProps = {
     order: PostSortingOrder;
     onChange?: (order: PostSortingOrder) => void;
     activator?: PopUpSelectorActivator;
-} & ThemeProps;
+};
 
 class PostSortingOrderPicker extends React.Component<PostSortingOrderPickerProps> {
     render(): JSX.Element {

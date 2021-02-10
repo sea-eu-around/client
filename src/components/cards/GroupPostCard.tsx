@@ -3,23 +3,41 @@ import {TouchableOpacity, TouchableOpacityProps, StyleSheet, Text, View} from "r
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {GroupPost} from "../../model/groups";
+import {Group, GroupPost} from "../../model/groups";
 import EnlargeableAvatar from "../EnlargeableAvatar";
 import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
-import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {MaterialIcons} from "@expo/vector-icons";
+import GroupPostCommentsModal, {GroupPostCommentsModalClass} from "../modals/GroupPostCommentsModal";
+import {connect, ConnectedProps} from "react-redux";
+import {AppState} from "../../state/types";
+import EditPostModal, {EditPostModalClass} from "../modals/EditPostModal";
+
+const reduxConnector = connect((state: AppState) => ({
+    localUser: state.profile.user,
+}));
 
 // Component props
 type GroupPostCardProps = {
+    group: Group | null;
     post: GroupPost | null;
 } & TouchableOpacityProps &
-    ThemeProps;
+    ThemeProps &
+    ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
+    commentsModalRef = React.createRef<GroupPostCommentsModalClass>();
+    editPostModalRef = React.createRef<EditPostModalClass>();
+
+    openComments(): void {
+        this.commentsModalRef.current?.show();
+    }
+
     render(): JSX.Element {
-        const {post, theme, style, ...otherProps} = this.props;
+        const {post, group, localUser, theme, style, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
+        const fromLocal = post && localUser && post.creator.id === localUser.id;
 
         return (
             <TouchableOpacity
@@ -31,8 +49,32 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                 {...otherProps}
             >
                 <View style={styles.top}>
-                    <EnlargeableAvatar profile={undefined} size={42} containerStyle={styles.avatarContainer} rounded />
-                    <Text style={styles.name}>Henry Miller</Text>
+                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                        <EnlargeableAvatar
+                            profile={post?.creator}
+                            size={42}
+                            containerStyle={styles.avatarContainer}
+                            rounded
+                        />
+                        <Text style={styles.name}>
+                            {post?.creator.firstName} {post?.creator.lastName}
+                        </Text>
+                    </View>
+                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                        {fromLocal && (
+                            <>
+                                <TouchableOpacity
+                                    style={styles.topButton}
+                                    onPress={() => this.editPostModalRef.current?.show()}
+                                >
+                                    <MaterialIcons style={styles.topButtonIcon} name="edit" />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.topButton}>
+                                    <MaterialIcons style={styles.topButtonIcon} name="delete" />
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
                 </View>
                 {post && (
                     <ReadMore
@@ -52,10 +94,10 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                     </ReadMore>
                 )}
                 <View style={styles.bottom}>
-                    <View>
+                    <TouchableOpacity onPress={() => this.openComments()}>
                         <Text style={styles.bottomText}>82 points</Text>
                         <Text style={styles.bottomText}>17 comments</Text>
-                    </View>
+                    </TouchableOpacity>
                     <View style={{flexDirection: "row"}}>
                         <TouchableOpacity style={styles.bottomButton}>
                             <MaterialIcons style={styles.bottomButtonIcon} name="arrow-upward" />
@@ -63,11 +105,10 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         <TouchableOpacity style={styles.bottomButton}>
                             <MaterialIcons style={styles.bottomButtonIcon} name="arrow-downward" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.bottomButton}>
-                            <MaterialCommunityIcons style={styles.bottomButtonIcon} name="dots-vertical" />
-                        </TouchableOpacity>
                     </View>
                 </View>
+                {post && group && <GroupPostCommentsModal ref={this.commentsModalRef} group={group} post={post} />}
+                {post && group && <EditPostModal ref={this.editPostModalRef} group={group} post={post} />}
             </TouchableOpacity>
         );
     }
@@ -83,6 +124,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         top: {
             flexDirection: "row",
+            justifyContent: "space-between",
             alignItems: "center",
             marginBottom: 10,
         },
@@ -124,7 +166,15 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 24,
             color: theme.textLight,
         },
+        topButton: {
+            marginLeft: 5,
+            padding: 5,
+        },
+        topButtonIcon: {
+            fontSize: 18,
+            color: theme.textLight,
+        },
     });
 });
 
-export default withTheme(GroupPostCard);
+export default reduxConnector(withTheme(GroupPostCard));

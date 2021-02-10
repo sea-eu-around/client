@@ -96,7 +96,7 @@ class GroupMembersScreen extends React.Component<GroupMembersScreenProps, GroupM
                     refresh={() => /*dispatch(refreshFetchedProfiles())*/ console.log("refresh")}
                     refreshOnFocus
                     renderItem={(member: GroupMember) => (
-                        <GroupMemberCard key={`${group?.id}-${member}.id`} member={member} />
+                        <GroupMemberCard key={`${group?.id}-${member.profile.id}`} member={member} />
                     )}
                     itemsContainerStyle={styles.itemsContainer}
                 />

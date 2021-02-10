@@ -24,6 +24,7 @@ const reduxConnector = connect((state: AppState) => ({
 export type GroupInvitesViewProps = ThemeProps &
     ConnectedProps<typeof reduxConnector> & {navigation: NavigationProp<never>};
 
+// TODO delete comp
 class GroupInvitesView extends React.Component<GroupInvitesViewProps> {
     render() {
         const {theme, groups, groupsDict, pagination, navigation, dispatch} = this.props;

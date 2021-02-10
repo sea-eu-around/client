@@ -13,9 +13,9 @@ import InfiniteScroller from "../../components/InfiniteScroller";
 import {MatchSuccessModalClass} from "../../components/modals/MatchSuccessModal";
 import MyGroupsView from "../../components/MyGroupsView";
 import {NavigationProp} from "@react-navigation/native";
-import GroupInvitesView from "../../components/GroupInvitesView";
 import Button from "../../components/Button";
 import {rootNavigate} from "../../navigation/utils";
+import {MaterialIcons} from "@expo/vector-icons";
 
 const reduxConnector = connect((state: AppState) => ({}));
 
@@ -35,15 +35,40 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
         return (
             <ScreenWrapper>
                 <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
-                <GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />
-                <Button text="Explore" onPress={() => rootNavigate("GroupsExploreScreen")} />
+                {/*<GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />*/}
+                <Button
+                    text="Explore"
+                    icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
+                    iconLeft
+                    style={styles.exploreButton}
+                    textStyle={styles.exploreButtonText}
+                    onPress={() => rootNavigate("GroupsExploreScreen")}
+                />
             </ScreenWrapper>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({});
+    return StyleSheet.create({
+        exploreButton: {
+            maxWidth: 150,
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            borderRadius: 100,
+            backgroundColor: theme.cardBackground,
+            marginTop: 20,
+        },
+        exploreButtonText: {
+            fontSize: 16,
+            color: theme.text,
+        },
+        exploreIcon: {
+            fontSize: 24,
+            color: theme.textLight,
+            marginRight: 4,
+        },
+    });
 });
 
 export default reduxConnector(withTheme(TabGroupsScreen));
