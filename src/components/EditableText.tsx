@@ -127,6 +127,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: 32,
             height: 32,
             justifyContent: "center",
+            alignItems: "center",
         },
         buttonIcon: {
             fontSize: 22,
