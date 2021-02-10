@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "cca6a50dd8d421cfb7df",
-    "url": "/static/js/app.f331c1ff.chunk.js"
+    "revision": "8cd23b144a2930428e89",
+    "url": "/static/js/app.9e746ae4.chunk.js"
   },
   {
     "revision": "5379f8582b99552aa3f2",
@@ -248,7 +248,7 @@ self.__precacheManifest = [
     "url": "/static/media/logosbeneficaireserasmusleft_fr_0.a62f8d2d.png"
   },
   {
-    "revision": "b87c96990834b9a5b8c7db593c054567",
+    "revision": "ea071101e01dbe313701e0be2b16abe3",
     "url": "/index.html"
   },
   {
