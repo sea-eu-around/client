@@ -10,17 +10,20 @@ type ModalImplState = {
     modalVisible: boolean;
 };
 
-export class ModalImplClass extends React.Component<ModalImplProps, ModalImplState> {
-    el: HTMLDivElement;
+let container: HTMLDivElement | null = null;
 
+export class ModalImplClass extends React.Component<ModalImplProps, ModalImplState> {
     constructor(props: ModalImplProps) {
         super(props);
         this.state = {modalVisible: props.visible || false};
-        this.el = document.createElement("div");
     }
 
     componentDidMount(): void {
-        document.body.appendChild(this.el);
+        if (container === null) {
+            container = document.createElement("div");
+            container.style.zIndex = "1000";
+            document.body.appendChild(container);
+        }
     }
 
     componentDidUpdate(oldProps: ModalImplProps): void {
@@ -79,12 +82,9 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
                             position: "fixed",
                             left: 0,
                             right: 0,
-                            ...(bottom ? {} : {top: 0}),
-                            bottom: 0,
                             margin: "auto",
                             // Actual styling
                             width: "80%",
-                            height: "fit-content",
                             maxWidth: 300,
                             borderRadius: 3,
                             paddingVertical: 20,
@@ -92,7 +92,11 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
                             alignItems: "center",
                         } as unknown) as ViewStyle, // force typings to accept web-specific styling
                         fullWidth ? {width: "100%", maxWidth: "100%"} : {},
-                        fullHeight ? {height: "100%"} : {},
+                        fullHeight
+                            ? {height: "100%"}
+                            : bottom
+                            ? {bottom: 0}
+                            : (({top: "50%", transform: "translateY(-50%)"} as unknown) as ViewStyle),
                         !noBackground
                             ? (({
                                   backgroundColor: theme.cardBackground,
@@ -110,7 +114,7 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
         );
 
         // "Teleport" the modal to an element that we previously appended to the <body>
-        return ReactDOM.createPortal(modal, this.el);
+        return container ? ReactDOM.createPortal(modal, container) : <></>;
     }
 }
 
