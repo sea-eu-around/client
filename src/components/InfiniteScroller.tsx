@@ -183,10 +183,10 @@ const themedStyles = preTheme((/*theme: Theme*/) => {
         noResultsContainer: {
             flex: 1,
             alignItems: "center",
-            marginTop: 20,
+            marginTop: 15,
         },
         endOfItemsContainer: {
-            marginTop: 20,
+            marginTop: 15,
             alignItems: "center",
         },
     });
