@@ -16,7 +16,6 @@ import ScreenWrapper from "./ScreenWrapper";
 import InfiniteScroller from "../components/InfiniteScroller";
 import MatchSuccessModal, {MatchSuccessModalClass} from "../components/modals/MatchSuccessModal";
 import {MatchActionStatus} from "../api/dto";
-import layout from "../constants/layout";
 
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.profiles,
@@ -24,7 +23,6 @@ const reduxConnector = connect((state: AppState) => ({
     fetchingProfiles: state.matching.profilesPagination.fetching,
     canFetchMore: state.matching.profilesPagination.canFetchMore,
     currentPage: state.matching.profilesPagination.page,
-    isFirstLaunch: state.settings.isFirstLaunch,
 }));
 
 // Component props
@@ -43,7 +41,6 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
             theme,
             fetchingProfiles,
             canFetchMore,
-            isFirstLaunch,
             currentPage,
             navigation,
             dispatch,
@@ -91,7 +88,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                             }}
                             onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
                             onHidden={() => hide()}
-                            showSwipeTip={profile.id == profileIds[0] && (isFirstLaunch || layout.isWideDevice)}
+                            showSwipeTip={profile.id == profileIds[0]}
                         />
                     )}
                     // Compensate for the header
