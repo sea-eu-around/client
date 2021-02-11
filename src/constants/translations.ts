@@ -11,6 +11,7 @@ export default {
         search: "Search",
         send: "Send",
         cancel: "Cancel",
+        delete: "Delete",
         ok: "OK",
         save: "Save",
         noResultsFound: "No results found",
@@ -49,9 +50,9 @@ export default {
         // Legal disclaimers
         legal: {
             modal: {
-                disclaimer1:
-                    "Please understand that you will not be able to use our services if you decide to decline the terms of service.",
-                disclaimer2: "Declining will abort the profile creation process.",
+                title: "Terms of service",
+                disclaimer:
+                    "Please understand that you will not be able to use our services if you decide to decline the terms of service.\n\nDeclining will abort the profile creation process.",
             },
             decline: "Decline",
             accept: "Accept",
@@ -684,14 +685,15 @@ export default {
         },
         // Unmatch modal
         unmatch: {
+            title: "Unmatch user?",
             text: "Are you sure you want to unmatch {{firstname}}? You will not be able to communicate anymore.",
             blockQuestion: "If you don't want {{firstname}} to be able to find you anymore, you can also block them:",
             action: "Unmatch",
         },
         // Block modal
         block: {
-            warning:
-                "Are you sure you want to block this user? You and {{firstname}} will not be able to find each other anymore.",
+            title: "Block user?",
+            warning: "You and {{firstname}} will not be able to find each other anymore.",
             action: "Block",
         },
         // Welcome screen
@@ -807,6 +809,10 @@ export default {
                 title: "Edit Post",
                 contentPlaceholder: "Content",
                 submit: "Send",
+            },
+            deletePost: {
+                title: "Delete Post?",
+                text: "This action is irreversible.",
             },
             join: "Join",
             myGroups: "My groups",
@@ -958,6 +964,7 @@ export default {
         search: "Rechercher",
         send: "Envoyer",
         cancel: "Annuler",
+        delete: "Supprimer",
         ok: "OK",
         save: "Sauvegarder",
         noResultsFound: "Aucun résultat",
@@ -996,9 +1003,9 @@ export default {
         // Legal disclaimers
         legal: {
             modal: {
-                disclaimer1:
-                    "Vous ne pourrez pas utiliser nos services si vous choisissez de refuser les conditions d'utilisation.",
-                disclaimer2: "La création du profil sera annulée.",
+                title: "Conditions d'utilisation",
+                disclaimer:
+                    "Vous ne pourrez pas utiliser nos services si vous choisissez de refuser les conditions d'utilisation.\n\nLa création du profil sera annulée.",
             },
             decline: "Refuser",
             accept: "Accepter",
@@ -1636,6 +1643,7 @@ export default {
         },
         // Unmatch modal
         unmatch: {
+            title: "Annuler le match ?",
             text: "Voulez-vous vraiment annuler le match avec {{firstname}} ? Vous ne pourrez plus communiquer.",
             blockQuestion:
                 "Si vous ne voulez plus apparaître dans les résultats de {{firstname}}, vous pouvez aussi bloquer ce profil :",
@@ -1643,8 +1651,8 @@ export default {
         },
         // Block modal
         block: {
-            warning:
-                "Voulez-vous vraiment bloquer cet utilisateur ? Vous et {{firstname}} n'apparaîtrez plus dans vos recherches respectives.",
+            title: "Bloquer l'utilisateur ?",
+            warning: "Vous et {{firstname}} n'apparaîtrez plus dans vos recherches respectives.",
             action: "Bloquer",
         },
         // Welcome screen
@@ -1762,6 +1770,10 @@ export default {
                 title: "Éditer le post",
                 contentPlaceholder: "Contenu",
                 submit: "Envoyer",
+            },
+            deletePost: {
+                title: "Supprimer le post ?",
+                text: "Cette action est irréversible.",
             },
             join: "Rejoindre",
             myGroups: "Mes groupes",

@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import {StyleProp, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {BLUR_MODAL_INTENSITY} from "../../styles/general";
-import {ModalImplProps} from "./ModalImpl.native";
+import {DEFAULT_MODAL_BACKDROP_OPACITY, ModalImplProps} from "./ModalImpl.native";
 
 type ModalImplState = {
     modalVisible: boolean;
@@ -68,7 +68,9 @@ export class ModalImplClass extends React.Component<ModalImplProps, ModalImplSta
                     style={
                         ({
                             ...fixedFullSize,
-                            backgroundColor: `rgba(0,0,0,${backdropOpacity || 0.05})`,
+                            backgroundColor: `rgba(0,0,0,${
+                                backdropOpacity === undefined ? DEFAULT_MODAL_BACKDROP_OPACITY : backdropOpacity
+                            })`,
                             cursor: "pointer",
                         } as unknown) as StyleProp<ViewStyle> // force typings to accept web-specific styling
                     }

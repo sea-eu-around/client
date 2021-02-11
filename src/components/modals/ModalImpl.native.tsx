@@ -23,6 +23,8 @@ export type ModalImplProps = ThemeProps & {
     statusBarTranslucent?: boolean;
 };
 
+export const DEFAULT_MODAL_BACKDROP_OPACITY = 0.15;
+
 type ModalImplState = {
     modalVisible: boolean;
 };
@@ -61,7 +63,9 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
         const {modalVisible} = this.state;
 
         const styles = themedStyles(theme);
-        const backdropColor = `rgba(0,0,0,${backdropOpacity === undefined ? 0.05 : backdropOpacity})`;
+        const backdropColor = `rgba(0,0,0,${
+            backdropOpacity === undefined ? DEFAULT_MODAL_BACKDROP_OPACITY : backdropOpacity
+        })`;
 
         const content = (
             <TouchableOpacity
@@ -81,10 +85,10 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
                             ? {
                                   backgroundColor: theme.cardBackground,
                                   shadowColor: "#000",
-                                  shadowOffset: {width: 0, height: 1},
-                                  shadowOpacity: 0.22,
-                                  shadowRadius: 2.22,
-                                  elevation: 3,
+                                  shadowOffset: {width: 0, height: 2},
+                                  shadowOpacity: 0.25,
+                                  shadowRadius: 3.84,
+                                  elevation: 5,
                               }
                             : {elevation: 0, shadowRadius: 0},
                         modalViewStyle,
