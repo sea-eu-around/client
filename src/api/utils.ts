@@ -75,7 +75,15 @@ export async function requestBackend(
         });
 
         let json = {status: response.status, data: {}};
-        if (response.status !== HttpStatusCode.NO_CONTENT) json = {...json, ...(await response.json())};
+        if (response.status !== HttpStatusCode.NO_CONTENT) {
+            // Attempt to parse response JSON
+            try {
+                json = {...json, ...(await response.json())};
+            } catch (error) {
+                if (json.status === HttpStatusCode.OK) json.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
+                console.error("Unable to parse server response as JSON.");
+            }
+        }
 
         if (verbose) {
             console.log(`Response from endpoint ${endpoint}:`);
