@@ -142,11 +142,20 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                     if (distanceToEnd < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
                                 }}
                                 horizontal={horizontal}
+                                // horizontal centering of noResultsContainer and loading indicator
+                                contentContainerStyle={horizontal && items.length == 0 && {width: "100%"}}
                                 {...(horizontal && {showsHorizontalScrollIndicator: !hideScrollIndicator})}
                                 {...(!horizontal && {showsVerticalScrollIndicator: !hideScrollIndicator})}
                             >
                                 {top}
-                                <View style={[{flexDirection: horizontal ? "row" : "column"}, itemsContainerStyle]}>
+                                <View
+                                    style={[
+                                        {flexDirection: horizontal ? "row" : "column"},
+                                        // horizontal centering of noResultsContainer and loading indicator
+                                        horizontal && {width: "100%"},
+                                        itemsContainerStyle,
+                                    ]}
+                                >
                                     {this.getShownItems().map((it: T) => renderItem(it, () => this.hideItem(it)))}
                                     {!fetching && items.length > 0 && !canFetchMore && (
                                         <View style={styles.endOfItemsContainer}>{endOfItemsComponent}</View>
