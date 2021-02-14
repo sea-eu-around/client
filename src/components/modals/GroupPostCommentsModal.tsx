@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
+import {GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
 import {MyThunkDispatch} from "../../state/types";
@@ -17,7 +17,7 @@ import Button from "../Button";
 
 // Component props
 export type GroupPostCommentsModalProps = {
-    group: Group;
+    groupId: string;
     post: GroupPost;
     activator?: ModalActivator;
 } & ThemeProps;
@@ -49,7 +49,7 @@ export class GroupPostCommentsModalClass extends React.Component<
     }
 
     render(): JSX.Element {
-        const {post, group, theme} = this.props;
+        const {post, groupId, theme} = this.props;
         const {replyingTo, expandedCommentId} = this.state;
 
         const styles = themedStyles(theme);
@@ -65,7 +65,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                 statusBarTranslucent={false}
                 modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0}}
                 onShow={() => {
-                    if (post && post.commentIds.length == 0) dispatch(fetchPostComments(group.id, post.id));
+                    if (post && post.commentIds.length == 0) dispatch(fetchPostComments(groupId, post.id));
                 }}
                 onHide={() => {
                     this.setReplyingTo(null);
@@ -85,7 +85,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                                     {post.score} {i18n.t("groups.points")}
                                 </Text>
                                 <GroupVoteButton
-                                    group={group}
+                                    groupId={groupId}
                                     post={post}
                                     currentStatus={post.voteStatus}
                                     vote={GroupVoteStatus.Upvote}
@@ -93,7 +93,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                                     iconStyle={styles.topButtonIcon}
                                 />
                                 <GroupVoteButton
-                                    group={group}
+                                    groupId={groupId}
                                     post={post}
                                     currentStatus={post.voteStatus}
                                     vote={GroupVoteStatus.Downvote}
@@ -105,8 +105,8 @@ export class GroupPostCommentsModalClass extends React.Component<
                         <View style={styles.comments}>
                             {post.commentIds.map((id) => (
                                 <GroupCommentCard
-                                    key={`${group.id}-${post.id}-comment-${id}`}
-                                    group={group}
+                                    key={`${groupId}-${post.id}-comment-${id}`}
+                                    groupId={groupId}
                                     post={post}
                                     comment={post.comments[id]}
                                     closeComments={hide}
@@ -138,7 +138,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 ref={this.commentTextInputRef}
                                 style={styles.input}
                                 onSend={(text) =>
-                                    (store.dispatch as MyThunkDispatch)(createPostComment(group.id, post.id, {text}))
+                                    (store.dispatch as MyThunkDispatch)(createPostComment(groupId, post.id, {text}))
                                 }
                             />
                         </View>

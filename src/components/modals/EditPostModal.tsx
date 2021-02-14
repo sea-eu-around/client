@@ -4,12 +4,12 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import EditPostForm from "../forms/EditPostForm";
-import {Group, GroupPost} from "../../model/groups";
+import {GroupPost} from "../../model/groups";
 import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import i18n from "i18n-js";
 
-export type EditPostModalProps = ThemeProps & Partial<CustomModalProps> & {group: Group; post?: GroupPost};
+export type EditPostModalProps = ThemeProps & Partial<CustomModalProps> & {groupId: string; post?: GroupPost};
 
 export class EditPostModalClass extends React.Component<EditPostModalProps> {
     modalRef = React.createRef<CustomModalClass>();
@@ -19,7 +19,7 @@ export class EditPostModalClass extends React.Component<EditPostModalProps> {
     }
 
     render(): JSX.Element {
-        const {group, post, theme, ...otherProps} = this.props;
+        const {groupId, post, theme, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
         const createMode = post === undefined;
@@ -45,7 +45,7 @@ export class EditPostModalClass extends React.Component<EditPostModalProps> {
                         </View>
                         <EditPostForm
                             containerStyle={styles.form}
-                            group={group}
+                            groupId={groupId}
                             post={post}
                             onCancel={hide}
                             onSuccessfulSubmit={hide}

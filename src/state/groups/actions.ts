@@ -115,11 +115,11 @@ export type JoinGroupSuccessAction = {
 
 export type CreatePostBeginAction = {
     type: string;
-    group: Group;
+    groupId: string;
 };
 export type CreatePostSuccessAction = {
     type: string;
-    group: Group;
+    groupId: string;
     post: GroupPost;
 };
 export type CreatePostFailureAction = {type: string};
@@ -353,6 +353,51 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         console.log("meta", paginated.meta);
         dispatch(fetchGroupsSuccess(groups, canFetchMore));
     } else dispatch(fetchGroupsFailure());
+};
+
+const fetchPostsFeedBegin = (): PaginatedFetchBeginAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN,
+});
+
+const fetchPostsFeedSuccess = (items: GroupPost[], canFetchMore: boolean): PaginatedFetchSuccessAction<GroupPost> => ({
+    type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_SUCCESS,
+    items,
+    canFetchMore,
+});
+
+const fetchPostsFeedFailure = (): PaginatedFetchFailureAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_FAILURE,
+});
+
+export const refreshFetchedPostsFeed = (): PaginatedFetchRefreshAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_REFRESH,
+});
+
+export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
+    const {
+        auth: {token},
+        groups: {feedPagination},
+    } = getState();
+
+    if (feedPagination.fetching || !feedPagination.canFetchMore) return;
+
+    dispatch(fetchPostsFeedBegin());
+
+    const response = await requestBackend(
+        "groups/posts", // TODO hook-up
+        "GET",
+        {page: feedPagination.page, limit: 50},
+        {},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.OK) {
+        const paginated = response as PaginatedRequestResponse;
+        const posts = (paginated.data as ResponseGroupPostDto[]).map(convertDtoToGroupPost);
+        const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
+        dispatch(fetchPostsFeedSuccess(posts, canFetchMore));
+    } else dispatch(fetchPostsFeedFailure());
 };
 
 const fetchGroupPostsBegin = (groupId: string): FetchGroupPostsBeginAction => ({
@@ -620,22 +665,22 @@ export const joinGroup = (group: Group): AppThunk<Promise<boolean>> => async (di
     } else return false;
 };
 
-const createGroupPostBegin = (group: Group): CreatePostBeginAction => ({
+const createGroupPostBegin = (groupId: string): CreatePostBeginAction => ({
     type: GROUP_ACTION_TYPES.CREATE_POST_BEGIN,
-    group,
+    groupId,
 });
 
 const createGroupPostFailure = (): CreatePostFailureAction => ({
     type: GROUP_ACTION_TYPES.CREATE_POST_FAILURE,
 });
 
-const createGroupPostSuccess = (group: Group, post: GroupPost): CreatePostSuccessAction => ({
+const createGroupPostSuccess = (groupId: string, post: GroupPost): CreatePostSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_POST_SUCCESS,
-    group,
+    groupId,
     post,
 });
 
-export const createGroupPost = (group: Group, dto: CreateGroupPostDto): ValidatedThunkAction => async (
+export const createGroupPost = (groupId: string, dto: CreateGroupPostDto): ValidatedThunkAction => async (
     dispatch,
     getState,
 ) => {
@@ -643,14 +688,14 @@ export const createGroupPost = (group: Group, dto: CreateGroupPostDto): Validate
 
     if (!token) return {success: false};
 
-    dispatch(createGroupPostBegin(group));
+    dispatch(createGroupPostBegin(groupId));
 
-    const response = await requestBackend(`groups/${group.id}/posts`, "POST", {}, dto, token, true);
+    const response = await requestBackend(`groups/${groupId}/posts`, "POST", {}, dto, token, true);
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data;
         const post = convertDtoToGroupPost(payload as ResponseGroupPostDto);
-        dispatch(createGroupPostSuccess(group, post));
+        dispatch(createGroupPostSuccess(groupId, post));
         return {success: true};
     } else {
         dispatch(createGroupPostFailure());
@@ -875,34 +920,6 @@ const setPostVoteSuccess = (groupId: string, postId: string, status: GroupVoteSt
     status,
 });
 
-export const setPostVote = (groupId: string, postId: string, status: GroupVoteStatus): AppThunk => async (
-    dispatch,
-    getState,
-) => {
-    const {
-        auth: {token},
-    } = getState();
-
-    // TODO hook-up to back
-    dispatch(setPostVoteSuccess(groupId, postId, status));
-
-    /*const response =
-        status === GroupVoteStatus.Neutral
-            ? await requestBackend(`groups/${groupId}/votes/${postId}`, "DELETE", {}, {}, token, true)
-            : await requestBackend(
-                  `groups/${groupId}/votes/post/${postId}/`,
-                  "POST",
-                  {voteType: status},
-                  {},
-                  token,
-                  true,
-              );
-
-    if (response.status === HttpStatusCode.OK) {
-        dispatch(setPostVoteSuccess(groupId, postId, status));
-    }*/
-};
-
 const setCommentVoteSuccess = (
     groupId: string,
     postId: string,
@@ -916,32 +933,40 @@ const setCommentVoteSuccess = (
     status,
 });
 
-export const setCommentVote = (
+export const setVote = (
     groupId: string,
     postId: string,
-    commentId: string,
+    commentId: string | null,
     status: GroupVoteStatus,
+    currentStatus: GroupVoteStatus,
 ): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
     } = getState();
 
-    // TODO hook-up to back
-    dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));
+    const entityId = commentId || postId;
+    const isComment = commentId !== null;
+    const entityType = isComment ? "comment" : "post";
 
-    /*const response =
+    const response =
         status === GroupVoteStatus.Neutral
-            ? await requestBackend(`groups/${groupId}/votes/${commentId}`, "DELETE", {}, {}, token, true)
-            : await requestBackend(
-                  `groups/${groupId}/votes/comment/${commentId}/`,
+            ? // If setting to neutral, simply DELETE the entity
+              await requestBackend(`groups/${groupId}/votes/${entityId}`, "DELETE", {}, {}, token, true)
+            : currentStatus === GroupVoteStatus.Neutral
+            ? // If currently neutral, POST a new entity
+              await requestBackend(
+                  `groups/${groupId}/votes/${entityType}/${entityId}`,
                   "POST",
-                  {voteType: status},
                   {},
+                  {voteType: status},
                   token,
                   true,
-              );
+              )
+            : // If already set, PATCH the entity
+              await requestBackend(`groups/${groupId}/votes/${entityId}`, "PATCH", {}, {voteType: status}, token, true);
 
     if (response.status === HttpStatusCode.OK) {
-        dispatch(setPostVoteSuccess(groupId, postId, status));
-    }*/
+        if (commentId) dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));
+        else dispatch(setPostVoteSuccess(groupId, postId, status));
+    }
 };

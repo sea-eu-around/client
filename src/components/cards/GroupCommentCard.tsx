@@ -3,7 +3,7 @@ import {TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
+import {GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
 import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
@@ -27,7 +27,7 @@ const reduxConnector = connect((state: AppState) => ({
 
 // Component props
 type GroupCommentCardProps = {
-    group: Group | null;
+    groupId: string;
     post: GroupPost | null;
     comment: PostComment | null;
     closeComments: () => void;
@@ -60,7 +60,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
         const {
             comment,
             post,
-            group,
+            groupId,
             closeComments,
             onPressReplyTo,
             localUser,
@@ -120,12 +120,12 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                         </ReadMore>
                     </View>
                 </View>
-                {group && post && comment && (
+                {post && comment && (
                     <ReAnimated.View style={[styles.bottom, {height: this.bottomHeight, opacity: expanded ? 1 : 0}]}>
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             {fromLocal && (
                                 <EditCommentModal
-                                    group={group}
+                                    groupId={groupId}
                                     post={post}
                                     comment={comment}
                                     activator={(show) => (
@@ -139,7 +139,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                             )}
                             {fromLocal && (
                                 <DeleteCommentConfirmModal
-                                    group={group}
+                                    groupId={groupId}
                                     post={post}
                                     comment={comment}
                                     activator={(show) => (
@@ -172,7 +172,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                                 onPress={onPressReplyTo}
                             />
                             <GroupVoteButton
-                                group={group}
+                                groupId={groupId}
                                 post={post}
                                 comment={comment}
                                 style={styles.bottomButton}
@@ -180,7 +180,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                                 vote={GroupVoteStatus.Upvote}
                             />
                             <GroupVoteButton
-                                group={group}
+                                groupId={groupId}
                                 post={post}
                                 comment={comment}
                                 style={styles.bottomButton}

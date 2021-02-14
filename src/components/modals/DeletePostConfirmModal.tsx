@@ -7,14 +7,14 @@ import {FontAwesome} from "@expo/vector-icons";
 import i18n from "i18n-js";
 import store from "../../state/store";
 import {deleteGroupPost} from "../../state/groups/actions";
-import {Group, GroupPost} from "../../model/groups";
+import {GroupPost} from "../../model/groups";
 import {MyThunkDispatch} from "../../state/types";
 
-export type DeletePostConfirmModalProps = ThemeProps & Partial<CustomModalProps> & {group: Group; post: GroupPost};
+export type DeletePostConfirmModalProps = ThemeProps & Partial<CustomModalProps> & {groupId: string; post: GroupPost};
 
 class DeletePostConfirmModal extends React.Component<DeletePostConfirmModalProps> {
     render() {
-        const {group, post, theme, ...otherProps} = this.props;
+        const {groupId, post, theme, ...otherProps} = this.props;
 
         return (
             <ConfirmationModal
@@ -27,7 +27,7 @@ class DeletePostConfirmModal extends React.Component<DeletePostConfirmModalProps
                         preset: "delete",
                         onPress: (hide) => {
                             hide();
-                            (store.dispatch as MyThunkDispatch)(deleteGroupPost(group.id, post.id));
+                            (store.dispatch as MyThunkDispatch)(deleteGroupPost(groupId, post.id));
                         },
                     },
                 ]}

@@ -32,7 +32,7 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
         return (
             <View style={styles.container}>
                 <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{i18n.t("groups.myGroups")}</Text>
+                    <Text style={styles.title}>{i18n.t("groups.myGroups.title")}</Text>
                 </View>
                 <InfiniteScroller
                     navigation={navigation}
@@ -46,12 +46,7 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     horizontal
                     hideScrollIndicator
                     refreshOnFocus
-                    noResultsComponent={
-                        <>
-                            <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
-                        </>
-                    }
+                    noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.myGroups.none")}</Text>}
                     refresh={() => dispatch(refreshFetchedMyGroups())}
                     renderItem={(group: Group) => <MyGroupCard key={group.id} group={group} />}
                     // Compensate for the header
@@ -82,8 +77,11 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         itemsContainer: {paddingHorizontal: 15},
 
-        noResultsText1: {},
-        noResultsText2: {},
+        noResultsText: {
+            fontSize: 16,
+            maxWidth: 200,
+            textAlign: "center",
+        },
     });
 });
 

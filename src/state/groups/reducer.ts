@@ -35,6 +35,9 @@ export const initialState: GroupsState = {
     myGroupsPagination: initialPaginatedState(),
     myGroups: [],
     postsSortOrder: PostSortingOrder.Newest,
+    feedPagination: initialPaginatedState(),
+    postsFeed: {},
+    postsFeedIds: [],
 };
 
 export const groupsReducer = (state: GroupsState = initialState, action: GroupsAction): GroupsState => {
@@ -70,6 +73,41 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             };
         }
 
+        case GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN:
+        case GROUP_ACTION_TYPES.FETCH_POSTS_FEED_FAILURE: {
+            return {
+                ...state,
+                feedPagination: {
+                    ...state.feedPagination,
+                    fetching: action.type === GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN,
+                    canFetchMore: action.type === GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN,
+                },
+            };
+        }
+        case GROUP_ACTION_TYPES.FETCH_POSTS_FEED_SUCCESS: {
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<GroupPost>;
+            return {
+                ...state,
+                postsFeedIds: state.postsFeedIds.concat(
+                    items.map((p) => p.id).filter((id) => state.postsFeedIds.indexOf(id) === -1),
+                ),
+                postsFeed: {...state.postsFeed, ...arrayWithIdsToDict(items)},
+                feedPagination: {
+                    ...state.feedPagination,
+                    fetching: false,
+                    page: state.feedPagination.page + 1,
+                    canFetchMore,
+                },
+            };
+        }
+        case GROUP_ACTION_TYPES.FETCH_POSTS_FEED_REFRESH: {
+            return {
+                ...state,
+                feedPagination: initialPaginatedState(),
+                postsFeedIds: [],
+            };
+        }
+
         case GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_BEGIN:
         case GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_FAILURE: {
             const {groupId} = action as FetchGroupPostsBeginAction | FetchGroupPostsFailureAction;
@@ -85,7 +123,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             const {groupId, items, canFetchMore} = action as FetchGroupPostsSuccessAction;
             return updateGroup(state, groupId, ({postsPagination: p, posts: gposts, postIds: gpostIds}) => ({
                 postIds: gpostIds.concat(items.map((p) => p.id).filter((id) => gpostIds.indexOf(id) === -1)),
-                posts: {...gposts, ...arrayWithIdsToDict(items)},
+                //posts: {...gposts, ...arrayWithIdsToDict(items)},
+                // TODO remove this
+                posts: {...gposts, ...arrayWithIdsToDict(items.map((i) => ({...i, groupId})))},
                 postsPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
             }));
         }
@@ -98,8 +138,8 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         }
 
         case GROUP_ACTION_TYPES.CREATE_POST_SUCCESS: {
-            const {group, post} = action as CreatePostSuccessAction;
-            return updateGroup(state, group.id, ({posts, postIds}) => ({
+            const {groupId, post} = action as CreatePostSuccessAction;
+            return updateGroup(state, groupId, ({posts, postIds}) => ({
                 posts: {...posts, [post.id]: post},
                 postIds: [post.id].concat(postIds),
             }));

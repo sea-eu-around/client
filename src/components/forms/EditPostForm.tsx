@@ -16,7 +16,7 @@ import {generalError, localizeError} from "../../api/errors";
 import {CreateGroupPostDto, RemoteValidationErrors} from "../../api/dto";
 import {createGroupPost, updateGroupPost} from "../../state/groups/actions";
 import {VALIDATOR_POST_TEXT} from "../../validators";
-import {Group, GroupPost} from "../../model/groups";
+import {GroupPost} from "../../model/groups";
 import ProfileAvatar from "../ProfileAvatar";
 import {connect, ConnectedProps} from "react-redux";
 
@@ -35,7 +35,7 @@ const EditPostFormSchema = Yup.object().shape({
 type EditPostFormProps = FormProps<FormState> &
     ThemeProps &
     ConnectedProps<typeof reduxConnector> & {
-        group: Group;
+        groupId: string;
         post?: GroupPost; // if not given a post, one will be created instead of editing
         containerStyle?: StyleProp<ViewStyle>;
         onCancel?: () => void;
@@ -67,14 +67,14 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
     }
 
     submit(values: FormState) {
-        const {group, post, onSuccessfulSubmit} = this.props;
+        const {groupId, post, onSuccessfulSubmit} = this.props;
         const dispatch = store.dispatch as MyThunkDispatch;
 
         this.setState({...this.state, submitting: true});
 
         const dto = this.getCreationDto(values);
 
-        dispatch(post === undefined ? createGroupPost(group, dto) : updateGroupPost(group.id, post.id, dto)).then(
+        dispatch(post === undefined ? createGroupPost(groupId, dto) : updateGroupPost(groupId, post.id, dto)).then(
             ({success, errors}: ValidatedActionReturn) => {
                 if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
                 if (errors && errors.fields) {
@@ -93,6 +93,8 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
 
         const createMode = post === undefined;
         const poster = post ? post.creator : localUser?.profile;
+
+        // TODO clean-up
 
         return (
             <View style={containerStyle}>

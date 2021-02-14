@@ -199,6 +199,7 @@ export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostCommen
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
         creator: convertDtoToProfile(dto.creator),
+        score: 0, // TODO hook up to back
         voteStatus: GroupVoteStatus.Neutral,
     };
 }

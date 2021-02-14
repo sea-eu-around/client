@@ -239,6 +239,7 @@ export type CreateGroupPostDto = {
 
 export type ResponseGroupPostDto = {
     id: string;
+    groupId: string;
     type: string;
     status: string;
     text: string;

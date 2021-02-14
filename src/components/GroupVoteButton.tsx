@@ -3,9 +3,9 @@ import {StyleSheet, StyleProp, ViewStyle, TextStyle} from "react-native";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, PostComment} from "../model/groups";
+import {PostComment} from "../model/groups";
 import {MaterialIcons} from "@expo/vector-icons";
-import {setCommentVote, setPostVote} from "../state/groups/actions";
+import {setVote} from "../state/groups/actions";
 import {GroupPost, GroupVoteStatus} from "../model/groups";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
@@ -15,7 +15,7 @@ import Button from "./Button";
 type GroupVoteButtonProps = {
     vote: GroupVoteStatus;
     currentStatus: GroupVoteStatus;
-    group: Group;
+    groupId: string;
     post: GroupPost;
     comment?: PostComment;
     style?: StyleProp<ViewStyle>;
@@ -24,7 +24,7 @@ type GroupVoteButtonProps = {
 
 class GroupVoteButton extends React.Component<GroupVoteButtonProps> {
     render(): JSX.Element {
-        const {group, post, comment, vote, currentStatus, theme, style, iconStyle} = this.props;
+        const {groupId, post, comment, vote, currentStatus, theme, style, iconStyle} = this.props;
 
         const styles = themedStyles(theme);
         const dispatch = store.dispatch as MyThunkDispatch;
@@ -34,8 +34,7 @@ class GroupVoteButton extends React.Component<GroupVoteButtonProps> {
             <Button
                 onPress={() => {
                     const val = isSet ? GroupVoteStatus.Neutral : vote;
-                    if (comment) dispatch(setCommentVote(group.id, post.id, comment.id, val));
-                    else if (post) dispatch(setPostVote(group.id, post.id, val));
+                    dispatch(setVote(groupId, post.id, comment?.id || null, val, currentStatus));
                 }}
                 icon={
                     <MaterialIcons

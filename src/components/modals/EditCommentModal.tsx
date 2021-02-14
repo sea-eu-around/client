@@ -3,7 +3,7 @@ import {CustomModalClass, CustomModalProps} from "./CustomModal";
 import {Platform, StyleSheet, TextStyle} from "react-native";
 import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost, PostComment} from "../../model/groups";
+import {GroupPost, PostComment} from "../../model/groups";
 import {preTheme} from "../../styles/utils";
 import i18n from "i18n-js";
 import ConfirmationModal from "./ConfirmationModal";
@@ -13,7 +13,7 @@ import {MyThunkDispatch} from "../../state/types";
 import ValidatedTextInput, {ValidatedTextInputProps} from "../ValidatedTextInput";
 
 export type EditCommentModalProps = ThemeProps &
-    Partial<CustomModalProps> & {group: Group; post: GroupPost; comment: PostComment};
+    Partial<CustomModalProps> & {groupId: string; post: GroupPost; comment: PostComment};
 
 type EditCommentModalState = {text: string};
 
@@ -30,7 +30,7 @@ export class EditCommentModalClass extends React.Component<EditCommentModalProps
     }
 
     render(): JSX.Element {
-        const {group, post, comment, theme, ...otherProps} = this.props;
+        const {groupId, post, comment, theme, ...otherProps} = this.props;
         const {text} = this.state;
 
         const styles = themedStyles(theme);
@@ -58,7 +58,7 @@ export class EditCommentModalClass extends React.Component<EditCommentModalProps
                         onPress: (hide) => {
                             if (text != comment.text) {
                                 (store.dispatch as MyThunkDispatch)(
-                                    updatePostComment(group.id, post.id, comment.id, {text}),
+                                    updatePostComment(groupId, post.id, comment.id, {text}),
                                 );
                             }
                             hide();

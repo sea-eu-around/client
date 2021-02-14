@@ -851,7 +851,13 @@ export default {
                 replyTo: "Reply to {{name}}",
             },
             join: "Join",
-            myGroups: "My groups",
+            myGroups: {
+                title: "My groups",
+                none: "When you join a group, it will appear here.",
+            },
+            explore: {
+                none: "No groups found.",
+            },
             invites: "Invites",
             inviteNew: "Invite new members",
             posts: "Posts",
@@ -1829,7 +1835,13 @@ export default {
                 replyTo: "Répondre à {{name}}",
             },
             join: "Rejoindre",
-            myGroups: "Mes groupes",
+            myGroups: {
+                title: "Mes groupes",
+                none: "Lorsque vous aurez rejoint un groupe, il apparaîtra ici.",
+            },
+            explore: {
+                none: "Aucun groupe n'a été trouvé.",
+            },
             invites: "Invitations",
             inviteNew: "Invitations",
             posts: "Posts",

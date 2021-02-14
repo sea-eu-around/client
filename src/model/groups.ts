@@ -24,6 +24,7 @@ export type GroupMember = {
 
 export type GroupPost = {
     id: string;
+    groupId: string;
     type: string;
     status: string;
     text: string;
@@ -40,6 +41,7 @@ export type GroupPost = {
 export type PostComment = {
     id: string;
     text: string;
+    score: number;
     voteStatus: GroupVoteStatus;
     creator: UserProfile;
     createdAt: Date;

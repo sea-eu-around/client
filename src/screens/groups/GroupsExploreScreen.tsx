@@ -84,12 +84,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     items={groups.map((id) => groupsDict[id])}
                     id={(group: Group): string => group.id}
                     hideScrollIndicator
-                    noResultsComponent={
-                        <>
-                            <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
-                        </>
-                    }
+                    noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.none")}</Text>}
                     refresh={() => /*dispatch(refreshFetchedProfiles())*/ console.log("refresh")}
                     refreshOnFocus
                     renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
@@ -102,6 +97,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
     }
 }
 
+// TODO remove
 function Filter({
     theme,
     selected,
@@ -135,16 +131,10 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             paddingHorizontal: 20,
         },
-        noResultsText1: {
+        noResultsText: {
             fontSize: 20,
-            letterSpacing: 0.75,
-            color: theme.text,
-            marginVertical: 5,
-        },
-        noResultsText2: {
-            fontSize: 16,
-            letterSpacing: 0.5,
-            color: theme.text,
+            color: theme.textLight,
+            marginVertical: 10,
         },
         // Filters
         filtersContainer: {

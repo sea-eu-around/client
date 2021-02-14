@@ -3,7 +3,7 @@ import {TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost, GroupVoteStatus} from "../../model/groups";
+import {GroupPost, GroupVoteStatus} from "../../model/groups";
 import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -22,11 +22,7 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type GroupPostCardProps = {
-    group: Group | null;
-    post: GroupPost | null;
-} & ThemeProps &
-    ConnectedProps<typeof reduxConnector>;
+type GroupPostCardProps = {post: GroupPost | null} & ThemeProps & ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
     commentsModalRef = React.createRef<GroupPostCommentsModalClass>();
@@ -37,10 +33,11 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
     }
 
     render(): JSX.Element {
-        const {post, group, localUser, theme} = this.props;
+        const {post, localUser, theme} = this.props;
 
         const styles = themedStyles(theme);
         const fromLocal = post && localUser && post.creator.id === localUser.id;
+        const groupId = post?.groupId || null;
 
         return (
             <TouchableOpacity style={styles.container} activeOpacity={0.9}>
@@ -54,9 +51,9 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                                     onPress={() => this.editPostModalRef.current?.show()}
                                     icon={<MaterialIcons style={styles.topButtonIcon} name="edit" />}
                                 />
-                                {group && post && (
+                                {groupId && post && (
                                     <DeletePostConfirmModal
-                                        group={group}
+                                        groupId={groupId}
                                         post={post}
                                         activator={(show) => (
                                             <Button
@@ -95,10 +92,10 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         </Text>
                         <Text style={styles.bottomText}>17 comments</Text>
                     </TouchableOpacity>
-                    {group && post && (
+                    {groupId && post && (
                         <View style={{flexDirection: "row"}}>
                             <GroupVoteButton
-                                group={group}
+                                groupId={groupId}
                                 post={post}
                                 currentStatus={post.voteStatus}
                                 vote={GroupVoteStatus.Upvote}
@@ -106,7 +103,7 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                                 iconStyle={styles.bottomButtonIcon}
                             />
                             <GroupVoteButton
-                                group={group}
+                                groupId={groupId}
                                 post={post}
                                 currentStatus={post.voteStatus}
                                 vote={GroupVoteStatus.Downvote}
@@ -116,8 +113,12 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         </View>
                     )}
                 </View>
-                {post && group && <GroupPostCommentsModal ref={this.commentsModalRef} group={group} post={post} />}
-                {post && group && <EditPostModal ref={this.editPostModalRef} group={group} post={post} />}
+                {groupId && post && (
+                    <>
+                        <GroupPostCommentsModal ref={this.commentsModalRef} groupId={groupId} post={post} />
+                        <EditPostModal ref={this.editPostModalRef} groupId={groupId} post={post} />
+                    </>
+                )}
             </TouchableOpacity>
         );
     }
