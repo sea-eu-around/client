@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle} from "react-native";
+import {StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
 
@@ -54,11 +54,12 @@ export type ButtonProps = {
     textStyle?: StyleProp<TextStyle>;
     skin?: ButtonSkin;
     iconLeft?: boolean;
+    contentOpacity?: number;
 } & ThemeProps;
 
 class Button extends React.Component<ButtonProps> {
     render(): JSX.Element {
-        const {onPress, text, icon, skin, style, textStyle, iconLeft, children, theme} = this.props;
+        const {onPress, text, icon, skin, style, textStyle, iconLeft, contentOpacity, children, theme} = this.props;
 
         const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
@@ -67,17 +68,20 @@ class Button extends React.Component<ButtonProps> {
                 accessibilityRole="button"
                 accessibilityLabel={text}
                 onPress={onPress}
-                style={[
-                    {flexDirection: iconLeft ? "row-reverse" : "row", alignItems: "center"},
-                    skinStyles.button,
-                    style,
-                ]}
+                style={[{alignItems: "center"}, skinStyles.button, style]}
             >
-                {children || (
-                    <>
+                {children}
+                {/* if content opacity is set, render content AND children anyway */}
+                {(!children || contentOpacity !== undefined) && (
+                    <View
+                        style={[
+                            {flexDirection: iconLeft ? "row-reverse" : "row", alignItems: "center"},
+                            contentOpacity !== undefined && {opacity: contentOpacity},
+                        ]}
+                    >
                         <Text style={[skinStyles.text, textStyle]}>{text}</Text>
                         {icon}
-                    </>
+                    </View>
                 )}
             </TouchableOpacity>
         );
