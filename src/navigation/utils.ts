@@ -1,6 +1,6 @@
 import * as React from "react";
 import {NavigationContainerRef, Route} from "@react-navigation/native";
-import {NavigatorRoute} from "./types";
+import {NavigatorRoute, RootNavigatorScreens} from "./types";
 import {Platform} from "react-native";
 import {APP_SCHEME, WEB_TO_APP_TIMEOUT} from "../constants/config";
 import i18n from "i18n-js";
@@ -47,6 +47,10 @@ export function attemptRedirectToApp(routeName: string, fallbackRoute: Navigator
 
 export function unauthorizedRedirect(): void {
     rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
+}
+
+export function getInitialRoute(loggedIn: boolean, onboarded: boolean): keyof RootNavigatorScreens {
+    return loggedIn ? (onboarded ? "MainScreen" : "OnboardingScreen") : "LoginRoot";
 }
 
 export function screenTitle(route: NavigatorRoute): string {

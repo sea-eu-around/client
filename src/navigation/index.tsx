@@ -28,6 +28,7 @@ import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 import {handleRouteChangeForChat} from "./MessagingNavigator";
 import {DEBUG_MODE} from "../constants/config";
 import {BackHandler} from "react-native";
+import BackendUnreachableScreen from "../screens/BackendUnreachableScreen";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -188,6 +189,11 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
                     name="OnboardingSuccessfulScreen"
                     component={OnboardingSuccessfulScreen}
                     options={{title: screenTitle("OnboardingSuccessfulScreen")}}
+                />
+                <Stack.Screen
+                    name="BackendUnreachableScreen"
+                    component={BackendUnreachableScreen}
+                    options={{title: screenTitle("BackendUnreachableScreen")}}
                 />
                 <Stack.Screen
                     name="NotFoundScreen"

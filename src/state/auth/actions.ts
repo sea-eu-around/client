@@ -356,3 +356,15 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
         );
     }
 };
+
+/**
+ * Verifies that the server is alive and reachable by the client.
+ */
+export const verifyBackendConnection = (): AppThunk<Promise<boolean>> => async () => {
+    // TODO change endpoint
+    //const response = await requestBackend("ping", "GET", {}, {}, undefined, false, true);
+    const response = await requestBackend("interests", "GET", {}, {}, undefined, false, true);
+
+    if (response.status == HttpStatusCode.OK) return true;
+    else return false;
+};

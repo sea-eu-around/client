@@ -44,6 +44,7 @@ export async function requestBackend(
     body: URLBodyParams = {},
     authToken: TokenDto | null | undefined = undefined,
     verbose = false,
+    completelySilent = false,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
@@ -52,7 +53,7 @@ export async function requestBackend(
 
     if (authToken !== undefined) {
         if (authToken === null) {
-            console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
+            if (!completelySilent) console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
             Alert.alert("A request could not be authenticated.");
             return {errorType: "error.no-auth", description: "Endpoint requires authentication", status: 401};
         } else headers.Authorization = `Bearer ${authToken.accessToken}`;
@@ -62,7 +63,7 @@ export async function requestBackend(
     let response: Response | null = null;
 
     try {
-        if (verbose && DEBUG_MODE) {
+        if (verbose && !completelySilent && DEBUG_MODE) {
             console.log(`Sending request: ${method} /${endpoint}${formattedParams}`);
             console.log(`  headers: ${JSON.stringify(headers)}`);
             console.log(`  body   : ${JSON.stringify(body)}`);
@@ -81,24 +82,26 @@ export async function requestBackend(
                 json = {...json, ...(await response.json())};
             } catch (error) {
                 if (json.status === HttpStatusCode.OK) json.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
-                console.error("Unable to parse server response as JSON.");
+                if (!completelySilent) console.error("Unable to parse server response as JSON.");
             }
         }
 
-        if (verbose && DEBUG_MODE) {
+        if (verbose && !completelySilent && DEBUG_MODE) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
         }
 
         return json;
     } catch (error) {
-        console.error(
-            `An unexpected error occured with a request to ${endpoint}. ` +
-                `Method = ${method}, authToken = ${authToken}, params=${JSON.stringify(params)}, ` +
-                `body=${JSON.stringify(body)}`,
-        );
-        console.error(error);
-        console.error("Response received from server:", response);
+        if (!completelySilent) {
+            console.error(
+                `An unexpected error occured with a request to ${endpoint}. ` +
+                    `Method = ${method}, authToken = ${authToken}, params=${JSON.stringify(params)}, ` +
+                    `body=${JSON.stringify(body)}`,
+            );
+            console.error(error);
+            console.error("Response received from server:", response);
+        }
         return {errorType: "error.unknown", description: "A client-side exception was raised.", status: 400};
     }
 }
