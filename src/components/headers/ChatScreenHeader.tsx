@@ -8,7 +8,7 @@ import {preTheme} from "../../styles/utils";
 import {GiftedAvatar} from "react-native-gifted-chat";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import {headerStyles} from "../../styles/headers";
-import {rootNavigate} from "../../navigation/utils";
+import {getRouteParams, rootNavigate} from "../../navigation/utils";
 import MainHeader, {MainHeaderStackProps} from "./MainHeader";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -18,7 +18,7 @@ import {Route} from "@react-navigation/native";
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
     rooms: store.getState().messaging.matchRooms,
-    activeRoom: store.getState().messaging.activeRoom,
+    activeRoomId: store.getState().messaging.activeRoomId,
     profileId: state.profile.user?.profile?.id,
 }));
 
@@ -30,20 +30,15 @@ export type ChatScreenHeaderProps = ConnectedProps<typeof reduxConnector> &
 
 class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
     private getRoomId(): string | null {
-        const {route} = this.props;
         // Get the room ID from the route parameters
-        if (route.params) {
-            const params = route.params as {[key: string]: string};
-            const {roomId} = params;
-            return roomId;
-        }
-        return null;
+        const {roomId} = getRouteParams(this.props.route);
+        return (roomId as string) || null;
     }
 
     private getRoom(): ChatRoom | null {
-        const {rooms, activeRoom} = this.props;
-        const roomId = this.getRoomId();
-        return activeRoom || (roomId ? rooms[roomId] : null);
+        const {rooms, activeRoomId} = this.props;
+        const id = activeRoomId || this.getRoomId();
+        return id ? rooms[id] : null;
     }
 
     render(): JSX.Element {

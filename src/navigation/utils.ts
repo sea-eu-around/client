@@ -58,5 +58,5 @@ export function headerTitle(route: NavigatorRoute): string {
 }
 
 export function openChat(roomId: string): void {
-    rootNavigate("TabMessaging", {screen: "ChatScreen", params: {roomId}});
+    rootNavigate("MainScreen", {screen: "TabMessaging", params: {screen: "ChatScreen", params: {roomId}}});
 }

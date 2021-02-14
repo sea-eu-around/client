@@ -34,6 +34,8 @@ export function configureNotifications(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = response.notification ? getNotificationData(response.notification) : (response as any).body;
 
+        if (data.roomId) openChat(data.roomId as string);
+
         Notifications.getPresentedNotificationsAsync().then((notifs: Notifications.Notification[]) => {
             if (data.roomId) {
                 // Dismiss all notifications of the same room
@@ -43,8 +45,6 @@ export function configureNotifications(): void {
                     .forEach(Notifications.dismissNotificationAsync);
             }
         });
-
-        if (data.roomId) openChat(data.roomId as string);
     });
 
     if (Platform.OS === "android") {

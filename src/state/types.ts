@@ -97,7 +97,7 @@ export type MessagingState = {
     matchRooms: {[key: string]: ChatRoom}; // store by id for faster access
     matchRoomsOrdered: string[];
     matchRoomsPagination: PaginatedState;
-    activeRoom: ChatRoom | null;
+    activeRoomId: string | null;
     localChatUser: ChatRoomUser | null;
     fetchingNewMessages: boolean;
 };

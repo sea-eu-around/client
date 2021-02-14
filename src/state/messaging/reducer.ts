@@ -23,7 +23,7 @@ export const initialState: MessagingState = {
     matchRoomsOrdered: [],
     matchRoomsPagination: initialPaginatedState(),
     socketState: {connected: false, connecting: false},
-    activeRoom: null,
+    activeRoomId: null,
     localChatUser: null,
     fetchingNewMessages: false,
 };
@@ -104,20 +104,19 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         }
         case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
             const {room} = action as JoinChatRoomBeginAction;
-            return {...state, activeRoom: room};
+            return {...state, activeRoomId: room.id};
         }
-        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_FAILURE: {
-            return {...state, activeRoom: null};
-        }
+        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_FAILURE:
         case MESSAGING_ACTION_TYPES.LEAVE_ROOM: {
-            return {...state, activeRoom: null};
+            return {...state, activeRoomId: null};
         }
         case MESSAGING_ACTION_TYPES.SEND_MESSAGE_SUCCESS: {
             const {message} = action as SendMessageSuccessAction;
-            if (state.activeRoom) {
+            if (state.activeRoomId) {
+                const room = state.matchRooms[state.activeRoomId];
                 return updateRoom(state, true, {
-                    ...state.activeRoom,
-                    messages: [message].concat(state.activeRoom.messages),
+                    ...room,
+                    messages: [message].concat(room.messages),
                     lastMessage: message,
                 });
             }
@@ -245,7 +244,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,
-                activeRoom: null,
+                activeRoomId: null,
                 matchRooms: {},
                 matchRoomsOrdered: [],
                 matchRoomsPagination: initialPaginatedState(),
@@ -258,21 +257,17 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
 };
 
 function updateRoom(state: MessagingState, setAsFirst: boolean, room: ChatRoom): MessagingState {
-    const activeRoom = state.activeRoom && state.activeRoom.id == room.id ? room : state.activeRoom;
-
     if (setAsFirst) {
         const otherRooms = state.matchRoomsOrdered.filter((id: string) => id !== room.id);
         return {
             ...state,
             matchRooms: {...state.matchRooms, [room.id]: room},
             matchRoomsOrdered: [room.id].concat(otherRooms),
-            activeRoom,
         };
     } else {
         return {
             ...state,
             matchRooms: {...state.matchRooms, [room.id]: room},
-            activeRoom,
         };
     }
 }

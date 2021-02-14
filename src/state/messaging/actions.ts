@@ -167,10 +167,9 @@ export const connectToChat = (callback?: (connected: boolean) => void): AppThunk
                 authToken,
                 {
                     onMessageReceived: (m) => {
-                        const {activeRoom} = getState().messaging;
+                        const {activeRoomId} = getState().messaging;
                         // Tell the server we've read the message if this is the active room
-                        if (activeRoom && m.roomId == activeRoom.id)
-                            chatSocket.readMessage(activeRoom.id, m.id, m.updatedAt);
+                        if (m.roomId == activeRoomId) chatSocket.readMessage(activeRoomId, m.id, m.updatedAt);
                         dispatch(receiveChatMessage(m));
                     },
                     onMessageRead: (p) => dispatch(readChatMessage(p)),
@@ -230,13 +229,9 @@ const sendChatMessageSuccess = (message: ChatRoomMessage): SendMessageSuccessAct
 });
 
 export const sendChatMessage = (id: string, text: string, createdAt: Date): AppThunk => async (dispatch, getState) => {
-    const {
-        socketState: {connected},
-        activeRoom,
-        localChatUser,
-    } = getState().messaging;
+    const {activeRoomId, localChatUser} = getState().messaging;
 
-    if (connected && activeRoom && localChatUser) {
+    if (chatSocket.isConnected() && activeRoomId && localChatUser) {
         const message: ChatRoomMessage = {
             _id: id,
             createdAt,
@@ -245,7 +240,7 @@ export const sendChatMessage = (id: string, text: string, createdAt: Date): AppT
             sent: false,
         };
         dispatch(sendChatMessageSuccess(message));
-        chatSocket.sendMessage(activeRoom.id, id, text);
+        chatSocket.sendMessage(activeRoomId, id, text);
     } else dispatch(sendChatMessageFailure());
 };
 

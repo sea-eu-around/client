@@ -52,11 +52,12 @@ import store from "../../state/store";
 import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import {normalizeWheelEvent} from "../../polyfills";
+import {getRouteParams} from "../../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
     rooms: state.messaging.matchRooms,
-    activeRoom: state.messaging.activeRoom,
+    activeRoomId: state.messaging.activeRoomId,
     localChatUser: state.messaging.localChatUser,
     connected: state.messaging.socketState.connected,
     connecting: state.messaging.socketState.connecting,
@@ -77,68 +78,71 @@ class ChatScreen extends React.Component<ChatScreenProps> {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     removeScrollListener: () => void = () => {};
 
+    private unsubscribeBlurEvent: null | (() => void) = null;
+    private unsubscribeFocusEvent: null | (() => void) = null;
+
     private getRoomId(): string | null {
-        const {route} = this.props;
         // Get the room ID from the route parameters
-        if (route.params) {
-            const params = route.params as {[key: string]: string};
-            const {roomId} = params;
-            return roomId;
-        }
-        return null;
+        const {roomId} = getRouteParams(this.props.route);
+        return (roomId as string) || null;
     }
 
     private getRoom(): ChatRoom | null {
-        const {rooms, activeRoom} = this.props;
-        const roomId = this.getRoomId();
-        return activeRoom || (roomId ? rooms[roomId] : null);
+        const {rooms, activeRoomId} = this.props;
+        const id = activeRoomId || this.getRoomId();
+        return id ? rooms[id] : null;
     }
 
     private connectToRoom(): void {
+        const {rooms} = this.props;
         const dispatch = this.props.dispatch as MyThunkDispatch;
 
-        const joinRoom = async (room: ChatRoom) => {
-            dispatch(joinChatRoom(room));
-            this.ensureLatestMessages();
-        };
+        const joinRoom = (room: ChatRoom) => dispatch(joinChatRoom(room));
 
         const roomId = this.getRoomId();
-        // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
+        // If a roomId parameter was given
         if (roomId) {
-            const room = store.getState().messaging.matchRooms[roomId];
+            const room = rooms[roomId];
+            // First ensure we have that room (in storage or we fetch it) before joining it.
             if (room) joinRoom(room);
-            else dispatch(fetchMatchRoom(roomId)).then((r) => r && joinRoom(r));
+            else dispatch(fetchMatchRoom(roomId)).then((room) => room && joinRoom(room));
         }
     }
 
     componentDidMount(): void {
         const {navigation} = this.props;
-        navigation.addListener("blur", () => this.onBlur());
-        navigation.addListener("focus", () => this.onFocus());
+        this.unsubscribeBlurEvent = navigation.addListener("blur", () => this.onBlur());
+        this.unsubscribeFocusEvent = navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
     }
 
+    componentWillUnmount(): void {
+        if (this.unsubscribeBlurEvent) this.unsubscribeBlurEvent();
+        if (this.unsubscribeFocusEvent) this.unsubscribeFocusEvent();
+    }
+
     componentDidUpdate(oldProps: ChatScreenProps): void {
-        const {activeRoom, connected} = this.props;
+        const {activeRoomId, connected} = this.props;
         // If we've just connected to the chat, connect to the room
         if (!oldProps.connected && connected) this.connectToRoom();
-        // If we're at the beginning of the messages pagination
-        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.ensureLatestMessages();
+        // If we've just joined the room, ensure we have the latest messages
+        if (!oldProps.activeRoomId && activeRoomId) this.ensureLatestMessages();
     }
 
     private onBlur(): void {
         // Leave the room when navigating to another screen
-        const {dispatch, activeRoom} = this.props;
-        if (activeRoom) (dispatch as MyThunkDispatch)(leaveChatRoom(activeRoom));
+        const {dispatch} = this.props;
+        const room = this.getRoom();
+        if (room) (dispatch as MyThunkDispatch)(leaveChatRoom(room));
     }
 
     private onFocus(): void {
-        const {connected, connecting, dispatch} = this.props;
+        const {dispatch} = this.props;
 
-        // If are already connected to the chat, connect to the room
-        if (connected) this.connectToRoom();
+        // If we are already connected to the chat, connect to the room
+        if (chatSocket.isConnected()) this.connectToRoom();
         // If we are not connected nor connecting to the chat, connect to the chat first
-        else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
+        else if (!chatSocket.isConnecting()) (dispatch as MyThunkDispatch)(connectToChat());
     }
 
     /**

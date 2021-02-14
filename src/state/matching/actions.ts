@@ -291,7 +291,7 @@ const fetchHistorySuccess = (
     items: MatchHistoryItem[],
     canFetchMore: boolean,
 ): PaginatedFetchSuccessAction<MatchHistoryItem> => ({
-    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE,
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS,
     items,
     canFetchMore,
 });
