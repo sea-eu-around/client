@@ -165,7 +165,9 @@ export const createProfile = (profile: CreateProfileDto): AppThunk => async (dis
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
-    const fromCache = await readCachedStaticData<OfferDto[]>("offers");
+    let fromCache = await readCachedStaticData<OfferDto[]>("offers");
+    if (!Array.isArray(fromCache)) fromCache = false; // fix corrupt cache
+
     const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
     requestBackend("offers", "GET", params).then((response: RequestResponse) => {
@@ -187,7 +189,9 @@ const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadPr
 });
 
 export const loadProfileInterests = (): AppThunk => async (dispatch) => {
-    const fromCache = await readCachedStaticData<InterestDto[]>("interests");
+    let fromCache = await readCachedStaticData<InterestDto[]>("interests");
+    if (!Array.isArray(fromCache)) fromCache = false; // fix corrupt cache
+
     const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
     requestBackend("interests", "GET", params).then((response: RequestResponse) => {
