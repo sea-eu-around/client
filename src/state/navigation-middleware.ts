@@ -21,7 +21,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
         }
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {user} = action as LogInSuccessAction;
-            if (user.onboarded) rootNavigate("MainScreen");
+            if (user.onboarded) rootNavigate("MainScreen", {screen: "TabMatching"});
             else store.dispatch(beginOnboarding());
             break;
         }
