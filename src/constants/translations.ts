@@ -295,6 +295,11 @@ export default {
             subtitle: "This page doesn't exist.",
             redirect: "Go to home screen",
         },
+        // Backend unreachable
+        backendUnreachable: {
+            title: "Unable to reach the server",
+            subtitle: "This can be caused by your network or by the application server itself.",
+        },
         // University-related
         universities: {
             "univ-cadiz": "University of Cádiz",
@@ -975,6 +980,7 @@ export default {
             ResetPasswordSuccessScreen: "Password reset",
             OnboardingSuccessfulScreen: "Successful registration",
             NotFoundScreen: "Not Found",
+            BackendUnreachableScreen: "Error",
             ForgotPasswordEmailSentScreen: "Forgot password",
         },
         // Settings screen
@@ -1271,6 +1277,11 @@ export default {
             title: "404: Page introuvable.",
             subtitle: "Cette page n'existe pas.",
             redirect: "Aller à l'écran d'accueil",
+        },
+        // Backend unreachable
+        backendUnreachable: {
+            title: "Impossible de se connecter au serveur",
+            subtitle: "Cela peut provenir de votre connection Internet ou du serveur de l'application.",
         },
         // University-related
         universities: {
@@ -1959,6 +1970,7 @@ export default {
             ResetPasswordSuccessScreen: "Mot de Passe Modifié",
             OnboardingSuccessfulScreen: "Inscription Réussie",
             NotFoundScreen: "Page Introuvable",
+            BackendUnreachableScreen: "Erreur",
             ForgotPasswordEmailSentScreen: "Mot de Passe Oublié",
         },
         // Settings screen
