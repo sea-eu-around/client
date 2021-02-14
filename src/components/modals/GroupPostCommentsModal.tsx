@@ -1,43 +1,59 @@
 import * as React from "react";
-import {TouchableOpacity, TouchableOpacityProps, StyleSheet, Text, View, TextInput} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost} from "../../model/groups";
-import EnlargeableAvatar from "../EnlargeableAvatar";
-import ReadMore from "react-native-read-more-text";
+import {Group, GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
 import i18n from "i18n-js";
-import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
-import {AppState, MyThunkDispatch} from "../../state/types";
-import {connect} from "react-redux";
+import {MaterialIcons} from "@expo/vector-icons";
+import {MyThunkDispatch} from "../../state/types";
 import CustomModal, {CustomModalClass, ModalActivator} from "./CustomModal";
-import CommentTextInput from "../CommentTextInput";
+import CommentTextInput, {CommentTextInputClass} from "../CommentTextInput";
 import store from "../../state/store";
-import {createPostComment} from "../../state/groups/actions";
-
-const reduxConnector = connect((state: AppState) => ({
-    groupsDict: state.groups.groupsDict,
-}));
+import {createPostComment, fetchPostComments} from "../../state/groups/actions";
+import GroupCommentCard from "../cards/GroupCommentCard";
+import GroupVoteButton from "../GroupVoteButton";
+import Button from "../Button";
 
 // Component props
-type GroupPostCommentsModalProps = {
+export type GroupPostCommentsModalProps = {
     group: Group;
     post: GroupPost;
     activator?: ModalActivator;
-} & TouchableOpacityProps &
-    ThemeProps;
+} & ThemeProps;
 
-export class GroupPostCommentsModalClass extends React.Component<GroupPostCommentsModalProps> {
+type GroupPostCommentsModalState = {
+    replyingTo: PostComment | null;
+    expandedCommentId: string | null;
+};
+
+export class GroupPostCommentsModalClass extends React.Component<
+    GroupPostCommentsModalProps,
+    GroupPostCommentsModalState
+> {
     modalRef = React.createRef<CustomModalClass>();
+    commentTextInputRef = React.createRef<CommentTextInputClass>();
+
+    constructor(props: GroupPostCommentsModalProps) {
+        super(props);
+        this.state = {replyingTo: null, expandedCommentId: null};
+    }
 
     show(): void {
         this.modalRef.current?.show();
     }
 
+    private setReplyingTo(comment: PostComment | null): void {
+        this.setState({...this.state, replyingTo: comment});
+        if (comment !== null) this.commentTextInputRef.current?.focus();
+    }
+
     render(): JSX.Element {
-        const {post, group, theme, style, ...otherProps} = this.props;
+        const {post, group, theme} = this.props;
+        const {replyingTo, expandedCommentId} = this.state;
 
         const styles = themedStyles(theme);
+        const dispatch = store.dispatch as MyThunkDispatch;
 
         return (
             <CustomModal
@@ -48,29 +64,78 @@ export class GroupPostCommentsModalClass extends React.Component<GroupPostCommen
                 fullHeight
                 statusBarTranslucent={false}
                 modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0}}
+                onShow={() => {
+                    if (post && post.commentIds.length == 0) dispatch(fetchPostComments(group.id, post.id));
+                }}
+                onHide={() => {
+                    this.setReplyingTo(null);
+                }}
                 renderContent={(hide) => (
                     <View style={styles.container}>
                         <View style={styles.top}>
                             <View style={{flexDirection: "row", alignItems: "center"}}>
-                                <TouchableOpacity onPress={hide} style={styles.topButton}>
-                                    <MaterialIcons name="close" style={styles.topButtonIcon} />
-                                </TouchableOpacity>
+                                <Button
+                                    style={styles.topButton}
+                                    icon={<MaterialIcons name="close" style={styles.topButtonIcon} />}
+                                    onPress={hide}
+                                />
                             </View>
                             <View style={{flexDirection: "row", alignItems: "center"}}>
-                                <Text style={styles.points}>19 points</Text>
-                                <TouchableOpacity onPress={hide} style={styles.topButton}>
-                                    <MaterialIcons name="arrow-upward" style={styles.topButtonIcon} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={hide} style={styles.topButton}>
-                                    <MaterialIcons name="arrow-downward" style={styles.topButtonIcon} />
-                                </TouchableOpacity>
+                                <Text style={styles.points}>
+                                    {post.score} {i18n.t("groups.points")}
+                                </Text>
+                                <GroupVoteButton
+                                    group={group}
+                                    post={post}
+                                    currentStatus={post.voteStatus}
+                                    vote={GroupVoteStatus.Upvote}
+                                    style={styles.topButton}
+                                    iconStyle={styles.topButtonIcon}
+                                />
+                                <GroupVoteButton
+                                    group={group}
+                                    post={post}
+                                    currentStatus={post.voteStatus}
+                                    vote={GroupVoteStatus.Downvote}
+                                    style={styles.topButton}
+                                    iconStyle={styles.topButtonIcon}
+                                />
                             </View>
                         </View>
                         <View style={styles.comments}>
-                            <Text>{post.commentIds.map((id) => id)}</Text>
+                            {post.commentIds.map((id) => (
+                                <GroupCommentCard
+                                    key={`${group.id}-${post.id}-comment-${id}`}
+                                    group={group}
+                                    post={post}
+                                    comment={post.comments[id]}
+                                    closeComments={hide}
+                                    onPressReplyTo={() => this.setReplyingTo(post.comments[id])}
+                                    expanded={expandedCommentId === id}
+                                    onExpand={() => this.setState({...this.state, expandedCommentId: id})}
+                                    onCollapse={() => this.setState({...this.state, expandedCommentId: null})}
+                                />
+                            ))}
                         </View>
                         <View style={styles.bottom}>
+                            <View style={styles.replyToContainer}>
+                                {replyingTo && (
+                                    <>
+                                        <Button
+                                            style={styles.replyToClose}
+                                            icon={<MaterialIcons name="close" style={styles.replyToCloseIcon} />}
+                                            onPress={() => this.setReplyingTo(null)}
+                                        />
+                                        <Text style={styles.replyToText}>
+                                            {i18n.t("groups.comments.replyTo", {
+                                                name: `${replyingTo.creator.firstName} ${replyingTo.creator.lastName}`,
+                                            })}
+                                        </Text>
+                                    </>
+                                )}
+                            </View>
                             <CommentTextInput
+                                ref={this.commentTextInputRef}
                                 style={styles.input}
                                 onSend={(text) =>
                                     (store.dispatch as MyThunkDispatch)(createPostComment(group.id, post.id, {text}))
@@ -79,7 +144,6 @@ export class GroupPostCommentsModalClass extends React.Component<GroupPostCommen
                         </View>
                     </View>
                 )}
-                {...otherProps}
             />
         );
     }
@@ -101,13 +165,14 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         comments: {
             flex: 1,
-            backgroundColor: "red",
         },
         bottom: {
-            flexDirection: "row",
-            alignItems: "center",
             justifyContent: "space-between",
             paddingHorizontal: 20,
+            paddingTop: 2,
+            paddingBottom: 7,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.componentBorder,
         },
 
         points: {
@@ -123,43 +188,24 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
         },
 
-        avatarContainer: {
-            width: 40,
-            height: 40,
-            backgroundColor: theme.accentSlight,
-            marginRight: 10,
-        },
-        name: {
-            fontSize: 18,
-            color: theme.text,
-        },
-        postText: {
-            fontSize: 16,
-            color: theme.text,
-            lineHeight: 20,
-        },
-        textFooter: {
-            color: theme.accent,
-        },
-
         input: {
-            flex: 1,
             backgroundColor: theme.onboardingInputBackground,
             borderRadius: 20,
-            marginVertical: 10,
         },
 
-        bottomText: {
-            fontSize: 13,
-            color: theme.textLight,
+        replyToContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            marginVertical: 2,
         },
-        bottomButton: {
-            marginLeft: 15,
+        replyToText: {color: theme.textLight},
+        replyToClose: {
             padding: 5,
         },
-        bottomButtonIcon: {
-            fontSize: 24,
+        replyToCloseIcon: {
             color: theme.textLight,
+            fontSize: 20,
         },
     });
 });

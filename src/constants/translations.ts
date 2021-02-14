@@ -130,6 +130,30 @@ export default {
             other: "Other",
         },
         dateOfBirth: "Date of birth",
+        dateUnits: {
+            singular: {
+                second: "second",
+                minute: "minute",
+                hour: "hour",
+                day: "day",
+                week: "week",
+                month: "month",
+                year: "year",
+            },
+            plural: {
+                second: "seconds",
+                minute: "minutes",
+                hour: "hours",
+                day: "days",
+                week: "weeks",
+                month: "months",
+                year: "years",
+            },
+        },
+        dateRelative: {
+            precise: "{{month}} {{day}}, {{year}}",
+            ago: "{{amount}} {{unit}} ago",
+        },
         months: {
             0: "January",
             1: "February",
@@ -742,6 +766,8 @@ export default {
             send: "Send",
             cancel: "Cancel",
             what: "What / who?",
+            commentFrom: "Comment from {{name}}",
+            postFrom: "Post from {{name}}",
             why: "Why?",
             typePlaceholder: "Select a reason",
             types: {
@@ -811,8 +837,18 @@ export default {
                 submit: "Send",
             },
             deletePost: {
-                title: "Delete Post?",
+                title: "Delete post",
                 text: "This action is irreversible.",
+            },
+            editComment: {
+                title: "Edit comment",
+            },
+            deleteComment: {
+                title: "Delete comment",
+                text: "This action is irreversible.",
+            },
+            comments: {
+                replyTo: "Reply to {{name}}",
             },
             join: "Join",
             myGroups: "My groups",
@@ -839,6 +875,7 @@ export default {
                 oldest: "Oldest",
                 "most-popular": "Popular",
             },
+            points: "points",
         },
         // Matching tab
         matching: {
@@ -1702,6 +1739,8 @@ export default {
             send: "Envoyer",
             cancel: "Annuler",
             what: "Quoi / qui ?",
+            commentFrom: "Commentaire de {{name}}",
+            postFrom: "Post de {{name}}",
             why: "Pourquoi ?",
             typePlaceholder: "Sélectionner une raison",
             types: {
@@ -1772,8 +1811,18 @@ export default {
                 submit: "Envoyer",
             },
             deletePost: {
-                title: "Supprimer le post ?",
+                title: "Supprimer le post",
                 text: "Cette action est irréversible.",
+            },
+            editComment: {
+                title: "Éditer le commentaire",
+            },
+            deleteComment: {
+                title: "Supprimer le commentaire",
+                text: "Cette action est irréversible.",
+            },
+            comments: {
+                replyTo: "Répondre à {{name}}",
             },
             join: "Rejoindre",
             myGroups: "Mes groupes",
@@ -1800,6 +1849,7 @@ export default {
                 oldest: "Ancien",
                 "most-popular": "Populaire",
             },
+            points: "points",
         },
         // Matching tab
         matching: {

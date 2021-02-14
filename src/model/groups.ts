@@ -27,7 +27,11 @@ export type GroupPost = {
     type: string;
     status: string;
     text: string;
+    createdAt: Date;
+    updatedAt: Date;
     creator: UserProfile;
+    score: number;
+    voteStatus: GroupVoteStatus;
     comments: {[key: string]: PostComment};
     commentIds: string[];
     commentsPagination: PaginatedState;
@@ -36,7 +40,10 @@ export type GroupPost = {
 export type PostComment = {
     id: string;
     text: string;
+    voteStatus: GroupVoteStatus;
     creator: UserProfile;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 export enum PostSortingOrder {
@@ -46,3 +53,9 @@ export enum PostSortingOrder {
 }
 
 export const POST_SORTING_ORDERS = [PostSortingOrder.Newest, PostSortingOrder.Oldest, PostSortingOrder.MostPopular];
+
+export enum GroupVoteStatus {
+    Upvote = "up",
+    Downvote = "down",
+    Neutral = "neutral",
+}

@@ -242,12 +242,16 @@ export type ResponseGroupPostDto = {
     type: string;
     status: string;
     text: string;
+    createdAt: string;
+    updatedAt: string;
     creator: ResponseProfileDto;
 };
 
 export type ResponsePostCommentDto = {
     id: string;
     text: string;
+    createdAt: string;
+    updatedAt: string;
     creator: ResponseProfileDto;
 };
 

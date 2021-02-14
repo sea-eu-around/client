@@ -6,20 +6,21 @@ import ConfirmationModal from "./ConfirmationModal";
 import {FontAwesome} from "@expo/vector-icons";
 import i18n from "i18n-js";
 import store from "../../state/store";
-import {deleteGroupPost} from "../../state/groups/actions";
-import {Group, GroupPost} from "../../model/groups";
+import {deletePostComment} from "../../state/groups/actions";
+import {Group, GroupPost, PostComment} from "../../model/groups";
 import {MyThunkDispatch} from "../../state/types";
 
-export type DeletePostConfirmModalProps = ThemeProps & Partial<CustomModalProps> & {group: Group; post: GroupPost};
+export type DeleteCommentConfirmModalProps = ThemeProps &
+    Partial<CustomModalProps> & {group: Group; post: GroupPost; comment: PostComment};
 
-class DeletePostConfirmModal extends React.Component<DeletePostConfirmModalProps> {
+class DeleteCommentConfirmModal extends React.Component<DeleteCommentConfirmModalProps> {
     render() {
-        const {group, post, theme, ...otherProps} = this.props;
+        const {group, post, comment, theme, ...otherProps} = this.props;
 
         return (
             <ConfirmationModal
-                title={i18n.t("groups.deletePost.title")}
-                text={i18n.t("groups.deletePost.text")}
+                title={i18n.t("groups.deleteComment.title")}
+                text={i18n.t("groups.deleteComment.text")}
                 icon={(props) => <FontAwesome name="warning" color={theme.error} {...props} />}
                 buttons={[
                     {preset: "cancel"},
@@ -27,7 +28,7 @@ class DeletePostConfirmModal extends React.Component<DeletePostConfirmModalProps
                         preset: "delete",
                         onPress: (hide) => {
                             hide();
-                            (store.dispatch as MyThunkDispatch)(deleteGroupPost(group.id, post.id));
+                            (store.dispatch as MyThunkDispatch)(deletePostComment(group.id, post.id, comment.id));
                         },
                     },
                 ]}
@@ -37,4 +38,4 @@ class DeletePostConfirmModal extends React.Component<DeletePostConfirmModalProps
     }
 }
 
-export default withTheme(DeletePostConfirmModal);
+export default withTheme(DeleteCommentConfirmModal);

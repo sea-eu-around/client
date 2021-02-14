@@ -14,7 +14,7 @@ import {
     ResponsePostCommentDto,
     SuccessfulRequestResponse,
 } from "../../api/dto";
-import {Group, GroupMember, GroupPost, PostComment, PostSortingOrder} from "../../model/groups";
+import {Group, GroupMember, GroupPost, PostComment, PostSortingOrder, GroupVoteStatus} from "../../model/groups";
 import {
     convertDtoToGroup,
     convertDtoToGroupMember,
@@ -55,14 +55,18 @@ export enum GROUP_ACTION_TYPES {
     CREATE_POST_SUCCESS = "GROUP/CREATE_POST_SUCCESS",
     CREATE_POST_FAILURE = "GROUP/CREATE_POST_FAILURE",
     UPDATE_POST_SUCCESS = "GROUP/UPDATE_POST_SUCCESS",
+    DELETE_POST_SUCCESS = "GROUP/DELETE_POST_SUCCESS",
     CREATE_COMMENT_BEGIN = "GROUP/CREATE_COMMENT_BEGIN",
     CREATE_COMMENT_SUCCESS = "GROUP/CREATE_COMMENT_SUCCESS",
     CREATE_COMMENT_FAILURE = "GROUP/CREATE_COMMENT_FAILURE",
     UPDATE_COMMENT_SUCCESS = "GROUP/UPDATE_COMMENT_SUCCESS",
+    DELETE_COMMENT_SUCCESS = "GROUP/DELETE_COMMENT_SUCCESS",
     SET_COVER_BEGIN = "GROUP/SET_COVER_BEGIN",
     SET_COVER_SUCCESS = "GROUP/SET_COVER_SUCCESS",
     SET_COVER_FAILURE = "GROUP/SET_COVER_FAILURE",
     SET_POST_SORTING_ORDER = "GROUP/SET_POST_SORTING_ORDER",
+    SET_POST_VOTE_SUCCESS = "GROUP/SET_POST_VOTE_SUCCESS",
+    SET_COMMENT_VOTE_SUCCESS = "GROUP/SET_COMMENT_VOTE_SUCCESS",
 }
 
 export type CreateGroupSuccessAction = {
@@ -193,6 +197,12 @@ export type UpdatePostSuccessAction = {
     post: GroupPost;
 };
 
+export type DeletePostSuccessAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+};
+
 export type CreateCommentBeginAction = {
     type: string;
     groupId: string;
@@ -216,6 +226,13 @@ export type UpdateCommentSuccessAction = {
     comment: PostComment;
 };
 
+export type DeleteCommentSuccessAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+    commentId: string;
+};
+
 export type SetGroupCoverBeginAction = {
     type: string;
     groupId: string;
@@ -235,6 +252,21 @@ export type SetGroupCoverFailureAction = {
 export type SetPostSortingOrderAction = {
     type: string;
     order: PostSortingOrder;
+};
+
+export type SetPostVoteSuccessAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+    status: GroupVoteStatus;
+};
+
+export type SetCommentVoteSuccessAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+    commentId: string;
+    status: GroupVoteStatus;
 };
 
 export type GroupsAction = CreateGroupSuccessAction &
@@ -260,14 +292,17 @@ export type GroupsAction = CreateGroupSuccessAction &
     CreatePostFailureAction &
     CreatePostSuccessAction &
     UpdatePostSuccessAction &
+    DeletePostSuccessAction &
     CreateCommentBeginAction &
     CreateCommentFailureAction &
     CreateCommentSuccessAction &
     UpdateCommentSuccessAction &
+    DeleteCommentSuccessAction &
     SetGroupCoverBeginAction &
     SetGroupCoverFailureAction &
     SetGroupCoverSuccessAction &
-    SetPostSortingOrderAction;
+    SetPostSortingOrderAction &
+    SetPostVoteSuccessAction;
 
 const createGroupSuccess = (): CreateGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_SUCCESS,
@@ -498,12 +533,39 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
         true,
     );
 
-    if (response.status === HttpStatusCode.OK) {
+    // TODO hook up comments to back again
+    dispatch(
+        fetchPostCommentsSuccess(
+            groupId,
+            postId,
+            [
+                {
+                    id: Math.round(Math.random() * 1e8) + "",
+                    createdAt: new Date(Date.now() - 1000 * 3600 * 24 * Math.random() * 10),
+                    updatedAt: new Date(Date.now() - 1000 * 3600 * Math.random() * 10),
+                    creator: getState().profile.user!.profile!,
+                    text: "This is a test comment",
+                    voteStatus: GroupVoteStatus.Neutral,
+                },
+                {
+                    id: Math.round(Math.random() * 1e8) + "",
+                    createdAt: new Date(Date.now() - 1000 * 3600 * 24 * Math.random() * 10),
+                    updatedAt: new Date(Date.now() - 1000 * 3600 * Math.random() * 10),
+                    creator: getState().profile.user!.profile!,
+                    text: "Another test comment",
+                    voteStatus: GroupVoteStatus.Upvote,
+                },
+            ],
+            false,
+        ),
+    );
+
+    /*if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
         const comments = (paginated.data as ResponsePostCommentDto[]).map(convertDtoToPostComment);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchPostCommentsSuccess(groupId, postId, comments, canFetchMore));
-    } else dispatch(fetchPostCommentsFailure(groupId, postId));
+    } else dispatch(fetchPostCommentsFailure(groupId, postId));*/
 };
 
 const fetchGroupMembersBegin = (groupId: string): FetchGroupMembersBeginAction => ({
@@ -578,9 +640,10 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {myGroupsPagination},
+        profile: {user},
     } = getState();
 
-    if (!token) {
+    if (!token || !user) {
         dispatch(fetchMyGroupsFailure());
         return;
     }
@@ -595,6 +658,7 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
         {
             page: myGroupsPagination.page,
             limit: GROUPS_FETCH_LIMIT,
+            profileId: user.id,
         },
         {},
         token,
@@ -694,6 +758,30 @@ export const updateGroupPost = (
     }
 };
 
+const deletePostSuccess = (groupId: string, postId: string): DeletePostSuccessAction => ({
+    type: GROUP_ACTION_TYPES.DELETE_POST_SUCCESS,
+    groupId,
+    postId,
+});
+
+export const deleteGroupPost = (groupId: string, postId: string): ValidatedThunkAction => async (
+    dispatch,
+    getState,
+) => {
+    const {token} = getState().auth;
+
+    if (!token) return {success: false};
+
+    const response = await requestBackend(`groups/${groupId}/posts/${postId}`, "DELETE", {}, {}, token, true);
+
+    if (response.status === HttpStatusCode.NO_CONTENT) {
+        dispatch(deletePostSuccess(groupId, postId));
+        return {success: true};
+    } else {
+        return {success: false, errors: gatherValidationErrors(response)};
+    }
+};
+
 const createPostCommentBegin = (groupId: string, postId: string): CreateCommentBeginAction => ({
     type: GROUP_ACTION_TYPES.CREATE_COMMENT_BEGIN,
     groupId,
@@ -772,6 +860,38 @@ export const updatePostComment = (
     }
 };
 
+const deletePostCommentSuccess = (groupId: string, postId: string, commentId: string): DeleteCommentSuccessAction => ({
+    type: GROUP_ACTION_TYPES.DELETE_COMMENT_SUCCESS,
+    groupId,
+    postId,
+    commentId,
+});
+
+export const deletePostComment = (groupId: string, postId: string, commentId: string): ValidatedThunkAction => async (
+    dispatch,
+    getState,
+) => {
+    const {token} = getState().auth;
+
+    if (!token) return {success: false};
+
+    const response = await requestBackend(
+        `groups/${groupId}/posts/${postId}/comments/${commentId}`,
+        "DELETE",
+        {},
+        {},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.NO_CONTENT) {
+        dispatch(deletePostCommentSuccess(groupId, postId, commentId));
+        return {success: true};
+    } else {
+        return {success: false, errors: gatherValidationErrors(response)};
+    }
+};
+
 const setGroupCoverBegin = (groupId: string): SetGroupCoverBeginAction => ({
     type: GROUP_ACTION_TYPES.SET_COVER_BEGIN,
     groupId,
@@ -820,3 +940,81 @@ export const setPostSortingOrder = (order: PostSortingOrder): SetPostSortingOrde
     type: GROUP_ACTION_TYPES.SET_POST_SORTING_ORDER,
     order,
 });
+
+const setPostVoteSuccess = (groupId: string, postId: string, status: GroupVoteStatus): SetPostVoteSuccessAction => ({
+    type: GROUP_ACTION_TYPES.SET_POST_VOTE_SUCCESS,
+    groupId,
+    postId,
+    status,
+});
+
+export const setPostVote = (groupId: string, postId: string, status: GroupVoteStatus): AppThunk => async (
+    dispatch,
+    getState,
+) => {
+    const {
+        auth: {token},
+    } = getState();
+
+    // TODO hook-up to back
+    dispatch(setPostVoteSuccess(groupId, postId, status));
+
+    /*const response =
+        status === GroupVoteStatus.Neutral
+            ? await requestBackend(`groups/${groupId}/votes/${postId}`, "DELETE", {}, {}, token, true)
+            : await requestBackend(
+                  `groups/${groupId}/votes/post/${postId}/`,
+                  "POST",
+                  {voteType: status},
+                  {},
+                  token,
+                  true,
+              );
+
+    if (response.status === HttpStatusCode.OK) {
+        dispatch(setPostVoteSuccess(groupId, postId, status));
+    }*/
+};
+
+const setCommentVoteSuccess = (
+    groupId: string,
+    postId: string,
+    commentId: string,
+    status: GroupVoteStatus,
+): SetCommentVoteSuccessAction => ({
+    type: GROUP_ACTION_TYPES.SET_COMMENT_VOTE_SUCCESS,
+    groupId,
+    postId,
+    commentId,
+    status,
+});
+
+export const setCommentVote = (
+    groupId: string,
+    postId: string,
+    commentId: string,
+    status: GroupVoteStatus,
+): AppThunk => async (dispatch, getState) => {
+    const {
+        auth: {token},
+    } = getState();
+
+    // TODO hook-up to back
+    dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));
+
+    /*const response =
+        status === GroupVoteStatus.Neutral
+            ? await requestBackend(`groups/${groupId}/votes/${commentId}`, "DELETE", {}, {}, token, true)
+            : await requestBackend(
+                  `groups/${groupId}/votes/comment/${commentId}/`,
+                  "POST",
+                  {voteType: status},
+                  {},
+                  token,
+                  true,
+              );
+
+    if (response.status === HttpStatusCode.OK) {
+        dispatch(setPostVoteSuccess(groupId, postId, status));
+    }*/
+};

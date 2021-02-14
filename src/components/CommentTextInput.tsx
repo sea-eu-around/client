@@ -1,9 +1,10 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInput, ViewStyle, TouchableOpacity, StyleSheet} from "react-native";
+import {TextStyle, StyleProp, View, TextInput, ViewStyle, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
+import Button from "./Button";
 
 export type CommentTextInputProps = {
     style?: StyleProp<ViewStyle>;
@@ -22,7 +23,7 @@ type CommentTextInputState = {
 
 const MIN_HEIGHT = 40;
 
-class CommentTextInput extends React.Component<CommentTextInputProps, CommentTextInputState> {
+export class CommentTextInputClass extends React.Component<CommentTextInputProps, CommentTextInputState> {
     inputRef = React.createRef<TextInput>();
 
     constructor(props: CommentTextInputProps) {
@@ -53,28 +54,18 @@ class CommentTextInput extends React.Component<CommentTextInputProps, CommentTex
             value.length === 0 ? (
                 <></>
             ) : (
-                <>
-                    <TouchableOpacity
-                        style={styles.inputButton}
-                        onPress={() => {
-                            if (onSend) onSend(value);
-                        }}
-                    >
-                        <MaterialIcons name={"send"} style={styles.inputButtonIcon} />
-                    </TouchableOpacity>
-                </>
+                <Button
+                    style={styles.inputButton}
+                    onPress={() => onSend && onSend(value)}
+                    icon={<MaterialIcons name={"send"} style={styles.inputButtonIcon} />}
+                />
             );
 
         return (
             <View style={[styles.wrapper, {height}, style, this.state.focused ? focusedStyle : {}]}>
                 <TextInput
                     ref={this.inputRef}
-                    style={[
-                        styles.input,
-                        inputStyle,
-                        this.state.focused ? inputFocusedStyle : {},
-                        // untouched ? {} : error ? errorStyle : value.length > 0 ? validStyle : {},
-                    ]}
+                    style={[styles.input, inputStyle, this.state.focused ? inputFocusedStyle : {}]}
                     onBlur={() => {
                         this.onBlur();
                         this.setState({focused: false});
@@ -123,4 +114,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(CommentTextInput);
+export default withTheme(CommentTextInputClass);

@@ -1,10 +1,9 @@
 import * as React from "react";
-import {TouchableOpacity, TouchableOpacityProps, StyleSheet, Text, View} from "react-native";
+import {TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
-import {Group, GroupPost} from "../../model/groups";
-import EnlargeableAvatar from "../EnlargeableAvatar";
+import {Group, GroupPost, GroupVoteStatus} from "../../model/groups";
 import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -12,6 +11,11 @@ import GroupPostCommentsModal, {GroupPostCommentsModalClass} from "../modals/Gro
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import EditPostModal, {EditPostModalClass} from "../modals/EditPostModal";
+import DeletePostConfirmModal from "../modals/DeletePostConfirmModal";
+import PostHeader from "../PostHeader";
+import {formatPostDate} from "../../model/utils";
+import Button from "../Button";
+import GroupVoteButton from "../GroupVoteButton";
 
 const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
@@ -21,8 +25,7 @@ const reduxConnector = connect((state: AppState) => ({
 type GroupPostCardProps = {
     group: Group | null;
     post: GroupPost | null;
-} & TouchableOpacityProps &
-    ThemeProps &
+} & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
@@ -34,44 +37,36 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
     }
 
     render(): JSX.Element {
-        const {post, group, localUser, theme, style, ...otherProps} = this.props;
+        const {post, group, localUser, theme} = this.props;
 
         const styles = themedStyles(theme);
         const fromLocal = post && localUser && post.creator.id === localUser.id;
 
         return (
-            <TouchableOpacity
-                style={[styles.container, style]}
-                activeOpacity={0.9}
-                /*onPress={() => {
-                    rootNavigate("TabGroups", {screen: "GroupScreen", params: group ? {groupId: group.id} : {}});
-                }}*/
-                {...otherProps}
-            >
+            <TouchableOpacity style={styles.container} activeOpacity={0.9}>
                 <View style={styles.top}>
-                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <EnlargeableAvatar
-                            profile={post?.creator}
-                            size={42}
-                            containerStyle={styles.avatarContainer}
-                            rounded
-                        />
-                        <Text style={styles.name}>
-                            {post?.creator.firstName} {post?.creator.lastName}
-                        </Text>
-                    </View>
+                    <PostHeader profile={post?.creator || null} subtitle={post && formatPostDate(post)} />
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                         {fromLocal && (
                             <>
-                                <TouchableOpacity
+                                <Button
                                     style={styles.topButton}
                                     onPress={() => this.editPostModalRef.current?.show()}
-                                >
-                                    <MaterialIcons style={styles.topButtonIcon} name="edit" />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.topButton}>
-                                    <MaterialIcons style={styles.topButtonIcon} name="delete" />
-                                </TouchableOpacity>
+                                    icon={<MaterialIcons style={styles.topButtonIcon} name="edit" />}
+                                />
+                                {group && post && (
+                                    <DeletePostConfirmModal
+                                        group={group}
+                                        post={post}
+                                        activator={(show) => (
+                                            <Button
+                                                style={styles.topButton}
+                                                onPress={show}
+                                                icon={<MaterialIcons style={styles.topButtonIcon} name="delete" />}
+                                            />
+                                        )}
+                                    />
+                                )}
                             </>
                         )}
                     </View>
@@ -95,17 +90,31 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                 )}
                 <View style={styles.bottom}>
                     <TouchableOpacity onPress={() => this.openComments()}>
-                        <Text style={styles.bottomText}>82 points</Text>
+                        <Text style={styles.bottomText}>
+                            {post?.score} {i18n.t("groups.points")}
+                        </Text>
                         <Text style={styles.bottomText}>17 comments</Text>
                     </TouchableOpacity>
-                    <View style={{flexDirection: "row"}}>
-                        <TouchableOpacity style={styles.bottomButton}>
-                            <MaterialIcons style={styles.bottomButtonIcon} name="arrow-upward" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.bottomButton}>
-                            <MaterialIcons style={styles.bottomButtonIcon} name="arrow-downward" />
-                        </TouchableOpacity>
-                    </View>
+                    {group && post && (
+                        <View style={{flexDirection: "row"}}>
+                            <GroupVoteButton
+                                group={group}
+                                post={post}
+                                currentStatus={post.voteStatus}
+                                vote={GroupVoteStatus.Upvote}
+                                style={styles.bottomButton}
+                                iconStyle={styles.bottomButtonIcon}
+                            />
+                            <GroupVoteButton
+                                group={group}
+                                post={post}
+                                currentStatus={post.voteStatus}
+                                vote={GroupVoteStatus.Downvote}
+                                style={styles.bottomButton}
+                                iconStyle={styles.bottomButtonIcon}
+                            />
+                        </View>
+                    )}
                 </View>
                 {post && group && <GroupPostCommentsModal ref={this.commentsModalRef} group={group} post={post} />}
                 {post && group && <EditPostModal ref={this.editPostModalRef} group={group} post={post} />}
@@ -135,16 +144,6 @@ const themedStyles = preTheme((theme: Theme) => {
             marginTop: 10,
         },
 
-        avatarContainer: {
-            width: 40,
-            height: 40,
-            backgroundColor: theme.accentSlight,
-            marginRight: 10,
-        },
-        name: {
-            fontSize: 18,
-            color: theme.text,
-        },
         postText: {
             fontSize: 16,
             color: theme.text,

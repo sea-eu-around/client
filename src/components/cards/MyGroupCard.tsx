@@ -1,5 +1,5 @@
 import * as React from "react";
-import {TouchableOpacity, TouchableOpacityProps, StyleSheet, Text} from "react-native";
+import {TouchableOpacity, TouchableOpacityProps, StyleSheet, Text, Image} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -20,7 +20,7 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
 
         return (
             <TouchableOpacity
-                style={[styles.container, style]}
+                style={[styles.container, group && !group.cover ? styles.containerWithoutCover : {}, style]}
                 activeOpacity={0.9}
                 onPress={() => {
                     rootNavigate("TabGroups", {screen: "GroupScreen", params: group ? {groupId: group.id} : {}});
@@ -28,9 +28,17 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
                 {...otherProps}
             >
                 {group && (
-                    <Text style={styles.groupName} numberOfLines={2}>
-                        {group?.name}
-                    </Text>
+                    <>
+                        {group.cover && (
+                            <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />
+                        )}
+                        <Text
+                            style={group.cover ? styles.groupNameWithCover : styles.groupNameWithoutCover}
+                            numberOfLines={3}
+                        >
+                            {group?.name}
+                        </Text>
+                    </>
                 )}
             </TouchableOpacity>
         );
@@ -40,15 +48,31 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
-            width: 80,
-            height: 80,
-            backgroundColor: theme.accentSlight,
-            borderRadius: 10,
+            width: 90,
+            height: 90,
+            borderRadius: 15,
             marginRight: 10,
-            padding: 5,
+            overflow: "hidden",
         },
-        groupName: {
-            color: theme.text,
+        containerWithoutCover: {
+            borderWidth: 1,
+            borderColor: theme.componentBorder,
+        },
+        groupCover: {
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+        },
+        groupNameWithCover: {
+            color: theme.textWhite,
+            textShadowColor: "rgba(0, 0, 0, 0.75)",
+            textShadowOffset: {width: 0, height: 1},
+            textShadowRadius: 15,
+            margin: 5,
+        },
+        groupNameWithoutCover: {
+            color: theme.textLight,
+            margin: 5,
         },
     });
 });

@@ -30,7 +30,7 @@ import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
 import {PARTNER_UNIVERSITIES} from "../constants/universities";
-import {Group, GroupMember, GroupPost, PostComment} from "../model/groups";
+import {Group, GroupMember, GroupPost, PostComment, GroupVoteStatus} from "../model/groups";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -185,13 +185,20 @@ export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
         comments: {},
         commentIds: [],
         commentsPagination: initialPaginatedState(),
+        createdAt: new Date(dto.createdAt),
+        updatedAt: new Date(dto.updatedAt),
         creator: convertDtoToProfile(dto.creator),
+        score: 0, // TODO hook score to back
+        voteStatus: GroupVoteStatus.Neutral,
     };
 }
 
 export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostComment {
     return {
         ...dto,
+        createdAt: new Date(dto.createdAt),
+        updatedAt: new Date(dto.updatedAt),
         creator: convertDtoToProfile(dto.creator),
+        voteStatus: GroupVoteStatus.Neutral,
     };
 }
