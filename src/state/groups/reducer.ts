@@ -3,6 +3,8 @@ import {Group, GroupPost, PostSortingOrder} from "../../model/groups";
 import {GroupsState, initialPaginatedState} from "../types";
 import {
     CreatePostSuccessAction,
+    DeleteCommentSuccessAction,
+    DeletePostSuccessAction,
     FetchGroupMembersBeginAction,
     FetchGroupMembersFailureAction,
     FetchGroupMembersSuccessAction,
@@ -16,10 +18,12 @@ import {
     FetchPostCommentsSuccessAction,
     GroupsAction,
     GROUP_ACTION_TYPES,
+    SetCommentVoteSuccessAction,
     SetGroupCoverBeginAction,
     SetGroupCoverFailureAction,
     SetGroupCoverSuccessAction,
     SetPostSortingOrderAction,
+    SetPostVoteSuccessAction,
     UpdateCommentSuccessAction,
     UpdateGroupSuccessAction,
     UpdatePostSuccessAction,
@@ -111,6 +115,20 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 },
             }));
         }
+        case GROUP_ACTION_TYPES.DELETE_POST_SUCCESS: {
+            const {groupId, postId} = action as DeletePostSuccessAction;
+            return updateGroup(state, groupId, ({posts, postIds}) => {
+                delete posts[postId];
+                return {
+                    posts,
+                    postIds: postIds.filter((id) => id !== postId),
+                };
+            });
+        }
+        case GROUP_ACTION_TYPES.SET_POST_VOTE_SUCCESS: {
+            const {groupId, postId, status} = action as SetPostVoteSuccessAction;
+            return updatePost(state, groupId, postId, () => ({voteStatus: status}));
+        }
 
         case GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_BEGIN:
         case GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_FAILURE: {
@@ -143,6 +161,22 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                     ...comments,
                     [comment.id]: {...comments[comment.id], text: comment.text},
                 },
+            }));
+        }
+        case GROUP_ACTION_TYPES.DELETE_COMMENT_SUCCESS: {
+            const {groupId, postId, commentId} = action as DeleteCommentSuccessAction;
+            return updatePost(state, groupId, postId, ({comments, commentIds}) => {
+                delete comments[commentId];
+                return {
+                    comments,
+                    commentIds: commentIds.filter((id) => id !== commentId),
+                };
+            });
+        }
+        case GROUP_ACTION_TYPES.SET_COMMENT_VOTE_SUCCESS: {
+            const {groupId, postId, commentId, status} = action as SetCommentVoteSuccessAction;
+            return updatePost(state, groupId, postId, ({comments}) => ({
+                comments: {...comments, [commentId]: {...comments[commentId], voteStatus: status}},
             }));
         }
 
