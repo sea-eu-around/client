@@ -14,6 +14,7 @@ import store from "../../state/store";
 import {reportEntity} from "../../state/reports/actions";
 import {MyThunkDispatch} from "../../state/types";
 import QuickForm, {QuickFormClass} from "./QuickForm";
+import {GroupPost, PostComment} from "../../model/groups";
 
 export type QuickFormReportProps = ThemeProps & {
     entityType: ReportEntityType;
@@ -40,7 +41,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
         if (!entity) return null;
 
         switch (entityType) {
-            case ReportEntityType.PROFILE_ENTITY:
+            case ReportEntityType.PROFILE_ENTITY: {
                 if ((entity as ChatRoomUser)._id) {
                     const u = entity as ChatRoomUser;
                     return {name: u.name, id: u._id};
@@ -48,7 +49,17 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                     const p = entity as UserProfile;
                     return {name: `${p.firstName} ${p.lastName}`, id: p.id};
                 }
-                break;
+            }
+            case ReportEntityType.POST_ENTITY: {
+                const post = entity as GroupPost;
+                const {firstName, lastName} = post.creator;
+                return {name: i18n.t("report.postFrom", {name: `${firstName} ${lastName}`}), id: post.id};
+            }
+            case ReportEntityType.COMMENT_ENTITY: {
+                const comment = entity as PostComment;
+                const {firstName, lastName} = comment.creator;
+                return {name: i18n.t("report.commentFrom", {name: `${firstName} ${lastName}`}), id: comment.id};
+            }
             default:
                 return null;
         }

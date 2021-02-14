@@ -870,6 +870,10 @@ export default {
             },
             noMorePosts: "No more posts to show.",
             noPosts: "No posts to show.",
+            justPosted: "Just posted",
+            justCommented: "just commented",
+            justEdited: "just edited",
+            editedAgo: "edited {{ago}}",
             postsSorting: {
                 newest: "Newest",
                 oldest: "Oldest",
@@ -1844,6 +1848,10 @@ export default {
             },
             noMorePosts: "Aucun autre post à afficher.",
             noPosts: "Aucun post à afficher.",
+            justPosted: "Posté à l'instant",
+            justCommented: "commenté à l'instant",
+            justEdited: "modifié à l'instant",
+            editedAgo: "modifié {{ago}}",
             postsSorting: {
                 newest: "Récent",
                 oldest: "Ancien",
