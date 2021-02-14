@@ -51,7 +51,6 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     renderItem={(group: Group) => <MyGroupCard key={group.id} group={group} />}
                     // Compensate for the header
                     itemsContainerStyle={styles.itemsContainer}
-                    progressViewOffset={100}
                 />
             </View>
         );
