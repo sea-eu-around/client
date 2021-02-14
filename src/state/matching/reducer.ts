@@ -1,19 +1,17 @@
 import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
 import {arrayWithIdsToDict} from "../../general-utils";
 import {MatchHistoryItem} from "../../model/matching";
+import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES} from "../auth/actions";
-import {initialPaginatedState, MatchingFiltersState, MatchingState} from "../types";
+import {initialPaginatedState, MatchingFiltersState, MatchingState, PaginatedFetchSuccessAction} from "../types";
 import {
     MatchingAction,
     MATCHING_ACTION_TYPES,
     SetOfferFilterAction,
     SetMatchingFiltersAction,
-    FetchProfilesSuccessAction,
     DislikeProfileSuccessAction,
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
-    FetchMyMatchesSuccessAction,
-    FetchHistorySuccessAction,
     SetHistoryFiltersAction,
     ActionCancelSuccessAction,
 } from "./actions";
@@ -72,8 +70,8 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, profilesPagination: {...state.profilesPagination, fetching: false, canFetchMore: false}};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
-            const {profiles, canFetchMore} = <FetchProfilesSuccessAction>action;
-            const ids = profiles.map((p) => p.id);
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<UserProfile>;
+            const ids = items.map((p) => p.id);
             const pagination = state.profilesPagination;
             return {
                 ...state,
@@ -81,7 +79,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                     // Remove duplicates
                     ids.filter((id) => state.orderedProfileIds.indexOf(id) === -1),
                 ),
-                profiles: {...state.profiles, ...arrayWithIdsToDict(profiles)},
+                profiles: {...state.profiles, ...arrayWithIdsToDict(items)},
                 profilesPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
@@ -99,10 +97,10 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, fetchingMyMatches: false};
         }
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS: {
-            const {profiles} = <FetchMyMatchesSuccessAction>action;
+            const {items} = action as PaginatedFetchSuccessAction<UserProfile>;
             return {
                 ...state,
-                myMatches: profiles,
+                myMatches: items,
                 fetchingMyMatches: false,
             };
         }
@@ -128,7 +126,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, historyPagination: {...state.historyPagination, fetching: false, canFetchMore: false}};
         }
         case MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS: {
-            const {items, canFetchMore} = <FetchHistorySuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<MatchHistoryItem>;
             const pagination = state.historyPagination;
             return {
                 ...state,

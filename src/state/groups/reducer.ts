@@ -1,6 +1,6 @@
 import {arrayWithIdsToDict} from "../../general-utils";
 import {Group, GroupPost, PostSortingOrder} from "../../model/groups";
-import {GroupsState, initialPaginatedState} from "../types";
+import {GroupsState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
     CreatePostSuccessAction,
     DeleteCommentSuccessAction,
@@ -12,7 +12,6 @@ import {
     FetchGroupPostsFailureAction,
     FetchGroupPostsRefreshAction,
     FetchGroupPostsSuccessAction,
-    FetchGroupsSuccessAction,
     FetchPostCommentsBeginAction,
     FetchPostCommentsFailureAction,
     FetchPostCommentsSuccessAction,
@@ -52,14 +51,14 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return {...state, pagination: {...state.pagination, fetching: false, canFetchMore: false}};
         }
         case GROUP_ACTION_TYPES.FETCH_GROUPS_SUCCESS: {
-            const {groups, canFetchMore} = action as FetchGroupsSuccessAction;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<Group>;
             const pagination = state.pagination;
             const groupsDict = {...state.groupsDict};
-            groups.forEach((g: Group) => (groupsDict[g.id] = g));
+            items.forEach((g: Group) => (groupsDict[g.id] = g));
             return {
                 ...state,
                 groupsDict,
-                groups: state.groups.concat(groups.map((g: Group) => g.id)),
+                groups: state.groups.concat(items.map((g: Group) => g.id)),
                 pagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
@@ -83,10 +82,10 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_SUCCESS: {
-            const {groupId, posts, canFetchMore} = action as FetchGroupPostsSuccessAction;
+            const {groupId, items, canFetchMore} = action as FetchGroupPostsSuccessAction;
             return updateGroup(state, groupId, ({postsPagination: p, posts: gposts, postIds: gpostIds}) => ({
-                postIds: gpostIds.concat(posts.map((p) => p.id).filter((id) => gpostIds.indexOf(id) === -1)),
-                posts: {...gposts, ...arrayWithIdsToDict(posts)},
+                postIds: gpostIds.concat(items.map((p) => p.id).filter((id) => gpostIds.indexOf(id) === -1)),
+                posts: {...gposts, ...arrayWithIdsToDict(items)},
                 postsPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
             }));
         }
@@ -141,14 +140,14 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_SUCCESS: {
-            const {groupId, postId, comments, canFetchMore} = action as FetchPostCommentsSuccessAction;
+            const {groupId, postId, items, canFetchMore} = action as FetchPostCommentsSuccessAction;
             return updatePost(
                 state,
                 groupId,
                 postId,
                 ({commentsPagination: p, comments: pcomments, commentIds: pcommentIds}) => ({
-                    commentIds: pcommentIds.concat(comments.map((c) => c.id)),
-                    comments: {...pcomments, ...arrayWithIdsToDict(comments)},
+                    commentIds: pcommentIds.concat(items.map((c) => c.id)),
+                    comments: {...pcomments, ...arrayWithIdsToDict(items)},
                     commentsPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
                 }),
             );
@@ -191,9 +190,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_SUCCESS: {
-            const {groupId, members, canFetchMore} = action as FetchGroupMembersSuccessAction;
+            const {groupId, items, canFetchMore} = action as FetchGroupMembersSuccessAction;
             return updateGroup(state, groupId, ({membersPagination: p, members: gm}) => ({
-                members: (gm || []).concat(members),
+                members: (gm || []).concat(items),
                 membersPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
             }));
         }
@@ -205,14 +204,14 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return {...state, myGroupsPagination: {...state.myGroupsPagination, fetching: false, canFetchMore: false}};
         }
         case GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS: {
-            const {groups, canFetchMore} = action as FetchGroupsSuccessAction;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<Group>;
             const pagination = state.myGroupsPagination;
             const groupsDict = {...state.groupsDict};
-            groups.forEach((g: Group) => (groupsDict[g.id] = g));
+            items.forEach((g: Group) => (groupsDict[g.id] = g));
             return {
                 ...state,
                 groupsDict,
-                myGroups: state.myGroups.concat(groups.map((g: Group) => g.id)),
+                myGroups: state.myGroups.concat(items.map((g: Group) => g.id)),
                 myGroupsPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }

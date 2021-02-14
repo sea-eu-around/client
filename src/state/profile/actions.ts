@@ -51,11 +51,9 @@ export type SetProfileFieldsAction = {
     type: string;
     fields: Partial<UserProfile>;
 };
-
 export type SetProfileFieldsFailureAction = {
     type: string;
 };
-
 export type SetProfileFieldsSuccessAction = {
     type: string;
     fields: Partial<UserProfile>;
@@ -65,26 +63,19 @@ export type CreateProfileAction = {
     type: string;
     profile: CreateProfileDto;
 };
-
 export type CreateProfileSuccessAction = {
     type: string;
     profile: UserProfile;
 };
 
-export type LoadProfileOffersAction = {
-    type: string;
-};
-
+export type LoadProfileOffersAction = {type: string};
 export type LoadProfileOffersSuccessAction = {
     type: string;
     offers: OfferDto[];
     fromCache: boolean;
 };
 
-export type LoadProfileInterestsAction = {
-    type: string;
-};
-
+export type LoadProfileInterestsAction = {type: string};
 export type LoadProfileInterestsSuccessAction = {
     type: string;
     interests: InterestDto[];
@@ -101,18 +92,12 @@ export type FetchProfileSuccessAction = {
     profile: UserProfileWithMatchInfo;
 };
 
-export type SetAvatarBeginAction = {
-    type: string;
-};
-
+export type SetAvatarBeginAction = {type: string};
 export type SetAvatarSuccessAction = {
     type: string;
     avatarUrl: string;
 };
-
-export type SetAvatarFailureAction = {
-    type: string;
-};
+export type SetAvatarFailureAction = {type: string};
 
 export type ProfileAction =
     | SetProfileFieldsAction

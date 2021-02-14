@@ -1,5 +1,12 @@
 import {requestBackend} from "../../api/utils";
-import {AppThunk, ValidatedThunkAction} from "../types";
+import {
+    AppThunk,
+    PaginatedFetchBeginAction,
+    PaginatedFetchFailureAction,
+    PaginatedFetchRefreshAction,
+    PaginatedFetchSuccessAction,
+    ValidatedThunkAction,
+} from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {GROUPS_FETCH_LIMIT} from "../../constants/config";
 import {
@@ -32,6 +39,10 @@ export enum GROUP_ACTION_TYPES {
     UPDATE_FAILURE = "GROUP/UPDATE_FAILURE",
     DELETE_SUCCESS = "GROUP/DELETE_SUCCESS",
     DELETE_FAILURE = "GROUP/DELETE_FAILURE",
+    FETCH_POSTS_FEED_BEGIN = "GROUP/FETCH_POSTS_FEED_BEGIN",
+    FETCH_POSTS_FEED_SUCCESS = "GROUP/FETCH_POSTS_FEED_SUCCESS",
+    FETCH_POSTS_FEED_FAILURE = "GROUP/FETCH_POSTS_FEED_FAILURE",
+    FETCH_POSTS_FEED_REFRESH = "GROUP/FETCH_POSTS_FEED_REFRESH",
     FETCH_GROUPS_BEGIN = "GROUP/FETCH_GROUPS_BEGIN",
     FETCH_GROUPS_FAILURE = "GROUP/FETCH_GROUPS_FAILURE",
     FETCH_GROUPS_SUCCESS = "GROUP/FETCH_GROUPS_SUCCESS",
@@ -69,107 +80,33 @@ export enum GROUP_ACTION_TYPES {
     SET_COMMENT_VOTE_SUCCESS = "GROUP/SET_COMMENT_VOTE_SUCCESS",
 }
 
-export type CreateGroupSuccessAction = {
-    type: string;
-};
-
-export type CreateGroupFailureAction = {
-    type: string;
-};
+export type CreateGroupSuccessAction = {type: string};
+export type CreateGroupFailureAction = {type: string};
 
 export type UpdateGroupSuccessAction = {
     type: string;
     group: {id: string} & Partial<Group>;
 };
+export type UpdateGroupFailureAction = {type: string};
 
-export type UpdateGroupFailureAction = {
-    type: string;
-};
+export type DeleteGroupSuccessAction = {type: string};
+export type DeleteGroupFailureAction = {type: string};
 
-export type DeleteGroupSuccessAction = {
-    type: string;
-};
+export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {groupId: string};
+export type FetchGroupMembersSuccessAction = PaginatedFetchSuccessAction<GroupMember> & {groupId: string};
+export type FetchGroupMembersFailureAction = PaginatedFetchFailureAction & {groupId: string};
 
-export type DeleteGroupFailureAction = {
-    type: string;
-};
+export type FetchGroupPostsBeginAction = PaginatedFetchBeginAction & {groupId: string};
+export type FetchGroupPostsSuccessAction = PaginatedFetchSuccessAction<GroupPost> & {groupId: string};
+export type FetchGroupPostsRefreshAction = PaginatedFetchRefreshAction & {groupId: string};
+export type FetchGroupPostsFailureAction = PaginatedFetchFailureAction & {groupId: string};
 
-export type BeginFetchGroupsAction = {
-    type: string;
-};
-
-export type FetchGroupsFailureAction = {
-    type: string;
-};
-
-export type FetchGroupsSuccessAction = {
-    type: string;
-    groups: Group[];
-    canFetchMore: boolean;
-};
-
-export type FetchGroupsRefreshAction = {
-    type: string;
-};
-
-export type FetchGroupMembersBeginAction = {
-    type: string;
-    groupId: string;
-};
-
-export type FetchGroupMembersSuccessAction = {
-    type: string;
-    groupId: string;
-    members: GroupMember[];
-    canFetchMore: boolean;
-};
-
-export type FetchGroupMembersFailureAction = {
-    type: string;
-    groupId: string;
-};
-
-export type FetchGroupPostsBeginAction = {
-    type: string;
-    groupId: string;
-};
-
-export type FetchGroupPostsSuccessAction = {
-    type: string;
-    groupId: string;
-    posts: GroupPost[];
-    canFetchMore: boolean;
-};
-
-export type FetchGroupPostsRefreshAction = {
-    type: string;
-    groupId: string;
-};
-
-export type FetchGroupPostsFailureAction = {
-    type: string;
-    groupId: string;
-};
-
-export type FetchPostCommentsBeginAction = {
-    type: string;
+export type FetchPostCommentsBeginAction = PaginatedFetchBeginAction & {groupId: string; postId: string};
+export type FetchPostCommentsSuccessAction = PaginatedFetchSuccessAction<PostComment> & {
     groupId: string;
     postId: string;
 };
-
-export type FetchPostCommentsSuccessAction = {
-    type: string;
-    groupId: string;
-    postId: string;
-    comments: PostComment[];
-    canFetchMore: boolean;
-};
-
-export type FetchPostCommentsFailureAction = {
-    type: string;
-    groupId: string;
-    postId: string;
-};
+export type FetchPostCommentsFailureAction = PaginatedFetchFailureAction & {groupId: string; postId: string};
 
 export type JoinGroupSuccessAction = {
     type: string;
@@ -180,16 +117,12 @@ export type CreatePostBeginAction = {
     type: string;
     group: Group;
 };
-
 export type CreatePostSuccessAction = {
     type: string;
     group: Group;
     post: GroupPost;
 };
-
-export type CreatePostFailureAction = {
-    type: string;
-};
+export type CreatePostFailureAction = {type: string};
 
 export type UpdatePostSuccessAction = {
     type: string;
@@ -208,16 +141,12 @@ export type CreateCommentBeginAction = {
     groupId: string;
     postId: string;
 };
-
 export type CreateCommentSuccessAction = {
     type: string;
     groupId: string;
     postId: string;
 };
-
-export type CreateCommentFailureAction = {
-    type: string;
-};
+export type CreateCommentFailureAction = {type: string};
 
 export type UpdateCommentSuccessAction = {
     type: string;
@@ -237,13 +166,11 @@ export type SetGroupCoverBeginAction = {
     type: string;
     groupId: string;
 };
-
 export type SetGroupCoverSuccessAction = {
     type: string;
     groupId: string;
     url: string;
 };
-
 export type SetGroupCoverFailureAction = {
     type: string;
     groupId: string;
@@ -273,10 +200,10 @@ export type GroupsAction = CreateGroupSuccessAction &
     CreateGroupFailureAction &
     UpdateGroupSuccessAction &
     UpdateGroupFailureAction &
-    BeginFetchGroupsAction &
-    FetchGroupsFailureAction &
-    FetchGroupsSuccessAction &
-    FetchGroupsRefreshAction &
+    PaginatedFetchBeginAction &
+    PaginatedFetchFailureAction &
+    PaginatedFetchSuccessAction<Group> &
+    PaginatedFetchRefreshAction &
     FetchGroupMembersBeginAction &
     FetchGroupMembersFailureAction &
     FetchGroupMembersSuccessAction &
@@ -372,21 +299,21 @@ export const deleteGroup = (id: string): ValidatedThunkAction => async (dispatch
     }
 };
 
-const beginFetchGroups = (): BeginFetchGroupsAction => ({
+const beginFetchGroups = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_BEGIN,
 });
 
-const fetchGroupsSuccess = (groups: Group[], canFetchMore: boolean): FetchGroupsSuccessAction => ({
+const fetchGroupsSuccess = (groups: Group[], canFetchMore: boolean): PaginatedFetchSuccessAction<Group> => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_SUCCESS,
-    groups,
+    items: groups,
     canFetchMore,
 });
 
-const fetchGroupsFailure = (): FetchGroupsFailureAction => ({
+const fetchGroupsFailure = (): PaginatedFetchFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_FAILURE,
 });
 
-export const refreshFetchedGroups = (): FetchGroupsRefreshAction => ({
+export const refreshFetchedGroups = (): PaginatedFetchRefreshAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_REFRESH,
 });
 
@@ -435,12 +362,12 @@ const fetchGroupPostsBegin = (groupId: string): FetchGroupPostsBeginAction => ({
 
 const fetchGroupPostsSuccess = (
     groupId: string,
-    posts: GroupPost[],
+    items: GroupPost[],
     canFetchMore: boolean,
 ): FetchGroupPostsSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_SUCCESS,
     groupId,
-    posts,
+    items,
     canFetchMore,
 });
 
@@ -492,13 +419,13 @@ const fetchPostCommentsBegin = (groupId: string, postId: string): FetchPostComme
 const fetchPostCommentsSuccess = (
     groupId: string,
     postId: string,
-    comments: PostComment[],
+    items: PostComment[],
     canFetchMore: boolean,
 ): FetchPostCommentsSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_SUCCESS,
     groupId,
     postId,
-    comments,
+    items,
     canFetchMore,
 });
 
@@ -575,12 +502,12 @@ const fetchGroupMembersBegin = (groupId: string): FetchGroupMembersBeginAction =
 
 const fetchGroupMembersSuccess = (
     groupId: string,
-    members: GroupMember[],
+    items: GroupMember[],
     canFetchMore: boolean,
 ): FetchGroupMembersSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_SUCCESS,
     groupId,
-    members,
+    items,
     canFetchMore,
 });
 
@@ -618,21 +545,21 @@ export const fetchGroupMembers = (groupId: string): AppThunk => async (dispatch,
     } else dispatch(fetchGroupMembersFailure(groupId));
 };
 
-const beginFetchMyGroups = (): BeginFetchGroupsAction => ({
+const beginFetchMyGroups = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN,
 });
 
-const fetchMyGroupsSuccess = (groups: Group[], canFetchMore: boolean): FetchGroupsSuccessAction => ({
+const fetchMyGroupsSuccess = (items: Group[], canFetchMore: boolean): PaginatedFetchSuccessAction<Group> => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS,
-    groups,
+    items,
     canFetchMore,
 });
 
-const fetchMyGroupsFailure = (): FetchGroupsFailureAction => ({
+const fetchMyGroupsFailure = (): PaginatedFetchFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_FAILURE,
 });
 
-export const refreshFetchedMyGroups = (): FetchGroupsRefreshAction => ({
+export const refreshFetchedMyGroups = (): PaginatedFetchRefreshAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_REFRESH,
 });
 

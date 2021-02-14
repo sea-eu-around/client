@@ -7,13 +7,9 @@ export enum NOTIFICATIONS_ACTION_TYPES {
     DELETE_TOKEN_SUCCESS = "NOTIFICATIONS/DELETE_TOKEN_SUCCESS",
 }
 
-export type RegisterNotificationSuccessAction = {
-    type: string;
-};
+export type RegisterNotificationSuccessAction = {type: string};
 
-export type DeleteNotificationTokenSuccessAction = {
-    type: string;
-};
+export type DeleteNotificationTokenSuccessAction = {type: string};
 
 export type NotificationsAction = RegisterNotificationSuccessAction & DeleteNotificationTokenSuccessAction;
 

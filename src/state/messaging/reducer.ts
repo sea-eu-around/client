@@ -3,12 +3,11 @@ import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../../model/chat-room";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {CreateProfileSuccessAction, FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
-import {MessagingState, initialPaginatedState} from "../types";
+import {MessagingState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
     FetchEarlierMessagesBeginAction,
     FetchEarlierMessagesFailureAction,
     FetchEarlierMessagesSuccessAction,
-    FetchMatchRoomsSuccessAction,
     FetchNewMessagesSuccessAction,
     JoinChatRoomBeginAction,
     MessagingAction,
@@ -63,11 +62,11 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             };
         }
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS: {
-            const {rooms, canFetchMore} = <FetchMatchRoomsSuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<ChatRoom>;
             const pagination = state.matchRoomsPagination;
             const matchRooms = {...state.matchRooms};
             // Add entries in the rooms dictionary
-            rooms.forEach((r: ChatRoom) => {
+            items.forEach((r: ChatRoom) => {
                 if (matchRooms[r.id]) {
                     // matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage, users: r.users};
                     matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage};
@@ -75,7 +74,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                     matchRooms[r.id] = r;
                 }
             });
-            const ids = rooms.map((r: ChatRoom) => r.id);
+            const ids = items.map((r: ChatRoom) => r.id);
 
             return {
                 ...state,
@@ -200,11 +199,11 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             });
         }
         case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_SUCCESS: {
-            const {room, messages, canFetchMore} = action as FetchEarlierMessagesSuccessAction;
+            const {room, items, canFetchMore} = action as FetchEarlierMessagesSuccessAction;
             const pagination = room.messagePagination;
             return updateRoom(state, false, {
                 ...room,
-                messages: room.messages.concat(messages),
+                messages: room.messages.concat(items),
                 messagePagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             });
         }
@@ -221,8 +220,8 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             };
         }
         case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS: {
-            const {room, messages} = action as FetchNewMessagesSuccessAction;
-            const filteredMessages = messages.filter((ma) => !room.messages.some((mb) => mb._id === ma._id));
+            const {room, items} = action as FetchNewMessagesSuccessAction;
+            const filteredMessages = items.filter((ma) => !room.messages.some((mb) => mb._id === ma._id));
             const users = room.users.concat(); // copy
 
             // Update the last message seen for the user who sent it

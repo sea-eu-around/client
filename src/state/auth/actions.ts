@@ -35,9 +35,7 @@ export type RegisterBeginAction = {
     email: string;
     password: string;
 };
-
 export type RegisterSuccessAction = {type: string; user: User};
-
 export type RegisterFailureAction = {type: string};
 
 export type LogInSuccessAction = {
@@ -46,31 +44,20 @@ export type LogInSuccessAction = {
     user: User;
     usingCachedCredentials: boolean;
 };
+export type LogInFailureAction = {type: string; needsRecovery: boolean};
+export type LogInRecoverCancelAction = {type: string};
 
 export type LogOutAction = {type: string; redirect: boolean};
-
-export type LogInFailureAction = {type: string; needsRecovery: boolean};
-
-export type LogInRecoverCancelAction = {type: string};
 
 export type ValidateAccountSuccessAction = {
     type: string;
     email: string;
 };
-
 export type ValidateAccountFailureAction = {type: string};
 
-export type BeginOnboardingAction = {
-    type: string;
-};
-
-export type NextOnboardingSlideAction = {
-    type: string;
-};
-
-export type PreviousOnboardingSlideAction = {
-    type: string;
-};
+export type BeginOnboardingAction = {type: string};
+export type NextOnboardingSlideAction = {type: string};
+export type PreviousOnboardingSlideAction = {type: string};
 
 export type SetOnboardingValuesAction = {
     type: string;
@@ -84,7 +71,6 @@ export type SetOnboardingOfferValueAction = {
 };
 
 export type ForgotPasswordFailureAction = {type: string};
-
 export type ForgotPasswordSuccessAction = {
     type: string;
     email: string;

@@ -12,7 +12,13 @@ import {requestBackend} from "../../api/utils";
 import {MESSAGES_FETCH_LIMIT, ROOMS_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
 import {ChatRoom, ChatRoomMessage} from "../../model/chat-room";
-import {AppThunk} from "../types";
+import {
+    AppThunk,
+    PaginatedFetchBeginAction,
+    PaginatedFetchFailureAction,
+    PaginatedFetchRefreshAction,
+    PaginatedFetchSuccessAction,
+} from "../types";
 
 export enum MESSAGING_ACTION_TYPES {
     FETCH_MATCH_ROOMS_BEGIN = "MESSAGING/FETCH_MATCH_ROOMS_BEGIN",
@@ -40,15 +46,6 @@ export enum MESSAGING_ACTION_TYPES {
     FETCH_NEW_MESSAGES_SUCCESS = "MESSAGING/FETCH_NEW_MESSAGES_SUCCESS",
 }
 
-export type FetchMatchRoomsBeginAction = {type: string};
-export type FetchMatchRoomsFailureAction = {type: string};
-export type FetchMatchRoomsSuccessAction = {
-    type: string;
-    rooms: ChatRoom[];
-    canFetchMore: boolean;
-};
-export type FetchMatchRoomsRefreshAction = {type: string};
-
 export type ConnectToChatBeginAction = {type: string};
 export type ConnectToChatFailureAction = {type: string};
 export type ConnectToChatSuccessAction = {type: string};
@@ -66,27 +63,18 @@ export type ReceiveChatMessageAction = {type: string; message: ResponseChatMessa
 export type ReceiveChatWritingAction = {type: string; payload: ResponseChatWritingDto};
 export type ReadChatMessageAction = {type: string; payload: ResponseChatMessageReadDto};
 
-export type FetchEarlierMessagesBeginAction = {type: string; room: ChatRoom};
-export type FetchEarlierMessagesFailureAction = {type: string; room: ChatRoom};
-export type FetchEarlierMessagesSuccessAction = {
-    type: string;
-    room: ChatRoom;
-    messages: ChatRoomMessage[];
-    canFetchMore: boolean;
-};
+export type FetchEarlierMessagesBeginAction = {room: ChatRoom} & PaginatedFetchBeginAction;
+export type FetchEarlierMessagesFailureAction = {room: ChatRoom} & PaginatedFetchFailureAction;
+export type FetchEarlierMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuccessAction<ChatRoomMessage>;
 
-export type FetchNewMessagesBeginAction = {type: string; room: ChatRoom};
-export type FetchNewMessagesFailureAction = {type: string; room: ChatRoom};
-export type FetchNewMessagesSuccessAction = {
-    type: string;
-    room: ChatRoom;
-    messages: ChatRoomMessage[];
-};
+export type FetchNewMessagesBeginAction = {room: ChatRoom} & PaginatedFetchBeginAction;
+export type FetchNewMessagesFailureAction = {room: ChatRoom} & PaginatedFetchFailureAction;
+export type FetchNewMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuccessAction<ChatRoomMessage>;
 
 export type MessagingAction =
-    | FetchMatchRoomsFailureAction
-    | FetchMatchRoomsSuccessAction
-    | FetchMatchRoomsRefreshAction
+    | PaginatedFetchBeginAction
+    | PaginatedFetchSuccessAction<ChatRoom>
+    | PaginatedFetchRefreshAction
     | ConnectToChatBeginAction
     | ConnectToChatFailureAction
     | ConnectToChatSuccessAction
@@ -105,17 +93,17 @@ export type MessagingAction =
     | FetchNewMessagesFailureAction
     | FetchNewMessagesSuccessAction;
 
-const beginFetchMatchRooms = (): FetchMatchRoomsBeginAction => ({
+const beginFetchMatchRooms = (): PaginatedFetchBeginAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN,
 });
 
-const fetchMatchRoomsFailure = (): FetchMatchRoomsFailureAction => ({
+const fetchMatchRoomsFailure = (): PaginatedFetchFailureAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_FAILURE,
 });
 
-const fetchMatchRoomsSuccess = (rooms: ChatRoom[], canFetchMore: boolean): FetchMatchRoomsSuccessAction => ({
+const fetchMatchRoomsSuccess = (items: ChatRoom[], canFetchMore: boolean): PaginatedFetchSuccessAction<ChatRoom> => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS,
-    rooms,
+    items,
     canFetchMore,
 });
 
@@ -144,7 +132,7 @@ export const fetchMatchRooms = (search?: string): AppThunk => async (dispatch, g
     } else dispatch(fetchMatchRoomsFailure());
 };
 
-export const refreshMatchRooms = (): FetchMatchRoomsRefreshAction => ({
+export const refreshMatchRooms = (): PaginatedFetchRefreshAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_REFRESH,
 });
 
@@ -288,12 +276,12 @@ const fetchEarlierMessagesFailure = (room: ChatRoom): FetchEarlierMessagesFailur
 
 const fetchEarlierMessagesSuccess = (
     room: ChatRoom,
-    messages: ChatRoomMessage[],
+    items: ChatRoomMessage[],
     canFetchMore: boolean,
 ): FetchEarlierMessagesSuccessAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_SUCCESS,
     room,
-    messages,
+    items,
     canFetchMore,
 });
 
@@ -307,10 +295,15 @@ const fetchNewMessagesFailure = (room: ChatRoom): FetchNewMessagesFailureAction 
     room,
 });
 
-const fetchNewMessagesSuccess = (room: ChatRoom, messages: ChatRoomMessage[]): FetchNewMessagesSuccessAction => ({
+const fetchNewMessagesSuccess = (
+    room: ChatRoom,
+    items: ChatRoomMessage[],
+    canFetchMore: boolean,
+): FetchNewMessagesSuccessAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS,
     room,
-    messages,
+    items,
+    canFetchMore,
 });
 
 /**
@@ -357,7 +350,9 @@ export const fetchNewMessages = (room: ChatRoom): AppThunk => async (dispatch, g
                     // Inform the server that we've read the last message
                     chatSocket.readMessage(room.id, messages[0]._id, messages[0].createdAt.toJSON());
                 }
-                dispatch(fetchNewMessagesSuccess(room, messages as ChatRoomMessage[]));
+                dispatch(
+                    fetchNewMessagesSuccess(room, messages as ChatRoomMessage[], page < paginated.meta.totalPages),
+                );
             } else dispatch(fetchNewMessagesFailure(room));
         };
 

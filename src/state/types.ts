@@ -133,3 +133,13 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 
 // Shortcut type for redux-thunk dispatch (cast dispatch function to this for async actions)
 export type MyThunkDispatch = ThunkDispatch<AppState, void, AnyAction>;
+
+// Common action types
+export type PaginatedFetchBeginAction = {type: string};
+export type PaginatedFetchFailureAction = {type: string};
+export type PaginatedFetchSuccessAction<T> = {
+    type: string;
+    items: T[];
+    canFetchMore: boolean;
+};
+export type PaginatedFetchRefreshAction = {type: string};
