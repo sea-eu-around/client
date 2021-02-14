@@ -23,7 +23,7 @@ class GroupCover extends React.Component<GroupCoverProps> {
         const showLoading = group?.uploadingCover;
         const showPlaceholder = !showLoading && (!group || !group.cover);
         const allowEditing = group !== null;
-        console.log(group && group.cover);
+
         return (
             <View style={styles.container}>
                 {group && group.cover && <Image style={styles.image} source={{uri: group.cover}} resizeMode="cover" />}

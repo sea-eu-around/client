@@ -5,6 +5,7 @@ import {ResponseChatMessageDto} from "./api/dto";
 import {receiveChatMessage} from "./state/messaging/actions";
 import {areNotificationsSupported, getNotificationData} from "./notifications-utils";
 import store from "./state/store";
+import {DEBUG_MODE} from "./constants/config";
 
 export function configureNotifications(): void {
     if (!areNotificationsSupported()) return;
@@ -20,8 +21,10 @@ export function configureNotifications(): void {
     Notifications.addNotificationReceivedListener((notification) => {
         const data = getNotificationData(notification);
 
-        console.log("Notification received:");
-        console.log(data);
+        if (DEBUG_MODE) {
+            console.log("Notification received:");
+            console.log(data);
+        }
 
         if (data.roomId && data.text) {
             const message = data as ResponseChatMessageDto;
@@ -30,7 +33,6 @@ export function configureNotifications(): void {
     });
 
     Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Notification response received:");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = response.notification ? getNotificationData(response.notification) : (response as any).body;
 

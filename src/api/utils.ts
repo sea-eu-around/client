@@ -1,5 +1,5 @@
 import {Alert} from "react-native";
-import {BACKEND_URL} from "../constants/config";
+import {BACKEND_URL, DEBUG_MODE} from "../constants/config";
 import {HttpStatusCode} from "../constants/http-status";
 import {RequestResponse, TokenDto} from "./dto";
 
@@ -62,7 +62,7 @@ export async function requestBackend(
     let response: Response | null = null;
 
     try {
-        if (verbose) {
+        if (verbose && DEBUG_MODE) {
             console.log(`Sending request: ${method} /${endpoint}${formattedParams}`);
             console.log(`  headers: ${JSON.stringify(headers)}`);
             console.log(`  body   : ${JSON.stringify(body)}`);
@@ -85,7 +85,7 @@ export async function requestBackend(
             }
         }
 
-        if (verbose) {
+        if (verbose && DEBUG_MODE) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
         }
