@@ -3,7 +3,6 @@ import * as React from "react";
 import {StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {refreshFetchedHistory} from "../../state/matching/actions";
 import {AppState, MyThunkDispatch, PaginatedState} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -68,7 +67,7 @@ class GroupMembersScreen extends React.Component<GroupMembersScreenProps, GroupM
         return (
             <ScreenWrapper>
                 <BufferedSearchBar
-                    onBufferedUpdate={() => dispatch(refreshFetchedHistory())} // TODO
+                    onBufferedUpdate={() => group && dispatch(fetchGroupMembersRefresh(group.id))}
                     bufferDelay={SEARCH_BUFFER_DELAY}
                     placeholder={i18n.t("search")}
                     onChangeText={(search: string) => this.setState({...this.state, search})}
