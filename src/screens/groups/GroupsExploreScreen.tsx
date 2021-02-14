@@ -14,7 +14,7 @@ import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
 import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
 import BufferedSearchBar from "../../components/BufferedSearchBar";
-import {fetchGroups} from "../../state/groups/actions";
+import {fetchGroups, refreshFetchedGroups} from "../../state/groups/actions";
 import {Group} from "../../model/groups";
 import GroupExploreCard from "../../components/cards/GroupExploreCard";
 
@@ -85,7 +85,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     id={(group: Group): string => group.id}
                     hideScrollIndicator
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.none")}</Text>}
-                    refresh={() => /*dispatch(refreshFetchedProfiles())*/ console.log("refresh")}
+                    refresh={() => dispatch(refreshFetchedGroups())}
                     refreshOnFocus
                     renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
                     itemsContainerStyle={styles.itemsContainer}

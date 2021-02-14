@@ -50,6 +50,7 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUP_MEMBERS_BEGIN = "GROUP/FETCH_GROUP_MEMBERS_BEGIN",
     FETCH_GROUP_MEMBERS_SUCCESS = "GROUP/FETCH_GROUP_MEMBERS_SUCCESS",
     FETCH_GROUP_MEMBERS_FAILURE = "GROUP/FETCH_GROUP_MEMBERS_FAILURE",
+    FETCH_GROUP_MEMBERS_REFRESH = "GROUP/FETCH_GROUP_MEMBERS_REFRESH",
     FETCH_GROUP_POSTS_BEGIN = "GROUP/FETCH_GROUP_POSTS_BEGIN",
     FETCH_GROUP_POSTS_SUCCESS = "GROUP/FETCH_GROUP_POSTS_SUCCESS",
     FETCH_GROUP_POSTS_FAILURE = "GROUP/FETCH_GROUP_POSTS_FAILURE",
@@ -94,6 +95,7 @@ export type DeleteGroupFailureAction = {type: string};
 
 export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {groupId: string};
 export type FetchGroupMembersSuccessAction = PaginatedFetchSuccessAction<GroupMember> & {groupId: string};
+export type FetchGroupMembersRefreshAction = PaginatedFetchRefreshAction & {groupId: string};
 export type FetchGroupMembersFailureAction = PaginatedFetchFailureAction & {groupId: string};
 
 export type FetchGroupPostsBeginAction = PaginatedFetchBeginAction & {groupId: string};
@@ -349,8 +351,6 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         const paginated = response as PaginatedRequestResponse;
         const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        console.log("fetched", groups.length, "groups");
-        console.log("meta", paginated.meta);
         dispatch(fetchGroupsSuccess(groups, canFetchMore));
     } else dispatch(fetchGroupsFailure());
 };
@@ -518,6 +518,7 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
                     creator: getState().profile.user!.profile!,
                     text: "This is a test comment",
                     voteStatus: GroupVoteStatus.Neutral,
+                    score: 0,
                 },
                 {
                     id: Math.round(Math.random() * 1e8) + "",
@@ -526,6 +527,7 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
                     creator: getState().profile.user!.profile!,
                     text: "Another test comment",
                     voteStatus: GroupVoteStatus.Upvote,
+                    score: 0,
                 },
             ],
             false,
@@ -558,6 +560,11 @@ const fetchGroupMembersSuccess = (
 
 const fetchGroupMembersFailure = (groupId: string): FetchGroupMembersFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_FAILURE,
+    groupId,
+});
+
+export const fetchGroupMembersRefresh = (groupId: string): FetchGroupMembersRefreshAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_REFRESH,
     groupId,
 });
 
@@ -641,8 +648,6 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
         const paginated = response as PaginatedRequestResponse;
         const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        console.log("fetched", groups.length, "groups");
-        console.log("meta", paginated.meta);
         dispatch(fetchMyGroupsSuccess(groups, canFetchMore));
     } else dispatch(fetchMyGroupsFailure());
 };

@@ -7,6 +7,7 @@ import {
     DeletePostSuccessAction,
     FetchGroupMembersBeginAction,
     FetchGroupMembersFailureAction,
+    FetchGroupMembersRefreshAction,
     FetchGroupMembersSuccessAction,
     FetchGroupPostsBeginAction,
     FetchGroupPostsFailureAction,
@@ -234,6 +235,13 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return updateGroup(state, groupId, ({membersPagination: p, members: gm}) => ({
                 members: (gm || []).concat(items),
                 membersPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
+            }));
+        }
+        case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_REFRESH: {
+            const {groupId} = action as FetchGroupMembersRefreshAction;
+            return updateGroup(state, groupId, ({}) => ({
+                members: [],
+                membersPagination: initialPaginatedState(),
             }));
         }
 

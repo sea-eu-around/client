@@ -13,7 +13,7 @@ import {GROUPS_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
 import BufferedSearchBar from "../../components/BufferedSearchBar";
-import {fetchGroupMembers} from "../../state/groups/actions";
+import {fetchGroupMembers, fetchGroupMembersRefresh} from "../../state/groups/actions";
 import {Group, GroupMember} from "../../model/groups";
 import {getRouteParams} from "../../navigation/utils";
 import GroupMemberCard from "../../components/cards/GroupMemberCard";
@@ -93,7 +93,7 @@ class GroupMembersScreen extends React.Component<GroupMembersScreenProps, GroupM
                             <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
                         </>
                     }
-                    refresh={() => /*dispatch(refreshFetchedProfiles())*/ console.log("refresh")}
+                    refresh={() => group && dispatch(fetchGroupMembersRefresh(group.id))}
                     refreshOnFocus
                     renderItem={(member: GroupMember) => (
                         <GroupMemberCard key={`${group?.id}-${member.profile.id}`} member={member} />
