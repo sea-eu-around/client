@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {Dimensions} from "react-native";
+import {Dimensions, Platform} from "react-native";
 import {colors} from "react-native-elements";
+import ReAnimated from "react-native-reanimated";
 
 export function initPolyfills(): void {
     // FIXME: https://github.com/react-native-elements/react-native-elements/pull/2561
@@ -48,4 +49,9 @@ export function normalizeWheelEvent(e: WheelEvent): {spinY: number; pixelY: numb
     if (pY && !sY) sY = pY < 1 ? -1 : 1;
 
     return {spinY: sY, pixelY: pY};
+}
+
+export function animateValue(node: ReAnimated.Value<number>, config: ReAnimated.TimingConfig): void {
+    if (Platform.OS === "web") node.setValue(config.toValue);
+    else ReAnimated.timing(node, config).start();
 }

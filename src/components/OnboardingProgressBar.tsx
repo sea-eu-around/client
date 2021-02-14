@@ -1,11 +1,12 @@
 import * as React from "react";
-import {View, StyleSheet, StyleProp, ViewStyle, Platform} from "react-native";
+import {View, StyleSheet, StyleProp, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {SafeAreaInsetsContext} from "react-native-safe-area-context";
+import {animateValue} from "../polyfills";
 
 export type OnboardingProgressBarProps = {
     index: number;
@@ -30,14 +31,11 @@ class OnboardingProgressBar extends React.Component<OnboardingProgressBarProps> 
         const progress = (index + 1) / ONBOARDING_ORDER.length;
         const targetWidth = progress * this.containerWidth;
 
-        if (Platform.OS === "web") this.width.setValue(targetWidth);
-        else {
-            ReAnimated.timing(this.width, {
-                toValue: targetWidth,
-                duration: 150,
-                easing: Easing.sin,
-            }).start();
-        }
+        animateValue(this.width, {
+            toValue: targetWidth,
+            duration: 150,
+            easing: Easing.sin,
+        });
     }
 
     render(): JSX.Element {

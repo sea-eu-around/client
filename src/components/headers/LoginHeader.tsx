@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, TouchableOpacity, StyleSheet, Dimensions, Keyboard, Platform, View} from "react-native";
+import {Text, TouchableOpacity, StyleSheet, Dimensions, Keyboard, View} from "react-native";
 import {ThemeConsumer} from "react-native-elements";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {Theme, ThemeProps} from "../../types";
@@ -12,6 +12,7 @@ import i18n from "i18n-js";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import layout from "../../constants/layout";
+import {animateValue} from "../../polyfills";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -54,47 +55,37 @@ class LoginHeaderClass extends React.Component<LoginHeaderProps> {
             const imageTopVal = this.getCollapsedHeight() - this.getImageHeight();
             const heightVal = this.getCollapsedHeight() - LOGIN_HEADER_WAVE_HEIGHT;
 
-            if (Platform.OS === "web") {
-                this.height.setValue(heightVal);
-                this.imageTop.setValue(imageTopVal);
-            } else {
-                const easing: ReAnimated.EasingFunction = Easing.cubic;
-                const duration = 100;
-
-                ReAnimated.timing(this.height, {
-                    toValue: heightVal,
-                    duration,
-                    easing,
-                }).start();
-                ReAnimated.timing(this.imageTop, {
-                    toValue: imageTopVal,
-                    duration,
-                    easing,
-                }).start();
-            }
+            const easing: ReAnimated.EasingFunction = Easing.cubic;
+            const duration = 100;
+            animateValue(this.height, {
+                toValue: heightVal,
+                duration,
+                easing,
+            });
+            animateValue(this.imageTop, {
+                toValue: imageTopVal,
+                duration,
+                easing,
+            });
         });
 
         Keyboard.addListener("keyboardDidHide", () => {
             const imageTopVal = this.getFullHeight() - this.getImageHeight();
             const heightVal = this.getFullHeight() - LOGIN_HEADER_WAVE_HEIGHT;
 
-            if (Platform.OS === "web") {
-                this.height.setValue(heightVal);
-                this.imageTop.setValue(imageTopVal);
-            } else {
-                const easing: ReAnimated.EasingFunction = Easing.cubic;
-                const duration = 100;
-                ReAnimated.timing(this.height, {
-                    toValue: heightVal,
-                    duration,
-                    easing,
-                }).start();
-                ReAnimated.timing(this.imageTop, {
-                    toValue: imageTopVal,
-                    duration,
-                    easing,
-                }).start();
-            }
+            const easing: ReAnimated.EasingFunction = Easing.cubic;
+            const duration = 100;
+
+            animateValue(this.height, {
+                toValue: heightVal,
+                duration,
+                easing,
+            });
+            animateValue(this.imageTop, {
+                toValue: imageTopVal,
+                duration,
+                easing,
+            });
         });
     }
 
