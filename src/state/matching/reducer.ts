@@ -47,7 +47,7 @@ export const initialState: MatchingState = {
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
     switch (action.type) {
         case MATCHING_ACTION_TYPES.SET_OFFER_FILTER: {
-            const {offerId, value} = <SetOfferFilterAction>action;
+            const {offerId, value} = action as SetOfferFilterAction;
             return {
                 ...state,
                 filters: {
@@ -57,7 +57,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             };
         }
         case MATCHING_ACTION_TYPES.SET_FILTERS: {
-            const {filters} = <SetMatchingFiltersAction>action;
+            const {filters} = action as SetMatchingFiltersAction;
             return {
                 ...state,
                 filters: {...state.filters, ...filters},

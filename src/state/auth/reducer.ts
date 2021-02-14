@@ -43,7 +43,7 @@ export const initialState: AuthState = {
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
     switch (action.type) {
         case AUTH_ACTION_TYPES.REGISTER_BEGIN: {
-            const {email} = <RegisterBeginAction>action;
+            const {email} = action as RegisterBeginAction;
             return {
                 ...state,
                 registerEmail: email,
@@ -52,7 +52,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             const {
                 user: {verificationToken, onboarded},
-            } = <RegisterSuccessAction>action;
+            } = action as RegisterSuccessAction;
             return {
                 ...state,
                 verificationToken,
@@ -60,7 +60,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
-            const {email} = <ValidateAccountSuccessAction>action;
+            const {email} = action as ValidateAccountSuccessAction;
             return {...state, validated: true, validatedEmail: email};
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE: {
@@ -70,7 +70,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             const {
                 token,
                 user: {onboarded, email},
-            } = <LogInSuccessAction>action;
+            } = action as LogInSuccessAction;
 
             // Pre-fill some of the on-boarding values
             const onboarding = {...state.onboarding};
@@ -122,11 +122,11 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             return {...state, onboardingIndex: state.onboardingIndex + 1};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
-            const {values} = <SetOnboardingValuesAction>action;
+            const {values} = action as SetOnboardingValuesAction;
             return {...state, onboarding: {...state.onboarding, ...values}};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE: {
-            const {id, value} = <SetOnboardingOfferValueAction>action;
+            const {id, value} = action as SetOnboardingOfferValueAction;
             return {
                 ...state,
                 onboarding: {
