@@ -20,9 +20,7 @@ import {MatchActionStatus} from "../api/dto";
 const reduxConnector = connect((state: AppState) => ({
     profiles: state.matching.profiles,
     profileIds: state.matching.orderedProfileIds,
-    fetchingProfiles: state.matching.profilesPagination.fetching,
-    canFetchMore: state.matching.profilesPagination.canFetchMore,
-    currentPage: state.matching.profilesPagination.page,
+    pagination: state.matching.profilesPagination,
 }));
 
 // Component props
@@ -35,16 +33,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     successModalRef = React.createRef<MatchSuccessModalClass>();
 
     render(): JSX.Element {
-        const {
-            profileIds,
-            profiles,
-            theme,
-            fetchingProfiles,
-            canFetchMore,
-            currentPage,
-            navigation,
-            dispatch,
-        } = this.props;
+        const {profileIds, profiles, theme, pagination, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -54,10 +43,10 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     navigation={navigation}
                     fetchLimit={PROFILES_FETCH_LIMIT}
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchProfiles())}
-                    fetching={fetchingProfiles}
-                    canFetchMore={canFetchMore}
-                    // refreshOnFocus={true}
-                    currentPage={currentPage}
+                    fetching={pagination.fetching}
+                    canFetchMore={pagination.canFetchMore}
+                    currentPage={pagination.page}
+                    // refreshOnFocus
                     items={profileIds.map((id) => profiles[id])}
                     id={(profile: UserProfile): string => profile.id}
                     noResultsComponent={
