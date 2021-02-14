@@ -1,5 +1,5 @@
 import React from "react";
-import {Text, View, StyleSheet, TextProps, TouchableOpacity} from "react-native";
+import {Text, View, StyleSheet, TextProps, TouchableOpacity, StyleProp, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
@@ -25,8 +25,9 @@ export type ConfirmationModalProps = ThemeProps &
         text?: string;
         justifyText?: boolean;
         icon?: (props: Partial<IconProps<never>>) => JSX.Element;
-        additionalContent?: (hide: () => void, textProps: TextProps) => JSX.Element;
         buttons: ConfirmationModalButton[];
+        additionalContent?: (hide: () => void, textProps: TextProps) => JSX.Element;
+        contentContainerStyle?: StyleProp<ViewStyle>;
     };
 
 class ConfirmationModal extends React.Component<ConfirmationModalProps> {
@@ -62,7 +63,17 @@ class ConfirmationModal extends React.Component<ConfirmationModalProps> {
     }
 
     render() {
-        const {theme, title, text, justifyText, icon, buttons, additionalContent, ...otherProps} = this.props;
+        const {
+            theme,
+            title,
+            text,
+            justifyText,
+            icon,
+            buttons,
+            additionalContent,
+            contentContainerStyle,
+            ...otherProps
+        } = this.props;
         const styles = themedStyles(theme);
 
         const buttonDefaults = {backgroundColor: theme.okay, color: theme.textWhite};
@@ -74,9 +85,17 @@ class ConfirmationModal extends React.Component<ConfirmationModalProps> {
                 renderContent={(hide: () => void) => (
                     <>
                         {icon && icon({style: styles.icon})}
-                        <View style={styles.contentContainer}>
+                        <View style={[styles.contentContainer, contentContainerStyle]}>
                             <Text style={styles.title}>{title}</Text>
-                            <Text style={[styles.text, justifyText ? {textAlign: "justify"} : {}]}>{text}</Text>
+                            <Text
+                                style={[
+                                    styles.text,
+                                    justifyText && {textAlign: "justify"},
+                                    !text && {marginVertical: 8, height: 0},
+                                ]}
+                            >
+                                {text}
+                            </Text>
                             {additionalContent && additionalContent(hide, {style: styles.contentText})}
                         </View>
                         <View style={styles.actionsWrapper}>
