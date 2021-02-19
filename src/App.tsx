@@ -11,6 +11,7 @@ import ThemedStatusBar from "./components/ThemedStatusBar";
 import {configureNotifications} from "./notifications";
 import {initPolyfills} from "./polyfills";
 import CookieBanner from "./components/CookieBanner";
+import BottomSheetModalProvider from "./components/bottom-sheet/BottomSheetModalProvider";
 
 function App() {
     initPolyfills();
@@ -27,8 +28,10 @@ function App() {
             <SafeAreaProvider>
                 <Provider store={store}>
                     <ConnectedThemeProvider>
-                        <Navigation onReady={() => setNavigationReady(true)} initialRoute={initialRoute} />
-                        {navigationReady && <ThemedStatusBar />}
+                        <BottomSheetModalProvider>
+                            <Navigation onReady={() => setNavigationReady(true)} initialRoute={initialRoute} />
+                            {navigationReady && <ThemedStatusBar />}
+                        </BottomSheetModalProvider>
                         <CookieBanner />
                     </ConnectedThemeProvider>
                 </Provider>
