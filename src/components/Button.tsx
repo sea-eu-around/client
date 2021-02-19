@@ -55,6 +55,7 @@ export type ButtonProps = {
     skin?: ButtonSkin;
     iconLeft?: boolean;
     contentOpacity?: number;
+    TouchableComponent?: typeof React.Component;
 } & ThemeProps;
 
 class Button extends React.Component<ButtonProps> {
@@ -63,8 +64,10 @@ class Button extends React.Component<ButtonProps> {
 
         const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
+        const TouchableComponent = this.props.TouchableComponent || TouchableOpacity;
+
         return (
-            <TouchableOpacity
+            <TouchableComponent
                 accessibilityRole="button"
                 accessibilityLabel={text}
                 onPress={onPress}
@@ -83,7 +86,7 @@ class Button extends React.Component<ButtonProps> {
                         {icon}
                     </View>
                 )}
-            </TouchableOpacity>
+            </TouchableComponent>
         );
     }
 }

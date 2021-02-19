@@ -24,6 +24,7 @@ export type PopUpSelectorProps = ThemeProps & {
     valueStyle?: StyleProp<TextStyle>;
     buttonStyleVariant?: PickerButtonStyleVariant;
     activator?: PopUpSelectorActivator;
+    TouchableComponent?: typeof React.Component;
 };
 
 // Component state
@@ -99,11 +100,13 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
         const pstyles = pickerStyles(theme);
         const buttonStyleProps = getPickerButtonStyleProps(buttonStyleVariant, theme);
 
+        const TouchableComponent = this.props.TouchableComponent || TouchableOpacity;
+
         return (
             <>
                 {activator !== undefined && activator(() => this.show())}
                 {!activator && (
-                    <TouchableOpacity
+                    <TouchableComponent
                         style={[
                             buttonStyleProps.button,
                             selected.length > 0 && !noOkUnderline ? styles.buttonOk : {},
@@ -124,7 +127,7 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
                                 {selected.map(label).join(", ")}
                             </Text>
                         )}
-                    </TouchableOpacity>
+                    </TouchableComponent>
                 )}
                 <CustomModal
                     ref={this.modalRef}

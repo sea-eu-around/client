@@ -14,6 +14,7 @@ type FormSubmitButtonProps = {
     textStyle?: StyleProp<TextStyle>;
     loadingIndicatorStyle?: StyleProp<ViewStyle>;
     skin?: ButtonSkin;
+    TouchableComponent?: typeof React.Component;
 } & ThemeProps;
 
 class FormSubmitButton extends React.Component<FormSubmitButtonProps> {
