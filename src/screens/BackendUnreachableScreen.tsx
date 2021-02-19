@@ -80,7 +80,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginTop: 40,
             marginBottom: 20,
             textAlign: "center",
-            color: theme.text,
+            color: theme.textLight,
         },
         retryButton: {
             padding: 10,
