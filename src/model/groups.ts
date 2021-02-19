@@ -1,4 +1,4 @@
-import {GroupRoleDto} from "../api/dto";
+import {GroupMemberStatus, GroupRole} from "../api/dto";
 import {PaginatedState} from "../state/types";
 import {UserProfile} from "./user-profile";
 
@@ -10,16 +10,20 @@ export type Group = {
     requireApproval: boolean;
     cover: string | null;
     uploadingCover: boolean;
-    members: GroupMember[] | null;
-    membersPagination: PaginatedState;
+    members: {[key: string]: GroupMember};
+    membersPaginations: {[key in GroupMemberStatus]: PaginatedState};
+    memberIds: {[key in GroupMemberStatus]: string[]};
     posts: {[key: string]: GroupPost};
     postIds: string[];
     postsPagination: PaginatedState;
+    myRole: GroupRole | null;
+    numApprovedMembers: number | null;
 };
 
 export type GroupMember = {
     profile: UserProfile;
-    role: GroupRoleDto;
+    role: GroupRole;
+    status: GroupMemberStatus;
 };
 
 export type GroupPost = {
@@ -46,18 +50,24 @@ export type PostComment = {
     creator: UserProfile;
     createdAt: Date;
     updatedAt: Date;
+    children: PostComment[];
 };
 
 export enum PostSortingOrder {
     Newest = "newest",
     Oldest = "oldest",
-    MostPopular = "most-popular",
+    Popular = "popular",
 }
 
-export const POST_SORTING_ORDERS = [PostSortingOrder.Newest, PostSortingOrder.Oldest, PostSortingOrder.MostPopular];
+export const POST_SORTING_ORDERS = [PostSortingOrder.Newest, PostSortingOrder.Oldest, PostSortingOrder.Popular];
 
 export enum GroupVoteStatus {
     Upvote = "up",
     Downvote = "down",
     Neutral = "neutral",
 }
+export const GROUP_VOTE_VALUES = {
+    [GroupVoteStatus.Upvote]: 1,
+    [GroupVoteStatus.Downvote]: -1,
+    [GroupVoteStatus.Neutral]: 0,
+};

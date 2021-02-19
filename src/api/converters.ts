@@ -167,11 +167,23 @@ export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchIn
 export function convertDtoToGroup(dto: ResponseGroupDto): Group {
     return {
         ...dto,
-        membersPagination: initialPaginatedState(),
+        membersPaginations: {
+            approved: initialPaginatedState(),
+            banned: initialPaginatedState(),
+            pending: initialPaginatedState(),
+        },
+        memberIds: {
+            approved: [],
+            banned: [],
+            pending: [],
+        },
+        members: {},
         posts: {},
         postIds: [],
         postsPagination: initialPaginatedState(),
         uploadingCover: false,
+        myRole: dto.isMember ? dto.role : null,
+        numApprovedMembers: null,
     };
 }
 
@@ -188,8 +200,14 @@ export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
         creator: convertDtoToProfile(dto.creator),
-        score: 0, // TODO hook score to back
-        voteStatus: GroupVoteStatus.Neutral,
+        score: dto.upVotesCount - dto.downVotesCount,
+        voteStatus: dto.isVoted
+            ? dto.voteType === "up"
+                ? GroupVoteStatus.Upvote
+                : dto.voteType === "down"
+                ? GroupVoteStatus.Downvote
+                : GroupVoteStatus.Neutral
+            : GroupVoteStatus.Neutral,
     };
 }
 
@@ -199,7 +217,14 @@ export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostCommen
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
         creator: convertDtoToProfile(dto.creator),
-        score: 0, // TODO hook up to back
-        voteStatus: GroupVoteStatus.Neutral,
+        score: dto.upVotesCount - dto.downVotesCount,
+        voteStatus: dto.isVoted
+            ? dto.voteType === "up"
+                ? GroupVoteStatus.Upvote
+                : dto.voteType === "down"
+                ? GroupVoteStatus.Downvote
+                : GroupVoteStatus.Neutral
+            : GroupVoteStatus.Neutral,
+        children: dto.children?.map(convertDtoToPostComment) || [],
     };
 }

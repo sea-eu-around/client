@@ -223,6 +223,8 @@ export type ResponseGroupDto = {
     visible: boolean;
     requireApproval: boolean;
     members: null;
+    isMember: boolean;
+    role: GroupRole | null;
 };
 
 export type CreateGroupDto = {
@@ -246,6 +248,10 @@ export type ResponseGroupPostDto = {
     createdAt: string;
     updatedAt: string;
     creator: ResponseProfileDto;
+    upVotesCount: number;
+    downVotesCount: number;
+    isVoted: boolean;
+    voteType?: "up" | "down";
 };
 
 export type ResponsePostCommentDto = {
@@ -254,19 +260,34 @@ export type ResponsePostCommentDto = {
     createdAt: string;
     updatedAt: string;
     creator: ResponseProfileDto;
+    children: ResponsePostCommentDto[] | null;
+    upVotesCount: number;
+    downVotesCount: number;
+    isVoted: boolean;
+    voteType?: "up" | "down";
 };
 
 export type CreatePostCommentDto = {
     text: string;
+    parentID?: string;
 };
 
-export type GroupRoleDto = "admin" | "basic";
+export enum GroupRole {
+    Admin = "admin",
+    Basic = "basic",
+}
+
+export enum GroupMemberStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Banned = "banned",
+}
 
 export type ResponseGroupMemberDto = {
     profile: ResponseProfileDto;
     profileId: string;
-    role: GroupRoleDto;
-    status: "approved";
+    role: GroupRole;
+    status: GroupMemberStatus;
 };
 
 export type GroupCoverSuccessfullyUpdatedDto = {
