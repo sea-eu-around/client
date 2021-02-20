@@ -1,7 +1,7 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {StyleSheet, Text} from "react-native";
-import {Button, withTheme} from "react-native-elements";
+import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {refreshFetchedHistory} from "../../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../../state/types";
@@ -12,7 +12,6 @@ import {TabGroupsRoot} from "../../navigation/types";
 import {GROUPS_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
-import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
 import BufferedSearchBar from "../../components/BufferedSearchBar";
 import {fetchGroups, refreshFetchedGroups} from "../../state/groups/actions";
 import {Group} from "../../model/groups";
@@ -46,24 +45,8 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
         const {search} = this.state;
         const styles = themedStyles(theme);
 
-        const filters = MATCH_ACTION_HISTORY_STATUSES;
-
         return (
             <ScreenWrapper>
-                {/*<View style={styles.filtersContainer}>
-                    {filters.map((key: string) => (
-                        <Filter
-                            theme={theme}
-                            key={`match-history-filter-${key}`}
-                            filterKey={key}
-                            selected={historyFilters[key]}
-                            onPress={() => {
-                                dispatch(setHistoryFilters({[key]: !historyFilters[key]}));
-                                dispatch(refreshFetchedHistory());
-                            }}
-                        />
-                    ))}
-                        </View>*/}
                 <BufferedSearchBar
                     onBufferedUpdate={() => dispatch(refreshFetchedHistory())}
                     bufferDelay={SEARCH_BUFFER_DELAY}
@@ -97,31 +80,6 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
     }
 }
 
-// TODO remove
-function Filter({
-    theme,
-    selected,
-    filterKey,
-    onPress,
-}: {
-    theme: Theme;
-    selected: boolean;
-    filterKey: string;
-    onPress: () => void;
-}): JSX.Element {
-    const styles = themedStyles(theme);
-    return (
-        <Button
-            onPress={onPress}
-            title={i18n.t(`matching.history.status.${filterKey}`)}
-            containerStyle={styles.filterButtonContainer}
-            buttonStyle={[styles.filterButton, selected ? styles.filterButtonSelected : {}]}
-            titleStyle={[styles.filterLabel, selected ? styles.filterLabelSelected : {}]}
-            raised={false}
-        />
-    );
-}
-
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         itemsContainer: {
@@ -135,42 +93,6 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 20,
             color: theme.textLight,
             marginVertical: 10,
-        },
-        // Filters
-        filtersContainer: {
-            width: "100%",
-            marginVertical: 10,
-            flexDirection: "row",
-        },
-        filterButtonContainer: {
-            flex: 1,
-            marginHorizontal: 15,
-            borderRadius: 25,
-        },
-        filterButton: {
-            height: 40,
-            backgroundColor: theme.cardBackground,
-        },
-        filterButtonSelected: {
-            backgroundColor: theme.accent,
-        },
-        filterLabel: {
-            color: theme.text,
-            fontSize: 14,
-            textTransform: "uppercase",
-            letterSpacing: 0.6,
-        },
-        filterLabelSelected: {
-            color: theme.textWhite,
-            fontWeight: "600",
-        },
-        filterIcon: {
-            fontSize: 18,
-            color: theme.text,
-            marginRight: 4,
-        },
-        filterIconSelected: {
-            color: theme.textWhite,
         },
         // Search bar
         searchBarContainer: {
