@@ -16,6 +16,7 @@ import {NavigationProp} from "@react-navigation/native";
 import Button from "../../components/Button";
 import {rootNavigate} from "../../navigation/utils";
 import {MaterialIcons} from "@expo/vector-icons";
+import PostsFeedView from "../../components/PostsFeedView";
 
 const reduxConnector = connect((state: AppState) => ({}));
 
@@ -34,15 +35,22 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
 
         return (
             <ScreenWrapper>
-                <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
-                {/*<GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />*/}
-                <Button
-                    text="Explore"
-                    icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
-                    iconLeft
-                    style={styles.exploreButton}
-                    textStyle={styles.exploreButtonText}
-                    onPress={() => rootNavigate("GroupsExploreScreen")}
+                <PostsFeedView
+                    top={
+                        <>
+                            <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
+                            {/*<GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />*/}
+                            <Button
+                                text="Explore"
+                                icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
+                                iconLeft
+                                style={styles.exploreButton}
+                                textStyle={styles.exploreButtonText}
+                                onPress={() => rootNavigate("GroupsExploreScreen")}
+                            />
+                        </>
+                    }
+                    navigation={(navigation as unknown) as NavigationProp<never>}
                 />
             </ScreenWrapper>
         );
