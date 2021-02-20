@@ -101,7 +101,7 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
 
         return (
             <>
-                <ActionMenu ref={this.actionMenuRef} title={i18n.t("groups.postMenu.title")} actions={actions} />
+                <ActionMenu ref={this.actionMenuRef} title={i18n.t("groups.group")} actions={actions} />
                 {group && (
                     <>
                         <LeaveGroupConfirmModal ref={this.leaveModalRef} groupId={group.id} />
