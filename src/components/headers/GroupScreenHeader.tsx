@@ -1,6 +1,6 @@
 import * as React from "react";
 import {TouchableOpacity} from "react-native";
-import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 import MainHeader, {MainHeaderStackProps} from "./MainHeader";
 import {Group} from "../../model/groups";
 import {withTheme} from "react-native-elements";
@@ -49,13 +49,6 @@ class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
                     rightButtons={
                         group
                             ? [
-                                  ({buttonStyle, iconStyle}) => (
-                                      <TouchableOpacity
-                                          style={buttonStyle} /*onPress={() => rootNavigate("MatchHistoryScreen")}*/
-                                      >
-                                          <MaterialIcons name="search" style={iconStyle} />
-                                      </TouchableOpacity>
-                                  ),
                                   ({buttonStyle, iconStyle}) => (
                                       <TouchableOpacity
                                           style={buttonStyle}
