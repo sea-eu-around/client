@@ -301,7 +301,12 @@ const deleteGroupFailure = (): DeleteGroupFailureAction => ({
 export const createGroup = (group: CreateGroupDto): ValidatedThunkAction => async (dispatch, getState) => {
     const token = getState().auth.token;
 
-    const response = await requestBackend("groups", "POST", {}, group, token, true);
+    const dto: CreateGroupDto = {
+        ...group,
+        name: group.name.trim(),
+    };
+
+    const response = await requestBackend("groups", "POST", {}, dto, token, true);
     if (response.status === HttpStatusCode.CREATED) {
         dispatch(createGroupSuccess());
         return {success: true};
