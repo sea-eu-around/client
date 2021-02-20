@@ -14,7 +14,7 @@ import store from "../../state/store";
 import {reportEntity} from "../../state/reports/actions";
 import {MyThunkDispatch} from "../../state/types";
 import QuickForm, {QuickFormClass} from "./QuickForm";
-import {GroupPost, PostComment} from "../../model/groups";
+import {Group, GroupPost, PostComment} from "../../model/groups";
 import BottomSheetTouchableOpacity from "../bottom-sheet/BottomSheetTouchableOpacity";
 
 export type QuickFormReportProps = ThemeProps & {
@@ -62,6 +62,10 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                 const comment = entity as PostComment;
                 const {firstName, lastName} = comment.creator;
                 return {name: i18n.t("report.commentFrom", {name: `${firstName} ${lastName}`}), id: comment.id};
+            }
+            case ReportEntityType.GROUP_ENTITY: {
+                const group = entity as Group;
+                return {name: i18n.t("report.group", {name: group.name}), id: group.id};
             }
             default:
                 return null;
