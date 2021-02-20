@@ -11,6 +11,7 @@ export default {
         search: "Search",
         send: "Send",
         cancel: "Cancel",
+        close: "Close",
         delete: "Delete",
         ok: "OK",
         save: "Save",
@@ -854,6 +855,8 @@ export default {
             },
             comments: {
                 replyTo: "Reply to {{name}}",
+                placeholder: "Write a comment...",
+                none: "No comments here yet.",
             },
             join: "Join",
             myGroups: {
@@ -866,10 +869,39 @@ export default {
             invites: "Invites",
             inviteNew: "Invite new members",
             posts: "Posts",
+            postMenu: {
+                title: "Post",
+            },
             members: {
                 zero: "No members",
                 singular: "1 member",
                 plural: "{{num}} members",
+                approval: {
+                    noResults: "No approval requests.",
+                },
+                approved: {
+                    noResults: "No members.",
+                },
+            },
+            deleteMember: {
+                title: "Remove User?",
+                text: "{{name}} will no longer be able to post in this group. Existing posts and comments will remain.",
+                action: "Remove",
+            },
+            deletePendingMember: {
+                title: "Refuse User",
+                text: "Do you really want to refuse {{name}}'s request to join the group?",
+                action: "Yes",
+            },
+            banMember: {
+                title: "Ban User?",
+                text: "{{name}} will be removed and unable to join this group again.",
+                action: "Ban",
+            },
+            banPendingMember: {
+                title: "Ban User?",
+                text: "{{name}} will no longer be able to send requests to join the group.",
+                action: "Ban",
             },
             description: {
                 placeholder: "Enter a description here",
@@ -879,6 +911,7 @@ export default {
                 admin: "Administrator",
                 basic: "Member",
             },
+            reportPost: "Report",
             noMorePosts: "No more posts to show.",
             noPosts: "No posts to show.",
             justPosted: "Just posted",
@@ -888,9 +921,18 @@ export default {
             postsSorting: {
                 newest: "Newest",
                 oldest: "Oldest",
-                "most-popular": "Popular",
+                popular: "Most popular",
             },
             points: "points",
+            feed: {
+                title: "Trending",
+                help:
+                    "We are showing you posts from your groups, based on their popularity and how long ago they were posted.",
+            },
+            leave: {
+                title: "Leave Group",
+                text: "Are you sure you want to leave this group?",
+            },
         },
         // Matching tab
         matching: {
@@ -967,6 +1009,7 @@ export default {
             GroupsExploreScreen: "Explore Groups",
             GroupScreen: "Group",
             GroupMembersScreen: "Group Members",
+            GroupMembersApprovalScreen: "Members Approval",
             GroupInviteScreen: "Invite",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profile",
@@ -1017,6 +1060,7 @@ export default {
         search: "Rechercher",
         send: "Envoyer",
         cancel: "Annuler",
+        close: "Fermer",
         delete: "Supprimer",
         ok: "OK",
         save: "Sauvegarder",
@@ -1844,6 +1888,8 @@ export default {
             },
             comments: {
                 replyTo: "Répondre à {{name}}",
+                placeholder: "Écrivez un commentaire...",
+                none: "Il n'y a pas encore de commentaires ici.",
             },
             join: "Rejoindre",
             myGroups: {
@@ -1856,10 +1902,40 @@ export default {
             invites: "Invitations",
             inviteNew: "Invitations",
             posts: "Posts",
+            postMenu: {
+                title: "Post",
+            },
             members: {
                 zero: "Aucun membre",
                 singular: "1 membre",
                 plural: "{{num}} membres",
+                approval: {
+                    noResults: "Aucune demande d'approbation.",
+                },
+                approved: {
+                    noResults: "Aucun membre.",
+                },
+            },
+            deleteMember: {
+                title: "Exclure l'utilisateur ?",
+                text:
+                    "{{name}} ne pourra plus poster sur ce groupe. Les posts et commentaires existant ne seront pas supprimés.",
+                action: "Exclure",
+            },
+            deletePendingMember: {
+                title: "Refuser la demande",
+                text: "Voulez-vous vraiment refuser la demande de {{name}} pour rejoindre le groupe ?",
+                action: "Oui",
+            },
+            banMember: {
+                title: "Bannir l'utilisateur ?",
+                text: "L'utilisateur sera exclu et ne pourra plus rejoindre le groupe.",
+                action: "Bannir",
+            },
+            banPendingMember: {
+                title: "Bannir l'utilisateur ?",
+                text: "{{name}} ne pourra plus demander à rejoindre le groupe.",
+                action: "Bannir",
             },
             description: {
                 placeholder: "Entrez une description ici",
@@ -1869,6 +1945,7 @@ export default {
                 admin: "Administrateur",
                 basic: "Membre",
             },
+            reportPost: "Signaler",
             noMorePosts: "Aucun autre post à afficher.",
             noPosts: "Aucun post à afficher.",
             justPosted: "Posté à l'instant",
@@ -1878,9 +1955,18 @@ export default {
             postsSorting: {
                 newest: "Récent",
                 oldest: "Ancien",
-                "most-popular": "Populaire",
+                popular: "Populaire",
             },
             points: "points",
+            feed: {
+                title: "En tendance",
+                help:
+                    "Nous vous montrons seulement les posts de vos groupes, selon leur popularité et leur date de création.",
+            },
+            leave: {
+                title: "Quitter le groupe",
+                text: "Voulez-vous vraiment quitter ce groupe ?",
+            },
         },
         // Matching tab
         matching: {
@@ -1957,6 +2043,7 @@ export default {
             GroupsExploreScreen: "Explorer les groupes",
             GroupScreen: "Groupe",
             GroupMembersScreen: "Membres du groupe",
+            GroupMembersApprovalScreen: "Approbation des membres",
             GroupInviteScreen: "Inviter",
             TabNotificationsScreen: "Notifications",
             MyProfileScreen: "Profil",
