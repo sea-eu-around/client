@@ -17,6 +17,7 @@ import GroupMembersScreen from "../screens/groups/GroupMembersScreen";
 import GroupMembersScreenHeader from "../components/headers/GroupMembersScreenHeader";
 import GroupInviteScreenHeader from "../components/headers/GroupInviteScreenHeader";
 import GroupInviteScreen from "../screens/groups/GroupInviteScreen";
+import GroupMembersApprovalScreen from "../screens/groups/GroupMembersApprovalScreen";
 
 const GroupsStack = createStackNavigator<TabGroupsRoot>();
 
@@ -70,11 +71,11 @@ export const GroupsNavigator = (): JSX.Element => {
                 </GroupsStack.Screen>
                 <GroupsStack.Screen
                     name="GroupMembersScreen"
-                    options={(props) => ({
+                    options={(screenProps) => ({
                         title: screenTitle("GroupMembersScreen"),
                         header: (headerProps) => (
                             <GroupMembersScreenHeader
-                                groupId={getRouteParams(props.route).groupId as string}
+                                groupId={getRouteParams(screenProps.route).groupId as string}
                                 {...headerProps}
                             />
                         ),
@@ -82,12 +83,25 @@ export const GroupsNavigator = (): JSX.Element => {
                     component={GroupMembersScreen}
                 />
                 <GroupsStack.Screen
+                    name="GroupMembersApprovalScreen"
+                    options={(screenProps) => ({
+                        title: screenTitle("GroupMembersApprovalScreen"),
+                        header: (headerProps) => (
+                            <GroupMembersScreenHeader
+                                groupId={getRouteParams(screenProps.route).groupId as string}
+                                {...headerProps}
+                            />
+                        ),
+                    })}
+                    component={GroupMembersApprovalScreen}
+                />
+                <GroupsStack.Screen
                     name="GroupInviteScreen"
-                    options={(props) => ({
+                    options={(screenProps) => ({
                         title: screenTitle("GroupInviteScreen"),
                         header: (headerProps) => (
                             <GroupInviteScreenHeader
-                                groupId={getRouteParams(props.route).groupId as string}
+                                groupId={getRouteParams(screenProps.route).groupId as string}
                                 {...headerProps}
                             />
                         ),

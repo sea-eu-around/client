@@ -40,6 +40,7 @@ const config: LinkingOptions = {
                             GroupsExploreScreen: "groups/explore",
                             GroupScreen: "group/:groupId",
                             GroupMembersScreen: "group/:groupId/members",
+                            GroupMembersApprovalScreen: "group/:groupId/requests",
                             GroupInviteScreen: "group/:groupId/invite",
                         },
                     },
