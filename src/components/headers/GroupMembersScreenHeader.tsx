@@ -18,6 +18,8 @@ export type GroupMembersScreenHeaderProps = MainHeaderStackProps &
     ThemeProps &
     ConnectedProps<typeof reduxConnector> & {
         groupId: string | null;
+        keepScreenTitle?: boolean;
+        noInviteButton?: boolean;
     };
 
 class GroupMembersScreenHeaderClass extends React.Component<GroupMembersScreenHeaderProps> {
@@ -27,7 +29,7 @@ class GroupMembersScreenHeaderClass extends React.Component<GroupMembersScreenHe
     }
 
     render(): JSX.Element {
-        const {theme, ...stackProps} = this.props;
+        const {keepScreenTitle, noInviteButton, ...stackProps} = this.props;
 
         const group = this.getGroup();
 
@@ -37,24 +39,28 @@ class GroupMembersScreenHeaderClass extends React.Component<GroupMembersScreenHe
                 backButton
                 noAvatar
                 noShadow
-                overrideTitle={group ? group.name : ""}
+                {...(!keepScreenTitle ? {overrideTitle: group ? group.name : ""} : {})}
                 titleStyle={{fontSize: 18}}
-                rightButtons={[
-                    ({buttonStyle, iconStyle}) => (
-                        <TouchableOpacity
-                            style={buttonStyle}
-                            onPress={() =>
-                                group &&
-                                rootNavigate("TabGroups", {
-                                    screen: "GroupInviteScreen",
-                                    params: {groupId: group.id},
-                                })
-                            }
-                        >
-                            <MaterialCommunityIcons name="account-plus-outline" style={iconStyle} />
-                        </TouchableOpacity>
-                    ),
-                ]}
+                rightButtons={
+                    group && !noInviteButton
+                        ? [
+                              ({buttonStyle, iconStyle}) => (
+                                  <TouchableOpacity
+                                      style={buttonStyle}
+                                      onPress={() =>
+                                          group &&
+                                          rootNavigate("TabGroups", {
+                                              screen: "GroupInviteScreen",
+                                              params: {groupId: group.id},
+                                          })
+                                      }
+                                  >
+                                      <MaterialCommunityIcons name="account-plus-outline" style={iconStyle} />
+                                  </TouchableOpacity>
+                              ),
+                          ]
+                        : []
+                }
             />
         );
     }
