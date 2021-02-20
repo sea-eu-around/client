@@ -6,20 +6,81 @@ import {withTheme} from "react-native-elements";
 import {GroupMember} from "../../model/groups";
 import i18n from "i18n-js";
 import EnlargeableAvatar from "../EnlargeableAvatar";
-import {MaterialIcons} from "@expo/vector-icons";
+import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
+import Button from "../Button";
+import DeleteGroupMemberModal from "../modals/DeleteGroupMemberModal";
+import {connect, ConnectedProps} from "react-redux";
+import {AppState, MyThunkDispatch} from "../../state/types";
+import BanGroupMemberModal from "../modals/BanGroupMemberModal";
+import {GroupMemberStatus} from "../../api/dto";
+import {setGroupMemberStatus} from "../../state/groups/actions";
+
+// Map props from store
+const reduxConnector = connect((state: AppState) => ({
+    localUserId: state.profile.user?.id,
+}));
 
 // Component props
 type GroupMemberCardProps = {
+    groupId: string;
     member: GroupMember | null;
     style?: StyleProp<ViewStyle>;
-} & ThemeProps;
+    adminView: boolean;
+} & ThemeProps &
+    ConnectedProps<typeof reduxConnector>;
 
 class GroupMemberCard extends React.Component<GroupMemberCardProps> {
     render(): JSX.Element {
-        const {theme, member, style, ...otherProps} = this.props;
+        const {theme, groupId, localUserId, member, adminView, style, dispatch, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
+        const isLocalUser = member && localUserId === member.profile.id;
+
+        const deleteMemberButton = member && (
+            <DeleteGroupMemberModal
+                activator={(show) => (
+                    <Button
+                        style={styles.controlButton}
+                        icon={
+                            <MaterialCommunityIcons
+                                name="account-remove"
+                                style={[styles.controlIcon, {color: theme.error}]}
+                            />
+                        }
+                        onPress={show}
+                    />
+                )}
+                groupId={groupId}
+                profile={member.profile}
+                pending={member.status === GroupMemberStatus.Pending}
+            />
+        );
+        const banMemberButton = member && (
+            <BanGroupMemberModal
+                activator={(show) => (
+                    <Button
+                        style={styles.controlButton}
+                        icon={<MaterialIcons name="block" style={[styles.controlIcon, {color: theme.error}]} />}
+                        onPress={show}
+                    />
+                )}
+                groupId={groupId}
+                profile={member.profile}
+                pending={member.status === GroupMemberStatus.Pending}
+            />
+        );
+        const acceptMemberButton = member && (
+            <Button
+                style={styles.controlButton}
+                icon={<MaterialIcons name="person-add" style={[styles.controlIcon, {color: theme.accent}]} />}
+                onPress={() =>
+                    (dispatch as MyThunkDispatch)(
+                        setGroupMemberStatus(groupId, member.profile.id, GroupMemberStatus.Approved),
+                    )
+                }
+            />
+        );
 
         return (
             <TouchableOpacity
@@ -48,6 +109,21 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                                 </View>
                             )}
                         </View>
+                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                            {adminView && member.status === GroupMemberStatus.Approved && !isLocalUser && (
+                                <>
+                                    {deleteMemberButton}
+                                    {banMemberButton}
+                                </>
+                            )}
+                            {adminView && member.status === GroupMemberStatus.Pending && (
+                                <>
+                                    {acceptMemberButton}
+                                    {deleteMemberButton}
+                                    {banMemberButton}
+                                </>
+                            )}
+                        </View>
                     </>
                 )}
             </TouchableOpacity>
@@ -67,6 +143,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         avatarContainer: {
             marginRight: 10,
+            backgroundColor: theme.accentSecondary,
         },
         name: {
             color: theme.text,
@@ -81,7 +158,14 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 20,
             marginRight: 3,
         },
+        controlButton: {
+            padding: 6,
+        },
+        controlIcon: {
+            color: theme.textLight,
+            fontSize: 24,
+        },
     });
 });
 
-export default withTheme(GroupMemberCard);
+export default reduxConnector(withTheme(GroupMemberCard));

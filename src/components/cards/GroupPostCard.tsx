@@ -6,23 +6,24 @@ import {withTheme} from "react-native-elements";
 import {GroupPost, GroupVoteStatus} from "../../model/groups";
 import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
-import {MaterialIcons} from "@expo/vector-icons";
 import GroupPostCommentsModal, {GroupPostCommentsModalClass} from "../modals/GroupPostCommentsModal";
 import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../../state/types";
+import {AppState, MyThunkDispatch} from "../../state/types";
 import EditPostModal, {EditPostModalClass} from "../modals/EditPostModal";
-import DeletePostConfirmModal from "../modals/DeletePostConfirmModal";
 import PostHeader from "../PostHeader";
 import {formatPostDate} from "../../model/utils";
-import Button from "../Button";
 import GroupVoteButton from "../GroupVoteButton";
+import {fetchGroup} from "../../state/groups/actions";
+import {GroupRole} from "../../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
+    groupsDict: state.groups.groupsDict,
 }));
 
 // Component props
-type GroupPostCardProps = {post: GroupPost | null} & ThemeProps & ConnectedProps<typeof reduxConnector>;
+type GroupPostCardProps = {post: GroupPost | null; showGroup?: boolean; openPostMenu?: () => void} & ThemeProps &
+    ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
     commentsModalRef = React.createRef<GroupPostCommentsModalClass>();
@@ -32,41 +33,44 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
         this.commentsModalRef.current?.show();
     }
 
+    componentDidMount(): void {
+        this.fetchGroupIfNeeded();
+    }
+
+    componentDidUpdate(oldProps: GroupPostCardProps): void {
+        const {post} = this.props;
+
+        // If the post has changed
+        if (post && (!oldProps.post || oldProps.post.id !== post.id)) this.fetchGroupIfNeeded();
+    }
+
+    private fetchGroupIfNeeded(): void {
+        const {post, groupsDict, dispatch} = this.props;
+        if (post) {
+            const groupId = post.groupId;
+            if (!groupsDict[groupId]) (dispatch as MyThunkDispatch)(fetchGroup(groupId));
+        }
+    }
+
     render(): JSX.Element {
-        const {post, localUser, theme} = this.props;
+        const {post, localUser, showGroup, groupsDict, openPostMenu, theme} = this.props;
 
         const styles = themedStyles(theme);
         const fromLocal = post && localUser && post.creator.id === localUser.id;
         const groupId = post?.groupId || null;
+        const group = groupId ? groupsDict[groupId] || null : null;
+        const isAdmin = group?.myRole == GroupRole.Admin;
 
         return (
             <TouchableOpacity style={styles.container} activeOpacity={0.9}>
                 <View style={styles.top}>
-                    <PostHeader profile={post?.creator || null} subtitle={post && formatPostDate(post)} />
-                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                        {fromLocal && (
-                            <>
-                                <Button
-                                    style={styles.topButton}
-                                    onPress={() => this.editPostModalRef.current?.show()}
-                                    icon={<MaterialIcons style={styles.topButtonIcon} name="edit" />}
-                                />
-                                {groupId && post && (
-                                    <DeletePostConfirmModal
-                                        groupId={groupId}
-                                        post={post}
-                                        activator={(show) => (
-                                            <Button
-                                                style={styles.topButton}
-                                                onPress={show}
-                                                icon={<MaterialIcons style={styles.topButtonIcon} name="delete" />}
-                                            />
-                                        )}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </View>
+                    <PostHeader
+                        profile={post?.creator || null}
+                        subtitle={post && formatPostDate(post)}
+                        group={group}
+                        showGroup={showGroup}
+                        openPostMenu={openPostMenu}
+                    />
                 </View>
                 {post && (
                     <ReadMore
@@ -115,7 +119,12 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                 </View>
                 {groupId && post && (
                     <>
-                        <GroupPostCommentsModal ref={this.commentsModalRef} groupId={groupId} post={post} />
+                        <GroupPostCommentsModal
+                            ref={this.commentsModalRef}
+                            groupId={groupId}
+                            post={post}
+                            adminView={isAdmin}
+                        />
                         <EditPostModal ref={this.editPostModalRef} groupId={groupId} post={post} />
                     </>
                 )}

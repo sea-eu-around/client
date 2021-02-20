@@ -1,9 +1,11 @@
-import {arrayWithIdsToDict} from "../../general-utils";
-import {Group, GroupPost, PostSortingOrder} from "../../model/groups";
+import {GroupMemberStatus} from "../../api/dto";
+import {arrayWithIdMapperToDict, arrayWithIdsToDict} from "../../general-utils";
+import {Group, GroupPost, GROUP_VOTE_VALUES, PostSortingOrder} from "../../model/groups";
 import {GroupsState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
     CreatePostSuccessAction,
     DeleteCommentSuccessAction,
+    DeleteGroupMemberSuccessAction,
     DeletePostSuccessAction,
     FetchGroupMembersBeginAction,
     FetchGroupMembersFailureAction,
@@ -13,15 +15,18 @@ import {
     FetchGroupPostsFailureAction,
     FetchGroupPostsRefreshAction,
     FetchGroupPostsSuccessAction,
+    FetchGroupSuccessAction,
     FetchPostCommentsBeginAction,
     FetchPostCommentsFailureAction,
     FetchPostCommentsSuccessAction,
     GroupsAction,
     GROUP_ACTION_TYPES,
+    LeaveGroupSuccessAction,
     SetCommentVoteSuccessAction,
     SetGroupCoverBeginAction,
     SetGroupCoverFailureAction,
     SetGroupCoverSuccessAction,
+    SetGroupMemberStatusSuccessAction,
     SetPostSortingOrderAction,
     SetPostVoteSuccessAction,
     UpdateCommentSuccessAction,
@@ -48,6 +53,14 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return updateGroup(state, group.id, () => group);
         }
 
+        case GROUP_ACTION_TYPES.LEAVE_SUCCESS: {
+            const {id} = action as LeaveGroupSuccessAction;
+            return {
+                ...state,
+                myGroups: state.myGroups.filter((groupId) => groupId !== id),
+            };
+        }
+
         case GROUP_ACTION_TYPES.FETCH_GROUPS_BEGIN: {
             return {...state, pagination: {...state.pagination, fetching: true}};
         }
@@ -57,11 +70,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         case GROUP_ACTION_TYPES.FETCH_GROUPS_SUCCESS: {
             const {items, canFetchMore} = action as PaginatedFetchSuccessAction<Group>;
             const pagination = state.pagination;
-            const groupsDict = {...state.groupsDict};
-            items.forEach((g: Group) => (groupsDict[g.id] = g));
+            const newState = items.reduce(setOrUpdateGroup, state);
             return {
-                ...state,
-                groupsDict,
+                ...newState,
                 groups: state.groups.concat(items.map((g: Group) => g.id)),
                 pagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
@@ -72,6 +83,11 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 groups: [],
                 pagination: initialPaginatedState(),
             };
+        }
+
+        case GROUP_ACTION_TYPES.FETCH_GROUP_SUCCESS: {
+            const {group} = action as FetchGroupSuccessAction;
+            return setOrUpdateGroup(state, group);
         }
 
         case GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN:
@@ -124,9 +140,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             const {groupId, items, canFetchMore} = action as FetchGroupPostsSuccessAction;
             return updateGroup(state, groupId, ({postsPagination: p, posts: gposts, postIds: gpostIds}) => ({
                 postIds: gpostIds.concat(items.map((p) => p.id).filter((id) => gpostIds.indexOf(id) === -1)),
-                //posts: {...gposts, ...arrayWithIdsToDict(items)},
-                // TODO remove this
-                posts: {...gposts, ...arrayWithIdsToDict(items.map((i) => ({...i, groupId})))},
+                posts: {...gposts, ...arrayWithIdsToDict(items)},
                 postsPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
             }));
         }
@@ -167,7 +181,11 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         }
         case GROUP_ACTION_TYPES.SET_POST_VOTE_SUCCESS: {
             const {groupId, postId, status} = action as SetPostVoteSuccessAction;
-            return updatePost(state, groupId, postId, () => ({voteStatus: status}));
+            return updatePost(state, groupId, postId, ({score, voteStatus}) => ({
+                voteStatus: status,
+                // Add value of new vote, remove value of previous vote
+                score: score + GROUP_VOTE_VALUES[status] - GROUP_VOTE_VALUES[voteStatus],
+            }));
         }
 
         case GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_BEGIN:
@@ -222,27 +240,86 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
 
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN:
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_FAILURE: {
-            const {groupId} = action as FetchGroupMembersBeginAction | FetchGroupMembersFailureAction;
-            return updateGroup(state, groupId, ({membersPagination}) => ({
-                membersPagination: {
-                    ...membersPagination,
-                    fetching: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN,
+            const {groupId, memberStatus} = action as FetchGroupMembersBeginAction | FetchGroupMembersFailureAction;
+            return updateGroup(state, groupId, ({membersPaginations}) => ({
+                membersPaginations: {
+                    ...membersPaginations,
+                    [memberStatus]: {
+                        ...membersPaginations[memberStatus],
+                        fetching: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN,
+                    },
                 },
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_SUCCESS: {
-            const {groupId, items, canFetchMore} = action as FetchGroupMembersSuccessAction;
-            return updateGroup(state, groupId, ({membersPagination: p, members: gm}) => ({
-                members: (gm || []).concat(items),
-                membersPagination: {...p, fetching: false, page: p.page + 1, canFetchMore},
+            const {
+                groupId,
+                items,
+                canFetchMore,
+                totalItems,
+                memberStatus,
+                search,
+            } = action as FetchGroupMembersSuccessAction;
+            return updateGroup(state, groupId, ({membersPaginations, members, memberIds}) => ({
+                members: {...members, ...arrayWithIdMapperToDict(items, (it) => it.profile.id)},
+                memberIds: {
+                    ...memberIds,
+                    [memberStatus]: memberIds[memberStatus].concat(items.map((m) => m.profile.id)),
+                },
+                membersPaginations: {
+                    ...membersPaginations,
+                    [memberStatus]: {
+                        ...membersPaginations[memberStatus],
+                        fetching: false,
+                        page: membersPaginations[memberStatus].page + 1,
+                        canFetchMore,
+                    },
+                },
+                // Update number of approved members
+                ...(memberStatus === GroupMemberStatus.Approved && !search && {numApprovedMembers: totalItems}),
             }));
         }
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_REFRESH: {
-            const {groupId} = action as FetchGroupMembersRefreshAction;
-            return updateGroup(state, groupId, ({}) => ({
-                members: [],
-                membersPagination: initialPaginatedState(),
+            const {groupId, memberStatus} = action as FetchGroupMembersRefreshAction;
+            return updateGroup(state, groupId, ({memberIds, membersPaginations}) => ({
+                memberIds: {...memberIds, [memberStatus]: []},
+                membersPaginations: {...membersPaginations, [memberStatus]: initialPaginatedState()},
             }));
+        }
+
+        case GROUP_ACTION_TYPES.DELETE_GROUP_MEMBER_SUCCESS: {
+            const {groupId, profileId} = action as DeleteGroupMemberSuccessAction;
+            return updateGroup(state, groupId, ({memberIds, members}) => {
+                const member = members[profileId];
+                if (member) {
+                    // Remove the member from the right array, depending on his status
+                    return {
+                        memberIds: {
+                            ...memberIds,
+                            [member.status]: memberIds[member.status].filter((id) => id !== profileId),
+                        },
+                    };
+                } else {
+                    // If we didn't have this member, do nothing
+                    return {};
+                }
+            });
+        }
+        case GROUP_ACTION_TYPES.SET_GROUP_MEMBER_STATUS_SUCCESS: {
+            const {groupId, profileId, memberStatus} = action as SetGroupMemberStatusSuccessAction;
+            return updateGroup(state, groupId, ({members, memberIds}) => {
+                const member = members[profileId];
+                if (member) {
+                    return {
+                        members: {...members, [profileId]: {...member, status: memberStatus}},
+                        memberIds: {
+                            ...memberIds,
+                            [member.status]: memberIds[member.status].filter((id) => id !== profileId),
+                            [memberStatus]: memberIds[memberStatus].concat([profileId]),
+                        },
+                    };
+                } else return {};
+            });
         }
 
         case GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN: {
@@ -292,6 +369,12 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             return state;
     }
 };
+
+function setOrUpdateGroup(state: GroupsState, group: Group): GroupsState {
+    const g = state.groupsDict[group.id];
+    if (g) return updateGroup(state, group.id, () => group);
+    else return {...state, groupsDict: {...state.groupsDict, [group.id]: group}};
+}
 
 function updateGroup(state: GroupsState, groupId: string, update: (g: Group) => Partial<Group>): GroupsState {
     const g = state.groupsDict[groupId];

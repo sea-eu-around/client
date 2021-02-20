@@ -14,6 +14,7 @@ import {
     CreateGroupPostDto,
     CreatePostCommentDto,
     GroupCoverSuccessfullyUpdatedDto,
+    GroupMemberStatus,
     PaginatedRequestResponse,
     ResponseGroupDto,
     ResponseGroupMemberDto,
@@ -39,6 +40,7 @@ export enum GROUP_ACTION_TYPES {
     UPDATE_FAILURE = "GROUP/UPDATE_FAILURE",
     DELETE_SUCCESS = "GROUP/DELETE_SUCCESS",
     DELETE_FAILURE = "GROUP/DELETE_FAILURE",
+    LEAVE_SUCCESS = "GROUP/LEAVE_SUCCESS",
     FETCH_POSTS_FEED_BEGIN = "GROUP/FETCH_POSTS_FEED_BEGIN",
     FETCH_POSTS_FEED_SUCCESS = "GROUP/FETCH_POSTS_FEED_SUCCESS",
     FETCH_POSTS_FEED_FAILURE = "GROUP/FETCH_POSTS_FEED_FAILURE",
@@ -47,10 +49,13 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUPS_FAILURE = "GROUP/FETCH_GROUPS_FAILURE",
     FETCH_GROUPS_SUCCESS = "GROUP/FETCH_GROUPS_SUCCESS",
     FETCH_GROUPS_REFRESH = "GROUP/FETCH_GROUPS_REFRESH",
+    FETCH_GROUP_SUCCESS = "GROUP/FETCH_GROUP_SUCCESS",
     FETCH_GROUP_MEMBERS_BEGIN = "GROUP/FETCH_GROUP_MEMBERS_BEGIN",
     FETCH_GROUP_MEMBERS_SUCCESS = "GROUP/FETCH_GROUP_MEMBERS_SUCCESS",
     FETCH_GROUP_MEMBERS_FAILURE = "GROUP/FETCH_GROUP_MEMBERS_FAILURE",
     FETCH_GROUP_MEMBERS_REFRESH = "GROUP/FETCH_GROUP_MEMBERS_REFRESH",
+    DELETE_GROUP_MEMBER_SUCCESS = "GROUP/DELETE_GROUP_MEMBER_SUCCESS",
+    SET_GROUP_MEMBER_STATUS_SUCCESS = "GROUP/SET_GROUP_MEMBER_STATUS_SUCCESS",
     FETCH_GROUP_POSTS_BEGIN = "GROUP/FETCH_GROUP_POSTS_BEGIN",
     FETCH_GROUP_POSTS_SUCCESS = "GROUP/FETCH_GROUP_POSTS_SUCCESS",
     FETCH_GROUP_POSTS_FAILURE = "GROUP/FETCH_GROUP_POSTS_FAILURE",
@@ -93,10 +98,40 @@ export type UpdateGroupFailureAction = {type: string};
 export type DeleteGroupSuccessAction = {type: string};
 export type DeleteGroupFailureAction = {type: string};
 
-export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {groupId: string};
-export type FetchGroupMembersSuccessAction = PaginatedFetchSuccessAction<GroupMember> & {groupId: string};
-export type FetchGroupMembersRefreshAction = PaginatedFetchRefreshAction & {groupId: string};
-export type FetchGroupMembersFailureAction = PaginatedFetchFailureAction & {groupId: string};
+export type LeaveGroupSuccessAction = {type: string; id: string};
+
+export type FetchGroupSuccessAction = {type: string; group: Group};
+
+export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {
+    groupId: string;
+    memberStatus: GroupMemberStatus;
+};
+export type FetchGroupMembersSuccessAction = PaginatedFetchSuccessAction<GroupMember> & {
+    groupId: string;
+    memberStatus: GroupMemberStatus;
+    totalItems: number;
+    search?: string;
+};
+export type FetchGroupMembersRefreshAction = PaginatedFetchRefreshAction & {
+    groupId: string;
+    memberStatus: GroupMemberStatus;
+};
+export type FetchGroupMembersFailureAction = PaginatedFetchFailureAction & {
+    groupId: string;
+    memberStatus: GroupMemberStatus;
+};
+
+export type DeleteGroupMemberSuccessAction = {
+    type: string;
+    groupId: string;
+    profileId: string;
+};
+export type SetGroupMemberStatusSuccessAction = {
+    type: string;
+    groupId: string;
+    profileId: string;
+    memberStatus: GroupMemberStatus;
+};
 
 export type FetchGroupPostsBeginAction = PaginatedFetchBeginAction & {groupId: string};
 export type FetchGroupPostsSuccessAction = PaginatedFetchSuccessAction<GroupPost> & {groupId: string};
@@ -202,6 +237,8 @@ export type GroupsAction = CreateGroupSuccessAction &
     CreateGroupFailureAction &
     UpdateGroupSuccessAction &
     UpdateGroupFailureAction &
+    LeaveGroupSuccessAction &
+    FetchGroupSuccessAction &
     PaginatedFetchBeginAction &
     PaginatedFetchFailureAction &
     PaginatedFetchSuccessAction<Group> &
@@ -209,6 +246,9 @@ export type GroupsAction = CreateGroupSuccessAction &
     FetchGroupMembersBeginAction &
     FetchGroupMembersFailureAction &
     FetchGroupMembersSuccessAction &
+    FetchGroupMembersRefreshAction &
+    DeleteGroupMemberSuccessAction &
+    SetGroupMemberStatusSuccessAction &
     FetchGroupPostsBeginAction &
     FetchGroupPostsFailureAction &
     FetchGroupPostsSuccessAction &
@@ -301,6 +341,23 @@ export const deleteGroup = (id: string): ValidatedThunkAction => async (dispatch
     }
 };
 
+const leaveGroupSuccess = (id: string): LeaveGroupSuccessAction => ({
+    type: GROUP_ACTION_TYPES.LEAVE_SUCCESS,
+    id,
+});
+
+export const leaveGroup = (id: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+    const token = getState().auth.token;
+
+    const response = await requestBackend(`groups/${id}`, "DELETE", {}, {}, token, true);
+    if (response.status === HttpStatusCode.NO_CONTENT) {
+        dispatch(leaveGroupSuccess(id));
+        return true;
+    } else {
+        return false;
+    }
+};
+
 const beginFetchGroups = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_BEGIN,
 });
@@ -355,6 +412,25 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
     } else dispatch(fetchGroupsFailure());
 };
 
+const fetchGroupSuccess = (group: Group): FetchGroupSuccessAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_GROUP_SUCCESS,
+    group,
+});
+
+export const fetchGroup = (groupId: string): AppThunk => async (dispatch, getState) => {
+    const {token} = getState().auth;
+
+    if (!token) return;
+
+    const response = await requestBackend(`groups/${groupId}`, "GET", {}, {}, token);
+
+    if (response.status === HttpStatusCode.OK) {
+        const payload = (response as SuccessfulRequestResponse).data;
+        const group = convertDtoToGroup(payload as ResponseGroupDto);
+        dispatch(fetchGroupSuccess(group));
+    }
+};
+
 const fetchPostsFeedBegin = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN,
 });
@@ -384,7 +460,7 @@ export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
     dispatch(fetchPostsFeedBegin());
 
     const response = await requestBackend(
-        "groups/posts", // TODO hook-up
+        "groups/feed",
         "GET",
         {page: feedPagination.page, limit: 50},
         {},
@@ -429,7 +505,7 @@ export const refreshFetchedGroupPosts = (groupId: string): FetchGroupPostsRefres
 export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
-        groups: {groupsDict},
+        groups: {groupsDict, postsSortOrder},
     } = getState();
 
     const g = groupsDict[groupId];
@@ -441,10 +517,9 @@ export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, g
     const response = await requestBackend(
         `groups/${groupId}/posts`,
         "GET",
-        {page: g.postsPagination.page, limit: 50},
+        {page: g.postsPagination.page, limit: 50, type: postsSortOrder},
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
@@ -505,85 +580,78 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
         true,
     );
 
-    // TODO hook up comments to back again
-    dispatch(
-        fetchPostCommentsSuccess(
-            groupId,
-            postId,
-            [
-                {
-                    id: Math.round(Math.random() * 1e8) + "",
-                    createdAt: new Date(Date.now() - 1000 * 3600 * 24 * Math.random() * 10),
-                    updatedAt: new Date(Date.now() - 1000 * 3600 * Math.random() * 10),
-                    creator: getState().profile.user!.profile!,
-                    text: "This is a test comment",
-                    voteStatus: GroupVoteStatus.Neutral,
-                    score: 0,
-                },
-                {
-                    id: Math.round(Math.random() * 1e8) + "",
-                    createdAt: new Date(Date.now() - 1000 * 3600 * 24 * Math.random() * 10),
-                    updatedAt: new Date(Date.now() - 1000 * 3600 * Math.random() * 10),
-                    creator: getState().profile.user!.profile!,
-                    text: "Another test comment",
-                    voteStatus: GroupVoteStatus.Upvote,
-                    score: 0,
-                },
-            ],
-            false,
-        ),
-    );
-
-    /*if (response.status === HttpStatusCode.OK) {
+    if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
         const comments = (paginated.data as ResponsePostCommentDto[]).map(convertDtoToPostComment);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchPostCommentsSuccess(groupId, postId, comments, canFetchMore));
-    } else dispatch(fetchPostCommentsFailure(groupId, postId));*/
+    } else dispatch(fetchPostCommentsFailure(groupId, postId));
 };
 
-const fetchGroupMembersBegin = (groupId: string): FetchGroupMembersBeginAction => ({
+const fetchGroupMembersBegin = (groupId: string, memberStatus: GroupMemberStatus): FetchGroupMembersBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN,
     groupId,
+    memberStatus,
 });
 
 const fetchGroupMembersSuccess = (
     groupId: string,
     items: GroupMember[],
     canFetchMore: boolean,
+    totalItems: number,
+    memberStatus: GroupMemberStatus,
+    search?: string,
 ): FetchGroupMembersSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_SUCCESS,
     groupId,
     items,
     canFetchMore,
+    totalItems,
+    memberStatus,
+    search,
 });
 
-const fetchGroupMembersFailure = (groupId: string): FetchGroupMembersFailureAction => ({
+const fetchGroupMembersFailure = (
+    groupId: string,
+    memberStatus: GroupMemberStatus,
+): FetchGroupMembersFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_FAILURE,
     groupId,
+    memberStatus,
 });
 
-export const fetchGroupMembersRefresh = (groupId: string): FetchGroupMembersRefreshAction => ({
+export const fetchGroupMembersRefresh = (
+    groupId: string,
+    memberStatus: GroupMemberStatus,
+): FetchGroupMembersRefreshAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_REFRESH,
     groupId,
+    memberStatus,
 });
 
-export const fetchGroupMembers = (groupId: string): AppThunk => async (dispatch, getState) => {
+export const fetchGroupMembers = (groupId: string, status: GroupMemberStatus, search?: string): AppThunk => async (
+    dispatch,
+    getState,
+) => {
     const {
         auth: {token},
         groups: {groupsDict},
     } = getState();
 
     const g = groupsDict[groupId];
+    if (!g) return;
 
-    if (!g || g.membersPagination.fetching || !g.membersPagination.canFetchMore) return;
+    const pagination = g.membersPaginations[status];
+    if (pagination.fetching || !pagination.canFetchMore) return;
 
-    dispatch(fetchGroupMembersBegin(groupId));
+    dispatch(fetchGroupMembersBegin(groupId, status));
+
+    if (search && search.length <= 1) search = undefined;
 
     const response = await requestBackend(
         `groups/${groupId}/members`,
         "GET",
-        {page: g.membersPagination.page, limit: 50},
+        {page: pagination.page, limit: 50, statuses: [status], search},
         {},
         token,
         true,
@@ -593,8 +661,58 @@ export const fetchGroupMembers = (groupId: string): AppThunk => async (dispatch,
         const paginated = response as PaginatedRequestResponse;
         const members = (paginated.data as ResponseGroupMemberDto[]).map(convertDtoToGroupMember);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchGroupMembersSuccess(groupId, members, canFetchMore));
-    } else dispatch(fetchGroupMembersFailure(groupId));
+        dispatch(fetchGroupMembersSuccess(groupId, members, canFetchMore, paginated.meta.totalItems, status, search));
+    } else dispatch(fetchGroupMembersFailure(groupId, status));
+};
+
+const deleteGroupMemberSuccess = (groupId: string, profileId: string): DeleteGroupMemberSuccessAction => ({
+    type: GROUP_ACTION_TYPES.DELETE_GROUP_MEMBER_SUCCESS,
+    groupId,
+    profileId,
+});
+
+export const deleteGroupMember = (groupId: string, profileId: string): AppThunk<Promise<boolean>> => async (
+    dispatch,
+    getState,
+) => {
+    const {token} = getState().auth;
+
+    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "DELETE", {}, {}, token, true);
+
+    if (response.status === HttpStatusCode.NO_CONTENT) {
+        dispatch(deleteGroupMemberSuccess(groupId, profileId));
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const setGroupMemberStatusSuccess = (
+    groupId: string,
+    profileId: string,
+    memberStatus: GroupMemberStatus,
+): SetGroupMemberStatusSuccessAction => ({
+    type: GROUP_ACTION_TYPES.SET_GROUP_MEMBER_STATUS_SUCCESS,
+    groupId,
+    profileId,
+    memberStatus,
+});
+
+export const setGroupMemberStatus = (
+    groupId: string,
+    profileId: string,
+    status: GroupMemberStatus,
+): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+    const {token} = getState().auth;
+
+    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {status}, token, true);
+
+    if (response.status === HttpStatusCode.OK) {
+        dispatch(setGroupMemberStatusSuccess(groupId, profileId, status));
+        return true;
+    } else {
+        return false;
+    }
 };
 
 const beginFetchMyGroups = (): PaginatedFetchBeginAction => ({
@@ -952,23 +1070,17 @@ export const setVote = (
     const entityId = commentId || postId;
     const isComment = commentId !== null;
     const entityType = isComment ? "comment" : "post";
+    const url = `groups/${groupId}/votes/${entityType}/${entityId}`;
 
     const response =
         status === GroupVoteStatus.Neutral
             ? // If setting to neutral, simply DELETE the entity
-              await requestBackend(`groups/${groupId}/votes/${entityId}`, "DELETE", {}, {}, token, true)
+              await requestBackend(url, "DELETE", {}, {}, token, true)
             : currentStatus === GroupVoteStatus.Neutral
             ? // If currently neutral, POST a new entity
-              await requestBackend(
-                  `groups/${groupId}/votes/${entityType}/${entityId}`,
-                  "POST",
-                  {},
-                  {voteType: status},
-                  token,
-                  true,
-              )
+              await requestBackend(url, "POST", {}, {voteType: status}, token, true)
             : // If already set, PATCH the entity
-              await requestBackend(`groups/${groupId}/votes/${entityId}`, "PATCH", {}, {voteType: status}, token, true);
+              await requestBackend(url, "PATCH", {}, {voteType: status}, token, true);
 
     if (response.status === HttpStatusCode.OK) {
         if (commentId) dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));

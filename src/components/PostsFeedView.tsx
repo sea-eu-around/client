@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
@@ -12,6 +12,8 @@ import {AppState, MyThunkDispatch} from "../state/types";
 import {fetchPostsFeed, refreshFetchedPostsFeed} from "../state/groups/actions";
 import {connect, ConnectedProps} from "react-redux";
 import GroupPostCard from "./cards/GroupPostCard";
+import CustomTooltip from "./CustomTooltip";
+import {MaterialIcons} from "@expo/vector-icons";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -20,18 +22,16 @@ const reduxConnector = connect((state: AppState) => ({
     posts: state.groups.postsFeed,
 }));
 
-// TODO clean-up
 // Component props
 export type GroupPostsViewProps = ThemeProps &
     ConnectedProps<typeof reduxConnector> & {
-        titleContainerStyle?: StyleProp<ViewStyle>;
         navigation: NavigationProp<never>;
         top?: JSX.Element;
     };
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
     render() {
-        const {pagination, postIds, posts, top, navigation, titleContainerStyle, dispatch, theme} = this.props;
+        const {pagination, postIds, posts, top, navigation, dispatch, theme} = this.props;
         const styles = themedStyles(theme);
 
         return (
@@ -39,22 +39,11 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 top={
                     <>
                         {top}
-                        <View style={[styles.titleWrapper, titleContainerStyle]}>
-                            <Text style={styles.title}>{i18n.t("groups.posts")}</Text>
-                            {/*<View style={styles.buttons}>
-                                <PostSortingOrderPicker
-                                    order={sortOrder}
-                                    activator={(show) => (
-                                        <TouchableOpacity style={styles.button} onPress={show}>
-                                            <MaterialIcons style={styles.buttonIcon} name="sort" />
-                                        </TouchableOpacity>
-                                    )}
-                                    onChange={(order: PostSortingOrder) => {
-                                        dispatch(setPostSortingOrder(order));
-                                        if (group) dispatch(refreshFetchedGroupPosts(group.id));
-                                    }}
-                                />
-                            </View>*/}
+                        <View style={styles.titleWrapper}>
+                            <CustomTooltip text={i18n.t("groups.feed.help")}>
+                                <MaterialIcons style={styles.feedTooltipIcon} name="help-outline" />
+                            </CustomTooltip>
+                            <Text style={styles.title}>{i18n.t("groups.feed.title")}</Text>
                         </View>
                     </>
                 }
@@ -71,10 +60,9 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
                 noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
                 refresh={() => dispatch(refreshFetchedPostsFeed())}
-                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} />}
-                // Compensate for the header
-                itemsContainerStyle={styles.itemsContainer}
-                progressViewOffset={350}
+                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} showGroup />}
+                // Compensate for the top
+                progressViewOffset={250}
             />
         );
     }
@@ -82,38 +70,23 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        itemsContainer: {
-            //backgroundColor: theme.accentSlight,
-        },
         titleWrapper: {
-            width: "100%",
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
             paddingHorizontal: 15,
             paddingVertical: 10,
-            //backgroundColor: theme.accentSlight,
         },
         title: {
             fontSize: 20,
-        },
-        buttons: {
-            flexDirection: "row",
-        },
-        button: {
-            width: 32,
-            height: 32,
-            justifyContent: "center",
-            alignItems: "center",
-            marginHorizontal: 4,
-        },
-        buttonIcon: {
-            fontSize: 24,
-            color: theme.text,
+            marginLeft: 5,
         },
         noResultsText: {
             color: theme.text,
             fontSize: 16,
+        },
+        feedTooltipIcon: {
+            fontSize: 20,
+            color: theme.textLight,
         },
     });
 });

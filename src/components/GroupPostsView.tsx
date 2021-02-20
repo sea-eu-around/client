@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../types";
@@ -15,6 +15,8 @@ import {fetchGroupPosts, refreshFetchedGroupPosts, setPostSortingOrder} from "..
 import GroupPostCard from "./cards/GroupPostCard";
 import PostSortingOrderPicker from "./PostSortingOrderPicker";
 import {connect, ConnectedProps} from "react-redux";
+import Button from "./Button";
+import GroupPostMenu, {GroupPostMenuClass} from "./GroupPostMenu";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -28,11 +30,14 @@ export type GroupPostsViewProps = ThemeProps &
         titleContainerStyle?: StyleProp<ViewStyle>;
         navigation: NavigationProp<never>;
         top?: JSX.Element;
+        onRefresh?: () => void;
     };
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
+    menuRef = React.createRef<GroupPostMenuClass>();
+
     render() {
-        const {group, top, navigation, titleContainerStyle, sortOrder, dispatch, theme} = this.props;
+        const {group, top, navigation, titleContainerStyle, sortOrder, onRefresh, dispatch, theme} = this.props;
         const styles = themedStyles(theme);
 
         const pagination: PaginatedState = group
@@ -40,69 +45,83 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
             : {canFetchMore: true, fetching: true, page: 1};
 
         return (
-            <InfiniteScroller
-                top={
-                    <>
-                        {top}
-                        <View style={[styles.titleWrapper, titleContainerStyle]}>
-                            <Text style={styles.title}>{i18n.t("groups.posts")}</Text>
-                            <View style={styles.buttons}>
-                                {group && (
-                                    <EditPostModal
-                                        groupId={group.id}
-                                        activator={(show) => (
-                                            <TouchableOpacity style={styles.button} onPress={show}>
-                                                <MaterialIcons style={styles.buttonIcon} name="add" />
-                                            </TouchableOpacity>
-                                        )}
-                                    />
-                                )}
-                                <PostSortingOrderPicker
-                                    order={sortOrder}
-                                    activator={(show) => (
-                                        <TouchableOpacity style={styles.button} onPress={show}>
-                                            <MaterialIcons style={styles.buttonIcon} name="sort" />
-                                        </TouchableOpacity>
+            <>
+                <InfiniteScroller
+                    top={
+                        <>
+                            {top}
+                            <View style={[styles.titleWrapper, titleContainerStyle]}>
+                                <Text style={styles.title}>{i18n.t("groups.posts")}</Text>
+                                <View style={styles.buttons}>
+                                    {group && (
+                                        <EditPostModal
+                                            groupId={group.id}
+                                            activator={(show) => (
+                                                <Button
+                                                    style={styles.button}
+                                                    icon={<MaterialIcons style={styles.buttonIcon} name="add" />}
+                                                    onPress={show}
+                                                />
+                                            )}
+                                        />
                                     )}
-                                    onChange={(order: PostSortingOrder) => {
-                                        dispatch(setPostSortingOrder(order));
-                                        if (group) dispatch(refreshFetchedGroupPosts(group.id));
-                                    }}
-                                />
+                                    <PostSortingOrderPicker
+                                        order={sortOrder}
+                                        activator={(show) => (
+                                            <Button
+                                                style={styles.button}
+                                                icon={<MaterialIcons style={styles.buttonIcon} name="sort" />}
+                                                onPress={show}
+                                            />
+                                        )}
+                                        onChange={(order: PostSortingOrder) => {
+                                            dispatch(setPostSortingOrder(order));
+                                            if (group) dispatch(refreshFetchedGroupPosts(group.id));
+                                        }}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    </>
-                }
-                navigation={navigation}
-                fetchLimit={GROUPS_POSTS_FETCH_LIMIT}
-                fetchMore={() => {
-                    if (group) (dispatch as MyThunkDispatch)(fetchGroupPosts(group.id));
-                }}
-                fetching={pagination.fetching}
-                canFetchMore={pagination.canFetchMore}
-                currentPage={pagination.page}
-                items={group ? group.postIds.map((id) => group.posts[id]) : []}
-                id={(post: GroupPost): string => post.id}
-                hideScrollIndicator
-                endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
-                noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
-                refresh={() => {
-                    if (group) dispatch(refreshFetchedGroupPosts(group.id));
-                }}
-                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} />}
-                // Compensate for the header
-                itemsContainerStyle={styles.itemsContainer}
-                progressViewOffset={350}
-            />
+                        </>
+                    }
+                    navigation={navigation}
+                    fetchLimit={GROUPS_POSTS_FETCH_LIMIT}
+                    fetchMore={() => {
+                        if (group) (dispatch as MyThunkDispatch)(fetchGroupPosts(group.id));
+                    }}
+                    fetching={pagination.fetching}
+                    canFetchMore={pagination.canFetchMore}
+                    currentPage={pagination.page}
+                    items={group ? group.postIds.map((id) => group.posts[id]) : []}
+                    id={(post: GroupPost): string => post.id}
+                    hideScrollIndicator
+                    endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
+                    noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
+                    refresh={() => {
+                        if (group) {
+                            dispatch(refreshFetchedGroupPosts(group.id));
+                            if (onRefresh) onRefresh();
+                        }
+                    }}
+                    renderItem={(post: GroupPost) => (
+                        <GroupPostCard
+                            key={post.id}
+                            post={post}
+                            openPostMenu={() => group && this.menuRef.current?.show(group, post)}
+                        />
+                    )}
+                    // Compensate for the header
+                    itemsContainerStyle={styles.itemsContainer}
+                    progressViewOffset={350}
+                />
+                <GroupPostMenu ref={this.menuRef} />
+            </>
         );
     }
 }
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        itemsContainer: {
-            //backgroundColor: theme.accentSlight,
-        },
+        itemsContainer: {},
         titleWrapper: {
             width: "100%",
             flexDirection: "row",
@@ -110,7 +129,6 @@ export const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             paddingHorizontal: 15,
             paddingVertical: 10,
-            //backgroundColor: theme.accentSlight,
         },
         title: {
             fontSize: 20,
