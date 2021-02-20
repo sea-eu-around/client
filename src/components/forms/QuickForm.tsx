@@ -1,6 +1,6 @@
 import React from "react";
-import {View, StyleSheet, Platform, Text} from "react-native";
-import {BottomSheet, withTheme} from "react-native-elements";
+import {View, StyleSheet, Text} from "react-native";
+import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import CustomModal from "../modals/CustomModal";
@@ -8,6 +8,8 @@ import i18n from "i18n-js";
 import FormSubmitButton from "../forms/FormSubmitButton";
 import {Icon} from "expo";
 import Button from "../Button";
+import BottomSheet, {BottomSheetClass} from "../bottom-sheet/BottomSheet";
+import BottomSheetTouchableOpacity from "../bottom-sheet/BottomSheetTouchableOpacity";
 
 export type QuickFormProps = ThemeProps & {
     activator?: (open: () => void) => JSX.Element;
@@ -20,27 +22,29 @@ export type QuickFormProps = ThemeProps & {
     failureTitle?: string;
     failureText?: string;
     submitText: string;
+    sheetHeight?: number;
 };
 
 type QuickFormState = {
-    open: boolean;
     confirmationOpen: boolean;
     failureOpen: boolean;
     submitting: boolean;
 };
 
 export class QuickFormClass extends React.Component<QuickFormProps, QuickFormState> {
+    sheetRef = React.createRef<BottomSheetClass>();
+
     constructor(props: QuickFormProps) {
         super(props);
-        this.state = {open: false, confirmationOpen: false, failureOpen: false, submitting: false};
+        this.state = {confirmationOpen: false, failureOpen: false, submitting: false};
     }
 
     open(): void {
-        this.setState({...this.state, open: true});
+        this.sheetRef.current?.show();
     }
 
     close(): void {
-        this.setState({...this.state, open: false});
+        this.sheetRef.current?.hide();
     }
 
     submit(): void {
@@ -53,7 +57,6 @@ export class QuickFormClass extends React.Component<QuickFormProps, QuickFormSta
                 this.setState({
                     ...this.state,
                     submitting: false,
-                    open: false,
                     confirmationOpen: true,
                     failureOpen: false,
                 });
@@ -61,11 +64,11 @@ export class QuickFormClass extends React.Component<QuickFormProps, QuickFormSta
                 this.setState({
                     ...this.state,
                     submitting: false,
-                    open: false,
                     confirmationOpen: false,
                     failureOpen: true,
                 });
             }
+            this.close();
         });
     }
 
@@ -81,64 +84,56 @@ export class QuickFormClass extends React.Component<QuickFormProps, QuickFormSta
             failureTitle,
             failureText,
             theme,
+            sheetHeight,
             children,
         } = this.props;
-        const {open, confirmationOpen, failureOpen, submitting} = this.state;
+        const {confirmationOpen, failureOpen, submitting} = this.state;
         const styles = themedStyles(theme);
-
-        const actionButtons = (
-            <>
-                {!hideSubmit && (
-                    <FormSubmitButton
-                        text={submitText}
-                        submitting={submitting}
-                        onPress={() => this.submit()}
-                        skin="rounded-filled"
-                        style={styles.actionButton}
-                        textStyle={styles.actionButtonText}
-                    />
-                )}
-                <Button
-                    text={i18n.t("cancel")}
-                    onPress={() => this.close()}
-                    skin="rounded-hollow"
-                    style={styles.actionButton}
-                    textStyle={styles.actionButtonText}
-                />
-            </>
-        );
-
-        const content = (
-            <>
-                {(title || titleIcon) && (
-                    <View style={styles.titleContainer}>
-                        {titleIcon && (
-                            <titleIcon.component name={titleIcon.name} style={[styles.title, styles.titleIcon]} />
-                        )}
-                        {title && <Text style={styles.title}>{title}</Text>}
-                    </View>
-                )}
-                {children}
-                {actionButtons}
-            </>
-        );
 
         return (
             <>
                 {activator && activator(() => this.open())}
-                {Platform.OS === "web" ? (
-                    <CustomModal
-                        visible={open}
-                        onHide={() => this.close()}
-                        renderContent={() => <View style={styles.containerModal}>{content}</View>}
-                    />
-                ) : (
-                    <BottomSheet modalProps={{statusBarTranslucent: true}} isVisible={open}>
+                <BottomSheet
+                    ref={this.sheetRef}
+                    snapPoints={[0, sheetHeight === undefined ? 300 : sheetHeight]}
+                    renderContent={(hide) => (
                         <View style={styles.wrapperSheet}>
-                            <View style={styles.containerSheet}>{content}</View>
+                            <View style={styles.containerSheet}>
+                                {(title || titleIcon) && (
+                                    <View style={styles.titleContainer}>
+                                        {titleIcon && (
+                                            <titleIcon.component
+                                                name={titleIcon.name}
+                                                style={[styles.title, styles.titleIcon]}
+                                            />
+                                        )}
+                                        {title && <Text style={styles.title}>{title}</Text>}
+                                    </View>
+                                )}
+                                {children}
+                                {!hideSubmit && (
+                                    <FormSubmitButton
+                                        text={submitText}
+                                        submitting={submitting}
+                                        onPress={() => this.submit()}
+                                        skin="rounded-filled"
+                                        style={styles.actionButton}
+                                        textStyle={styles.actionButtonText}
+                                        TouchableComponent={BottomSheetTouchableOpacity}
+                                    />
+                                )}
+                                <Button
+                                    text={i18n.t("cancel")}
+                                    onPress={hide}
+                                    skin="rounded-hollow"
+                                    style={styles.actionButton}
+                                    textStyle={styles.actionButtonText}
+                                    TouchableComponent={BottomSheetTouchableOpacity}
+                                />
+                            </View>
                         </View>
-                    </BottomSheet>
-                )}
+                    )}
+                />
                 <CustomModal
                     visible={confirmationOpen}
                     onHide={() => this.setState({...this.state, confirmationOpen: false})}
@@ -184,9 +179,9 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapperSheet: {
             width: "100%",
-            paddingVertical: 20,
+            //paddingVertical: 20,
             alignItems: "center",
-            backgroundColor: theme.cardBackground,
+            //backgroundColor: theme.cardBackground,
         },
         containerSheet: {
             width: "90%",

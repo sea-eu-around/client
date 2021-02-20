@@ -15,6 +15,7 @@ import {reportEntity} from "../../state/reports/actions";
 import {MyThunkDispatch} from "../../state/types";
 import QuickForm, {QuickFormClass} from "./QuickForm";
 import {GroupPost, PostComment} from "../../model/groups";
+import BottomSheetTouchableOpacity from "../bottom-sheet/BottomSheetTouchableOpacity";
 
 export type QuickFormReportProps = ThemeProps & {
     entityType: ReportEntityType;
@@ -26,6 +27,8 @@ export type QuickFormReportProps = ThemeProps & {
 type QuickFormReportState = {
     selectedType: ReportType | null;
 };
+
+// TODO try on web (maybe usable when not wide)
 
 export class QuickFormReportClass extends React.Component<QuickFormReportProps, QuickFormReportState> {
     quickFormRef = React.createRef<QuickFormClass>();
@@ -97,8 +100,8 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
         return (
             <>
                 <QuickForm
-                    ref={this.quickFormRef}
                     activator={activator}
+                    ref={this.quickFormRef}
                     submit={() => this.submit()}
                     titleIcon={{component: MaterialIcons, name: "report"}}
                     title={i18n.t("report.title")}
@@ -108,6 +111,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                     failureTitle={i18n.t("report.failureTitle")}
                     failureText={i18n.t("report.failure")}
                     hideSubmit={!selectedType}
+                    sheetHeight={330}
                 >
                     <View style={styles.inputItem}>
                         <InputLabel>{i18n.t("report.what")}</InputLabel>
@@ -128,6 +132,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                                     this.setState({...this.state, selectedType: values[0] as ReportType});
                             }}
                             buttonStyleVariant="onboarding"
+                            TouchableComponent={BottomSheetTouchableOpacity}
                         />
                     </View>
                 </QuickForm>
