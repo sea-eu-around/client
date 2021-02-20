@@ -48,6 +48,7 @@ export type TabGroupsRoot = {
     GroupsExploreScreen: undefined;
     GroupScreen: undefined;
     GroupMembersScreen: undefined;
+    GroupBannedMembersScreen: undefined;
     GroupMembersApprovalScreen: undefined;
     GroupInviteScreen: undefined;
 };

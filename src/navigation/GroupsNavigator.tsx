@@ -18,6 +18,7 @@ import GroupMembersScreenHeader from "../components/headers/GroupMembersScreenHe
 import GroupInviteScreenHeader from "../components/headers/GroupInviteScreenHeader";
 import GroupInviteScreen from "../screens/groups/GroupInviteScreen";
 import GroupMembersApprovalScreen from "../screens/groups/GroupMembersApprovalScreen";
+import GroupBannedMembersScreen from "../screens/groups/GroupBannedMembersScreen";
 
 const GroupsStack = createStackNavigator<TabGroupsRoot>();
 
@@ -81,6 +82,21 @@ export const GroupsNavigator = (): JSX.Element => {
                         ),
                     })}
                     component={GroupMembersScreen}
+                />
+                <GroupsStack.Screen
+                    name="GroupBannedMembersScreen"
+                    options={(screenProps) => ({
+                        title: screenTitle("GroupBannedMembersScreen"),
+                        header: (headerProps) => (
+                            <GroupMembersScreenHeader
+                                groupId={getRouteParams(screenProps.route).groupId as string}
+                                keepScreenTitle
+                                noInviteButton
+                                {...headerProps}
+                            />
+                        ),
+                    })}
+                    component={GroupBannedMembersScreen}
                 />
                 <GroupsStack.Screen
                     name="GroupMembersApprovalScreen"
