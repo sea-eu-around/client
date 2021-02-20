@@ -20,6 +20,7 @@ export type GroupPostCommentsModalProps = {
     groupId: string;
     post: GroupPost;
     activator?: ModalActivator;
+    adminView: boolean;
 } & ThemeProps;
 
 type GroupPostCommentsModalState = {
@@ -49,11 +50,33 @@ export class GroupPostCommentsModalClass extends React.Component<
     }
 
     render(): JSX.Element {
-        const {post, groupId, theme} = this.props;
+        const {post, groupId, adminView, theme} = this.props;
         const {replyingTo, expandedCommentId} = this.state;
 
         const styles = themedStyles(theme);
         const dispatch = store.dispatch as MyThunkDispatch;
+
+        const createCommentComponent = (comment: PostComment, hide: () => void, depth = 0): JSX.Element => {
+            const children = comment.children.map((c: PostComment) => createCommentComponent(c, hide, depth + 1));
+            return (
+                <>
+                    <GroupCommentCard
+                        key={`${groupId}-${post.id}-comment-${comment.id}`}
+                        groupId={groupId}
+                        post={post}
+                        comment={comment}
+                        closeComments={hide}
+                        onPressReplyTo={() => this.setReplyingTo(comment)}
+                        expanded={expandedCommentId === comment.id}
+                        onExpand={() => this.setState({...this.state, expandedCommentId: comment.id})}
+                        onCollapse={() => this.setState({...this.state, expandedCommentId: null})}
+                        depth={depth}
+                        adminView={adminView}
+                    />
+                    {children}
+                </>
+            );
+        };
 
         return (
             <CustomModal
@@ -103,19 +126,10 @@ export class GroupPostCommentsModalClass extends React.Component<
                             </View>
                         </View>
                         <View style={styles.comments}>
-                            {post.commentIds.map((id) => (
-                                <GroupCommentCard
-                                    key={`${groupId}-${post.id}-comment-${id}`}
-                                    groupId={groupId}
-                                    post={post}
-                                    comment={post.comments[id]}
-                                    closeComments={hide}
-                                    onPressReplyTo={() => this.setReplyingTo(post.comments[id])}
-                                    expanded={expandedCommentId === id}
-                                    onExpand={() => this.setState({...this.state, expandedCommentId: id})}
-                                    onCollapse={() => this.setState({...this.state, expandedCommentId: null})}
-                                />
-                            ))}
+                            {post.commentIds.length === 0 && (
+                                <Text style={styles.noCommentsText}>{i18n.t("groups.comments.none")}</Text>
+                            )}
+                            {post.commentIds.map((id) => createCommentComponent(post.comments[id], hide))}
                         </View>
                         <View style={styles.bottom}>
                             <View style={styles.replyToContainer}>
@@ -137,9 +151,10 @@ export class GroupPostCommentsModalClass extends React.Component<
                             <CommentTextInput
                                 ref={this.commentTextInputRef}
                                 style={styles.input}
-                                onSend={(text) =>
-                                    (store.dispatch as MyThunkDispatch)(createPostComment(groupId, post.id, {text}))
-                                }
+                                onSend={(text) => {
+                                    const dto = {text, parentId: replyingTo?.id || undefined};
+                                    (store.dispatch as MyThunkDispatch)(createPostComment(groupId, post.id, dto));
+                                }}
                             />
                         </View>
                     </View>
@@ -186,6 +201,15 @@ const themedStyles = preTheme((theme: Theme) => {
         topButtonIcon: {
             fontSize: 24,
             color: theme.textLight,
+        },
+
+        noCommentsText: {
+            fontSize: 16,
+            color: theme.textLight,
+            alignSelf: "center",
+            textAlign: "center",
+            marginTop: 25,
+            maxWidth: 250,
         },
 
         input: {
