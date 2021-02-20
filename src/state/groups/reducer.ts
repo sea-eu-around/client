@@ -3,6 +3,7 @@ import {arrayWithIdMapperToDict, arrayWithIdsToDict} from "../../general-utils";
 import {Group, GroupPost, GROUP_VOTE_VALUES, PostSortingOrder} from "../../model/groups";
 import {GroupsState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
+    CreateGroupSuccessAction,
     CreatePostSuccessAction,
     DeleteCommentSuccessAction,
     DeleteGroupMemberSuccessAction,
@@ -48,6 +49,14 @@ export const initialState: GroupsState = {
 
 export const groupsReducer = (state: GroupsState = initialState, action: GroupsAction): GroupsState => {
     switch (action.type) {
+        case GROUP_ACTION_TYPES.CREATE_SUCCESS: {
+            const {group} = action as CreateGroupSuccessAction;
+            return {
+                ...state,
+                groupsDict: {...state.groupsDict, [group.id]: group},
+                myGroups: [group.id].concat(state.myGroups),
+            };
+        }
         case GROUP_ACTION_TYPES.UPDATE_SUCCESS: {
             const {group} = action as UpdateGroupSuccessAction;
             return updateGroup(state, group.id, () => group);

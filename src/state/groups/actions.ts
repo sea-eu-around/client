@@ -86,7 +86,7 @@ export enum GROUP_ACTION_TYPES {
     SET_COMMENT_VOTE_SUCCESS = "GROUP/SET_COMMENT_VOTE_SUCCESS",
 }
 
-export type CreateGroupSuccessAction = {type: string};
+export type CreateGroupSuccessAction = {type: string; group: Group};
 export type CreateGroupFailureAction = {type: string};
 
 export type UpdateGroupSuccessAction = {
@@ -273,8 +273,9 @@ export type GroupsAction = CreateGroupSuccessAction &
     SetPostSortingOrderAction &
     SetPostVoteSuccessAction;
 
-const createGroupSuccess = (): CreateGroupSuccessAction => ({
+const createGroupSuccess = (group: Group): CreateGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_SUCCESS,
+    group,
 });
 
 const createGroupFailure = (): CreateGroupFailureAction => ({
@@ -308,7 +309,9 @@ export const createGroup = (group: CreateGroupDto): ValidatedThunkAction => asyn
 
     const response = await requestBackend("groups", "POST", {}, dto, token, true);
     if (response.status === HttpStatusCode.CREATED) {
-        dispatch(createGroupSuccess());
+        const payload = (response as SuccessfulRequestResponse).data as ResponseGroupDto;
+        const createdGroup = convertDtoToGroup(payload);
+        dispatch(createGroupSuccess(createdGroup));
         return {success: true};
     } else {
         dispatch(createGroupFailure());
