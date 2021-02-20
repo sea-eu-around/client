@@ -17,6 +17,7 @@ export type ConfirmationModalButton = {
     onPress?: (hide: () => void) => void;
     backgroundColor?: string;
     color?: string;
+    disabled?: boolean;
 };
 
 export type ConfirmationModalProps = ThemeProps &
@@ -116,8 +117,10 @@ export class ConfirmationModalClass extends React.Component<ConfirmationModalPro
                                     <TouchableOpacity
                                         key={`modal-button-${i}-${b.text}`}
                                         style={[styles.action, {backgroundColor: b.backgroundColor}]}
-                                        onPress={() => b.onPress && b.onPress(hide)}
+                                        activeOpacity={b.disabled ? 1.0 : undefined}
+                                        onPress={b.disabled ? undefined : () => b.onPress && b.onPress(hide)}
                                     >
+                                        {b.disabled && <View style={styles.actionDisabledOverlay}></View>}
                                         {b.text && <Text style={[styles.actionText, {color: b.color}]}>{b.text}</Text>}
                                     </TouchableOpacity>
                                 );
@@ -154,6 +157,15 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         actionText: {
             fontSize: 16,
+        },
+        actionDisabledOverlay: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#777",
+            opacity: 0.6,
         },
         contentContainer: {
             paddingHorizontal: 25,
