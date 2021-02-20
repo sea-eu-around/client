@@ -5,12 +5,14 @@ import {Group} from "../model/groups";
 import {ThemeProps} from "../types";
 import ActionMenu, {ActionMenuClass, ActionMenuItem} from "./ActionMenu";
 import i18n from "i18n-js";
-import {DeletePostConfirmModalClass} from "./modals/DeletePostConfirmModal";
-import {QuickFormReportClass} from "./forms/QuickFormReport";
+import QuickFormReport, {QuickFormReportClass} from "./forms/QuickFormReport";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import {GroupRole} from "../api/dto";
 import LeaveGroupConfirmModal, {LeaveGroupConfirmModalClass} from "./modals/LeaveGroupConfirmModal";
+import DeleteGroupConfirmModal, {DeleteGroupConfirmModalClass} from "./modals/DeleteGroupConfirmModal";
+import {rootNavigate} from "../navigation/utils";
+import {ReportEntityType} from "../constants/reports";
 
 const reduxConnector = connect(
     (state: AppState) => ({
@@ -28,7 +30,7 @@ type GroupSettingsMenuState = {group: Group | null; actions: ActionMenuItem[]};
 export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuProps, GroupSettingsMenuState> {
     private actionMenuRef = React.createRef<ActionMenuClass>();
     private leaveModalRef = React.createRef<LeaveGroupConfirmModalClass>();
-    private deletePostModalRef = React.createRef<DeletePostConfirmModalClass>();
+    private deleteGroupModalRef = React.createRef<DeleteGroupConfirmModalClass>();
     private reportFormRef = React.createRef<QuickFormReportClass>();
 
     constructor(props: GroupSettingsMenuProps) {
@@ -49,26 +51,36 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
         const isAdmin = group && group.myRole == GroupRole.Admin;
 
         const leaveAction: ActionMenuItem = {
-            icon: (style) => <MaterialIcons style={style} name="edit" />,
-            text: i18n.t("groups.settings.leave.title"),
+            icon: (style) => <MaterialIcons style={style} name="exit-to-app" />,
+            text: i18n.t("groups.leave.title"),
             onSelect: () => this.leaveModalRef.current?.show(),
         };
         const manageBansAction: ActionMenuItem = {
-            icon: (style) => <MaterialIcons style={style} name="edit" />,
-            text: i18n.t("groups.settings.manageBans.title"),
-            onSelect: () => this.leaveModalRef.current?.show(),
+            icon: (style) => <MaterialIcons style={style} name="block" />,
+            text: i18n.t("groups.members.manageBanned"),
+            onSelect: () =>
+                group &&
+                rootNavigate("TabGroups", {
+                    screen: "GroupBannedMembersScreen",
+                    params: {groupId: group.id},
+                }),
         };
         const manageMembersAction: ActionMenuItem = {
-            icon: (style) => <MaterialIcons style={style} name="edit" />,
-            text: i18n.t("groups.settings.manageMembers.title"),
-            onSelect: () => this.leaveModalRef.current?.show(),
+            icon: (style) => <MaterialIcons style={style} name="group" />,
+            text: i18n.t("groups.members.manage"),
+            onSelect: () =>
+                group &&
+                rootNavigate("TabGroups", {
+                    screen: "GroupMembersScreen",
+                    params: {groupId: group.id},
+                }),
         };
         const deleteAction: ActionMenuItem = {
             icon: (style) => <MaterialIcons style={style} name="delete" />,
-            text: i18n.t("groups.settings.delete.title"),
+            text: i18n.t("groups.delete.title"),
             containerStyle: {backgroundColor: theme.error},
             textStyle: {color: "white"},
-            onSelect: () => this.deletePostModalRef.current?.show(),
+            onSelect: () => this.deleteGroupModalRef.current?.show(),
         };
         const reportAction: ActionMenuItem = {
             icon: (style) => <MaterialIcons style={style} name="report" />,
@@ -80,23 +92,27 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
 
         const actions: ActionMenuItem[] = [];
 
-        if (isAdmin) actions.push(manageBansAction);
         if (isAdmin) actions.push(manageMembersAction);
-        if (isAdmin) actions.push(deleteAction);
         if (isAdmin) actions.push(manageBansAction);
         actions.push(leaveAction);
+        if (isAdmin) actions.push(deleteAction);
         actions.push(reportAction);
         actions.push({preset: "close"});
 
         return (
             <>
                 <ActionMenu ref={this.actionMenuRef} title={i18n.t("groups.postMenu.title")} actions={actions} />
-                {group && <LeaveGroupConfirmModal ref={this.leaveModalRef} groupId={group.id} />}
-                {/*post && <EditPostModal ref={this.editPostModalRef} groupId={post.groupId} post={post} />}
-                {post && <DeletePostConfirmModal ref={this.deletePostModalRef} groupId={post.groupId} post={post} />}
-                {post && (
-                    <QuickFormReport ref={this.reportFormRef} entity={post} entityType={ReportEntityType.POST_ENTITY} />
-                )*/}
+                {group && (
+                    <>
+                        <LeaveGroupConfirmModal ref={this.leaveModalRef} groupId={group.id} />
+                        <DeleteGroupConfirmModal ref={this.deleteGroupModalRef} group={group} />
+                        <QuickFormReport
+                            ref={this.reportFormRef}
+                            entity={group}
+                            entityType={ReportEntityType.GROUP_ENTITY}
+                        />
+                    </>
+                )}
             </>
         );
     }
