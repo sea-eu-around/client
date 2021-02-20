@@ -1,17 +1,14 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInput, ViewStyle, StyleSheet} from "react-native";
+import {StyleProp, View, TextInput, ViewStyle, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import Button from "./Button";
+import i18n from "i18n-js";
 
 export type CommentTextInputProps = {
     style?: StyleProp<ViewStyle>;
-    focusedStyle?: StyleProp<TextStyle>;
-    inputStyle?: StyleProp<TextStyle>;
-    inputFocusedStyle?: StyleProp<TextStyle>;
-    placeholderTextColor?: string;
     onSend?: (text: string) => void;
 } & ThemeProps;
 
@@ -44,7 +41,7 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
     }
 
     render(): JSX.Element {
-        const {style, inputStyle, inputFocusedStyle, focusedStyle, placeholderTextColor, theme, onSend} = this.props;
+        const {style, theme, onSend} = this.props;
         const {value} = this.state;
         const styles = themedStyles(theme);
 
@@ -62,10 +59,10 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
             );
 
         return (
-            <View style={[styles.wrapper, {height}, style, this.state.focused ? focusedStyle : {}]}>
+            <View style={[styles.wrapper, {height}, style, this.state.focused ? styles.focusedStyle : {}]}>
                 <TextInput
                     ref={this.inputRef}
-                    style={[styles.input, inputStyle, this.state.focused ? inputFocusedStyle : {}]}
+                    style={[styles.input, this.state.focused ? styles.inputFocusedStyle : {}]}
                     onBlur={() => {
                         this.onBlur();
                         this.setState({focused: false});
@@ -74,10 +71,11 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
                         this.onFocus();
                         this.setState({focused: true});
                     }}
+                    placeholder={i18n.t("groups.comments.placeholder")}
                     multiline
                     numberOfLines={4}
                     value={value}
-                    placeholderTextColor={placeholderTextColor}
+                    placeholderTextColor={theme.textLight}
                     onChangeText={(value) => this.setState({...this.state, value})}
                     onContentSizeChange={(event) => {
                         if ((value.match(/\n/g) || []).length < 4)
@@ -97,6 +95,8 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             width: "100%",
         },
+        focusedStyle: {},
+        inputFocusedStyle: {},
         input: {
             paddingLeft: 20,
             paddingVertical: 10,
