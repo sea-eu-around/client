@@ -27,7 +27,7 @@ export type ActionMenuProps = {
     snapPoints?: number[];
 } & ThemeProps;
 
-const ITEM_HEIGHT = 60;
+const ITEM_HEIGHT = 55;
 
 export class ActionMenuClass extends React.Component<ActionMenuProps> {
     sheetRef = React.createRef<BottomSheetClass>();
