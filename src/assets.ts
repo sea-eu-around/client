@@ -58,6 +58,8 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
             return import("@assets/images/store-android.png");
         case "store-button.ios":
             return import("@assets/images/store-ios.svg");
+        case "group-placeholder":
+            return import("@assets/images/group-placeholder.png");
         default:
             return import("@assets/images/placeholder.png");
     }

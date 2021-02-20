@@ -4,7 +4,9 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {Group} from "../../model/groups";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToGroup} from "../../navigation/utils";
+import LocalImage from "../LocalImage";
+import {BlurView} from "expo-blur";
 
 // Component props
 type MyGroupCardProps = {
@@ -22,9 +24,7 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
             <TouchableOpacity
                 style={[styles.container, group && !group.cover ? styles.containerWithoutCover : {}, style]}
                 activeOpacity={0.9}
-                onPress={() => {
-                    rootNavigate("TabGroups", {screen: "GroupScreen", params: group ? {groupId: group.id} : {}});
-                }}
+                onPress={() => group && navigateToGroup(group.id)}
                 {...otherProps}
             >
                 {group && (
@@ -32,10 +32,11 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
                         {group.cover && (
                             <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />
                         )}
-                        <Text
-                            style={group.cover ? styles.groupNameWithCover : styles.groupNameWithoutCover}
-                            numberOfLines={3}
-                        >
+                        {!group.cover && (
+                            <LocalImage style={styles.groupCover} imageKey="group-placeholder" resizeMode="cover" />
+                        )}
+                        <BlurView style={styles.textUnderlay} tint="dark" intensity={5} />
+                        <Text style={styles.groupName} numberOfLines={3}>
                             {group?.name}
                         </Text>
                     </>
@@ -55,7 +56,7 @@ const themedStyles = preTheme((theme: Theme) => {
             overflow: "hidden",
         },
         containerWithoutCover: {
-            borderWidth: 1,
+            borderWidth: StyleSheet.hairlineWidth,
             borderColor: theme.componentBorder,
         },
         groupCover: {
@@ -63,16 +64,19 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             height: "100%",
         },
-        groupNameWithCover: {
-            color: theme.textWhite,
-            textShadowColor: "rgba(0, 0, 0, 0.75)",
-            textShadowOffset: {width: 0, height: 1},
-            textShadowRadius: 15,
-            margin: 5,
+        textUnderlay: {
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
         },
-        groupNameWithoutCover: {
-            color: theme.textLight,
+        groupName: {
+            color: theme.textWhite,
+            textShadowColor: "rgba(0, 0, 0, 0.7)",
+            textShadowOffset: {width: 1, height: 1},
+            textShadowRadius: 10,
             margin: 5,
+            zIndex: 1, // fix for web version
         },
     });
 });
