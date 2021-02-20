@@ -35,10 +35,13 @@ type GroupCommentCardProps = {
     expanded: boolean;
     onExpand?: () => void;
     onCollapse?: () => void;
+    depth: number;
+    adminView: boolean;
 } & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
 
 const EXPANDED_BOTTOM_HEIGHT = 35;
+const DEPTH_OFFSET = 20;
 
 class GroupCommentCard extends React.Component<GroupCommentCardProps> {
     private bottomHeight = new ReAnimated.Value<number>(0);
@@ -68,6 +71,8 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
             expanded,
             onExpand,
             onCollapse,
+            depth,
+            adminView,
             ...otherProps
         } = this.props;
 
@@ -77,7 +82,11 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
 
         return (
             <TouchableOpacity
-                style={[styles.container, expanded ? styles.containerExpanded : {}]}
+                style={[
+                    styles.container,
+                    expanded ? styles.containerExpanded : {},
+                    {paddingLeft: 10 + depth * DEPTH_OFFSET},
+                ]}
                 activeOpacity={0.9}
                 onPress={() => {
                     if (expanded && onCollapse) onCollapse();
@@ -137,7 +146,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                                     )}
                                 />
                             )}
-                            {fromLocal && (
+                            {(adminView || fromLocal) && (
                                 <DeleteCommentConfirmModal
                                     groupId={groupId}
                                     post={post}
@@ -151,14 +160,14 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
                                     )}
                                 />
                             )}
-                            {(true || !fromLocal) && (
+                            {!fromLocal && (
                                 <QuickFormReport
                                     entityType={ReportEntityType.COMMENT_ENTITY}
                                     entity={comment}
                                     activator={(show) => (
                                         <Button
                                             style={styles.bottomButton}
-                                            icon={<MaterialIcons style={styles.bottomButtonIcon} name="block" />}
+                                            icon={<MaterialIcons style={styles.bottomButtonIcon} name="report" />}
                                             onPress={show}
                                         />
                                     )}
