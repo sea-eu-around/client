@@ -3,6 +3,7 @@ import {DEBUG_MODE} from "../constants/config";
 import {rootNavigate} from "../navigation/utils";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
 import {AUTH_ACTION_TYPES, beginOnboarding, LogInSuccessAction, LogOutAction} from "./auth/actions";
+import {GROUP_ACTION_TYPES} from "./groups/actions";
 import {ActionCancelSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
 import {AppState} from "./types";
@@ -72,6 +73,10 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             const {isMatch} = action as ActionCancelSuccessAction;
             // When un-matching someone, navigate back from their profile to MainScreen
             if (isMatch) rootNavigate("MainScreen", {screen: "TabMatching"});
+            break;
+        }
+        case GROUP_ACTION_TYPES.LEAVE_SUCCESS: {
+            rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
             break;
         }
     }
