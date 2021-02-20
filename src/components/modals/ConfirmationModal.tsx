@@ -4,7 +4,7 @@ import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
-import CustomModal, {CustomModalProps} from "./CustomModal";
+import CustomModal, {CustomModalClass, CustomModalProps} from "./CustomModal";
 import {IconProps} from "@expo/vector-icons/build/createIconSet";
 import {styleTextLight} from "../../styles/general";
 
@@ -30,7 +30,9 @@ export type ConfirmationModalProps = ThemeProps &
         contentContainerStyle?: StyleProp<ViewStyle>;
     };
 
-class ConfirmationModal extends React.Component<ConfirmationModalProps> {
+export class ConfirmationModalClass extends React.Component<ConfirmationModalProps> {
+    private modalRef = React.createRef<CustomModalClass>();
+
     private getPreset(preset: ConfirmationModalButtonPreset): ConfirmationModalButton {
         const {theme} = this.props;
 
@@ -62,7 +64,11 @@ class ConfirmationModal extends React.Component<ConfirmationModalProps> {
         }
     }
 
-    render() {
+    show(): void {
+        this.modalRef.current?.show();
+    }
+
+    render(): JSX.Element {
         const {
             theme,
             title,
@@ -80,6 +86,7 @@ class ConfirmationModal extends React.Component<ConfirmationModalProps> {
 
         return (
             <CustomModal
+                ref={this.modalRef}
                 {...otherProps}
                 modalViewStyle={[styles.modalStyle, otherProps.modalViewStyle]}
                 renderContent={(hide: () => void) => (
@@ -177,4 +184,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default withTheme(ConfirmationModal);
+export default withTheme(ConfirmationModalClass);
