@@ -178,11 +178,11 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
 
         case GROUP_ACTION_TYPES.UPDATE_POST_SUCCESS: {
             const {groupId, post} = action as UpdatePostSuccessAction;
-            return updateGroup(state, groupId, ({posts}) => ({
-                posts: {
-                    ...posts,
-                    [post.id]: {...posts[post.id], status: post.status, type: post.type, text: post.text},
-                },
+            return updatePost(state, groupId, post.id, () => ({
+                status: post.status,
+                type: post.type,
+                text: post.text,
+                updatedAt: post.updatedAt,
             }));
         }
         case GROUP_ACTION_TYPES.DELETE_POST_SUCCESS: {
