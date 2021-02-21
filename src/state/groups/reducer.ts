@@ -290,7 +290,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 members: {...members, ...arrayWithIdMapperToDict(items, (it) => it.profile.id)},
                 memberIds: {
                     ...memberIds,
-                    [memberStatus]: memberIds[memberStatus].concat(items.map((m) => m.profile.id)),
+                    [memberStatus]: memberIds[memberStatus].concat(
+                        items.map((m) => m.profile.id).filter((id) => memberIds[memberStatus].indexOf(id) === -1),
+                    ),
                 },
                 membersPaginations: {
                     ...membersPaginations,
