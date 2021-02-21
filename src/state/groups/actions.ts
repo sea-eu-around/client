@@ -82,7 +82,9 @@ export enum GROUP_ACTION_TYPES {
     SET_COVER_SUCCESS = "GROUP/SET_COVER_SUCCESS",
     SET_COVER_FAILURE = "GROUP/SET_COVER_FAILURE",
     SET_POST_SORTING_ORDER = "GROUP/SET_POST_SORTING_ORDER",
+    SET_POST_VOTE_BEGIN = "GROUP/SET_POST_VOTE_BEGIN",
     SET_POST_VOTE_SUCCESS = "GROUP/SET_POST_VOTE_SUCCESS",
+    SET_COMMENT_VOTE_BEGIN = "GROUP/SET_COMMENT_VOTE_BEGIN",
     SET_COMMENT_VOTE_SUCCESS = "GROUP/SET_COMMENT_VOTE_SUCCESS",
 }
 
@@ -224,10 +226,25 @@ export type SetPostSortingOrderAction = {
     order: PostSortingOrder;
 };
 
+export type SetPostVoteBeginAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+    status: GroupVoteStatus;
+};
+
 export type SetPostVoteSuccessAction = {
     type: string;
     groupId: string;
     postId: string;
+    status: GroupVoteStatus;
+};
+
+export type SetCommentVoteBeginAction = {
+    type: string;
+    groupId: string;
+    postId: string;
+    commentId: string;
     status: GroupVoteStatus;
 };
 
@@ -281,7 +298,10 @@ export type GroupsAction = CreateGroupSuccessAction &
     SetGroupCoverFailureAction &
     SetGroupCoverSuccessAction &
     SetPostSortingOrderAction &
-    SetPostVoteSuccessAction;
+    SetPostVoteBeginAction &
+    SetPostVoteSuccessAction &
+    SetCommentVoteBeginAction &
+    SetCommentVoteSuccessAction;
 
 const createGroupSuccess = (group: Group): CreateGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_SUCCESS,
@@ -1071,10 +1091,30 @@ export const setPostSortingOrder = (order: PostSortingOrder): SetPostSortingOrde
     order,
 });
 
+const setPostVoteBegin = (groupId: string, postId: string, status: GroupVoteStatus): SetPostVoteBeginAction => ({
+    type: GROUP_ACTION_TYPES.SET_POST_VOTE_BEGIN,
+    groupId,
+    postId,
+    status,
+});
+
 const setPostVoteSuccess = (groupId: string, postId: string, status: GroupVoteStatus): SetPostVoteSuccessAction => ({
     type: GROUP_ACTION_TYPES.SET_POST_VOTE_SUCCESS,
     groupId,
     postId,
+    status,
+});
+
+const setCommentVoteBegin = (
+    groupId: string,
+    postId: string,
+    commentId: string,
+    status: GroupVoteStatus,
+): SetCommentVoteBeginAction => ({
+    type: GROUP_ACTION_TYPES.SET_COMMENT_VOTE_BEGIN,
+    groupId,
+    postId,
+    commentId,
     status,
 });
 
@@ -1106,6 +1146,10 @@ export const setVote = (
     const isComment = commentId !== null;
     const entityType = isComment ? "comment" : "post";
     const url = `groups/${groupId}/votes/${entityType}/${entityId}`;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (isComment) dispatch(setCommentVoteBegin(groupId, postId, commentId!, status));
+    else dispatch(setPostVoteBegin(groupId, postId, status));
 
     const response =
         status === GroupVoteStatus.Neutral

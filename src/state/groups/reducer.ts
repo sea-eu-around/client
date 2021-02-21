@@ -28,13 +28,13 @@ import {
     GroupsAction,
     GROUP_ACTION_TYPES,
     LeaveGroupSuccessAction,
-    SetCommentVoteSuccessAction,
+    SetCommentVoteBeginAction,
     SetGroupCoverBeginAction,
     SetGroupCoverFailureAction,
     SetGroupCoverSuccessAction,
     SetGroupMemberStatusSuccessAction,
     SetPostSortingOrderAction,
-    SetPostVoteSuccessAction,
+    SetPostVoteBeginAction,
     UpdateCommentSuccessAction,
     UpdateGroupSuccessAction,
     UpdatePostSuccessAction,
@@ -195,8 +195,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 };
             });
         }
-        case GROUP_ACTION_TYPES.SET_POST_VOTE_SUCCESS: {
-            const {groupId, postId, status} = action as SetPostVoteSuccessAction;
+        // Update on begin action so it doesn't look slow
+        case GROUP_ACTION_TYPES.SET_POST_VOTE_BEGIN: {
+            const {groupId, postId, status} = action as SetPostVoteBeginAction;
             return updatePost(state, groupId, postId, ({score, voteStatus}) => ({
                 voteStatus: status,
                 // Add value of new vote, remove value of previous vote
@@ -256,10 +257,22 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 };
             });
         }
-        case GROUP_ACTION_TYPES.SET_COMMENT_VOTE_SUCCESS: {
-            const {groupId, postId, commentId, status} = action as SetCommentVoteSuccessAction;
+        // Update on begin action so it doesn't look slow
+        case GROUP_ACTION_TYPES.SET_COMMENT_VOTE_BEGIN: {
+            const {groupId, postId, commentId, status} = action as SetCommentVoteBeginAction;
             return updatePost(state, groupId, postId, ({comments}) => ({
-                comments: {...comments, [commentId]: {...comments[commentId], voteStatus: status}},
+                comments: {
+                    ...comments,
+                    [commentId]: {
+                        ...comments[commentId],
+                        voteStatus: status,
+                        // Add value of new vote, remove value of previous vote
+                        score:
+                            comments[commentId].score +
+                            GROUP_VOTE_VALUES[status] -
+                            GROUP_VOTE_VALUES[comments[commentId].voteStatus],
+                    },
+                },
             }));
         }
 
