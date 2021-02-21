@@ -51,7 +51,6 @@ class GroupBannedMembersScreen extends React.Component<GroupBannedMembersScreenP
         const {navigation} = this.props;
 
         const group = this.getGroup();
-        const isAdmin = group?.myRole === GroupRole.Admin;
 
         return (
             <ScreenWrapper>
@@ -65,7 +64,7 @@ class GroupBannedMembersScreen extends React.Component<GroupBannedMembersScreenP
                                 key={`${group.id}-${member.profile.id}`}
                                 groupId={group.id}
                                 member={member}
-                                adminView={isAdmin}
+                                adminView={group.myRole === GroupRole.Admin}
                             />
                         ) : (
                             <></>
