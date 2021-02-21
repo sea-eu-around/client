@@ -75,7 +75,7 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
 
         const pendingMemberIds = group ? group.memberIds[GroupMemberStatus.Pending] : [];
         const isAdmin = group && group.myRole === GroupRole.Admin;
-        const numApprovedMembers = group?.numApprovedMembers || null;
+        const numApprovedMembers = group?.numApprovedMembers;
 
         const top = (
             <View style={styles.top}>
@@ -110,7 +110,7 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                     />
                     <View style={styles.members}>
                         <Text style={styles.groupInfo}>
-                            {numApprovedMembers === null
+                            {numApprovedMembers === null || numApprovedMembers === undefined
                                 ? ""
                                 : numApprovedMembers === 0
                                 ? i18n.t("groups.members.zero")
