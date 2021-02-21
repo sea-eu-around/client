@@ -248,6 +248,7 @@ export type ResponseGroupPostDto = {
     createdAt: string;
     updatedAt: string;
     creator: ResponseProfileDto;
+    commentsCount: number;
     upVotesCount: number;
     downVotesCount: number;
     isVoted: boolean;
@@ -281,6 +282,8 @@ export enum GroupMemberStatus {
     Pending = "pending",
     Approved = "approved",
     Banned = "banned",
+    Invited = "invited",
+    InvitedByAdmin = "invited-by-admin",
 }
 
 export type ResponseGroupMemberDto = {

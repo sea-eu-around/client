@@ -38,6 +38,7 @@ export type GroupPost = {
     score: number;
     voteStatus: GroupVoteStatus;
     comments: {[key: string]: PostComment};
+    commentsCount: number;
     commentIds: string[];
     commentsPagination: PaginatedState;
 };

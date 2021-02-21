@@ -102,6 +102,11 @@ export type LeaveGroupSuccessAction = {type: string; id: string};
 
 export type FetchGroupSuccessAction = {type: string; group: Group};
 
+export type FetchMyGroupsBeginAction = {invites: boolean} & PaginatedFetchBeginAction;
+export type FetchMyGroupsFailureAction = {invites: boolean} & PaginatedFetchFailureAction;
+export type FetchMyGroupsSuccessAction = {invites: boolean} & PaginatedFetchSuccessAction<Group>;
+export type FetchMyGroupsRefreshAction = {invites: boolean} & PaginatedFetchRefreshAction;
+
 export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {
     groupId: string;
     memberStatus: GroupMemberStatus;
@@ -182,6 +187,7 @@ export type CreateCommentSuccessAction = {
     type: string;
     groupId: string;
     postId: string;
+    comment: PostComment;
 };
 export type CreateCommentFailureAction = {type: string};
 
@@ -239,6 +245,10 @@ export type GroupsAction = CreateGroupSuccessAction &
     UpdateGroupFailureAction &
     LeaveGroupSuccessAction &
     FetchGroupSuccessAction &
+    FetchMyGroupsBeginAction &
+    FetchMyGroupsFailureAction &
+    FetchMyGroupsSuccessAction &
+    FetchMyGroupsRefreshAction &
     PaginatedFetchBeginAction &
     PaginatedFetchFailureAction &
     PaginatedFetchSuccessAction<Group> &
@@ -723,25 +733,29 @@ export const setGroupMemberStatus = (
     }
 };
 
-const beginFetchMyGroups = (): PaginatedFetchBeginAction => ({
+const beginFetchMyGroups = (invites: boolean): FetchMyGroupsBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN,
+    invites,
 });
 
-const fetchMyGroupsSuccess = (items: Group[], canFetchMore: boolean): PaginatedFetchSuccessAction<Group> => ({
+const fetchMyGroupsSuccess = (items: Group[], canFetchMore: boolean, invites: boolean): FetchMyGroupsSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS,
     items,
     canFetchMore,
+    invites,
 });
 
-const fetchMyGroupsFailure = (): PaginatedFetchFailureAction => ({
+const fetchMyGroupsFailure = (invites: boolean): FetchMyGroupsFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_FAILURE,
+    invites,
 });
 
-export const refreshFetchedMyGroups = (): PaginatedFetchRefreshAction => ({
+export const refreshFetchedMyGroups = (invites = false): FetchMyGroupsRefreshAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_REFRESH,
+    invites,
 });
 
-export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
+export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {myGroupsPagination},
@@ -749,13 +763,13 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
     } = getState();
 
     if (!token || !user) {
-        dispatch(fetchMyGroupsFailure());
+        dispatch(fetchMyGroupsFailure(invites));
         return;
     }
 
     if (myGroupsPagination.fetching || !myGroupsPagination.canFetchMore) return;
 
-    dispatch(beginFetchMyGroups());
+    dispatch(beginFetchMyGroups(invites));
 
     const response = await requestBackend(
         "groups",
@@ -764,6 +778,9 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
             page: myGroupsPagination.page,
             limit: GROUPS_FETCH_LIMIT,
             profileId: user.id,
+            statuses: invites
+                ? [GroupMemberStatus.Invited, GroupMemberStatus.InvitedByAdmin]
+                : [GroupMemberStatus.Approved],
         },
         {},
         token,
@@ -774,8 +791,8 @@ export const fetchMyGroups = (): AppThunk => async (dispatch, getState) => {
         const paginated = response as PaginatedRequestResponse;
         const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchMyGroupsSuccess(groups, canFetchMore));
-    } else dispatch(fetchMyGroupsFailure());
+        dispatch(fetchMyGroupsSuccess(groups, canFetchMore, invites));
+    } else dispatch(fetchMyGroupsFailure(invites));
 };
 
 const joinGroupSuccess = (group: Group): JoinGroupSuccessAction => ({
@@ -895,10 +912,15 @@ const createPostCommentFailure = (): CreateCommentFailureAction => ({
     type: GROUP_ACTION_TYPES.CREATE_COMMENT_FAILURE,
 });
 
-const createPostCommentSuccess = (groupId: string, postId: string): CreateCommentSuccessAction => ({
+const createPostCommentSuccess = (
+    groupId: string,
+    postId: string,
+    comment: PostComment,
+): CreateCommentSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_COMMENT_SUCCESS,
     groupId,
     postId,
+    comment,
 });
 
 export const createPostComment = (
@@ -915,7 +937,9 @@ export const createPostComment = (
     const response = await requestBackend(`groups/${groupId}/posts/${postId}/comments`, "POST", {}, dto, token, true);
 
     if (response.status === HttpStatusCode.CREATED) {
-        dispatch(createPostCommentSuccess(groupId, postId));
+        const payload = response as SuccessfulRequestResponse;
+        const comment = convertDtoToPostComment(payload.data as ResponsePostCommentDto);
+        dispatch(createPostCommentSuccess(groupId, postId, comment));
         return {success: true};
     } else {
         dispatch(createPostCommentFailure());

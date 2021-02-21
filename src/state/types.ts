@@ -89,7 +89,7 @@ export type MatchingState = {
     historyFilters: {[key: string]: boolean};
     historyItems: MatchHistoryItem[];
     myMatches: UserProfile[];
-    fetchingMyMatches: boolean;
+    myMatchesPagination: PaginatedState;
 };
 
 export type MessagingState = {
@@ -114,6 +114,8 @@ export type GroupsState = {
     groups: string[];
     myGroupsPagination: PaginatedState;
     myGroups: string[];
+    myGroupInvitesPagination: PaginatedState;
+    myGroupInvites: string[];
     postsSortOrder: PostSortingOrder;
     feedPagination: PaginatedState;
     postsFeed: {[key: string]: GroupPost};
