@@ -14,7 +14,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import BanGroupMemberModal from "../modals/BanGroupMemberModal";
 import {GroupMemberStatus} from "../../api/dto";
-import {setGroupMemberStatus} from "../../state/groups/actions";
+import {deleteGroupMember, setGroupMemberStatus} from "../../state/groups/actions";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -32,10 +32,11 @@ type GroupMemberCardProps = {
 
 class GroupMemberCard extends React.Component<GroupMemberCardProps> {
     render(): JSX.Element {
-        const {theme, groupId, localUserId, member, adminView, style, dispatch, ...otherProps} = this.props;
+        const {theme, groupId, localUserId, member, adminView, style, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
         const isLocalUser = member && localUserId === member.profile.id;
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const deleteMemberButton = member && (
             <DeleteGroupMemberModal
@@ -74,11 +75,14 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
             <Button
                 style={styles.controlButton}
                 icon={<MaterialIcons name="person-add" style={[styles.controlIcon, {color: theme.accent}]} />}
-                onPress={() =>
-                    (dispatch as MyThunkDispatch)(
-                        setGroupMemberStatus(groupId, member.profile.id, GroupMemberStatus.Approved),
-                    )
-                }
+                onPress={() => dispatch(setGroupMemberStatus(groupId, member.profile.id, GroupMemberStatus.Approved))}
+            />
+        );
+        const unbanMemberButton = member && member.status === GroupMemberStatus.Banned && (
+            <Button
+                style={styles.controlButton}
+                icon={<MaterialIcons name="cancel" style={[styles.controlIcon, {color: theme.accent}]} />}
+                onPress={() => dispatch(deleteGroupMember(groupId, member.profile.id))}
             />
         );
 
@@ -116,6 +120,7 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                                     {banMemberButton}
                                 </>
                             )}
+                            {adminView && member.status === GroupMemberStatus.Banned && <>{unbanMemberButton}</>}
                             {adminView && member.status === GroupMemberStatus.Pending && (
                                 <>
                                     {acceptMemberButton}
