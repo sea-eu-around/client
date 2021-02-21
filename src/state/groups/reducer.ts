@@ -451,23 +451,19 @@ function updatePost(
     postId: string,
     update: (p: GroupPost) => Partial<GroupPost>,
 ): GroupsState {
-    const g = state.groupsDict[groupId];
-    if (g) {
-        const p = g.posts[postId];
-        if (p) {
-            return {
-                ...state,
-                groupsDict: {
-                    ...state.groupsDict,
-                    [groupId]: {...g, posts: {...g.posts, [postId]: {...p, ...update(p)}}},
-                },
-            };
-        } else {
-            console.error("Anomaly: cannot update post (not in memory).");
-            return state;
-        }
-    } else {
-        console.error("Anomaly: cannot update post (group not in memory).");
-        return state;
+    const s = {...state};
+    const g = s.groupsDict[groupId];
+    if (g && g.posts[postId]) {
+        s.groupsDict = {
+            ...s.groupsDict,
+            [groupId]: {...g, posts: {...g.posts, [postId]: {...g.posts[postId], ...update(g.posts[postId])}}},
+        };
     }
+    if (s.postsFeed[postId]) {
+        s.postsFeed = {
+            ...s.postsFeed,
+            [postId]: {...s.postsFeed[postId], ...update(s.postsFeed[postId])},
+        };
+    }
+    return s;
 }
