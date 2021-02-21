@@ -453,12 +453,14 @@ function updatePost(
 ): GroupsState {
     const s = {...state};
     const g = s.groupsDict[groupId];
+    // Update the post in the group it belongs to
     if (g && g.posts[postId]) {
         s.groupsDict = {
             ...s.groupsDict,
             [groupId]: {...g, posts: {...g.posts, [postId]: {...g.posts[postId], ...update(g.posts[postId])}}},
         };
     }
+    // Update the post in the feed
     if (s.postsFeed[postId]) {
         s.postsFeed = {
             ...s.postsFeed,
