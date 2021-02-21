@@ -8,7 +8,7 @@ import {
     ValidatedThunkAction,
 } from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
-import {GROUPS_FETCH_LIMIT} from "../../constants/config";
+import {GROUPS_FETCH_LIMIT, POSTS_FEED_FETCH_LIMIT} from "../../constants/config";
 import {
     CreateGroupDto,
     CreateGroupPostDto,
@@ -480,7 +480,7 @@ export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
     const response = await requestBackend(
         "groups/feed",
         "GET",
-        {page: feedPagination.page, limit: 50},
+        {page: feedPagination.page, limit: POSTS_FEED_FETCH_LIMIT},
         {},
         token,
         true,
