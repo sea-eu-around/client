@@ -94,7 +94,19 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         <Text style={styles.bottomText}>
                             {post?.score} {i18n.t("groups.points")}
                         </Text>
-                        <Text style={styles.bottomText}>17 comments</Text>
+                        <Text style={styles.bottomText}>
+                            {post &&
+                                i18n.t(
+                                    `groups.comments.${
+                                        post.commentsCount === 0
+                                            ? "zero"
+                                            : post.commentsCount === 1
+                                            ? "singular"
+                                            : "plural"
+                                    }`,
+                                    {num: post.commentsCount},
+                                )}
+                        </Text>
                     </TouchableOpacity>
                     {groupId && post && (
                         <View style={{flexDirection: "row"}}>
