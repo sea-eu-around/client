@@ -488,7 +488,7 @@ export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
-        const posts = (paginated.data as ResponseGroupPostDto[]).map(convertDtoToGroupPost);
+        const posts = (paginated.data as ResponseGroupPostDto[]).map((p) => convertDtoToGroupPost(p));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchPostsFeedSuccess(posts, canFetchMore));
     } else dispatch(fetchPostsFeedFailure());
@@ -542,7 +542,7 @@ export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, g
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
-        const posts = (paginated.data as ResponseGroupPostDto[]).map(convertDtoToGroupPost);
+        const posts = (paginated.data as ResponseGroupPostDto[]).map((p) => convertDtoToGroupPost(p));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchGroupPostsSuccess(groupId, posts, canFetchMore));
     } else dispatch(fetchGroupPostsFailure(groupId));
@@ -600,7 +600,7 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
-        const comments = (paginated.data as ResponsePostCommentDto[]).map(convertDtoToPostComment);
+        const comments = (paginated.data as ResponsePostCommentDto[]).map((c) => convertDtoToPostComment(c));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchPostCommentsSuccess(groupId, postId, comments, canFetchMore));
     } else dispatch(fetchPostCommentsFailure(groupId, postId));
@@ -842,7 +842,7 @@ export const createGroupPost = (groupId: string, dto: CreateGroupPostDto): Valid
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data;
-        const post = convertDtoToGroupPost(payload as ResponseGroupPostDto);
+        const post = convertDtoToGroupPost(payload as ResponseGroupPostDto, getState().profile.user?.profile);
         dispatch(createGroupPostSuccess(groupId, post));
         return {success: true};
     } else {
@@ -870,7 +870,7 @@ export const updateGroupPost = (
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseGroupPostDto;
-        const post = convertDtoToGroupPost(payload);
+        const post = convertDtoToGroupPost(payload, getState().profile.user?.profile);
         dispatch(updateGroupPostSuccess(groupId, post));
         return {success: true};
     } else {
@@ -938,7 +938,10 @@ export const createPostComment = (
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = response as SuccessfulRequestResponse;
-        const comment = convertDtoToPostComment(payload.data as ResponsePostCommentDto);
+        const comment = convertDtoToPostComment(
+            payload.data as ResponsePostCommentDto,
+            getState().profile.user?.profile,
+        );
         dispatch(createPostCommentSuccess(groupId, postId, comment));
         return {success: true};
     } else {
@@ -979,7 +982,7 @@ export const updatePostComment = (
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponsePostCommentDto;
-        const comment = convertDtoToPostComment(payload);
+        const comment = convertDtoToPostComment(payload, getState().profile.user?.profile);
         dispatch(updatePostCommentSuccess(groupId, postId, comment));
         return {success: true};
     } else {

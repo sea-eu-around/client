@@ -195,7 +195,7 @@ export function convertDtoToGroupMember(dto: ResponseGroupMemberDto): GroupMembe
     return {...dto, profile: convertDtoToProfile(dto.profile)};
 }
 
-export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
+export function convertDtoToGroupPost(dto: ResponseGroupPostDto, creator?: UserProfile): GroupPost {
     return {
         ...dto,
         comments: {},
@@ -203,7 +203,7 @@ export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
         commentsPagination: initialPaginatedState(),
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
-        creator: convertDtoToProfile(dto.creator),
+        creator: creator && !dto.creator ? creator : convertDtoToProfile(dto.creator),
         score: dto.upVotesCount - dto.downVotesCount,
         voteStatus: dto.isVoted
             ? dto.voteType === "up"
@@ -215,12 +215,12 @@ export function convertDtoToGroupPost(dto: ResponseGroupPostDto): GroupPost {
     };
 }
 
-export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostComment {
+export function convertDtoToPostComment(dto: ResponsePostCommentDto, creator?: UserProfile): PostComment {
     return {
         ...dto,
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
-        creator: convertDtoToProfile(dto.creator),
+        creator: creator && !dto.creator ? creator : convertDtoToProfile(dto.creator),
         score: dto.upVotesCount - dto.downVotesCount,
         voteStatus: dto.isVoted
             ? dto.voteType === "up"
@@ -229,6 +229,6 @@ export function convertDtoToPostComment(dto: ResponsePostCommentDto): PostCommen
                 ? GroupVoteStatus.Downvote
                 : GroupVoteStatus.Neutral
             : GroupVoteStatus.Neutral,
-        children: dto.children?.map(convertDtoToPostComment) || [],
+        children: dto.children?.map((c) => convertDtoToPostComment(c)) || [],
     };
 }
