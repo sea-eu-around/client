@@ -19,7 +19,7 @@ import {styleTextThin} from "../../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
 
 // Theses style elements are defined this way because they have to be set in very specific ways
-type SwipeableLooks = {
+export type SwipeableLooks = {
     sideMargin: number;
     borderRadius: number;
     verticalSpacing: number;
@@ -36,7 +36,9 @@ const DEFAULT_LOOKS: SwipeableLooks = {
 // Component props
 export type SwipeableCardProps = ThemeProps &
     SwipeableProperties & {
-        style?: ViewStyle;
+        wrapperStyle?: StyleProp<ViewStyle>;
+        touchableStyle?: StyleProp<ViewStyle>;
+        style: StyleProp<ViewStyle>;
         onHidden?: () => void;
         onPress?: () => void;
         looks?: Partial<SwipeableLooks>;
@@ -95,10 +97,13 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             children,
             leftActions,
             rightActions,
+            wrapperStyle,
             style,
             looks,
             onPress,
             wrapperProps,
+            containerStyle,
+            touchableStyle,
             ...swipeableProps
         } = this.props;
         const {minHeight, right, hidden} = this.state;
@@ -115,16 +120,21 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
                 ref={this.swipeableRef}
                 containerStyle={[
                     styles.swipeableContainer,
+                    containerStyle,
                     {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
                 ]}
-                childrenContainerStyle={[styles.swipeable, {borderRadius}]}
+                childrenContainerStyle={[styles.swipeable, {borderRadius}, style]}
                 useNativeAnimations={Platform.OS !== "web"}
                 friction={1}
                 renderLeftActions={leftActions ? () => leftActions(hideCard) : swipeableProps.renderLeftActions}
                 renderRightActions={rightActions ? () => rightActions(hideCard) : swipeableProps.renderRightActions}
                 {...swipeableProps}
             >
-                <TouchableOpacity activeOpacity={0.75} style={styles.touchable} {...(onPress ? {onPress} : {})}>
+                <TouchableOpacity
+                    activeOpacity={0.75}
+                    style={[styles.touchable, touchableStyle]}
+                    {...(onPress ? {onPress} : {})}
+                >
                     {children}
                 </TouchableOpacity>
             </Swipeable>
@@ -136,7 +146,7 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
                 <View
                     style={[
                         styles.wrapper,
-                        style,
+                        wrapperStyle,
                         {flexBasis: minHeight[" __value"], right: right[" __value"]},
                         hidden ? {display: "none"} : {},
                     ]}
@@ -149,7 +159,12 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             return (
                 // Use flexBasis, acting as minHeight
                 <ReAnimated.View
-                    style={[styles.wrapper, style, {flexBasis: minHeight, right}, hidden ? {display: "none"} : {}]}
+                    style={[
+                        styles.wrapper,
+                        wrapperStyle,
+                        {flexBasis: minHeight, right},
+                        hidden ? {display: "none"} : {},
+                    ]}
                     {...wrapperProps}
                 >
                     {container}
