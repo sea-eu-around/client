@@ -56,12 +56,12 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
         if (token) {
             (store.dispatch as MyThunkDispatch)(resetPassword(token, values.password)).then(
                 ({success, errors}: ValidatedActionReturn) => {
-                    if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
+                    this.setState({remoteErrors: errors, submitting: false});
                     if (errors && errors.fields) {
                         const f = errors.fields;
                         Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                     }
-                    this.setState({remoteErrors: errors, submitting: false});
+                    if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
                 },
             );
         } else {

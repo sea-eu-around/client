@@ -4,7 +4,6 @@ import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
 import {FormTextInput, FormTextInputProps} from "./FormTextInput";
-import {getFormCheckBoxStyleProps} from "../../styles/forms";
 import {FormProps, Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
@@ -38,7 +37,6 @@ type EditPostFormProps = FormProps<FormState> &
         groupId: string;
         post?: GroupPost; // if not given a post, one will be created instead of editing
         containerStyle?: StyleProp<ViewStyle>;
-        onCancel?: () => void;
     };
 
 // Component state
@@ -74,20 +72,21 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
 
         const dto = this.getCreationDto(values);
 
+        // Make the promise cancellable to avoid updates when the component has been unmounted
         dispatch(post === undefined ? createGroupPost(groupId, dto) : updateGroupPost(groupId, post.id, dto)).then(
             ({success, errors}: ValidatedActionReturn) => {
-                if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
+                this.setState({remoteErrors: errors, submitting: false});
                 if (errors && errors.fields) {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                 }
-                this.setState({remoteErrors: errors, submitting: false});
+                if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
             },
         );
     }
 
     render(): JSX.Element {
-        const {theme, post, containerStyle, onCancel, localUser} = this.props;
+        const {theme, post, containerStyle, localUser} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
 
@@ -121,8 +120,6 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                 handleChange,
                                 handleBlur,
                                 setFieldError,
-                                setFieldValue,
-                                setFieldTouched,
                             } = formikProps;
                             const textInputProps: Partial<FormTextInputProps> = {
                                 handleChange,
@@ -139,7 +136,7 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                 inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
                                 placeholderTextColor: theme.inputPlaceholder,
                             };
-                            const checkboxProps = {setFieldValue, setFieldTouched, ...getFormCheckBoxStyleProps(theme)};
+                            // const checkboxProps = {setFieldValue, setFieldTouched, ...getFormCheckBoxStyleProps(theme)};
                             this.setFieldError = setFieldError;
 
                             return (
@@ -154,30 +151,9 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                         {...textInputProps}
                                     />
 
-                                    {/*<FormCheckBox
-                                        field="visible"
-                                        error={errors.visible}
-                                        value={values.visible}
-                                        touched={touched.visible}
-                                        label={i18n.t("groups.create.visible")}
-                                        {...checkboxProps}
-                                    />
-                                    <Text style={styles.fieldDescription}>
-                                        {i18n.t("groups.create.visibleDescription")}
-                                    </Text>*/}
-
                                     <FormError error={generalError(remoteErrors)} />
 
                                     <View style={styles.actionsContainer}>
-                                        {/*<Button
-                                            onPress={() => {
-                                                if (onCancel) onCancel();
-                                            }}
-                                            style={[styles.button, styles.buttonCancel]}
-                                            skin="rounded-hollow"
-                                            text={i18n.t("cancel")}
-                                        />*/}
-
                                         <FormSubmitButton
                                             onPress={() => handleSubmit()}
                                             style={[styles.button, styles.buttonSubmit]}
@@ -224,10 +200,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginTop: 5,
         },
         button: {flex: 1},
-        buttonCancel: {marginRight: 10},
-        buttonSubmit: {
-            //marginLeft: 10,
-        },
+        buttonSubmit: {},
     });
 });
 

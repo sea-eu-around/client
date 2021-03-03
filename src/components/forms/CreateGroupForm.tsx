@@ -19,14 +19,15 @@ import {createGroup} from "../../state/groups/actions";
 import Button from "../Button";
 import {FormCheckBox} from "./FormCheckBox";
 import {MaterialIcons} from "@expo/vector-icons";
+import {VALIDATOR_GROUP_NAME} from "../../validators";
 
-type FormState = {name: string; visible: boolean; requireApproval: boolean};
+type FormState = {name: string; visible: boolean; requiresApproval: boolean};
 
-const initialState = (): FormState => ({name: "", visible: false, requireApproval: false});
+const initialState = (): FormState => ({name: "", visible: false, requiresApproval: false});
 
 // Use Yup to create the validation schema
 const CreateGroupFormSchema = Yup.object().shape({
-    //password: VALIDATOR_PASSWORD_LOGIN,
+    name: VALIDATOR_GROUP_NAME,
 });
 
 // Component props
@@ -44,11 +45,11 @@ class CreateGroupForm extends React.Component<CreateGroupFormProps, CreateGroupF
     }
 
     private getCreationDto(values: FormState): CreateGroupDto {
-        const {name, visible, requireApproval} = values;
+        const {name, visible, requiresApproval} = values;
         return {
             name,
             visible,
-            requireApproval,
+            requiresApproval,
             description: "",
         };
     }
@@ -61,12 +62,12 @@ class CreateGroupForm extends React.Component<CreateGroupFormProps, CreateGroupF
 
         (store.dispatch as MyThunkDispatch)(createGroup(dto)).then(
             ({success, errors}: ValidatedActionReturn) => {
-                if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
+                this.setState({remoteErrors: errors, submitting: false});
                 if (errors && errors.fields) {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                 }
-                this.setState({remoteErrors: errors, submitting: false});
+                if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
             },
         );
     }
@@ -130,10 +131,10 @@ class CreateGroupForm extends React.Component<CreateGroupFormProps, CreateGroupF
                                 </Text>
 
                                 <FormCheckBox
-                                    field="requireApproval"
-                                    error={errors.requireApproval}
-                                    value={values.requireApproval}
-                                    touched={touched.requireApproval}
+                                    field="requiresApproval"
+                                    error={errors.requiresApproval}
+                                    value={values.requiresApproval}
+                                    touched={touched.requiresApproval}
                                     label={i18n.t("groups.create.requireApproval")}
                                     {...checkboxProps}
                                 />
