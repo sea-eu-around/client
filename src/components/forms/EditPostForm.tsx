@@ -23,7 +23,7 @@ const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
 }));
 
-type FormState = {text: string; visible: boolean};
+type FormState = {text: string};
 
 // Use Yup to create the validation schema
 const EditPostFormSchema = Yup.object().shape({
@@ -57,11 +57,8 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
 
     private initialState(): FormState {
         const {post} = this.props;
-        if (post) {
-            return {text: post.text, visible: false};
-        } else {
-            return {text: "", visible: false};
-        }
+        if (post) return {text: post.text};
+        else return {text: ""};
     }
 
     submit(values: FormState) {
@@ -92,8 +89,6 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
 
         const createMode = post === undefined;
         const poster = post ? post.creator : localUser?.profile;
-
-        // TODO clean-up
 
         return (
             <View style={containerStyle}>
@@ -136,7 +131,6 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                 inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
                                 placeholderTextColor: theme.inputPlaceholder,
                             };
-                            // const checkboxProps = {setFieldValue, setFieldTouched, ...getFormCheckBoxStyleProps(theme)};
                             this.setFieldError = setFieldError;
 
                             return (
@@ -187,11 +181,6 @@ const themedStyles = preTheme((theme: Theme) => {
         creatorName: {
             color: theme.text,
             fontSize: 18,
-        },
-        fieldDescription: {
-            color: theme.textLight,
-            fontSize: 14,
-            marginBottom: 20,
         },
         actionsContainer: {
             width: "100%",
