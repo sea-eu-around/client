@@ -1,3 +1,4 @@
+import {noop} from "lodash";
 import React from "react";
 import {TextInputProps} from "react-native";
 import ValidatedTextInput, {ValidatedTextInputProps} from "../ValidatedTextInput";
@@ -38,10 +39,8 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
 
     static defaultProps = {
         showErrorText: true,
-        /* eslint-disable @typescript-eslint/no-empty-function */
-        handleChange: (): void => {},
-        handleBlur: (): void => {},
-        /* eslint-ensable @typescript-eslint/no-empty-function */
+        handleChange: noop,
+        handleBlur: noop,
     };
 
     focus(): void {
@@ -73,7 +72,7 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
                 }}
                 onBlur={(e) => {
                     if (onBlur) onBlur(e);
-                    handleBlur(this.props.field)(e);
+                    handleBlur(field)(e);
                 }}
                 {...(isEmail ? emailProps : {})}
                 {...(isPassword ? passwordProps : {})}
