@@ -1,4 +1,4 @@
-import {MAX_GROUP_NAME_LENGTH, MAX_POST_LENGTH, MIN_GROUP_NAME_LENGTH, MIN_PASSWORD_LENGTH} from "../validators";
+import {MAX_COMMENT_LENGTH, MAX_GROUP_NAME_LENGTH, MAX_POST_LENGTH, MIN_GROUP_NAME_LENGTH, MIN_PASSWORD_LENGTH} from "../validators";
 
 export default {
     en: {
@@ -90,7 +90,10 @@ export default {
                 },
             },
             post: {
-                tooLong: `The length of post cannot exceed ${MAX_POST_LENGTH} characters.`,
+                tooLong: `The length of a post cannot exceed ${MAX_POST_LENGTH} characters.`,
+            },
+            comment: {
+                tooLong: `The length of a comment cannot exceed ${MAX_COMMENT_LENGTH} characters.`,
             },
         },
         // Server-side errors
@@ -1184,12 +1187,15 @@ export default {
             },
             group: {
                 name: {
-                    tooShort: `The nom du groupe doit contenir au moins ${MIN_GROUP_NAME_LENGTH} caractères.`,
-                    tooLong: `The nom du groupe ne doit pas excéder ${MAX_GROUP_NAME_LENGTH} caractères.`,
+                    tooShort: `Le nom du groupe doit contenir au moins ${MIN_GROUP_NAME_LENGTH} caractères.`,
+                    tooLong: `Le nom du groupe ne doit pas excéder ${MAX_GROUP_NAME_LENGTH} caractères.`,
                 },
             },
             post: {
-                tooLong: `La post ne doit pas excéder ${MAX_POST_LENGTH} caractères.`,
+                tooLong: `Le post ne doit pas excéder ${MAX_POST_LENGTH} caractères.`,
+            },
+            comment: {
+                tooLong: `Le commentaire ne doit pas excéder ${MAX_COMMENT_LENGTH} caractères.`,
             },
         },
         // Server-side errors
