@@ -1,4 +1,4 @@
-import {MIN_PASSWORD_LENGTH} from "../validators";
+import {MAX_GROUP_NAME_LENGTH, MAX_POST_LENGTH, MIN_GROUP_NAME_LENGTH, MIN_PASSWORD_LENGTH} from "../validators";
 
 export default {
     en: {
@@ -82,6 +82,15 @@ export default {
             date: {
                 tooYoung: "You must be 16 or older to join this platform.",
                 invalid: "Please enter a valid date.",
+            },
+            group: {
+                name: {
+                    tooShort: `The name should have at least ${MIN_GROUP_NAME_LENGTH} characters.`,
+                    tooLong: `The length of the name cannot exceed ${MAX_GROUP_NAME_LENGTH} characters.`,
+                },
+            },
+            post: {
+                tooLong: `The length of post cannot exceed ${MAX_POST_LENGTH} characters.`,
             },
         },
         // Server-side errors
@@ -774,6 +783,7 @@ export default {
             what: "What / who?",
             commentFrom: "Comment from {{name}}",
             postFrom: "Post from {{name}}",
+            group: "Group “{{name}}”",
             why: "Why?",
             typePlaceholder: "Select a reason",
             types: {
@@ -823,6 +833,7 @@ export default {
         },
         // Groups tab
         groups: {
+            group: "Group",
             create: {
                 title: "Create Group",
                 name: "Name",
@@ -854,11 +865,23 @@ export default {
                 text: "This action is irreversible.",
             },
             comments: {
+                zero: "No comments",
+                singular: "1 comment",
+                plural: "{{num}} comments",
                 replyTo: "Reply to {{name}}",
                 placeholder: "Write a comment...",
                 none: "No comments here yet.",
             },
             join: "Join",
+            joinRequestSent: {
+                title: "Request Sent",
+                text: "You will be added to this group when one of its administrators has accepted your request.",
+            },
+            groupJoined: {
+                title: "Congratulations!",
+                text: "You have successfully joined the group “{{name}}”.",
+                viewGroup: "Show",
+            },
             myGroups: {
                 title: "My groups",
                 none: "When you join a group, it will appear here.",
@@ -868,6 +891,18 @@ export default {
             },
             invites: "Invites",
             inviteNew: "Invite new members",
+            invite: {
+                decline: "Decline",
+                accept: "Accept",
+                approvalDisclaimerInvitee:
+                    "You have been invited by a member. If you accept this invitation, an administrator of this group will still need to approve you.",
+                approvalDisclaimerInviter: "{{name}} will still need to be approved by an administrator of this group.",
+                nobodyToInvite:
+                    "Your matches who are not part of this group and have not been invited yet will appear here.",
+                invite: "Invite",
+                title: "Invite User",
+                text: "Do you want to invite {{name}} to this group?",
+            },
             posts: "Posts",
             postMenu: {
                 title: "Post",
@@ -876,11 +911,16 @@ export default {
                 zero: "No members",
                 singular: "1 member",
                 plural: "{{num}} members",
+                manage: "Manage members",
+                manageBanned: "Banned users",
                 approval: {
                     noResults: "No approval requests.",
                 },
                 approved: {
                     noResults: "No members.",
+                },
+                banned: {
+                    noResults: "No banned users.",
                 },
             },
             deleteMember: {
@@ -902,6 +942,11 @@ export default {
                 title: "Ban User?",
                 text: "{{name}} will no longer be able to send requests to join the group.",
                 action: "Ban",
+            },
+            promoteToAdmin: {
+                title: "Administrator",
+                text: "Do you want to promote {{name}} to admin?",
+                action: "Yes",
             },
             description: {
                 placeholder: "Enter a description here",
@@ -932,6 +977,10 @@ export default {
             leave: {
                 title: "Leave Group",
                 text: "Are you sure you want to leave this group?",
+            },
+            delete: {
+                title: "Delete Group",
+                text: "If you really want to delete this group, type its name below:",
             },
         },
         // Matching tab
@@ -1009,6 +1058,7 @@ export default {
             GroupsExploreScreen: "Explore Groups",
             GroupScreen: "Group",
             GroupMembersScreen: "Group Members",
+            GroupBannedMembersScreen: "Banned Users",
             GroupMembersApprovalScreen: "Members Approval",
             GroupInviteScreen: "Invite",
             TabNotificationsScreen: "Notifications",
@@ -1131,6 +1181,15 @@ export default {
             date: {
                 tooYoung: "Vous devez avoir au moins 16 ans pour rejoindre cette plateforme.",
                 invalid: "Date invalide.",
+            },
+            group: {
+                name: {
+                    tooShort: `The nom du groupe doit contenir au moins ${MIN_GROUP_NAME_LENGTH} caractères.`,
+                    tooLong: `The nom du groupe ne doit pas excéder ${MAX_GROUP_NAME_LENGTH} caractères.`,
+                },
+            },
+            post: {
+                tooLong: `La post ne doit pas excéder ${MAX_POST_LENGTH} caractères.`,
             },
         },
         // Server-side errors
@@ -1806,6 +1865,7 @@ export default {
             what: "Quoi / qui ?",
             commentFrom: "Commentaire de {{name}}",
             postFrom: "Post de {{name}}",
+            group: "Groupe “{{name}}”",
             why: "Pourquoi ?",
             typePlaceholder: "Sélectionner une raison",
             types: {
@@ -1856,6 +1916,7 @@ export default {
         },
         // Groups tab
         groups: {
+            group: "Groupe",
             create: {
                 title: "Créer un groupe",
                 name: "Nom",
@@ -1887,11 +1948,23 @@ export default {
                 text: "Cette action est irréversible.",
             },
             comments: {
+                zero: "Aucun commentaire",
+                singular: "1 commentaire",
+                plural: "{{num}} commentaires",
                 replyTo: "Répondre à {{name}}",
                 placeholder: "Écrivez un commentaire...",
                 none: "Il n'y a pas encore de commentaires ici.",
             },
             join: "Rejoindre",
+            joinRequestSent: {
+                title: "Demande envoyée",
+                text: "Vous serez ajouté à ce groupe lorsque l'un de ses administrateurs aura accepté votre demande.",
+            },
+            groupJoined: {
+                title: "Félicitations !",
+                text: "Vous venez de rejoindre le groupe “{{name}}”.",
+                viewGroup: "Afficher",
+            },
             myGroups: {
                 title: "Mes groupes",
                 none: "Lorsque vous aurez rejoint un groupe, il apparaîtra ici.",
@@ -1901,6 +1974,18 @@ export default {
             },
             invites: "Invitations",
             inviteNew: "Invitations",
+            invite: {
+                decline: "Refuser",
+                accept: "Rejoindre",
+                approvalDisclaimerInvitee:
+                    "Vous avez été invité par un membre. Si vous acceptez, un administrateur du groupe devra encore approuver avant que vous ne rejoigniez ce groupe.",
+                approvalDisclaimerInviter: "{{name}} devra être accepté par un administrateur de ce groupe.",
+                nobodyToInvite:
+                    "Vos match qui ne sont pas dans ce groupe et qui n'ont pas déjà été invités apparaîtront ici.",
+                invite: "Inviter",
+                title: "Inviter un utilisateur",
+                text: "Voulez-vous inviter {{name}} à rejoindre ce groupe ?",
+            },
             posts: "Posts",
             postMenu: {
                 title: "Post",
@@ -1909,11 +1994,16 @@ export default {
                 zero: "Aucun membre",
                 singular: "1 membre",
                 plural: "{{num}} membres",
+                manage: "Gérer les membres",
+                manageBanned: "Utilisateurs bannis",
                 approval: {
                     noResults: "Aucune demande d'approbation.",
                 },
                 approved: {
                     noResults: "Aucun membre.",
+                },
+                banned: {
+                    noResults: "Aucun utilisateur banni.",
                 },
             },
             deleteMember: {
@@ -1936,6 +2026,11 @@ export default {
                 title: "Bannir l'utilisateur ?",
                 text: "{{name}} ne pourra plus demander à rejoindre le groupe.",
                 action: "Bannir",
+            },
+            promoteToAdmin: {
+                title: "Administrateur",
+                text: "Voulez-vous promouvoir {{name}} au rang d'administrateur ?",
+                action: "Oui",
             },
             description: {
                 placeholder: "Entrez une description ici",
@@ -1966,6 +2061,10 @@ export default {
             leave: {
                 title: "Quitter le groupe",
                 text: "Voulez-vous vraiment quitter ce groupe ?",
+            },
+            delete: {
+                title: "Supprimer le Groupe",
+                text: "Si vous voulez vraiment supprimer ce groupe, entrez son nom ci-dessous :",
             },
         },
         // Matching tab
@@ -2043,6 +2142,7 @@ export default {
             GroupsExploreScreen: "Explorer les groupes",
             GroupScreen: "Groupe",
             GroupMembersScreen: "Membres du groupe",
+            GroupBannedMembersScreen: "Utilisateurs bannis",
             GroupMembersApprovalScreen: "Approbation des membres",
             GroupInviteScreen: "Inviter",
             TabNotificationsScreen: "Notifications",
