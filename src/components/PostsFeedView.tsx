@@ -64,6 +64,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} showGroup />}
                 // Compensate for the top
                 progressViewOffset={250}
+                keyboardShouldPersistTaps="handled"
             />
         );
     }
