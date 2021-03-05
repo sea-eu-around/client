@@ -5,8 +5,8 @@ import {withTheme} from "react-native-elements";
 import {UserProfile} from "../../model/user-profile";
 import {MyThunkDispatch} from "../../state/types";
 import store from "../../state/store";
-import {CustomModalClass, CustomModalProps} from "./CustomModal";
-import ConfirmationModal from "./ConfirmationModal";
+import {CustomModalProps} from "./CustomModal";
+import ConfirmationModal, {ConfirmationModalClass} from "./ConfirmationModal";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {deleteGroupMember} from "../../state/groups/actions";
 
@@ -14,7 +14,7 @@ export type DeleteGroupMemberModalProps = ThemeProps &
     Partial<CustomModalProps> & {groupId: string; profile: UserProfile | null; pending?: boolean};
 
 export class DeleteGroupMemberModalClass extends React.Component<DeleteGroupMemberModalProps> {
-    modalRef = React.createRef<CustomModalClass>();
+    modalRef = React.createRef<ConfirmationModalClass>();
 
     show(): void {
         this.modalRef.current?.show();
@@ -28,6 +28,7 @@ export class DeleteGroupMemberModalClass extends React.Component<DeleteGroupMemb
 
         return (
             <ConfirmationModal
+                ref={this.modalRef}
                 title={i18n.t(`${translationRoot}.title`)}
                 text={
                     profile ? i18n.t(`${translationRoot}.text`, {name: `${profile.firstName} ${profile.lastName}`}) : ""

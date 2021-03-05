@@ -31,8 +31,9 @@ export type GroupPostsViewProps = ThemeProps &
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
     render() {
-        const {pagination, postIds, posts, top, navigation, dispatch, theme} = this.props;
+        const {pagination, postIds, posts, top, navigation, theme} = this.props;
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         return (
             <InfiniteScroller
@@ -49,7 +50,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 }
                 navigation={navigation}
                 fetchLimit={GROUPS_POSTS_FETCH_LIMIT}
-                fetchMore={() => (dispatch as MyThunkDispatch)(fetchPostsFeed())}
+                fetchMore={() => dispatch(fetchPostsFeed())}
                 fetching={pagination.fetching}
                 canFetchMore={pagination.canFetchMore}
                 currentPage={pagination.page}

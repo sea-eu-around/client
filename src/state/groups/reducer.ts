@@ -1,6 +1,7 @@
-import {GroupMemberStatus} from "../../api/dto";
+import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import {arrayWithIdMapperToDict, arrayWithIdsToDict} from "../../general-utils";
 import {Group, GroupPost, GROUP_VOTE_VALUES, PostSortingOrder} from "../../model/groups";
+import {UserProfile} from "../../model/user-profile";
 import {GroupsState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
     CreateCommentSuccessAction,
@@ -9,6 +10,8 @@ import {
     DeleteCommentSuccessAction,
     DeleteGroupMemberSuccessAction,
     DeletePostSuccessAction,
+    FetchAvailableMatchesBeginAction,
+    FetchAvailableMatchesSuccessAction,
     FetchGroupMembersBeginAction,
     FetchGroupMembersFailureAction,
     FetchGroupMembersRefreshAction,
@@ -24,14 +27,17 @@ import {
     FetchMyGroupsSuccessAction,
     FetchPostCommentsBeginAction,
     FetchPostCommentsFailureAction,
+    FetchPostCommentsRefreshAction,
     FetchPostCommentsSuccessAction,
     GroupsAction,
     GROUP_ACTION_TYPES,
+    InviteToGroupSuccessAction,
     LeaveGroupSuccessAction,
     SetCommentVoteBeginAction,
     SetGroupCoverBeginAction,
     SetGroupCoverFailureAction,
     SetGroupCoverSuccessAction,
+    SetGroupMemberRoleSuccessAction,
     SetGroupMemberStatusSuccessAction,
     SetPostSortingOrderAction,
     SetPostVoteBeginAction,
@@ -187,6 +193,9 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         }
         case GROUP_ACTION_TYPES.DELETE_POST_SUCCESS: {
             const {groupId, postId} = action as DeletePostSuccessAction;
+            // Remove post from feed
+            state = {...state, postsFeedIds: state.postsFeedIds.filter((id) => id !== postId)};
+            // Remove post from group
             return updateGroup(state, groupId, ({posts, postIds}) => {
                 delete posts[postId];
                 return {
@@ -228,33 +237,73 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 }),
             );
         }
-
-        case GROUP_ACTION_TYPES.CREATE_COMMENT_SUCCESS: {
-            const {groupId, postId, comment} = action as CreateCommentSuccessAction;
-            return updatePost(state, groupId, postId, ({comments, commentIds, commentsCount}) => ({
-                comments: {...comments, [comment.id]: comment},
-                commentIds: [comment.id].concat(commentIds),
-                commentsCount: commentsCount + 1,
+        case GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_REFRESH: {
+            const {groupId, postId} = action as FetchPostCommentsRefreshAction;
+            return updatePost(state, groupId, postId, ({commentsPagination: p}) => ({
+                commentIds: [],
+                commentsPagination: {...p, fetching: false, page: 1, canFetchMore: true},
             }));
         }
+
+        case GROUP_ACTION_TYPES.CREATE_COMMENT_SUCCESS: {
+            const {groupId, postId, comment, parentId} = action as CreateCommentSuccessAction;
+
+            return updatePost(state, groupId, postId, ({comments, commentIds, commentsCount}) => {
+                const updated: Partial<GroupPost> = {
+                    commentsCount: commentsCount + 1,
+                    comments: {...comments, [comment.id]: comment},
+                };
+
+                if (parentId) {
+                    // Add the comment the its parent's children
+                    const parent = comments[parentId];
+                    if (parent) {
+                        updated.comments = {
+                            ...updated.comments,
+                            [parentId]: {...parent, childrenIds: [comment.id].concat(parent.childrenIds)},
+                        };
+                    }
+                } else updated.commentIds = [comment.id].concat(commentIds);
+
+                return updated;
+            });
+        }
         case GROUP_ACTION_TYPES.UPDATE_COMMENT_SUCCESS: {
-            const {groupId, postId, comment} = action as UpdateCommentSuccessAction;
-            return updatePost(state, groupId, postId, ({comments}) => ({
-                comments: {
-                    ...comments,
-                    [comment.id]: {...comments[comment.id], text: comment.text},
-                },
-            }));
+            const {groupId, postId, comments} = action as UpdateCommentSuccessAction;
+            return updatePost(state, groupId, postId, ({comments: currentComments}) => {
+                const updatedComments = {...currentComments};
+                comments.forEach((c) => {
+                    updatedComments[c.id] = {
+                        ...currentComments[c.id],
+                        text: c.text,
+                        updatedAt: new Date(),
+                    };
+                });
+                return {comments: updatedComments};
+            });
         }
         case GROUP_ACTION_TYPES.DELETE_COMMENT_SUCCESS: {
             const {groupId, postId, commentId} = action as DeleteCommentSuccessAction;
-            return updatePost(state, groupId, postId, ({comments, commentIds, commentsCount}) => {
-                delete comments[commentId];
-                return {
-                    comments,
-                    commentIds: commentIds.filter((id) => id !== commentId),
-                    commentsCount: commentsCount - 1,
-                };
+            return updatePost(state, groupId, postId, (post) => {
+                const {comments, commentIds, commentsCount} = post;
+                const updated: Partial<GroupPost> = {commentsCount: commentsCount - 1};
+
+                const comment = comments[commentId];
+                const parent = comment && comment.parentId && comments[comment.parentId];
+                if (parent) {
+                    // If this comment has a parent, remove it from the parent's comments
+                    updated.comments = {
+                        ...comments,
+                        [parent.id]: {
+                            ...parent,
+                            childrenIds: parent.childrenIds.filter((id) => id !== commentId),
+                        },
+                    };
+                } else {
+                    // Otherwise, simply remove the comment from the post
+                    updated.commentIds = commentIds.filter((id) => id !== commentId);
+                }
+                return updated;
             });
         }
         // Update on begin action so it doesn't look slow
@@ -329,7 +378,18 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
         }
 
         case GROUP_ACTION_TYPES.DELETE_GROUP_MEMBER_SUCCESS: {
-            const {groupId, profileId} = action as DeleteGroupMemberSuccessAction;
+            const {groupId, profileId, isLocalUser} = action as DeleteGroupMemberSuccessAction;
+
+            // If this user is us, remove the group from the arrays
+            // TODO test this (refuse an invite)
+            if (isLocalUser) {
+                state = {
+                    ...state,
+                    myGroups: state.myGroups.filter((id) => id !== groupId),
+                    myGroupInvites: state.myGroupInvites.filter((id) => id !== groupId),
+                };
+            }
+
             return updateGroup(state, groupId, ({memberIds, members}) => {
                 const member = members[profileId];
                 if (member) {
@@ -346,8 +406,30 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 }
             });
         }
+
         case GROUP_ACTION_TYPES.SET_GROUP_MEMBER_STATUS_SUCCESS: {
-            const {groupId, profileId, memberStatus} = action as SetGroupMemberStatusSuccessAction;
+            const {groupId, profileId, memberStatus, isLocalUser} = action as SetGroupMemberStatusSuccessAction;
+
+            // If this user is us, update storage so the group is in the right place
+            // TODO test this (accept an invite from a group with approval, without approval)
+            if (isLocalUser && state.groupsDict[groupId]) {
+                const previousStatus = state.groupsDict[groupId].myStatus;
+                // If I was previously an invite and not anymore, remove group from invites
+                const wasInvite =
+                    previousStatus === GroupMemberStatus.Invited || previousStatus === GroupMemberStatus.InvitedByAdmin;
+                const isNowInvite =
+                    memberStatus === GroupMemberStatus.Invited || memberStatus === GroupMemberStatus.InvitedByAdmin;
+                if (wasInvite && !isNowInvite)
+                    state = {...state, myGroupInvites: state.myGroupInvites.filter((id) => id !== groupId)};
+                // If I was approved and I'm not anymore, remove group from myGroups
+                if (previousStatus === GroupMemberStatus.Approved && memberStatus !== GroupMemberStatus.Approved)
+                    state = {...state, myGroups: state.myGroups.filter((id) => id !== groupId)};
+                // If i am now approved, add group to myGroups
+                if (memberStatus === GroupMemberStatus.Approved)
+                    state = {...state, myGroups: [groupId].concat(state.myGroups)};
+            }
+
+            // Change the member's status in the group
             return updateGroup(state, groupId, ({members, memberIds}) => {
                 const member = members[profileId];
                 if (member) {
@@ -358,9 +440,37 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                             [member.status]: memberIds[member.status].filter((id) => id !== profileId),
                             [memberStatus]: memberIds[memberStatus].concat([profileId]),
                         },
+                        ...(isLocalUser
+                            ? {
+                                  myStatus: memberStatus,
+                                  myRole: memberStatus === GroupMemberStatus.Approved ? GroupRole.Basic : null,
+                              }
+                            : {}),
                     };
                 } else return {};
             });
+        }
+
+        case GROUP_ACTION_TYPES.SET_GROUP_MEMBER_ROLE_SUCCESS: {
+            const {groupId, profileId, role, isLocalUser} = action as SetGroupMemberRoleSuccessAction;
+
+            // Change the member's role in the group
+            return updateGroup(state, groupId, ({members}) => ({
+                members: {...members, [profileId]: {...members[profileId], role: role}},
+                ...(isLocalUser && {myRole: role}),
+            }));
+        }
+
+        case GROUP_ACTION_TYPES.INVITE_TO_GROUP_SUCCESS: {
+            const {groupId, profile /*, memberStatus*/} = action as InviteToGroupSuccessAction;
+            return updateGroup(state, groupId, ({availableMatches: am}) => ({
+                availableMatches: {
+                    ...am,
+                    profiles: am.profiles ? am.profiles.filter((p: UserProfile) => p.id !== profile.id) : null,
+                },
+                // members: {...members, [profile.id]: profile},
+                // memberIds: {...memberIds, [memberStatus]: memberIds[memberIds].concat([profile.id])}
+            }));
         }
 
         case GROUP_ACTION_TYPES.FETCH_MYGROUPS_BEGIN: {
@@ -413,6 +523,24 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             const {order} = action as SetPostSortingOrderAction;
             return {...state, postsSortOrder: order};
         }
+
+        case GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_FAILURE:
+        case GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_BEGIN: {
+            const {groupId} = action as FetchAvailableMatchesBeginAction;
+            return updateGroup(state, groupId, ({availableMatches}) => ({
+                availableMatches: {
+                    ...availableMatches,
+                    fetching: action.type === GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_BEGIN,
+                },
+            }));
+        }
+        case GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_SUCCESS: {
+            const {groupId, items} = action as FetchAvailableMatchesSuccessAction;
+            return updateGroup(state, groupId, () => ({
+                availableMatches: {profiles: items, fetching: false},
+            }));
+        }
+
         default:
             return state;
     }

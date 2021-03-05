@@ -47,7 +47,6 @@ export class EditPostModalClass extends React.Component<EditPostModalProps> {
                             containerStyle={styles.form}
                             groupId={groupId}
                             post={post}
-                            onCancel={hide}
                             onSuccessfulSubmit={hide}
                         />
                     </>

@@ -187,7 +187,12 @@ export function convertDtoToGroup(dto: ResponseGroupDto): Group {
         postsPagination: initialPaginatedState(),
         uploadingCover: false,
         myRole: dto.isMember ? dto.role : null,
+        myStatus: dto.status || null,
         numApprovedMembers: null,
+        availableMatches: {
+            fetching: false,
+            profiles: null,
+        },
     };
 }
 
@@ -215,9 +220,15 @@ export function convertDtoToGroupPost(dto: ResponseGroupPostDto, creator?: UserP
     };
 }
 
-export function convertDtoToPostComment(dto: ResponsePostCommentDto, creator?: UserProfile): PostComment {
-    return {
-        ...dto,
+export function convertDtoToPostComments(
+    dto: ResponsePostCommentDto,
+    parentId: string | null = null,
+    depth = 0,
+    creator?: UserProfile,
+): PostComment[] {
+    const comment: PostComment = {
+        id: dto.id,
+        text: dto.text,
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
         creator: creator && !dto.creator ? creator : convertDtoToProfile(dto.creator),
@@ -229,6 +240,16 @@ export function convertDtoToPostComment(dto: ResponsePostCommentDto, creator?: U
                 ? GroupVoteStatus.Downvote
                 : GroupVoteStatus.Neutral
             : GroupVoteStatus.Neutral,
-        children: dto.children?.map((c) => convertDtoToPostComment(c)) || [],
+        childrenIds: dto.children?.map((c) => c.id) || [],
+        parentId,
+        depth,
     };
+
+    if (dto.children && dto.children.length > 0) {
+        // Get all children, including nested
+        const allChildren = dto.children.flatMap((childDto) =>
+            convertDtoToPostComments(childDto, comment.id, depth + 1, creator),
+        );
+        return [comment].concat(allChildren);
+    } else return [comment];
 }

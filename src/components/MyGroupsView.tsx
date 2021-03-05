@@ -49,7 +49,6 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.myGroups.none")}</Text>}
                     refresh={() => dispatch(refreshFetchedMyGroups())}
                     renderItem={(group: Group) => <MyGroupCard key={group.id} group={group} />}
-                    // Compensate for the header
                     itemsContainerStyle={styles.itemsContainer}
                 />
             </View>

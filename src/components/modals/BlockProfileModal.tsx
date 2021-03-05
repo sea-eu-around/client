@@ -6,15 +6,15 @@ import {UserProfile} from "../../model/user-profile";
 import {MyThunkDispatch} from "../../state/types";
 import {blockProfile} from "../../state/matching/actions";
 import store from "../../state/store";
-import {CustomModalClass, CustomModalProps} from "./CustomModal";
-import ConfirmationModal from "./ConfirmationModal";
+import {CustomModalProps} from "./CustomModal";
+import ConfirmationModal, {ConfirmationModalClass} from "./ConfirmationModal";
 import {MaterialIcons} from "@expo/vector-icons";
 
 export type BlockProfileModalProps = ThemeProps &
     Partial<CustomModalProps> & {onBlock?: () => void; profile: UserProfile | null};
 
 export class BlockProfileModalClass extends React.Component<BlockProfileModalProps> {
-    modalRef = React.createRef<CustomModalClass>();
+    modalRef = React.createRef<ConfirmationModalClass>();
 
     show(): void {
         this.modalRef.current?.show();
@@ -25,6 +25,7 @@ export class BlockProfileModalClass extends React.Component<BlockProfileModalPro
 
         return (
             <ConfirmationModal
+                ref={this.modalRef}
                 title={i18n.t("block.title")}
                 text={
                     profile ? i18n.t("block.warning", {firstname: profile.firstName, lastname: profile.lastName}) : ""

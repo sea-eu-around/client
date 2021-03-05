@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -10,10 +10,14 @@ import {MyThunkDispatch} from "../../state/types";
 import CustomModal, {CustomModalClass, ModalActivator} from "./CustomModal";
 import CommentTextInput, {CommentTextInputClass} from "../CommentTextInput";
 import store from "../../state/store";
-import {createPostComment, fetchPostComments} from "../../state/groups/actions";
+import {createPostComment, fetchPostComments, fetchPostCommentsRefresh} from "../../state/groups/actions";
 import GroupCommentCard from "../cards/GroupCommentCard";
 import GroupVoteButton from "../GroupVoteButton";
 import Button from "../Button";
+import {CreatePostCommentDto} from "../../api/dto";
+import {MAX_COMMENTS_DEPTH} from "../../constants/config";
+import Animated, {Easing} from "react-native-reanimated";
+import {animateValue} from "../../polyfills";
 
 // Component props
 export type GroupPostCommentsModalProps = {
@@ -25,7 +29,6 @@ export type GroupPostCommentsModalProps = {
 
 type GroupPostCommentsModalState = {
     replyingTo: PostComment | null;
-    expandedCommentId: string | null;
 };
 
 export class GroupPostCommentsModalClass extends React.Component<
@@ -34,10 +37,11 @@ export class GroupPostCommentsModalClass extends React.Component<
 > {
     modalRef = React.createRef<CustomModalClass>();
     commentTextInputRef = React.createRef<CommentTextInputClass>();
+    collapseCurrentlyExpanded: (() => void) | null = null;
 
     constructor(props: GroupPostCommentsModalProps) {
         super(props);
-        this.state = {replyingTo: null, expandedCommentId: null};
+        this.state = {replyingTo: null};
     }
 
     show(): void {
@@ -45,38 +49,71 @@ export class GroupPostCommentsModalClass extends React.Component<
     }
 
     private setReplyingTo(comment: PostComment | null): void {
+        // If this comment would exceed the maximum depth, respond to its parent instead
+        if (comment && comment.parentId && comment.depth >= MAX_COMMENTS_DEPTH) {
+            const parent = this.props.post.comments[comment.parentId];
+            if (parent) {
+                this.setReplyingTo(parent);
+                return;
+            }
+        }
+
         this.setState({...this.state, replyingTo: comment});
         if (comment !== null) this.commentTextInputRef.current?.focus();
     }
 
+    private createCommentComponent = (commentId: string, hide: () => void): JSX.Element => {
+        const {post, groupId, adminView} = this.props;
+
+        const comment = post.comments[commentId];
+        const children = comment.childrenIds.map((id: string) => this.createCommentComponent(id, hide));
+        const childrenContainerRef = React.createRef<CommentChildrenContainer>();
+
+        return (
+            <React.Fragment key={`${groupId}-${post.id}-comment-${comment.id}`}>
+                <GroupCommentCard
+                    groupId={groupId}
+                    post={post}
+                    comment={comment}
+                    closeComments={hide}
+                    onPressReplyTo={() => this.setReplyingTo(comment)}
+                    onExpand={(collapse) => {
+                        if (this.collapseCurrentlyExpanded) this.collapseCurrentlyExpanded();
+                        this.collapseCurrentlyExpanded = collapse;
+                    }}
+                    onCollapse={() => (this.collapseCurrentlyExpanded = null)}
+                    toggleChildren={() => childrenContainerRef.current?.toggle()}
+                    adminView={adminView}
+                />
+                <CommentChildrenContainer ref={childrenContainerRef}>{children}</CommentChildrenContainer>
+            </React.Fragment>
+        );
+    };
+
+    private fetchFirstComments(): void {
+        const {groupId, post} = this.props;
+        const dispatch = store.dispatch as MyThunkDispatch;
+
+        if (post && post.commentIds.length === 0) {
+            const pagination = post.commentsPagination;
+            if (pagination.canFetchMore && pagination.page === 1 && !pagination.fetching)
+                dispatch(fetchPostComments(groupId, post.id));
+        }
+    }
+
+    componentDidUpdate(oldProps: GroupPostCommentsModalProps): void {
+        const oldPagination = oldProps.post.commentsPagination;
+        const pagination = this.props.post.commentsPagination;
+        if (oldPagination.page > 1 && pagination.page === 1) this.fetchFirstComments();
+    }
+
     render(): JSX.Element {
-        const {post, groupId, adminView, theme} = this.props;
-        const {replyingTo, expandedCommentId} = this.state;
+        const {post, groupId, theme} = this.props;
+        const {replyingTo} = this.state;
 
         const styles = themedStyles(theme);
         const dispatch = store.dispatch as MyThunkDispatch;
-
-        const createCommentComponent = (comment: PostComment, hide: () => void, depth = 0): JSX.Element => {
-            const children = comment.children.map((c: PostComment) => createCommentComponent(c, hide, depth + 1));
-            return (
-                <>
-                    <GroupCommentCard
-                        key={`${groupId}-${post.id}-comment-${comment.id}`}
-                        groupId={groupId}
-                        post={post}
-                        comment={comment}
-                        closeComments={hide}
-                        onPressReplyTo={() => this.setReplyingTo(comment)}
-                        expanded={expandedCommentId === comment.id}
-                        onExpand={() => this.setState({...this.state, expandedCommentId: comment.id})}
-                        onCollapse={() => this.setState({...this.state, expandedCommentId: null})}
-                        depth={depth}
-                        adminView={adminView}
-                    />
-                    {children}
-                </>
-            );
-        };
+        const pagination = post.commentsPagination;
 
         return (
             <CustomModal
@@ -87,9 +124,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                 fullHeight
                 statusBarTranslucent={false}
                 modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0}}
-                onShow={() => {
-                    if (post && post.commentIds.length == 0) dispatch(fetchPostComments(groupId, post.id));
-                }}
+                onShow={() => this.fetchFirstComments()}
                 onHide={() => {
                     this.setReplyingTo(null);
                 }}
@@ -125,12 +160,24 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 />
                             </View>
                         </View>
-                        <View style={styles.comments}>
-                            {post.commentIds.length === 0 && (
+                        <ScrollView
+                            keyboardShouldPersistTaps="handled"
+                            contentContainerStyle={styles.comments}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={pagination.fetching}
+                                    onRefresh={() => dispatch(fetchPostCommentsRefresh(groupId, post.id))}
+                                />
+                            }
+                        >
+                            {post.commentIds.length === 0 && !pagination.fetching && (
                                 <Text style={styles.noCommentsText}>{i18n.t("groups.comments.none")}</Text>
                             )}
-                            {post.commentIds.map((id) => createCommentComponent(post.comments[id], hide))}
-                        </View>
+                            {post.commentIds.map(
+                                // Render all parent comments (this will recursively render the children)
+                                (id) => !post.comments[id].parentId && this.createCommentComponent(id, hide),
+                            )}
+                        </ScrollView>
                         <View style={styles.bottom}>
                             <View style={styles.replyToContainer}>
                                 {replyingTo && (
@@ -152,14 +199,45 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 ref={this.commentTextInputRef}
                                 style={styles.input}
                                 onSend={(text) => {
-                                    const dto = {text, parentId: replyingTo?.id || undefined};
-                                    (store.dispatch as MyThunkDispatch)(createPostComment(groupId, post.id, dto));
+                                    const dto: CreatePostCommentDto = {text, parentId: replyingTo?.id || undefined};
+                                    dispatch(createPostComment(groupId, post.id, dto));
+                                    this.setState({...this.state, replyingTo: null});
                                 }}
                             />
                         </View>
                     </View>
                 )}
             />
+        );
+    }
+}
+
+class CommentChildrenContainer extends React.Component<React.PropsWithChildren<unknown>> {
+    private EXTRA_HEIGHT_OFFSET = 100;
+    initialHeight = 0;
+    maxHeight = new Animated.Value<number>(1e6);
+    open = true;
+
+    toggle(): void {
+        this.open = !this.open;
+        const toValue = this.open ? this.initialHeight + this.EXTRA_HEIGHT_OFFSET : 0;
+        animateValue(this.maxHeight, {toValue, duration: 250, easing: Easing.cubic});
+    }
+
+    render(): JSX.Element {
+        return (
+            <Animated.View
+                style={{maxHeight: this.maxHeight, overflow: "hidden"}}
+                onLayout={(e) => {
+                    const h = e.nativeEvent.layout.height;
+                    if (h > this.initialHeight) {
+                        this.initialHeight = h;
+                        if (this.open) this.maxHeight.setValue(this.initialHeight + this.EXTRA_HEIGHT_OFFSET);
+                    }
+                }}
+            >
+                {this.props.children}
+            </Animated.View>
         );
     }
 }
@@ -188,6 +266,7 @@ const themedStyles = preTheme((theme: Theme) => {
             paddingBottom: 7,
             borderTopWidth: StyleSheet.hairlineWidth,
             borderColor: theme.componentBorder,
+            backgroundColor: theme.cardBackground,
         },
 
         points: {

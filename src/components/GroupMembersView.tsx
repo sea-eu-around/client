@@ -47,11 +47,11 @@ class GroupMembersView extends React.Component<GroupMembersViewProps, GroupMembe
         const memberIds = group ? group.memberIds[status] : [];
         const members = group ? memberIds.map((id) => group.members[id]) : [];
 
-        const numApproved = group?.numApprovedMembers || null;
+        const numApproved = group?.numApprovedMembers;
 
         return (
             <>
-                {numApproved !== null && numApproved > 0 && (
+                {numApproved !== null && numApproved !== undefined && numApproved > 0 && (
                     <BufferedSearchBar
                         onBufferedUpdate={() => group && dispatch(fetchGroupMembersRefresh(group.id, status))}
                         bufferDelay={SEARCH_BUFFER_DELAY}

@@ -15,11 +15,13 @@ import {
     CreatePostCommentDto,
     GroupCoverSuccessfullyUpdatedDto,
     GroupMemberStatus,
+    GroupRole,
     PaginatedRequestResponse,
     ResponseGroupDto,
     ResponseGroupMemberDto,
     ResponseGroupPostDto,
     ResponsePostCommentDto,
+    ResponseProfileDto,
     SuccessfulRequestResponse,
 } from "../../api/dto";
 import {Group, GroupMember, GroupPost, PostComment, PostSortingOrder, GroupVoteStatus} from "../../model/groups";
@@ -27,11 +29,14 @@ import {
     convertDtoToGroup,
     convertDtoToGroupMember,
     convertDtoToGroupPost,
-    convertDtoToPostComment,
+    convertDtoToPostComments,
+    convertDtoToProfile,
 } from "../../api/converters";
 import {gatherValidationErrors} from "../../api/errors";
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {uploadImage} from "../../api/media-upload";
+import {UserProfile} from "../../model/user-profile";
+import {findComment, findPost} from "./helpers";
 
 export enum GROUP_ACTION_TYPES {
     CREATE_SUCCESS = "GROUP/CREATE_SUCCESS",
@@ -56,6 +61,8 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUP_MEMBERS_REFRESH = "GROUP/FETCH_GROUP_MEMBERS_REFRESH",
     DELETE_GROUP_MEMBER_SUCCESS = "GROUP/DELETE_GROUP_MEMBER_SUCCESS",
     SET_GROUP_MEMBER_STATUS_SUCCESS = "GROUP/SET_GROUP_MEMBER_STATUS_SUCCESS",
+    SET_GROUP_MEMBER_ROLE_SUCCESS = "GROUP/SET_GROUP_MEMBER_ROLE_SUCCESS",
+    INVITE_TO_GROUP_SUCCESS = "GROUP/INVITE_TO_GROUP_SUCCESS",
     FETCH_GROUP_POSTS_BEGIN = "GROUP/FETCH_GROUP_POSTS_BEGIN",
     FETCH_GROUP_POSTS_SUCCESS = "GROUP/FETCH_GROUP_POSTS_SUCCESS",
     FETCH_GROUP_POSTS_FAILURE = "GROUP/FETCH_GROUP_POSTS_FAILURE",
@@ -63,6 +70,7 @@ export enum GROUP_ACTION_TYPES {
     FETCH_POST_COMMENTS_BEGIN = "GROUP/FETCH_POST_COMMENTS_BEGIN",
     FETCH_POST_COMMENTS_SUCCESS = "GROUP/FETCH_POST_COMMENTS_SUCCESS",
     FETCH_POST_COMMENTS_FAILURE = "GROUP/FETCH_POST_COMMENTS_FAILURE",
+    FETCH_POST_COMMENTS_REFRESH = "GROUP/FETCH_POST_COMMENTS_REFRESH",
     FETCH_MYGROUPS_BEGIN = "GROUP/FETCH_MYGROUPS_BEGIN",
     FETCH_MYGROUPS_FAILURE = "GROUP/FETCH_MYGROUPS_FAILURE",
     FETCH_MYGROUPS_SUCCESS = "GROUP/FETCH_MYGROUPS_SUCCESS",
@@ -86,6 +94,9 @@ export enum GROUP_ACTION_TYPES {
     SET_POST_VOTE_SUCCESS = "GROUP/SET_POST_VOTE_SUCCESS",
     SET_COMMENT_VOTE_BEGIN = "GROUP/SET_COMMENT_VOTE_BEGIN",
     SET_COMMENT_VOTE_SUCCESS = "GROUP/SET_COMMENT_VOTE_SUCCESS",
+    FETCH_AVAILABLE_MATCHES_BEGIN = "GROUP/FETCH_AVAILABLE_MATCHES_BEGIN",
+    FETCH_AVAILABLE_MATCHES_FAILURE = "GROUP/FETCH_AVAILABLE_MATCHES_FAILURE",
+    FETCH_AVAILABLE_MATCHES_SUCCESS = "GROUP/FETCH_AVAILABLE_MATCHES_SUCCESS",
 }
 
 export type CreateGroupSuccessAction = {type: string; group: Group};
@@ -132,11 +143,28 @@ export type DeleteGroupMemberSuccessAction = {
     type: string;
     groupId: string;
     profileId: string;
+    isLocalUser: boolean;
 };
 export type SetGroupMemberStatusSuccessAction = {
     type: string;
     groupId: string;
     profileId: string;
+    memberStatus: GroupMemberStatus;
+    isLocalUser: boolean;
+};
+
+export type SetGroupMemberRoleSuccessAction = {
+    type: string;
+    groupId: string;
+    profileId: string;
+    role: GroupRole;
+    isLocalUser: boolean;
+};
+
+export type InviteToGroupSuccessAction = {
+    type: string;
+    groupId: string;
+    profile: UserProfile;
     memberStatus: GroupMemberStatus;
 };
 
@@ -151,6 +179,7 @@ export type FetchPostCommentsSuccessAction = PaginatedFetchSuccessAction<PostCom
     postId: string;
 };
 export type FetchPostCommentsFailureAction = PaginatedFetchFailureAction & {groupId: string; postId: string};
+export type FetchPostCommentsRefreshAction = PaginatedFetchRefreshAction & {groupId: string; postId: string};
 
 export type JoinGroupSuccessAction = {
     type: string;
@@ -190,6 +219,7 @@ export type CreateCommentSuccessAction = {
     groupId: string;
     postId: string;
     comment: PostComment;
+    parentId: string | null;
 };
 export type CreateCommentFailureAction = {type: string};
 
@@ -197,7 +227,7 @@ export type UpdateCommentSuccessAction = {
     type: string;
     groupId: string;
     postId: string;
-    comment: PostComment;
+    comments: PostComment[]; // possibly children getting updated too
 };
 
 export type DeleteCommentSuccessAction = {
@@ -256,6 +286,10 @@ export type SetCommentVoteSuccessAction = {
     status: GroupVoteStatus;
 };
 
+export type FetchAvailableMatchesBeginAction = {type: string; groupId: string};
+export type FetchAvailableMatchesFailureAction = {type: string; groupId: string};
+export type FetchAvailableMatchesSuccessAction = {type: string; groupId: string; items: UserProfile[]};
+
 export type GroupsAction = CreateGroupSuccessAction &
     CreateGroupFailureAction &
     UpdateGroupSuccessAction &
@@ -276,6 +310,8 @@ export type GroupsAction = CreateGroupSuccessAction &
     FetchGroupMembersRefreshAction &
     DeleteGroupMemberSuccessAction &
     SetGroupMemberStatusSuccessAction &
+    SetGroupMemberRoleSuccessAction &
+    InviteToGroupSuccessAction &
     FetchGroupPostsBeginAction &
     FetchGroupPostsFailureAction &
     FetchGroupPostsSuccessAction &
@@ -283,6 +319,7 @@ export type GroupsAction = CreateGroupSuccessAction &
     FetchPostCommentsBeginAction &
     FetchPostCommentsFailureAction &
     FetchPostCommentsSuccessAction &
+    FetchPostCommentsRefreshAction &
     JoinGroupSuccessAction &
     CreatePostBeginAction &
     CreatePostFailureAction &
@@ -301,7 +338,10 @@ export type GroupsAction = CreateGroupSuccessAction &
     SetPostVoteBeginAction &
     SetPostVoteSuccessAction &
     SetCommentVoteBeginAction &
-    SetCommentVoteSuccessAction;
+    SetCommentVoteSuccessAction &
+    FetchAvailableMatchesBeginAction &
+    FetchAvailableMatchesFailureAction &
+    FetchAvailableMatchesSuccessAction;
 
 const createGroupSuccess = (group: Group): CreateGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_SUCCESS,
@@ -418,6 +458,7 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
     const {
         auth: {token},
         groups: {pagination},
+        profile: {user},
     } = getState();
 
     if (!token) {
@@ -435,7 +476,8 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         {
             page: pagination.page,
             limit: GROUPS_FETCH_LIMIT,
-            search,
+            search: search && search.length > 0 ? search : undefined,
+            profileId: user?.id || undefined,
         },
         {},
         token,
@@ -593,17 +635,20 @@ const fetchPostCommentsFailure = (groupId: string, postId: string): FetchPostCom
     postId,
 });
 
+export const fetchPostCommentsRefresh = (groupId: string, postId: string): FetchPostCommentsRefreshAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_REFRESH,
+    groupId,
+    postId,
+});
+
 export const fetchPostComments = (groupId: string, postId: string): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
-        groups: {groupsDict},
+        groups,
     } = getState();
 
-    const g = groupsDict[groupId];
-
-    if (!g) return;
-
-    const p = g.posts[postId];
+    // Try to get the post from storage (from its group or from the feed)
+    const p = findPost(groups, groupId, postId);
 
     if (!p || p.commentsPagination.fetching || !p.commentsPagination.canFetchMore) return;
 
@@ -620,7 +665,7 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
 
     if (response.status === HttpStatusCode.OK) {
         const paginated = response as PaginatedRequestResponse;
-        const comments = (paginated.data as ResponsePostCommentDto[]).map((c) => convertDtoToPostComment(c));
+        const comments = (paginated.data as ResponsePostCommentDto[]).flatMap((c) => convertDtoToPostComments(c));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
         dispatch(fetchPostCommentsSuccess(groupId, postId, comments, canFetchMore));
     } else dispatch(fetchPostCommentsFailure(groupId, postId));
@@ -703,22 +748,30 @@ export const fetchGroupMembers = (groupId: string, status: GroupMemberStatus, se
     } else dispatch(fetchGroupMembersFailure(groupId, status));
 };
 
-const deleteGroupMemberSuccess = (groupId: string, profileId: string): DeleteGroupMemberSuccessAction => ({
+const deleteGroupMemberSuccess = (
+    groupId: string,
+    profileId: string,
+    isLocalUser: boolean,
+): DeleteGroupMemberSuccessAction => ({
     type: GROUP_ACTION_TYPES.DELETE_GROUP_MEMBER_SUCCESS,
     groupId,
     profileId,
+    isLocalUser,
 });
 
 export const deleteGroupMember = (groupId: string, profileId: string): AppThunk<Promise<boolean>> => async (
     dispatch,
     getState,
 ) => {
-    const {token} = getState().auth;
+    const {
+        auth: {token},
+        profile: {user},
+    } = getState();
 
     const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "DELETE", {}, {}, token, true);
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
-        dispatch(deleteGroupMemberSuccess(groupId, profileId));
+        dispatch(deleteGroupMemberSuccess(groupId, profileId, profileId === user?.id));
         return true;
     } else {
         return false;
@@ -729,11 +782,13 @@ const setGroupMemberStatusSuccess = (
     groupId: string,
     profileId: string,
     memberStatus: GroupMemberStatus,
+    isLocalUser: boolean,
 ): SetGroupMemberStatusSuccessAction => ({
     type: GROUP_ACTION_TYPES.SET_GROUP_MEMBER_STATUS_SUCCESS,
     groupId,
     profileId,
     memberStatus,
+    isLocalUser,
 });
 
 export const setGroupMemberStatus = (
@@ -741,12 +796,85 @@ export const setGroupMemberStatus = (
     profileId: string,
     status: GroupMemberStatus,
 ): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
-    const {token} = getState().auth;
+    const {
+        auth: {token},
+        profile: {user},
+    } = getState();
 
     const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {status}, token, true);
 
     if (response.status === HttpStatusCode.OK) {
-        dispatch(setGroupMemberStatusSuccess(groupId, profileId, status));
+        dispatch(setGroupMemberStatusSuccess(groupId, profileId, status, profileId === user?.id));
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const setGroupMemberRoleSuccess = (
+    groupId: string,
+    profileId: string,
+    role: GroupRole,
+    isLocalUser: boolean,
+): SetGroupMemberRoleSuccessAction => ({
+    type: GROUP_ACTION_TYPES.SET_GROUP_MEMBER_ROLE_SUCCESS,
+    groupId,
+    profileId,
+    role,
+    isLocalUser,
+});
+
+export const setGroupMemberRole = (
+    groupId: string,
+    profileId: string,
+    role: GroupRole,
+): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+    const {
+        auth: {token},
+        profile: {user},
+    } = getState();
+
+    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {role}, token, true);
+
+    if (response.status === HttpStatusCode.OK) {
+        dispatch(setGroupMemberRoleSuccess(groupId, profileId, role, profileId === user?.id));
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const inviteToGroupSuccess = (
+    groupId: string,
+    profile: UserProfile,
+    memberStatus: GroupMemberStatus,
+): InviteToGroupSuccessAction => ({
+    type: GROUP_ACTION_TYPES.INVITE_TO_GROUP_SUCCESS,
+    groupId,
+    profile,
+    memberStatus,
+});
+
+export const inviteToGroup = (groupId: string, profile: UserProfile): AppThunk<Promise<boolean>> => async (
+    dispatch,
+    getState,
+) => {
+    const {token} = getState().auth;
+
+    /// Backend is responsible for assigning the right status
+    const response = await requestBackend(
+        `groups/${groupId}/members`,
+        "POST",
+        {},
+        {profileId: profile.id},
+        token,
+        true,
+    );
+
+    if (response.status === HttpStatusCode.CREATED) {
+        const payload = response as SuccessfulRequestResponse;
+        const status = (payload.data as ResponseGroupMemberDto).status;
+        dispatch(inviteToGroupSuccess(groupId, profile, status));
         return true;
     } else {
         return false;
@@ -936,11 +1064,13 @@ const createPostCommentSuccess = (
     groupId: string,
     postId: string,
     comment: PostComment,
+    parentId: string | null,
 ): CreateCommentSuccessAction => ({
     type: GROUP_ACTION_TYPES.CREATE_COMMENT_SUCCESS,
     groupId,
     postId,
     comment,
+    parentId,
 });
 
 export const createPostComment = (
@@ -948,21 +1078,34 @@ export const createPostComment = (
     postId: string,
     dto: CreatePostCommentDto,
 ): ValidatedThunkAction => async (dispatch, getState) => {
-    const {token} = getState().auth;
+    const {
+        auth: {token},
+        groups,
+    } = getState();
 
     if (!token) return {success: false};
 
     dispatch(createPostCommentBegin(groupId, postId));
 
+    let depth = 0;
+
+    if (dto.parentId) {
+        // Try to get the parent post and comment from storage (from its group or from the feed)
+        const parent = findComment(groups, groupId, postId, dto.parentId);
+        if (parent) depth = parent.depth + 1;
+    }
+
     const response = await requestBackend(`groups/${groupId}/posts/${postId}/comments`, "POST", {}, dto, token, true);
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = response as SuccessfulRequestResponse;
-        const comment = convertDtoToPostComment(
+        const comment = convertDtoToPostComments(
             payload.data as ResponsePostCommentDto,
+            dto.parentId || null,
+            depth,
             getState().profile.user?.profile,
-        );
-        dispatch(createPostCommentSuccess(groupId, postId, comment));
+        )[0]; // no children yet => we can safely just get the first and only comment
+        dispatch(createPostCommentSuccess(groupId, postId, comment, dto.parentId || null));
         return {success: true};
     } else {
         dispatch(createPostCommentFailure());
@@ -973,12 +1116,12 @@ export const createPostComment = (
 const updatePostCommentSuccess = (
     groupId: string,
     postId: string,
-    comment: PostComment,
+    comments: PostComment[],
 ): UpdateCommentSuccessAction => ({
     type: GROUP_ACTION_TYPES.UPDATE_COMMENT_SUCCESS,
     groupId,
     postId,
-    comment,
+    comments,
 });
 
 export const updatePostComment = (
@@ -987,7 +1130,10 @@ export const updatePostComment = (
     commentId: string,
     dto: Partial<CreatePostCommentDto>,
 ): ValidatedThunkAction => async (dispatch, getState) => {
-    const {token} = getState().auth;
+    const {
+        auth: {token},
+        groups,
+    } = getState();
 
     if (!token) return {success: false};
 
@@ -1000,10 +1146,18 @@ export const updatePostComment = (
         true,
     );
 
+    const comment = findComment(groups, groupId, postId, commentId);
+
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponsePostCommentDto;
-        const comment = convertDtoToPostComment(payload, getState().profile.user?.profile);
-        dispatch(updatePostCommentSuccess(groupId, postId, comment));
+        // Can include children
+        const comments = convertDtoToPostComments(
+            payload,
+            comment?.parentId,
+            comment?.depth,
+            getState().profile.user?.profile,
+        );
+        dispatch(updatePostCommentSuccess(groupId, postId, comments));
         return {success: true};
     } else {
         return {success: false, errors: gatherValidationErrors(response)};
@@ -1165,4 +1319,42 @@ export const setVote = (
         if (commentId) dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));
         else dispatch(setPostVoteSuccess(groupId, postId, status));
     }
+};
+
+const fetchAvailableMatchesBegin = (groupId: string): FetchAvailableMatchesBeginAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_BEGIN,
+    groupId,
+});
+
+const fetchAvailableMatchesSuccess = (groupId: string, items: UserProfile[]): FetchAvailableMatchesSuccessAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_SUCCESS,
+    groupId,
+    items,
+});
+
+const fetchAvailableMatchesFailure = (groupId: string): FetchAvailableMatchesFailureAction => ({
+    type: GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_FAILURE,
+    groupId,
+});
+
+export const fetchAvailableMatches = (groupId: string): AppThunk => async (dispatch, getState) => {
+    const {
+        auth: {token},
+        groups: {groupsDict},
+    } = getState();
+
+    const g = groupsDict[groupId];
+
+    if (!g || g.availableMatches.fetching) return;
+
+    dispatch(fetchAvailableMatchesBegin(groupId));
+
+    const response = await requestBackend(`groups/${groupId}/availableMatches`, "GET", {}, {}, token, true);
+
+    // TODO remove 201
+    if (response.status === HttpStatusCode.OK || response.status === 201) {
+        const payload = response as SuccessfulRequestResponse;
+        const profiles = (payload.data as ResponseProfileDto[]).map(convertDtoToProfile);
+        dispatch(fetchAvailableMatchesSuccess(groupId, profiles));
+    } else dispatch(fetchAvailableMatchesFailure(groupId));
 };

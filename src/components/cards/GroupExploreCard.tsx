@@ -1,14 +1,18 @@
 import * as React from "react";
-import {StyleSheet, Text, View, StyleProp, ViewStyle} from "react-native";
+import {StyleSheet, Text, View, StyleProp, ViewStyle, Image} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {Group} from "../../model/groups";
-import Button from "../Button";
-import i18n from "i18n-js";
 import store from "../../state/store";
 import {joinGroup} from "../../state/groups/actions";
 import {MyThunkDispatch} from "../../state/types";
+import GroupJoinRequestSentModal, {GroupJoinRequestSentModalClass} from "../modals/GroupJoinRequestSentModal";
+import GroupJoinedModal, {GroupJoinedModalClass} from "../modals/GroupJoinedModal";
+import SwipeableCard, {SwipeableCardClass, SwipeableLooks, SwipeActionContainer} from "./SwipeableCard";
+import GroupDescriptionModal, {GroupDescriptionModalClass} from "../modals/GroupDescriptionModal";
+import LocalImage from "../LocalImage";
+import {BlurView} from "expo-blur";
 
 // Component props
 type GroupExploreCardProps = {
@@ -17,84 +21,111 @@ type GroupExploreCardProps = {
 } & ThemeProps;
 
 class GroupExploreCard extends React.Component<GroupExploreCardProps> {
+    descriptionModalRef = React.createRef<GroupDescriptionModalClass>();
+    requestSentModalRef = React.createRef<GroupJoinRequestSentModalClass>();
+    joinedModalRef = React.createRef<GroupJoinedModalClass>();
+    cardRef = React.createRef<SwipeableCardClass>();
+
     private join(): void {
         const {group} = this.props;
 
         if (group) {
             (store.dispatch as MyThunkDispatch)(joinGroup(group));
+
+            if (group.requiresApproval) this.requestSentModalRef.current?.show();
+            else this.joinedModalRef.current?.show();
         }
     }
 
     render(): JSX.Element {
-        const {theme, group, style, ...otherProps} = this.props;
+        const {theme, group} = this.props;
 
         const styles = themedStyles(theme);
 
+        const looks: Partial<SwipeableLooks> = {verticalSpacing: 5, sideMargin: 15};
+
         return (
-            <View style={[styles.container, style]} {...otherProps}>
-                <View style={styles.left}>
+            <SwipeableCard
+                ref={this.cardRef}
+                looks={looks}
+                renderRightActions={() => <SwipeActionContainer side="right" looks={looks} fullCardWidth />}
+                style={styles.card}
+                onPress={() => this.descriptionModalRef.current?.show()}
+            >
+                {group && group.cover && (
+                    <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />
+                )}
+                {(!group || !group.cover) && (
+                    <LocalImage style={styles.groupCover} imageKey="group-placeholder" resizeMode="cover" />
+                )}
+                <BlurView style={styles.blurView} tint="dark" intensity={10} />
+
+                <View style={styles.innerContent}>
                     {group && (
-                        <>
-                            <Text style={styles.groupName} numberOfLines={2}>
-                                {group.name}
-                                {group.name.length % 2 === 0 && " Nom beaucoup trop long pour une ligne"}
-                            </Text>
-                            <Text style={styles.groupDescription} numberOfLines={1}>
-                                {group.description}
-                                {group.name.length % 2 === 0 && " Description un peu trop longue pour une ligne"}
-                            </Text>
-                        </>
+                        <Text style={styles.groupName} numberOfLines={2}>
+                            {group.name}
+                        </Text>
+                    )}
+                    {group && group.description.length > 0 && (
+                        <Text style={styles.groupDescription} numberOfLines={1}>
+                            {group.description}
+                        </Text>
                     )}
                 </View>
-                <View style={styles.right}>
-                    <Button
-                        style={styles.joinButton}
-                        textStyle={styles.joinButtonText}
-                        skin="rounded-filled"
-                        text={i18n.t("groups.join")}
-                        onPress={() => this.join()}
-                    />
-                </View>
-            </View>
+
+                <GroupJoinRequestSentModal
+                    ref={this.requestSentModalRef}
+                    onHide={() => this.cardRef.current?.collapse()}
+                />
+                {group && (
+                    <>
+                        <GroupDescriptionModal
+                            ref={this.descriptionModalRef}
+                            group={group}
+                            onJoinGroup={() => this.join()}
+                        />
+                        <GroupJoinedModal
+                            ref={this.joinedModalRef}
+                            group={group}
+                            onHide={() => this.cardRef.current?.collapse()}
+                        />
+                    </>
+                )}
+            </SwipeableCard>
         );
     }
 }
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
+        card: {
+            backgroundColor: theme.cardBackground,
+            height: 75,
+        },
+        blurView: {
+            position: "absolute",
             width: "100%",
-            height: 70,
-            marginVertical: 5,
-            backgroundColor: theme.accentSlight,
-            borderRadius: 10,
-            paddingVertical: 5,
+            height: "100%",
+        },
+        groupCover: {
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+        },
+        innerContent: {
+            justifyContent: "center",
             paddingHorizontal: 10,
-            flexDirection: "row",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
         },
         groupName: {
-            color: theme.text,
+            color: theme.textWhite,
+            fontFamily: "RalewaySemiBold",
             fontSize: 16,
         },
         groupDescription: {
-            color: theme.textLight,
+            color: theme.textWhite,
             fontSize: 14,
-        },
-        left: {
-            flex: 1,
-            justifyContent: "center",
-        },
-        right: {
-            alignItems: "center",
-            justifyContent: "center",
-        },
-        joinButton: {
-            width: "auto",
-            minWidth: 80,
-            height: 30,
-        },
-        joinButtonText: {
-            fontSize: 16,
         },
     });
 });

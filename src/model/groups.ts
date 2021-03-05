@@ -7,7 +7,7 @@ export type Group = {
     name: string;
     description: string;
     visible: boolean;
-    requireApproval: boolean;
+    requiresApproval: boolean;
     cover: string | null;
     uploadingCover: boolean;
     members: {[key: string]: GroupMember};
@@ -17,7 +17,12 @@ export type Group = {
     postIds: string[];
     postsPagination: PaginatedState;
     myRole: GroupRole | null;
+    myStatus: GroupMemberStatus | null;
     numApprovedMembers: number | null;
+    availableMatches: {
+        fetching: boolean;
+        profiles: UserProfile[] | null;
+    };
 };
 
 export type GroupMember = {
@@ -51,7 +56,9 @@ export type PostComment = {
     creator: UserProfile;
     createdAt: Date;
     updatedAt: Date;
-    children: PostComment[];
+    childrenIds: string[];
+    parentId: string | null;
+    depth: number;
 };
 
 export enum PostSortingOrder {

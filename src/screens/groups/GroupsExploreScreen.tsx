@@ -3,7 +3,6 @@ import * as React from "react";
 import {StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {refreshFetchedHistory} from "../../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -18,7 +17,6 @@ import {Group} from "../../model/groups";
 import GroupExploreCard from "../../components/cards/GroupExploreCard";
 
 const reduxConnector = connect((state: AppState) => ({
-    historyFilters: state.matching.historyFilters,
     pagination: state.groups.pagination,
     groups: state.groups.groups,
     groupsDict: state.groups.groupsDict,
@@ -41,14 +39,15 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
     }
 
     render(): JSX.Element {
-        const {theme, groups, groupsDict, pagination, navigation, dispatch} = this.props;
+        const {theme, groups, groupsDict, pagination, navigation} = this.props;
         const {search} = this.state;
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         return (
             <ScreenWrapper>
                 <BufferedSearchBar
-                    onBufferedUpdate={() => dispatch(refreshFetchedHistory())}
+                    onBufferedUpdate={() => dispatch(refreshFetchedGroups())}
                     bufferDelay={SEARCH_BUFFER_DELAY}
                     placeholder={i18n.t("search")}
                     onChangeText={(search: string) => this.setState({...this.state, search})}
@@ -60,7 +59,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={GROUPS_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchGroups(search))}
+                    fetchMore={() => dispatch(fetchGroups(search))}
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
@@ -87,7 +86,6 @@ const themedStyles = preTheme((theme: Theme) => {
             maxWidth: 600,
             alignSelf: "center",
             alignItems: "center",
-            paddingHorizontal: 20,
         },
         noResultsText: {
             fontSize: 20,

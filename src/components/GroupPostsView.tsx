@@ -16,7 +16,6 @@ import GroupPostCard from "./cards/GroupPostCard";
 import PostSortingOrderPicker from "./PostSortingOrderPicker";
 import {connect, ConnectedProps} from "react-redux";
 import Button from "./Button";
-import GroupPostMenu, {GroupPostMenuClass} from "./GroupPostMenu";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -34,11 +33,10 @@ export type GroupPostsViewProps = ThemeProps &
     };
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
-    menuRef = React.createRef<GroupPostMenuClass>();
-
-    render() {
-        const {group, top, navigation, titleContainerStyle, sortOrder, onRefresh, dispatch, theme} = this.props;
+    render(): JSX.Element {
+        const {group, top, navigation, titleContainerStyle, sortOrder, onRefresh, theme} = this.props;
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const pagination: PaginatedState = group
             ? group.postsPagination
@@ -85,9 +83,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                     }
                     navigation={navigation}
                     fetchLimit={GROUPS_POSTS_FETCH_LIMIT}
-                    fetchMore={() => {
-                        if (group) (dispatch as MyThunkDispatch)(fetchGroupPosts(group.id));
-                    }}
+                    fetchMore={() => group && dispatch(fetchGroupPosts(group.id))}
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
@@ -102,18 +98,10 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                             if (onRefresh) onRefresh();
                         }
                     }}
-                    renderItem={(post: GroupPost) => (
-                        <GroupPostCard
-                            key={post.id}
-                            post={post}
-                            openPostMenu={() => group && this.menuRef.current?.show(group, post)}
-                        />
-                    )}
-                    // Compensate for the header
-                    itemsContainerStyle={styles.itemsContainer}
-                    progressViewOffset={350}
+                    renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} />}
+                    progressViewOffset={350} // Compensate for the header
+                    keyboardShouldPersistTaps="handled"
                 />
-                <GroupPostMenu ref={this.menuRef} />
             </>
         );
     }
@@ -121,7 +109,6 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        itemsContainer: {},
         titleWrapper: {
             width: "100%",
             flexDirection: "row",

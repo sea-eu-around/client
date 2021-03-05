@@ -15,6 +15,7 @@ import {AppState, MyThunkDispatch} from "../../state/types";
 import BanGroupMemberModal from "../modals/BanGroupMemberModal";
 import {GroupMemberStatus} from "../../api/dto";
 import {deleteGroupMember, setGroupMemberStatus} from "../../state/groups/actions";
+import GroupPromoteAdminModal from "../modals/GroupPromoteAdminModal";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -71,6 +72,24 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                 pending={member.status === GroupMemberStatus.Pending}
             />
         );
+        const promoteAdminButton = member && (
+            <GroupPromoteAdminModal
+                activator={(show) => (
+                    <Button
+                        style={styles.controlButton}
+                        icon={
+                            <MaterialCommunityIcons
+                                name="account-star"
+                                style={[styles.controlIcon, {color: theme.accentTernary}]}
+                            />
+                        }
+                        onPress={show}
+                    />
+                )}
+                groupId={groupId}
+                profile={member.profile}
+            />
+        );
         const acceptMemberButton = member && (
             <Button
                 style={styles.controlButton}
@@ -116,6 +135,7 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             {adminView && member.status === GroupMemberStatus.Approved && !isLocalUser && (
                                 <>
+                                    {promoteAdminButton}
                                     {deleteMemberButton}
                                     {banMemberButton}
                                 </>

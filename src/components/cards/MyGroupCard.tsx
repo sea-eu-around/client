@@ -7,16 +7,20 @@ import {Group} from "../../model/groups";
 import {navigateToGroup} from "../../navigation/utils";
 import LocalImage from "../LocalImage";
 import {BlurView} from "expo-blur";
+import GroupInviteReponseModal, {GroupInviteResponseModalClass} from "../modals/GroupInviteReponseModal";
 
 // Component props
 type MyGroupCardProps = {
     group: Group | null;
+    isInvite?: boolean;
 } & TouchableOpacityProps &
     ThemeProps;
 
 class MyGroupCard extends React.Component<MyGroupCardProps> {
+    inviteResponseModalRef = React.createRef<GroupInviteResponseModalClass>();
+
     render(): JSX.Element {
-        const {group, theme, style, ...otherProps} = this.props;
+        const {group, theme, style, isInvite, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
 
@@ -24,7 +28,12 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
             <TouchableOpacity
                 style={[styles.container, group && !group.cover ? styles.containerWithoutCover : {}, style]}
                 activeOpacity={0.9}
-                onPress={() => group && navigateToGroup(group.id)}
+                onPress={() => {
+                    if (group) {
+                        if (isInvite) this.inviteResponseModalRef.current?.show();
+                        else navigateToGroup(group.id);
+                    }
+                }}
                 {...otherProps}
             >
                 {group && (
@@ -41,6 +50,7 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
                         </Text>
                     </>
                 )}
+                {group && isInvite && <GroupInviteReponseModal ref={this.inviteResponseModalRef} group={group} />}
             </TouchableOpacity>
         );
     }
@@ -68,7 +78,6 @@ const themedStyles = preTheme((theme: Theme) => {
             position: "absolute",
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
         },
         groupName: {
             color: theme.textWhite,

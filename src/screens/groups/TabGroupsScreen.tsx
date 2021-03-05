@@ -2,9 +2,7 @@ import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
-import {connect, ConnectedProps} from "react-redux";
 import {UserProfile} from "../../model/user-profile";
-import {AppState} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import {TabGroupsRoot} from "../../navigation/types";
@@ -17,13 +15,10 @@ import Button from "../../components/Button";
 import {rootNavigate} from "../../navigation/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import PostsFeedView from "../../components/PostsFeedView";
-
-const reduxConnector = connect((state: AppState) => ({}));
+import GroupInvitesView from "../../components/GroupInvitesView";
 
 // Component props
-type TabGroupsScreenProps = ConnectedProps<typeof reduxConnector> &
-    ThemeProps &
-    StackScreenProps<TabGroupsRoot, "TabGroupsScreen">;
+type TabGroupsScreenProps = ThemeProps & StackScreenProps<TabGroupsRoot, "TabGroupsScreen">;
 
 class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
     scrollerRef = React.createRef<InfiniteScroller<UserProfile>>();
@@ -39,7 +34,7 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
                     top={
                         <>
                             <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
-                            {/*<GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />*/}
+                            <GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />
                             <Button
                                 text="Explore"
                                 icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
@@ -79,4 +74,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(TabGroupsScreen));
+export default withTheme(TabGroupsScreen);

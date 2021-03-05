@@ -40,8 +40,16 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
         return;
     }
 
+    private send(): void {
+        const {onSend} = this.props;
+        const {value} = this.state;
+
+        if (onSend) onSend(value);
+        this.setState({...this.state, value: ""});
+    }
+
     render(): JSX.Element {
-        const {style, theme, onSend} = this.props;
+        const {style, theme} = this.props;
         const {value} = this.state;
         const styles = themedStyles(theme);
 
@@ -53,7 +61,7 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
             ) : (
                 <Button
                     style={styles.inputButton}
-                    onPress={() => onSend && onSend(value)}
+                    onPress={() => this.send()}
                     icon={<MaterialIcons name={"send"} style={styles.inputButtonIcon} />}
                 />
             );

@@ -38,7 +38,7 @@ export type SwipeableCardProps = ThemeProps &
     SwipeableProperties & {
         wrapperStyle?: StyleProp<ViewStyle>;
         touchableStyle?: StyleProp<ViewStyle>;
-        style: StyleProp<ViewStyle>;
+        style?: StyleProp<ViewStyle>;
         onHidden?: () => void;
         onPress?: () => void;
         looks?: Partial<SwipeableLooks>;
@@ -56,6 +56,7 @@ export type SwipeableCardState = {
 
 export class SwipeableCardClass extends React.Component<SwipeableCardProps, SwipeableCardState> {
     swipeableRef = React.createRef<Swipeable>();
+    private hideTimeout: NodeJS.Timeout | null = null;
 
     constructor(props: SwipeableCardProps) {
         super(props);
@@ -67,6 +68,13 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             right: new ReAnimated.Value(0),
             hidden: false,
         };
+    }
+
+    componentWillUnmount(): void {
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+            this.hideTimeout = null;
+        }
     }
 
     hide(): void {
@@ -81,9 +89,10 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             duration,
             easing: Easing.ease,
         }).start();
-        setTimeout(() => {
+        this.hideTimeout = setTimeout(() => {
             if (onFinish) onFinish();
             this.hide();
+            this.hideTimeout = null;
         }, duration);
     }
 

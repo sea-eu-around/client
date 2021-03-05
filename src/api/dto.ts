@@ -221,17 +221,18 @@ export type ResponseGroupDto = {
     description: string;
     cover: string | null;
     visible: boolean;
-    requireApproval: boolean;
+    requiresApproval: boolean;
     members: null;
     isMember: boolean;
     role: GroupRole | null;
+    status: GroupMemberStatus | null;
 };
 
 export type CreateGroupDto = {
     name: string;
     description: string;
     visible: boolean;
-    requireApproval: boolean;
+    requiresApproval: boolean;
 };
 
 export type CreateGroupPostDto = {
@@ -270,7 +271,7 @@ export type ResponsePostCommentDto = {
 
 export type CreatePostCommentDto = {
     text: string;
-    parentID?: string;
+    parentId?: string;
 };
 
 export enum GroupRole {
