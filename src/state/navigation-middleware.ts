@@ -80,6 +80,7 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             navigateToGroup(group.id);
             break;
         }
+        case GROUP_ACTION_TYPES.DELETE_SUCCESS:
         case GROUP_ACTION_TYPES.LEAVE_SUCCESS: {
             rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
             break;
