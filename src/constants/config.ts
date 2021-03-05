@@ -42,6 +42,12 @@ export const POSTS_FEED_FETCH_LIMIT = 6;
 export const GROUP_MEMBERS_FETCH_LIMIT = 15;
 
 /**
+ * The maximum depth for comments.
+ * Depth indexing starts at 0 : for example 3 means that there will be 4 indentation levels.
+ */
+export const MAX_COMMENTS_DEPTH = 3;
+
+/**
  * The buffer delay before sending a remote request when typing in a search bar (ms).
  */
 export const SEARCH_BUFFER_DELAY = 250;
