@@ -7,7 +7,7 @@ import {Group} from "../../model/groups";
 import {navigateToGroup} from "../../navigation/utils";
 import LocalImage from "../LocalImage";
 import {BlurView} from "expo-blur";
-import GroupInviteReponseModal, {GroupInviteResponseModalClass} from "../modals/GroupInviteReponseModal";
+import GroupInviteResponseModal, {GroupInviteResponseModalClass} from "../modals/GroupInviteResponseModal";
 
 // Component props
 type MyGroupCardProps = {
@@ -50,7 +50,7 @@ class MyGroupCard extends React.Component<MyGroupCardProps> {
                         </Text>
                     </>
                 )}
-                {group && isInvite && <GroupInviteReponseModal ref={this.inviteResponseModalRef} group={group} />}
+                {group && isInvite && <GroupInviteResponseModal ref={this.inviteResponseModalRef} group={group} />}
             </TouchableOpacity>
         );
     }
