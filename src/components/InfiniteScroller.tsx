@@ -36,6 +36,7 @@ export type InfiniteScrollerProps<T> = {
     horizontal?: boolean;
     hideScrollIndicator?: boolean;
     top?: JSX.Element;
+    keyboardShouldPersistTaps?: "always" | "never" | "handled";
 };
 
 // Component state
@@ -114,6 +115,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             horizontal,
             hideScrollIndicator,
             top,
+            keyboardShouldPersistTaps,
         } = this.props;
 
         return (
@@ -144,6 +146,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                 horizontal={horizontal}
                                 // horizontal centering of noResultsContainer and loading indicator
                                 contentContainerStyle={horizontal && items.length == 0 && {width: "100%"}}
+                                keyboardShouldPersistTaps={keyboardShouldPersistTaps}
                                 {...(horizontal && {showsHorizontalScrollIndicator: !hideScrollIndicator})}
                                 {...(!horizontal && {showsVerticalScrollIndicator: !hideScrollIndicator})}
                             >
