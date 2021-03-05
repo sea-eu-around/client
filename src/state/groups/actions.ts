@@ -424,10 +424,28 @@ const leaveGroupSuccess = (id: string): LeaveGroupSuccessAction => ({
     id,
 });
 
-export const leaveGroup = (id: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
-    const token = getState().auth.token;
+export const leaveGroup = (id: string, deleteData: boolean): AppThunk<Promise<boolean>> => async (
+    dispatch,
+    getState,
+) => {
+    const {
+        auth: {token},
+        profile: {user},
+    } = getState();
 
-    const response = await requestBackend(`groups/${id}`, "DELETE", {}, {}, token, true);
+    if (!user) return false;
+
+    // TODO test by having another member in the group and checking on that account if the user's content was deleted
+
+    const response = await requestBackend(
+        `groups/${id}/members/${user.id}`,
+        "DELETE",
+        {cascade: deleteData},
+        {},
+        token,
+        true,
+    );
+
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(leaveGroupSuccess(id));
         return true;

@@ -990,6 +990,7 @@ export default {
             leave: {
                 title: "Leave Group",
                 text: "Are you sure you want to leave this group?",
+                deleteData: "Delete all of my posts and comments from this group.",
             },
             delete: {
                 title: "Delete Group",
@@ -2079,6 +2080,7 @@ export default {
             leave: {
                 title: "Quitter le groupe",
                 text: "Voulez-vous vraiment quitter ce groupe ?",
+                deleteData: "Supprimer tous mes posts et commentaires de ce groupe.",
             },
             delete: {
                 title: "Supprimer le Groupe",
