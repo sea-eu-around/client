@@ -14,7 +14,7 @@ import FormError from "./FormError";
 import {generalError, localizeError} from "../../api/errors";
 import {CreateGroupPostDto, RemoteValidationErrors} from "../../api/dto";
 import {createGroupPost, updateGroupPost} from "../../state/groups/actions";
-import {VALIDATOR_POST_TEXT} from "../../validators";
+import {MAX_POST_LENGTH, VALIDATOR_POST_TEXT} from "../../validators";
 import {GroupPost} from "../../model/groups";
 import ProfileAvatar from "../ProfileAvatar";
 import {connect, ConnectedProps} from "react-redux";
@@ -102,7 +102,7 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                     <Formik
                         initialValues={this.initialState()}
                         validationSchema={EditPostFormSchema}
-                        validateOnChange={true}
+                        validateOnChange
                         validateOnBlur={false}
                         onSubmit={(values) => this.submit(values)}
                     >
@@ -147,6 +147,15 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
 
                                     <FormError error={generalError(remoteErrors)} />
 
+                                    <Text
+                                        style={[
+                                            styles.lengthText,
+                                            values.text.length > MAX_POST_LENGTH ? styles.lengthTextError : {},
+                                        ]}
+                                    >
+                                        {values.text.length}/{MAX_POST_LENGTH}
+                                    </Text>
+
                                     <View style={styles.actionsContainer}>
                                         <FormSubmitButton
                                             onPress={() => handleSubmit()}
@@ -182,11 +191,17 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
             fontSize: 18,
         },
+        lengthText: {
+            fontSize: 14,
+            color: theme.textLight,
+        },
+        lengthTextError: {
+            color: theme.error,
+        },
         actionsContainer: {
             width: "100%",
             flexDirection: "row",
             justifyContent: "center",
-            marginTop: 5,
         },
         button: {flex: 1},
         buttonSubmit: {},

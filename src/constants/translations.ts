@@ -1,4 +1,12 @@
-import {MAX_COMMENT_LENGTH, MAX_GROUP_NAME_LENGTH, MAX_POST_LENGTH, MIN_GROUP_NAME_LENGTH, MIN_PASSWORD_LENGTH} from "../validators";
+import {
+    MAX_COMMENT_LENGTH,
+    MAX_GROUP_NAME_LENGTH,
+    MAX_POST_LENGTH,
+    MIN_COMMENT_LENGTH,
+    MIN_GROUP_NAME_LENGTH,
+    MIN_PASSWORD_LENGTH,
+    MIN_POST_LENGTH,
+} from "../validators";
 
 export default {
     en: {
@@ -90,9 +98,11 @@ export default {
                 },
             },
             post: {
+                tooShort: `A post should contain at least ${MIN_POST_LENGTH} characters.`,
                 tooLong: `The length of a post cannot exceed ${MAX_POST_LENGTH} characters.`,
             },
             comment: {
+                tooShort: `A comment should contain at least ${MIN_COMMENT_LENGTH} characters.`,
                 tooLong: `The length of a comment cannot exceed ${MAX_COMMENT_LENGTH} characters.`,
             },
         },
@@ -1192,9 +1202,11 @@ export default {
                 },
             },
             post: {
+                tooShort: `Le post doit contenir au moins ${MIN_POST_LENGTH} caractères.`,
                 tooLong: `Le post ne doit pas excéder ${MAX_POST_LENGTH} caractères.`,
             },
             comment: {
+                tooShort: `Le commentaire doit contenir au moins ${MIN_COMMENT_LENGTH} caractères.`,
                 tooLong: `Le commentaire ne doit pas excéder ${MAX_COMMENT_LENGTH} caractères.`,
             },
         },

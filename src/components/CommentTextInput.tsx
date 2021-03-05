@@ -6,6 +6,7 @@ import {Theme, ThemeProps} from "../types";
 import {withTheme} from "react-native-elements";
 import Button from "./Button";
 import i18n from "i18n-js";
+import {MAX_COMMENT_LENGTH, MIN_COMMENT_LENGTH} from "../validators";
 
 export type CommentTextInputProps = {
     style?: StyleProp<ViewStyle>;
@@ -19,6 +20,7 @@ type CommentTextInputState = {
 };
 
 const MIN_HEIGHT = 40;
+const MAX_HEIGHT = 100;
 
 export class CommentTextInputClass extends React.Component<CommentTextInputProps, CommentTextInputState> {
     inputRef = React.createRef<TextInput>();
@@ -44,8 +46,9 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
         const {onSend} = this.props;
         const {value} = this.state;
 
+        this.setState({...this.state, value: "", height: MIN_HEIGHT});
+        this.inputRef.current?.blur();
         if (onSend) onSend(value);
-        this.setState({...this.state, value: ""});
     }
 
     render(): JSX.Element {
@@ -56,7 +59,7 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
         const height = Math.max(MIN_HEIGHT, this.state.height);
 
         const icons =
-            value.length === 0 ? (
+            value.length < MIN_COMMENT_LENGTH ? (
                 <></>
             ) : (
                 <Button
@@ -82,13 +85,13 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
                     placeholder={i18n.t("groups.comments.placeholder")}
                     multiline
                     numberOfLines={4}
+                    maxLength={MAX_COMMENT_LENGTH}
                     value={value}
                     placeholderTextColor={theme.textLight}
                     onChangeText={(value) => this.setState({...this.state, value})}
-                    onContentSizeChange={(event) => {
-                        if ((value.match(/\n/g) || []).length < 4)
-                            this.setState({height: event.nativeEvent.contentSize.height});
-                    }}
+                    onContentSizeChange={(event) =>
+                        this.setState({height: Math.min(MAX_HEIGHT, event.nativeEvent.contentSize.height)})
+                    }
                 />
                 <View>{icons}</View>
             </View>

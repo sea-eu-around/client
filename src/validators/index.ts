@@ -2,8 +2,10 @@ import * as Yup from "yup";
 import {DEGREES} from "../constants/profile-constants";
 
 export const MIN_PASSWORD_LENGTH = 8;
-export const MAX_POST_LENGTH = 12000;
-export const MAX_COMMENT_LENGTH = 8000;
+export const MIN_POST_LENGTH = 5;
+export const MAX_POST_LENGTH = 3000;
+export const MIN_COMMENT_LENGTH = 2;
+export const MAX_COMMENT_LENGTH = 1200;
 export const MIN_GROUP_NAME_LENGTH = 4;
 export const MAX_GROUP_NAME_LENGTH = 60;
 
@@ -46,8 +48,10 @@ export const VALIDATOR_GROUP_NAME = Yup.string()
 
 export const VALIDATOR_POST_TEXT = Yup.string()
     .required("validation.required")
+    .min(MIN_POST_LENGTH, "validation.post.tooShort")
     .max(MAX_POST_LENGTH, "validation.post.tooLong");
 
 export const VALIDATOR_COMMENT_TEXT = Yup.string()
     .required("validation.required")
+    .min(MIN_COMMENT_LENGTH, "validation.comment.tooShort")
     .max(MAX_COMMENT_LENGTH, "validation.comment.tooLong");
