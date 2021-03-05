@@ -257,7 +257,7 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
         },
         comments: {
-            flex: 1,
+            paddingBottom: 30,
         },
         bottom: {
             justifyContent: "space-between",
