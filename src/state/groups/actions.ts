@@ -380,7 +380,11 @@ export const createGroup = (group: CreateGroupDto): ValidatedThunkAction => asyn
     const response = await requestBackend("groups", "POST", {}, dto, token, true);
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseGroupDto;
-        const createdGroup = convertDtoToGroup(payload);
+        const createdGroup: Group = {
+            ...convertDtoToGroup(payload),
+            myStatus: GroupMemberStatus.Approved,
+            myRole: GroupRole.Admin,
+        };
         dispatch(createGroupSuccess(createdGroup));
         return {success: true};
     } else {
