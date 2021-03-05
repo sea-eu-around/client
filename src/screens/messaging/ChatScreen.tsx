@@ -53,6 +53,7 @@ import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import {normalizeWheelEvent} from "../../polyfills";
 import {getRouteParams} from "../../navigation/utils";
+import {noop} from "lodash";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -75,8 +76,7 @@ const INPUT_VERTICAL_MARGIN = 10;
 class ChatScreen extends React.Component<ChatScreenProps> {
     ref = React.createRef<GiftedChat>();
     listRef: FlatList | null = null;
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    removeScrollListener: () => void = () => {};
+    removeScrollListener: () => void = noop;
 
     private unsubscribeBlurEvent: null | (() => void) = null;
     private unsubscribeFocusEvent: null | (() => void) = null;

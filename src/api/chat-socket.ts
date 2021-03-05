@@ -1,3 +1,4 @@
+import {noop} from "lodash";
 import io from "socket.io-client";
 import {BACKEND_URL, DEBUG_MODE} from "../constants/config";
 import {ChatRoom} from "../model/chat-room";
@@ -105,8 +106,6 @@ class ChatSocket {
         callback?: (connected: boolean) => void,
         retry = RECONNECT_ATTEMPTS,
     ): void {
-        /* eslint-disable @typescript-eslint/no-empty-function */
-
         // If we're already connected, callback and abort
         if (this.isConnected()) {
             if (callback) callback(true);
@@ -134,9 +133,9 @@ class ChatSocket {
                 reconnection: false,
             });
             this.registerListeners({
-                onMessageRead: () => {},
-                onMessageReceived: () => {},
-                onWritingStateChange: () => {},
+                onMessageRead: noop,
+                onMessageReceived: noop,
+                onWritingStateChange: noop,
                 ...listeners,
             });
         }
@@ -149,7 +148,7 @@ class ChatSocket {
             // If we're still not connected
             if (!this.isConnected()) {
                 // Try again
-                if (retry > 0) this.connect(authToken, listeners, () => {}, retry - 1);
+                if (retry > 0) this.connect(authToken, listeners, noop, retry - 1);
                 // Stop trying
                 else this.consumeConnectCallbacks(false);
             }
