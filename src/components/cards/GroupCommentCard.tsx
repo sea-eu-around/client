@@ -32,31 +32,42 @@ type GroupCommentCardProps = {
     comment: PostComment | null;
     closeComments: () => void;
     onPressReplyTo: () => void;
-    expanded: boolean;
-    onExpand?: () => void;
+    onExpand?: (collapse: () => void) => void;
     onCollapse?: () => void;
-    depth: number;
+    toggleChildren: () => void;
     adminView: boolean;
 } & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
 
-const EXPANDED_BOTTOM_HEIGHT = 35;
-const DEPTH_OFFSET = 20;
+// Component state
+type GroupCommentCardState = {
+    expanded: boolean;
+};
 
-class GroupCommentCard extends React.Component<GroupCommentCardProps> {
+const EXPANDED_BOTTOM_HEIGHT = 35;
+const DEPTH_OFFSET = 8;
+const BORDER_LEFT_WIDTH = 4;
+
+class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupCommentCardState> {
     private bottomHeight = new ReAnimated.Value<number>(0);
 
-    componentDidUpdate(oldProps: GroupCommentCardProps): void {
-        if (!oldProps.expanded && this.props.expanded) this.animateExpanded(true);
-        if (oldProps.expanded && !this.props.expanded) this.animateExpanded(false);
+    constructor(props: GroupCommentCardProps) {
+        super(props);
+        this.state = {expanded: false};
     }
 
-    private animateExpanded(expanded: boolean): void {
+    private setExpanded(expanded: boolean): void {
+        const {onExpand, onCollapse} = this.props;
+
+        this.setState({...this.state, expanded});
         animateValue(this.bottomHeight, {
             toValue: expanded ? EXPANDED_BOTTOM_HEIGHT : 0,
             duration: 100,
             easing: Easing.linear,
         });
+
+        if (!expanded && onCollapse) onCollapse();
+        if (expanded && onExpand) onExpand(() => this.setExpanded(false));
     }
 
     render(): JSX.Element {
@@ -68,137 +79,143 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
             onPressReplyTo,
             localUser,
             theme,
-            expanded,
-            onExpand,
-            onCollapse,
-            depth,
             adminView,
+            toggleChildren,
             ...otherProps
         } = this.props;
+        const {expanded} = this.state;
 
         const styles = themedStyles(theme);
         const fromLocal = post && localUser && post.creator.id === localUser.id;
         const name = comment ? `${comment.creator.firstName} ${comment.creator.lastName}` : "";
 
+        const depth = comment?.depth || 0;
+
         return (
             <TouchableOpacity
-                style={[
-                    styles.container,
-                    expanded ? styles.containerExpanded : {},
-                    {paddingLeft: 10 + depth * DEPTH_OFFSET},
-                ]}
+                style={[styles.outerContainer, expanded ? styles.outerContainerExpanded : {}]}
                 activeOpacity={0.9}
-                onPress={() => {
-                    if (expanded && onCollapse) onCollapse();
-                    if (!expanded && onExpand) onExpand();
-                }}
+                onPress={() => this.setExpanded(!this.state.expanded)}
+                onLongPress={() => toggleChildren()}
+                delayLongPress={250}
                 {...otherProps}
             >
-                <View style={{flexDirection: "row", alignItems: "center"}}>
-                    <ProfileAvatar
-                        profile={comment?.creator}
-                        size={32}
-                        containerStyle={styles.avatarContainer}
-                        rounded
-                        onPress={() => {
-                            if (comment) {
-                                closeComments();
-                                rootNavigate("ProfileScreen", {id: comment.creator.id});
-                            }
-                        }}
-                    />
-                    <View>
-                        <View style={{flexDirection: "row", alignItems: "center"}}>
-                            <Text style={[styles.topText, styles.name]}>{name}</Text>
-                            <Text style={styles.topText}>{comment && ` - ${formatCommentDate(comment)}`}</Text>
+                <View
+                    style={[
+                        styles.innerContainer,
+                        expanded ? styles.innerContainerExpanded : {},
+                        {marginLeft: depth * DEPTH_OFFSET, borderLeftWidth: depth > 0 ? BORDER_LEFT_WIDTH : 0},
+                    ]}
+                >
+                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                        <ProfileAvatar
+                            profile={comment?.creator}
+                            size={32}
+                            containerStyle={styles.avatarContainer}
+                            rounded
+                            onPress={() => {
+                                if (comment) {
+                                    closeComments();
+                                    rootNavigate("ProfileScreen", {id: comment.creator.id});
+                                }
+                            }}
+                        />
+                        <View style={styles.content}>
+                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                                <Text style={[styles.topText, styles.name]}>{name}</Text>
+                                <Text style={styles.topText}>{comment && ` - ${formatCommentDate(comment)}`}</Text>
+                            </View>
+                            <ReadMore
+                                numberOfLines={3}
+                                renderTruncatedFooter={(handlePress) => (
+                                    <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
+                                        <Text style={[styles.text, styles.textFooter]}>... {i18n.t("showMore")}</Text>
+                                    </TouchableOpacity>
+                                )}
+                                renderRevealedFooter={(handlePress) => (
+                                    <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
+                                        <Text style={[styles.text, styles.textFooter]}>{i18n.t("showLess")}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            >
+                                <Text style={styles.text}>{comment?.text}</Text>
+                            </ReadMore>
                         </View>
-                        <ReadMore
-                            numberOfLines={3}
-                            renderTruncatedFooter={(handlePress) => (
-                                <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
-                                    <Text style={[styles.content, styles.textFooter]}>... {i18n.t("showMore")}</Text>
-                                </TouchableOpacity>
-                            )}
-                            renderRevealedFooter={(handlePress) => (
-                                <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
-                                    <Text style={[styles.content, styles.textFooter]}>{i18n.t("showLess")}</Text>
-                                </TouchableOpacity>
-                            )}
-                        >
-                            <Text style={styles.content}>{comment?.text}</Text>
-                        </ReadMore>
                     </View>
+                    {/* Comment footer */}
+                    {post && comment && (
+                        <ReAnimated.View
+                            style={[styles.bottom, {height: this.bottomHeight, opacity: expanded ? 1 : 0}]}
+                        >
+                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                                {fromLocal && (
+                                    <EditCommentModal
+                                        groupId={groupId}
+                                        post={post}
+                                        comment={comment}
+                                        activator={(show) => (
+                                            <Button
+                                                style={styles.bottomButton}
+                                                icon={<MaterialIcons style={styles.bottomButtonIcon} name="edit" />}
+                                                onPress={show}
+                                            />
+                                        )}
+                                    />
+                                )}
+                                {(adminView || fromLocal) && (
+                                    <DeleteCommentConfirmModal
+                                        groupId={groupId}
+                                        post={post}
+                                        comment={comment}
+                                        activator={(show) => (
+                                            <Button
+                                                style={styles.bottomButton}
+                                                icon={<MaterialIcons style={styles.bottomButtonIcon} name="delete" />}
+                                                onPress={show}
+                                            />
+                                        )}
+                                    />
+                                )}
+                                {!fromLocal && (
+                                    <QuickFormReport
+                                        entityType={ReportEntityType.COMMENT_ENTITY}
+                                        entity={comment}
+                                        activator={(show) => (
+                                            <Button
+                                                style={styles.bottomButton}
+                                                icon={<MaterialIcons style={styles.bottomButtonIcon} name="report" />}
+                                                onPress={show}
+                                            />
+                                        )}
+                                    />
+                                )}
+                            </View>
+                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                                <Button
+                                    style={styles.bottomButton}
+                                    icon={<MaterialIcons style={styles.bottomButtonIcon} name="reply" />}
+                                    onPress={onPressReplyTo}
+                                />
+                                <GroupVoteButton
+                                    groupId={groupId}
+                                    post={post}
+                                    comment={comment}
+                                    style={styles.bottomButton}
+                                    currentStatus={comment.voteStatus}
+                                    vote={GroupVoteStatus.Upvote}
+                                />
+                                <GroupVoteButton
+                                    groupId={groupId}
+                                    post={post}
+                                    comment={comment}
+                                    style={styles.bottomButton}
+                                    currentStatus={comment.voteStatus}
+                                    vote={GroupVoteStatus.Downvote}
+                                />
+                            </View>
+                        </ReAnimated.View>
+                    )}
                 </View>
-                {post && comment && (
-                    <ReAnimated.View style={[styles.bottom, {height: this.bottomHeight, opacity: expanded ? 1 : 0}]}>
-                        <View style={{flexDirection: "row", alignItems: "center"}}>
-                            {fromLocal && (
-                                <EditCommentModal
-                                    groupId={groupId}
-                                    post={post}
-                                    comment={comment}
-                                    activator={(show) => (
-                                        <Button
-                                            style={styles.bottomButton}
-                                            icon={<MaterialIcons style={styles.bottomButtonIcon} name="edit" />}
-                                            onPress={show}
-                                        />
-                                    )}
-                                />
-                            )}
-                            {(adminView || fromLocal) && (
-                                <DeleteCommentConfirmModal
-                                    groupId={groupId}
-                                    post={post}
-                                    comment={comment}
-                                    activator={(show) => (
-                                        <Button
-                                            style={styles.bottomButton}
-                                            icon={<MaterialIcons style={styles.bottomButtonIcon} name="delete" />}
-                                            onPress={show}
-                                        />
-                                    )}
-                                />
-                            )}
-                            {!fromLocal && (
-                                <QuickFormReport
-                                    entityType={ReportEntityType.COMMENT_ENTITY}
-                                    entity={comment}
-                                    activator={(show) => (
-                                        <Button
-                                            style={styles.bottomButton}
-                                            icon={<MaterialIcons style={styles.bottomButtonIcon} name="report" />}
-                                            onPress={show}
-                                        />
-                                    )}
-                                />
-                            )}
-                        </View>
-                        <View style={{flexDirection: "row", alignItems: "center"}}>
-                            <Button
-                                style={styles.bottomButton}
-                                icon={<MaterialIcons style={styles.bottomButtonIcon} name="reply" />}
-                                onPress={onPressReplyTo}
-                            />
-                            <GroupVoteButton
-                                groupId={groupId}
-                                post={post}
-                                comment={comment}
-                                style={styles.bottomButton}
-                                currentStatus={comment.voteStatus}
-                                vote={GroupVoteStatus.Upvote}
-                            />
-                            <GroupVoteButton
-                                groupId={groupId}
-                                post={post}
-                                comment={comment}
-                                style={styles.bottomButton}
-                                currentStatus={comment.voteStatus}
-                                vote={GroupVoteStatus.Downvote}
-                            />
-                        </View>
-                    </ReAnimated.View>
-                )}
             </TouchableOpacity>
         );
     }
@@ -206,14 +223,19 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps> {
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        container: {
+        outerContainer: {
             width: "100%",
             backgroundColor: theme.cardBackground,
+        },
+        outerContainerExpanded: {},
+        innerContainer: {
+            borderLeftColor: theme.componentBorder,
             padding: 10,
         },
-        containerExpanded: {
+        innerContainerExpanded: {
             backgroundColor: theme.accentSlight,
         },
+
         bottom: {
             flexDirection: "row",
             alignItems: "flex-end",
@@ -231,6 +253,9 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         name: {},
         content: {
+            flex: 1,
+        },
+        text: {
             fontSize: 13,
             color: theme.text,
         },
