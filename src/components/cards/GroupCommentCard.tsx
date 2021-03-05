@@ -4,7 +4,6 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
-import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
@@ -20,6 +19,7 @@ import ProfileAvatar from "../ProfileAvatar";
 import EditCommentModal from "../modals/EditCommentModal";
 import DeleteCommentConfirmModal from "../modals/DeleteCommentConfirmModal";
 import Button from "../Button";
+import {ReadMore} from "../ReadMore";
 
 const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
