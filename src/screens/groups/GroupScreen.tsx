@@ -118,66 +118,62 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                 ? i18n.t("groups.members.singular")
                                 : i18n.t("groups.members.plural", {num: numApprovedMembers})}
                         </Text>
-                        {group && (
-                            <>
-                                <Button
-                                    style={styles.membersButton}
-                                    icon={
-                                        <MaterialCommunityIcons
-                                            style={styles.membersButtonIcon}
-                                            name="dots-horizontal-circle-outline"
-                                        />
-                                    }
-                                    onPress={() =>
-                                        rootNavigate("TabGroups", {
-                                            screen: "GroupMembersScreen",
-                                            params: {groupId: group.id},
-                                        })
-                                    }
+                        <Button
+                            style={styles.membersButton}
+                            icon={
+                                <MaterialCommunityIcons
+                                    style={styles.membersButtonIcon}
+                                    name="dots-horizontal-circle-outline"
                                 />
-                                <Button
-                                    style={styles.membersButton}
-                                    icon={
-                                        <MaterialCommunityIcons
-                                            style={styles.membersButtonIcon}
-                                            name="account-plus-outline"
-                                        />
-                                    }
-                                    onPress={() =>
-                                        rootNavigate("TabGroups", {
-                                            screen: "GroupInviteScreen",
-                                            params: {groupId: group.id},
-                                        })
-                                    }
-                                />
-                                <Button
-                                    style={styles.membersButton}
-                                    icon={
-                                        <>
-                                            <MaterialIcons
-                                                style={styles.membersButtonIcon}
-                                                name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
+                            }
+                            onPress={() =>
+                                group &&
+                                rootNavigate("TabGroups", {
+                                    screen: "GroupMembersScreen",
+                                    params: {groupId: group.id},
+                                })
+                            }
+                        />
+                        <Button
+                            style={styles.membersButton}
+                            icon={
+                                <MaterialCommunityIcons style={styles.membersButtonIcon} name="account-plus-outline" />
+                            }
+                            onPress={() =>
+                                group &&
+                                rootNavigate("TabGroups", {
+                                    screen: "GroupInviteScreen",
+                                    params: {groupId: group.id},
+                                })
+                            }
+                        />
+                        <Button
+                            style={styles.membersButton}
+                            icon={
+                                <>
+                                    <MaterialIcons
+                                        style={styles.membersButtonIcon}
+                                        name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
+                                    />
+                                    {pendingMemberIds.length > 0 && (
+                                        <View style={styles.approbationRequestIndicatorContainer}>
+                                            <FontAwesome
+                                                size={APPROBATION_REQ_INDICATOR_SIZE - 4}
+                                                name="exclamation"
+                                                color={theme.textWhite}
                                             />
-                                            {pendingMemberIds.length > 0 && (
-                                                <View style={styles.approbationRequestIndicatorContainer}>
-                                                    <FontAwesome
-                                                        size={APPROBATION_REQ_INDICATOR_SIZE - 4}
-                                                        name="exclamation"
-                                                        color={theme.textWhite}
-                                                    />
-                                                </View>
-                                            )}
-                                        </>
-                                    }
-                                    onPress={() =>
-                                        rootNavigate("TabGroups", {
-                                            screen: "GroupMembersApprovalScreen",
-                                            params: {groupId: group.id},
-                                        })
-                                    }
-                                />
-                            </>
-                        )}
+                                        </View>
+                                    )}
+                                </>
+                            }
+                            onPress={() =>
+                                group &&
+                                rootNavigate("TabGroups", {
+                                    screen: "GroupMembersApprovalScreen",
+                                    params: {groupId: group.id},
+                                })
+                            }
+                        />
                     </View>
                 </View>
             </View>
@@ -201,7 +197,7 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         top: {
             width: "100%",
-            backgroundColor: theme.accentSlight,
+            backgroundColor: theme.cardBackground,
         },
         topInfo: {
             padding: 15,

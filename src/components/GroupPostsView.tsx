@@ -119,6 +119,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         title: {
             fontSize: 20,
+            color: theme.text,
         },
         buttons: {
             flexDirection: "row",

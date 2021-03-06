@@ -50,6 +50,6 @@ export default {
         greenModalBackground: "rgb(60, 175, 130)",
         chatBubble: "#333",
         inputPlaceholder: "#bbb",
-        onboardingInputBackground: "#F2F2F7",
+        onboardingInputBackground: "#333337",
     },
 };

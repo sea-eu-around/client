@@ -52,6 +52,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
             alignItems: "center",
             height: 250,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: theme.componentBorder,
         },
         image: {
             width: "100%",

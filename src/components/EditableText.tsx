@@ -24,6 +24,7 @@ export type EditableTextProps = {
     numberOfLines?: number;
     maxLength?: number;
     onSubmit?: (value: string) => void;
+    iconColor?: string;
 } & ThemeProps;
 
 // Component state
@@ -53,7 +54,17 @@ class EditableText extends React.Component<EditableTextProps, EditableTextState>
     }
 
     render(): JSX.Element {
-        const {nonEditable, containerStyle, text, placeholder, fontSize, numberOfLines, maxLength, theme} = this.props;
+        const {
+            nonEditable,
+            containerStyle,
+            text,
+            placeholder,
+            fontSize,
+            numberOfLines,
+            maxLength,
+            iconColor,
+            theme,
+        } = this.props;
         const {editing, value} = this.state;
         const styles = themedStyles(theme);
 
@@ -96,7 +107,12 @@ class EditableText extends React.Component<EditableTextProps, EditableTextState>
                             }
                         }}
                     >
-                        {!nonEditable && <MaterialIcons style={styles.buttonIcon} name={editing ? "check" : "edit"} />}
+                        {!nonEditable && (
+                            <MaterialIcons
+                                style={[styles.buttonIcon, {color: iconColor || theme.textLight}]}
+                                name={editing ? "check" : "edit"}
+                            />
+                        )}
                     </TouchableOpacity>
                 )}
             </View>
@@ -131,7 +147,6 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         buttonIcon: {
             fontSize: 22,
-            color: theme.textBlack,
         },
     });
 });

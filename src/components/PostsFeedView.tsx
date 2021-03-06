@@ -81,6 +81,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         title: {
             fontSize: 20,
             marginLeft: 5,
+            color: theme.text,
         },
         noResultsText: {
             color: theme.text,

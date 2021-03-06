@@ -105,6 +105,8 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             width: "100%",
+            backgroundColor: theme.onboardingInputBackground,
+            borderRadius: 20,
         },
         focusedStyle: {},
         inputFocusedStyle: {},

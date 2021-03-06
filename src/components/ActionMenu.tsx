@@ -40,7 +40,7 @@ export class ActionMenuClass extends React.Component<ActionMenuProps> {
                 return {
                     text: i18n.t("close"),
                     containerStyle: {backgroundColor: theme.cardBackground},
-                    textStyle: {color: theme.textBlack},
+                    textStyle: {color: theme.text},
                     noChevron: true,
                 };
             }
