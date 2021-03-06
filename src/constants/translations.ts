@@ -938,7 +938,8 @@ export default {
             },
             deleteMember: {
                 title: "Remove User?",
-                text: "{{name}} will no longer be able to post in this group. Existing posts and comments will remain.",
+                text:
+                    "{{name}} will no longer be able to post in this group. Additionally, existing posts and comments from this member will be deleted.",
                 action: "Remove",
             },
             deletePendingMember: {
@@ -948,7 +949,8 @@ export default {
             },
             banMember: {
                 title: "Ban User?",
-                text: "{{name}} will be removed and unable to join this group again.",
+                text:
+                    "{{name}} will be removed and unable to join this group again. Additionally, existing posts and comments from this member will be deleted.",
                 action: "Ban",
             },
             banPendingMember: {
@@ -2028,7 +2030,7 @@ export default {
             deleteMember: {
                 title: "Exclure l'utilisateur ?",
                 text:
-                    "{{name}} ne pourra plus poster sur ce groupe. Les posts et commentaires existant ne seront pas supprimés.",
+                    "{{name}} ne pourra plus poster sur ce groupe. De plus, ses posts et commentaires existants seront supprimés.",
                 action: "Exclure",
             },
             deletePendingMember: {
@@ -2038,7 +2040,8 @@ export default {
             },
             banMember: {
                 title: "Bannir l'utilisateur ?",
-                text: "L'utilisateur sera exclu et ne pourra plus rejoindre le groupe.",
+                text:
+                    "L'utilisateur sera exclu et ne pourra plus rejoindre le groupe. De plus, ses posts et commentaires existants seront supprimés.",
                 action: "Bannir",
             },
             banPendingMember: {
