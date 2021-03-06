@@ -6,7 +6,7 @@ import ConfirmationModal, {ConfirmationModalClass} from "./ConfirmationModal";
 import {MaterialIcons} from "@expo/vector-icons";
 import i18n from "i18n-js";
 import store from "../../state/store";
-import {leaveGroup} from "../../state/groups/actions";
+import {deleteGroup} from "../../state/groups/actions";
 import {MyThunkDispatch} from "../../state/types";
 import {StyleSheet} from "react-native";
 import {preTheme} from "../../styles/utils";
@@ -59,7 +59,7 @@ export class DeleteGroupConfirmModalClass extends React.Component<
                         preset: "delete",
                         disabled: !inputCorrect,
                         onPress: (hide) => {
-                            dispatch(leaveGroup(group.id));
+                            dispatch(deleteGroup(group.id));
                             hide();
                         },
                     },
