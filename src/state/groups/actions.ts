@@ -8,7 +8,13 @@ import {
     ValidatedThunkAction,
 } from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
-import {GROUPS_FETCH_LIMIT, POSTS_FEED_FETCH_LIMIT, POST_COMMENTS_FETCH_LIMIT} from "../../constants/config";
+import {
+    GROUPS_FETCH_LIMIT,
+    GROUPS_POSTS_FETCH_LIMIT,
+    GROUP_MEMBERS_FETCH_LIMIT,
+    POSTS_FEED_FETCH_LIMIT,
+    POST_COMMENTS_FETCH_LIMIT,
+} from "../../constants/config";
 import {
     CreateGroupDto,
     CreateGroupPostDto,
@@ -619,7 +625,7 @@ export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, g
     const response = await requestBackend(
         `groups/${groupId}/posts`,
         "GET",
-        {page: g.postsPagination.page, limit: 50, type: postsSortOrder},
+        {page: g.postsPagination.page, limit: GROUPS_POSTS_FETCH_LIMIT, type: postsSortOrder},
         {},
         token,
     );
@@ -755,7 +761,7 @@ export const fetchGroupMembers = (groupId: string, status: GroupMemberStatus, se
     const response = await requestBackend(
         `groups/${groupId}/members`,
         "GET",
-        {page: pagination.page, limit: 50, statuses: [status], search},
+        {page: pagination.page, limit: GROUP_MEMBERS_FETCH_LIMIT, statuses: [status], search},
         {},
         token,
         true,
