@@ -20,11 +20,13 @@ export class GroupDescriptionModalClass extends React.Component<GroupDescription
     render(): JSX.Element {
         const {theme, group, onJoinGroup, ...otherProps} = this.props;
 
+        const descriptionText = group.description.length > 0 ? group.description : i18n.t("groups.description.none");
+
         return (
             <ConfirmationModal
                 ref={this.modalRef}
                 title={group.name}
-                text={group.description}
+                text={descriptionText}
                 additionalContent={(hide, textProps) => (
                     <>
                         {group.requiresApproval && (
