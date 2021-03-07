@@ -1,5 +1,5 @@
 import * as React from "react";
-import {RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -18,6 +18,7 @@ import {CreatePostCommentDto} from "../../api/dto";
 import {MAX_COMMENTS_DEPTH} from "../../constants/config";
 import Animated, {Easing} from "react-native-reanimated";
 import {animateValue} from "../../polyfills";
+import {TouchableOpacity} from "react-native";
 
 // Component props
 export type GroupPostCommentsModalProps = {
@@ -91,14 +92,20 @@ export class GroupPostCommentsModalClass extends React.Component<
     };
 
     private fetchFirstComments(): void {
-        const {groupId, post} = this.props;
-        const dispatch = store.dispatch as MyThunkDispatch;
+        const {post} = this.props;
 
         if (post && post.commentIds.length === 0) {
             const pagination = post.commentsPagination;
-            if (pagination.canFetchMore && pagination.page === 1 && !pagination.fetching)
-                dispatch(fetchPostComments(groupId, post.id));
+            if (pagination.page === 1) this.fetchMore();
         }
+    }
+
+    private fetchMore(): void {
+        const {groupId, post} = this.props;
+        const dispatch = store.dispatch as MyThunkDispatch;
+
+        if (post && post.commentsPagination.canFetchMore && !post.commentsPagination.fetching)
+            dispatch(fetchPostComments(groupId, post.id));
     }
 
     componentDidUpdate(oldProps: GroupPostCommentsModalProps): void {
@@ -177,6 +184,16 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 // Render all parent comments (this will recursively render the children)
                                 (id) => !post.comments[id].parentId && this.createCommentComponent(id, hide),
                             )}
+                            {pagination.fetching && post.commentIds.length > 0 && (
+                                <ActivityIndicator size="large" color={theme.accent} />
+                            )}
+                            {pagination.canFetchMore && !pagination.fetching && (
+                                <TouchableOpacity style={styles.viewMoreComments} onPress={() => this.fetchMore()}>
+                                    <Text style={styles.viewMoreCommentsText}>
+                                        View more ({post.commentsCount - post.commentIds.length})
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                         </ScrollView>
                         <View style={styles.bottom}>
                             <View style={styles.replyToContainer}>
@@ -197,7 +214,6 @@ export class GroupPostCommentsModalClass extends React.Component<
                             </View>
                             <CommentTextInput
                                 ref={this.commentTextInputRef}
-                                style={styles.input}
                                 onSend={(text) => {
                                     const dto: CreatePostCommentDto = {text, parentId: replyingTo?.id || undefined};
                                     dispatch(createPostComment(groupId, post.id, dto));
@@ -291,11 +307,6 @@ const themedStyles = preTheme((theme: Theme) => {
             maxWidth: 250,
         },
 
-        input: {
-            backgroundColor: theme.onboardingInputBackground,
-            borderRadius: 20,
-        },
-
         replyToContainer: {
             flexDirection: "row",
             alignItems: "center",
@@ -309,6 +320,15 @@ const themedStyles = preTheme((theme: Theme) => {
         replyToCloseIcon: {
             color: theme.textLight,
             fontSize: 20,
+        },
+
+        viewMoreComments: {
+            paddingVertical: 15,
+            paddingHorizontal: 10,
+            backgroundColor: theme.accentSlight,
+        },
+        viewMoreCommentsText: {
+            color: theme.accent,
         },
     });
 });
