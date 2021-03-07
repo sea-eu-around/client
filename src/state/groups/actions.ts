@@ -8,7 +8,7 @@ import {
     ValidatedThunkAction,
 } from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
-import {GROUPS_FETCH_LIMIT, POSTS_FEED_FETCH_LIMIT} from "../../constants/config";
+import {GROUPS_FETCH_LIMIT, POSTS_FEED_FETCH_LIMIT, POST_COMMENTS_FETCH_LIMIT} from "../../constants/config";
 import {
     CreateGroupDto,
     CreateGroupPostDto,
@@ -679,10 +679,9 @@ export const fetchPostComments = (groupId: string, postId: string): AppThunk => 
     const response = await requestBackend(
         `groups/${groupId}/posts/${postId}/comments`,
         "GET",
-        {page: p.commentsPagination.page, limit: 50},
+        {page: p.commentsPagination.page, limit: POST_COMMENTS_FETCH_LIMIT},
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {

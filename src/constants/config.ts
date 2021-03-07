@@ -40,6 +40,7 @@ export const GROUPS_FETCH_LIMIT = 8;
 export const GROUPS_POSTS_FETCH_LIMIT = 6;
 export const POSTS_FEED_FETCH_LIMIT = 6;
 export const GROUP_MEMBERS_FETCH_LIMIT = 15;
+export const POST_COMMENTS_FETCH_LIMIT = 20;
 
 /**
  * The maximum depth for comments.
