@@ -221,6 +221,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 commentsPagination: {
                     ...commentsPagination,
                     fetching: action.type === GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_BEGIN,
+                    canFetchMore: action.type === GROUP_ACTION_TYPES.FETCH_POST_COMMENTS_BEGIN,
                 },
             }));
         }
@@ -334,6 +335,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                     [memberStatus]: {
                         ...membersPaginations[memberStatus],
                         fetching: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN,
+                        canFetchMore: action.type === GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_BEGIN,
                     },
                 },
             }));
@@ -531,6 +533,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 availableMatches: {
                     ...availableMatches,
                     fetching: action.type === GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_BEGIN,
+                    canFetchMore: action.type === GROUP_ACTION_TYPES.FETCH_AVAILABLE_MATCHES_BEGIN,
                 },
             }));
         }
