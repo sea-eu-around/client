@@ -96,7 +96,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         noResultsText: {
             fontSize: 18,
-            color: theme.text,
+            color: theme.textLight,
         },
         // Search bar
         searchBarContainer: {

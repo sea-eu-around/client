@@ -84,6 +84,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             maxWidth: 200,
             textAlign: "center",
+            color: theme.textLight,
         },
     });
 });

@@ -136,7 +136,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             color: theme.text,
         },
         noResultsText: {
-            color: theme.text,
+            color: theme.textLight,
             fontSize: 16,
         },
     });
