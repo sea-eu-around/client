@@ -4,7 +4,6 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {GroupPost, GroupVoteStatus} from "../../model/groups";
-import ReadMore from "react-native-read-more-text";
 import i18n from "i18n-js";
 import GroupPostCommentsModal, {GroupPostCommentsModalClass} from "../modals/GroupPostCommentsModal";
 import {connect, ConnectedProps} from "react-redux";
@@ -15,19 +14,21 @@ import {formatPostDate} from "../../model/utils";
 import GroupVoteButton from "../GroupVoteButton";
 import {fetchGroup} from "../../state/groups/actions";
 import {GroupRole} from "../../api/dto";
+import GroupPostMenu, {GroupPostMenuClass} from "../GroupPostMenu";
+import {ReadMore} from "../ReadMore";
 
 const reduxConnector = connect((state: AppState) => ({
-    localUser: state.profile.user,
     groupsDict: state.groups.groupsDict,
 }));
 
 // Component props
-type GroupPostCardProps = {post: GroupPost | null; showGroup?: boolean; openPostMenu?: () => void} & ThemeProps &
+type GroupPostCardProps = {post: GroupPost | null; showGroup?: boolean} & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
     commentsModalRef = React.createRef<GroupPostCommentsModalClass>();
     editPostModalRef = React.createRef<EditPostModalClass>();
+    menuRef = React.createRef<GroupPostMenuClass>();
 
     openComments(): void {
         this.commentsModalRef.current?.show();
@@ -53,10 +54,10 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
     }
 
     render(): JSX.Element {
-        const {post, localUser, showGroup, groupsDict, openPostMenu, theme} = this.props;
+        const {post, showGroup, groupsDict, theme} = this.props;
 
         const styles = themedStyles(theme);
-        const fromLocal = post && localUser && post.creator.id === localUser.id;
+        // const fromLocal = post && localUser && post.creator.id === localUser.id;
         const groupId = post?.groupId || null;
         const group = groupId ? groupsDict[groupId] || null : null;
         const isAdmin = group?.myRole == GroupRole.Admin;
@@ -69,7 +70,7 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         subtitle={post && formatPostDate(post)}
                         group={group}
                         showGroup={showGroup}
-                        openPostMenu={openPostMenu}
+                        openPostMenu={() => group && post && this.menuRef.current?.show(group, post)}
                     />
                 </View>
                 {post && (
@@ -140,6 +141,7 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         <EditPostModal ref={this.editPostModalRef} groupId={groupId} post={post} />
                     </>
                 )}
+                <GroupPostMenu ref={this.menuRef} />
             </TouchableOpacity>
         );
     }
@@ -185,14 +187,6 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         bottomButtonIcon: {
             fontSize: 24,
-            color: theme.textLight,
-        },
-        topButton: {
-            marginLeft: 5,
-            padding: 5,
-        },
-        topButtonIcon: {
-            fontSize: 18,
             color: theme.textLight,
         },
     });
