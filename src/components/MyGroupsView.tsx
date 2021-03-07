@@ -12,6 +12,9 @@ import {GROUPS_FETCH_LIMIT} from "../constants/config";
 import {Group} from "../model/groups";
 import {NavigationProp} from "@react-navigation/native";
 import MyGroupCard from "./cards/MyGroupCard";
+import Button from "./Button";
+import {MaterialIcons} from "@expo/vector-icons";
+import {rootNavigate} from "../navigation/utils";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -33,6 +36,16 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
             <View style={styles.container}>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("groups.myGroups.title")}</Text>
+                    <Button
+                        text={i18n.t("groups.explore.button")}
+                        icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
+                        iconLeft
+                        style={styles.exploreButton}
+                        textStyle={styles.exploreButtonText}
+                        onPress={() =>
+                            rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "GroupsExploreScreen"}})
+                        }
+                    />
                 </View>
                 <InfiniteScroller
                     navigation={navigation}
@@ -68,6 +81,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             marginBottom: 20,
             paddingHorizontal: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
         },
         title: {
             fontSize: 22,
@@ -79,6 +94,24 @@ export const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             maxWidth: 200,
             textAlign: "center",
+            color: theme.textLight,
+        },
+
+        exploreButton: {
+            paddingHorizontal: 15,
+            paddingVertical: 5,
+            borderRadius: 100,
+            backgroundColor: theme.background,
+            justifyContent: "center",
+        },
+        exploreButtonText: {
+            fontSize: 14,
+            color: theme.text,
+        },
+        exploreIcon: {
+            fontSize: 24,
+            color: theme.textLight,
+            marginRight: 4,
         },
     });
 });

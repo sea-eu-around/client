@@ -4,16 +4,13 @@ import {StyleSheet} from "react-native";
 import {withTheme} from "react-native-elements";
 import {UserProfile} from "../../model/user-profile";
 import {preTheme} from "../../styles/utils";
-import {Theme, ThemeProps} from "../../types";
+import {ThemeProps} from "../../types";
 import {TabGroupsRoot} from "../../navigation/types";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
 import {MatchSuccessModalClass} from "../../components/modals/MatchSuccessModal";
 import MyGroupsView from "../../components/MyGroupsView";
 import {NavigationProp} from "@react-navigation/native";
-import Button from "../../components/Button";
-import {rootNavigate} from "../../navigation/utils";
-import {MaterialIcons} from "@expo/vector-icons";
 import PostsFeedView from "../../components/PostsFeedView";
 import GroupInvitesView from "../../components/GroupInvitesView";
 
@@ -26,6 +23,7 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
 
     render(): JSX.Element {
         const {theme, navigation} = this.props;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const styles = themedStyles(theme);
 
         return (
@@ -35,14 +33,6 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
                         <>
                             <MyGroupsView navigation={(navigation as unknown) as NavigationProp<never>} />
                             <GroupInvitesView navigation={(navigation as unknown) as NavigationProp<never>} />
-                            <Button
-                                text="Explore"
-                                icon={<MaterialIcons name="explore" style={styles.exploreIcon} />}
-                                iconLeft
-                                style={styles.exploreButton}
-                                textStyle={styles.exploreButtonText}
-                                onPress={() => rootNavigate("GroupsExploreScreen")}
-                            />
                         </>
                     }
                     navigation={(navigation as unknown) as NavigationProp<never>}
@@ -52,26 +42,8 @@ class TabGroupsScreen extends React.Component<TabGroupsScreenProps> {
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        exploreButton: {
-            maxWidth: 150,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            borderRadius: 100,
-            backgroundColor: theme.cardBackground,
-            marginTop: 20,
-        },
-        exploreButtonText: {
-            fontSize: 16,
-            color: theme.text,
-        },
-        exploreIcon: {
-            fontSize: 24,
-            color: theme.textLight,
-            marginRight: 4,
-        },
-    });
+const themedStyles = preTheme(() => {
+    return StyleSheet.create({});
 });
 
 export default withTheme(TabGroupsScreen);
