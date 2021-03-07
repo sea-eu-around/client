@@ -37,6 +37,7 @@ export enum MATCHING_ACTION_TYPES {
     FETCH_MY_MATCHES_BEGIN = "MATCHING/FETCH_MY_MATCHES_BEGIN",
     FETCH_MY_MATCHES_FAILURE = "MATCHING/FETCH_MY_MATCHES_FAILURE",
     FETCH_MY_MATCHES_SUCCESS = "MATCHING/FETCH_MY_MATCHES_SUCCESS",
+    FETCH_MY_MATCHES_REFRESH = "MATCHING/FETCH_MY_MATCHES_REFRESH",
 
     FETCH_HISTORY_BEGIN = "MATCHING/FETCH_HISTORY_BEGIN",
     FETCH_HISTORY_FAILURE = "MATCHING/FETCH_HISTORY_FAILURE",
@@ -263,12 +264,18 @@ const fetchMyMatchesSuccess = (
     canFetchMore,
 });
 
+export const fetchMyMatchesRefresh = (): PaginatedFetchRefreshAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_REFRESH,
+});
+
 export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         matching,
     } = getState();
-    if (matching.fetchingMyMatches) return;
+
+    const pagination = matching.myMatchesPagination;
+    if (pagination.fetching || !pagination.canFetchMore) return;
 
     dispatch(beginFetchMyMatches());
 
@@ -276,8 +283,8 @@ export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
-        const profiles = (payload as ResponseProfileDto[]).map(convertDtoToProfile);
-        dispatch(fetchMyMatchesSuccess(profiles, false));
+        const items = (payload as ResponseProfileDto[]).map(convertDtoToProfile);
+        dispatch(fetchMyMatchesSuccess(items, false));
     } else dispatch(fetchMyMatchesFailure());
 };
 

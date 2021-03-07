@@ -41,7 +41,7 @@ export const initialState: MatchingState = {
     historyFilters: initialHistoryFilters(),
     historyItems: [],
     myMatches: [],
-    fetchingMyMatches: false,
+    myMatchesPagination: initialPaginatedState(),
 };
 
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
@@ -90,20 +90,33 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 profilesPagination: initialPaginatedState(),
             };
         }
+
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN: {
-            return {...state, fetchingMyMatches: true};
+            return {...state, myMatchesPagination: {...state.myMatchesPagination, fetching: true}};
         }
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE: {
-            return {...state, fetchingMyMatches: false};
-        }
-        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS: {
-            const {items} = action as PaginatedFetchSuccessAction<UserProfile>;
             return {
                 ...state,
-                myMatches: items,
-                fetchingMyMatches: false,
+                myMatchesPagination: {...state.myMatchesPagination, fetching: false, canFetchMore: false},
             };
         }
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS: {
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<UserProfile>;
+            const pagination = state.historyPagination;
+            return {
+                ...state,
+                myMatches: state.myMatches.concat(items),
+                myMatchesPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
+            };
+        }
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_REFRESH: {
+            return {
+                ...state,
+                myMatches: [],
+                myMatchesPagination: initialPaginatedState(),
+            };
+        }
+
         case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS:
         case MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS: {
             const {profile} = action as LikeProfileSuccessAction | DislikeProfileSuccessAction;
@@ -163,7 +176,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
                 orderedProfileIds: [],
                 profilesPagination: initialPaginatedState(),
                 myMatches: [],
-                fetchingMyMatches: false,
+                myMatchesPagination: initialPaginatedState(),
                 historyItems: [],
                 historyPagination: initialPaginatedState(),
             };
