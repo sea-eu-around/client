@@ -43,7 +43,7 @@ export type GroupPost = {
     score: number;
     voteStatus: GroupVoteStatus;
     comments: {[key: string]: PostComment};
-    commentsCount: number;
+    commentsCount: number; // total number of comments on the post
     commentIds: string[];
     commentsPagination: PaginatedState;
 };
