@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet, Text} from "react-native";
+import {View, StyleSheet, Text, Platform} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -179,9 +179,8 @@ export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         wrapperSheet: {
             width: "100%",
-            //paddingVertical: 20,
             alignItems: "center",
-            //backgroundColor: theme.cardBackground,
+            padding: Platform.OS === "web" ? 20 : 0,
         },
         containerSheet: {
             width: "90%",
