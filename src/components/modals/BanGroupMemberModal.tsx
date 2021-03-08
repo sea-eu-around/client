@@ -34,6 +34,7 @@ export class BanGroupMemberModalClass extends React.Component<BanGroupMemberModa
                 text={
                     profile ? i18n.t(`${translationRoot}.text`, {name: `${profile.firstName} ${profile.lastName}`}) : ""
                 }
+                justifyText
                 icon={(props) => <MaterialIcons name="block" color={theme.error} {...props} />}
                 buttons={[
                     {preset: "cancel"},

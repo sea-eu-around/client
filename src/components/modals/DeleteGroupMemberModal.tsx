@@ -33,18 +33,15 @@ export class DeleteGroupMemberModalClass extends React.Component<DeleteGroupMemb
                 text={
                     profile ? i18n.t(`${translationRoot}.text`, {name: `${profile.firstName} ${profile.lastName}`}) : ""
                 }
+                justifyText
                 icon={(props) => <MaterialCommunityIcons name="account-remove" color={theme.error} {...props} />}
                 buttons={[
                     {preset: "cancel"},
                     {
                         preset: "delete",
                         text: i18n.t(`${translationRoot}.action`),
-                        onPress: async (hide) => {
-                            if (profile) {
-                                const success = await dispatch(deleteGroupMember(groupId, profile.id));
-                                if (success) hide();
-                            }
-                        },
+                        // No need to hide the modal since it will be unmounted anyway
+                        onPress: () => profile && dispatch(deleteGroupMember(groupId, profile.id, true)),
                     },
                 ]}
                 {...otherProps}

@@ -21,6 +21,7 @@ export class DeletePostConfirmModalClass extends React.Component<DeletePostConfi
 
     render(): JSX.Element {
         const {groupId, post, theme, ...otherProps} = this.props;
+        const dispatch = store.dispatch as MyThunkDispatch;
 
         return (
             <ConfirmationModal
@@ -32,10 +33,8 @@ export class DeletePostConfirmModalClass extends React.Component<DeletePostConfi
                     {preset: "cancel"},
                     {
                         preset: "delete",
-                        onPress: (hide) => {
-                            hide();
-                            (store.dispatch as MyThunkDispatch)(deleteGroupPost(groupId, post.id));
-                        },
+                        // No need to hide the modal since it will be unmounted anyway
+                        onPress: () => dispatch(deleteGroupPost(groupId, post.id)),
                     },
                 ]}
                 {...otherProps}
