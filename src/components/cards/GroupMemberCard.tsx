@@ -101,7 +101,7 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
             <Button
                 style={styles.controlButton}
                 icon={<MaterialIcons name="cancel" style={[styles.controlIcon, {color: theme.accent}]} />}
-                onPress={() => dispatch(deleteGroupMember(groupId, member.profile.id))}
+                onPress={() => dispatch(deleteGroupMember(groupId, member.profile.id, false))}
             />
         );
 
