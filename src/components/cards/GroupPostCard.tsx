@@ -171,7 +171,7 @@ const themedStyles = preTheme((theme: Theme) => {
         postText: {
             fontSize: 16,
             color: theme.text,
-            lineHeight: 20,
+            lineHeight: 21,
         },
         textFooter: {
             color: theme.accent,
