@@ -5,7 +5,7 @@ import Wave from "../Wave";
 export type WavyHeaderProps = {
     style?: StyleProp<ViewStyle>;
     color: string;
-    wavePatternIndex?: number | "random";
+    wavePatternIndex?: number | number[] | "random";
     upsideDown?: boolean;
 };
 

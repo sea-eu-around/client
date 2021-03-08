@@ -5,7 +5,7 @@ import Svg, {Path} from "react-native-svg";
 export type WaveProps = {
     style?: StyleProp<ViewStyle>;
     color: string;
-    patternIndex?: number | "random";
+    patternIndex?: number | number[] | "random";
     upsideDown?: boolean;
 };
 
@@ -33,11 +33,20 @@ export const WAVE_HEADER_HEIGHT = 100;
 export default class Wave extends React.Component<WaveProps, WaveState> {
     constructor(props: WaveProps) {
         super(props);
+
+        let patternsIndices = WAVE_PATTERNS.map((_, i) => i); // by default, random amongst all patterns
+
+        if (props.patternIndex === "random") {
+            // already default
+        } else if (Array.isArray(props.patternIndex)) {
+            const arr = props.patternIndex as number[];
+            if (arr.length > 0) patternsIndices = arr;
+        } else {
+            patternsIndices = [props.patternIndex as number];
+        }
+
         this.state = {
-            wavePatternIdx:
-                props.patternIndex === "random"
-                    ? Math.floor(Math.random() * WAVE_PATTERNS.length)
-                    : (props.patternIndex as number),
+            wavePatternIdx: patternsIndices[Math.floor(Math.random() * patternsIndices.length)],
         };
     }
 
