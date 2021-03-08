@@ -281,10 +281,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                             textInputProps={{
                                 ...props.textInputProps,
                                 autoFocus: false,
-                                style: [
-                                    styles.textInput,
-                                    Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
-                                ],
+                                style: [styles.textInput, Platform.OS === "web" && ({outline: "none"} as TextStyle)],
                                 multiline: true,
                                 ...(Platform.OS === "web"
                                     ? {
