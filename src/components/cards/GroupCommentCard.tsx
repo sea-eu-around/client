@@ -86,7 +86,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
         const {expanded} = this.state;
 
         const styles = themedStyles(theme);
-        const fromLocal = post && localUser && post.creator.id === localUser.id;
+        const fromLocal = comment && localUser && comment.creator.id === localUser.id;
         const name = comment ? `${comment.creator.firstName} ${comment.creator.lastName}` : "";
 
         const depth = comment?.depth || 0;
