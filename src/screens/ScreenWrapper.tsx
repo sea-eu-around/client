@@ -10,6 +10,8 @@ type ScreenWrapperProps = ThemeProps & {
     containerStyle?: StyleProp<ViewStyle>;
 };
 
+export const DEFAULT_MAX_WIDTH = 1000;
+
 class ScreenWrapper extends React.Component<ScreenWrapperProps> {
     render(): JSX.Element {
         const {theme, forceFullWidth, wrapperStyle, containerStyle} = this.props;
@@ -36,7 +38,7 @@ const themedStyles = preTheme(() => {
         container: {
             flex: 1,
             alignItems: "center",
-            maxWidth: 1000,
+            maxWidth: DEFAULT_MAX_WIDTH,
         },
     });
 });
