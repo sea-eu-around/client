@@ -223,11 +223,12 @@ const themedStyles = preTheme((theme: Theme) => {
         top: {
             width: "100%",
             backgroundColor: theme.cardBackground,
-            marginBottom: 25,
+            marginBottom: 30,
         },
         topInfo: {
             paddingHorizontal: 15,
             paddingTop: 10,
+            paddingBottom: 5,
         },
         members: {
             flexDirection: "row",
