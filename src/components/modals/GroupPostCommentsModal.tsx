@@ -126,11 +126,9 @@ export class GroupPostCommentsModalClass extends React.Component<
             <CustomModal
                 ref={this.modalRef}
                 animationType="slide"
-                nonDismissable
-                fullWidth
                 fullHeight
                 statusBarTranslucent={false}
-                modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0}}
+                modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0, width: "100%", maxWidth: 1000}}
                 onShow={() => this.fetchFirstComments()}
                 onHide={() => {
                     this.setReplyingTo(null);
