@@ -10,7 +10,7 @@ import {RootNavigatorScreens} from "../../navigation/types";
 import {getRouteParams, rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
 import {AppState, MyThunkDispatch} from "../../state/types";
-import {fetchGroupMembers, fetchGroupMembersRefresh, updateGroup} from "../../state/groups/actions";
+import {fetchGroup, fetchGroupMembers, fetchGroupMembersRefresh, updateGroup} from "../../state/groups/actions";
 import GroupPostsView from "../../components/GroupPostsView";
 import EditableText from "../../components/EditableText";
 import GroupCover from "../../components/GroupCover";
@@ -18,6 +18,7 @@ import i18n from "i18n-js";
 import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import Button from "../../components/Button";
+import WavyHeader from "../../components/headers/WavyHeader";
 
 const reduxConnector = connect((state: AppState) => ({
     groupsDict: state.groups.groupsDict,
@@ -43,8 +44,27 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
 
         navigation.addListener("focus", () => {
             const groupId = getRouteParams(route).groupId as string;
-            this.setState({...this.state, groupId}, () => this.fetchFirstGroupMembers());
+            this.setState({...this.state, groupId});
         });
+    }
+
+    componentDidUpdate(oldProps: GroupScreenProps, oldState: GroupScreenState): void {
+        const {groupsDict} = this.props;
+        const {groupId} = this.state;
+        const dispatch = this.props.dispatch as MyThunkDispatch;
+
+        if (groupId && oldState.groupId !== groupId) {
+            const isGroupLoaded = groupsDict[groupId];
+            if (isGroupLoaded) this.fetchFirstGroupMembers();
+            else {
+                dispatch(fetchGroup(groupId)).then((group) => {
+                    // Redirect away if we're not supposed to be on this group
+                    if (!group || group.myStatus !== GroupMemberStatus.Approved)
+                        rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
+                    else this.fetchFirstGroupMembers();
+                });
+            }
+        }
     }
 
     private fetchFirstGroupMembers(refresh = false): void {
@@ -80,102 +100,107 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
         const top = (
             <View style={styles.top}>
                 <GroupCover group={group} />
-                <View style={styles.topInfo}>
-                    <EditableText
-                        text={group ? group.name : ""}
-                        nonEditable={!isAdmin}
-                        fontSize={22}
-                        numberOfLines={1}
-                        maxLength={30}
-                        onSubmit={(name: string) => {
-                            if (group) dispatch(updateGroup(group.id, {name}));
-                        }}
-                    />
-                    <EditableText
-                        text={group ? group.description : ""}
-                        placeholder={
-                            group
-                                ? isAdmin
-                                    ? i18n.t("groups.description.placeholder")
-                                    : i18n.t("groups.description.none")
-                                : ""
-                        }
-                        nonEditable={!isAdmin}
-                        fontSize={16}
-                        numberOfLines={4}
-                        maxLength={150}
-                        onSubmit={(description: string) => {
-                            if (group) dispatch(updateGroup(group.id, {description}));
-                        }}
-                    />
-                    <View style={styles.members}>
-                        <Text style={styles.groupInfo}>
-                            {numApprovedMembers === null || numApprovedMembers === undefined
-                                ? ""
-                                : numApprovedMembers === 0
-                                ? i18n.t("groups.members.zero")
-                                : numApprovedMembers === 1
-                                ? i18n.t("groups.members.singular")
-                                : i18n.t("groups.members.plural", {num: numApprovedMembers})}
-                        </Text>
-                        <Button
-                            style={styles.membersButton}
-                            icon={
-                                <MaterialCommunityIcons
-                                    style={styles.membersButtonIcon}
-                                    name="dots-horizontal-circle-outline"
-                                />
-                            }
-                            onPress={() =>
-                                group &&
-                                rootNavigate("TabGroups", {
-                                    screen: "GroupMembersScreen",
-                                    params: {groupId: group.id},
-                                })
-                            }
+                <WavyHeader color={theme.cardBackground} wavePatternIndex={[2, 4, 6, 7]}>
+                    <View style={styles.topInfo}>
+                        <EditableText
+                            text={group ? group.name : ""}
+                            nonEditable={!isAdmin}
+                            fontSize={22}
+                            numberOfLines={1}
+                            maxLength={30}
+                            onSubmit={(name: string) => {
+                                if (group) dispatch(updateGroup(group.id, {name}));
+                            }}
                         />
-                        <Button
-                            style={styles.membersButton}
-                            icon={
-                                <MaterialCommunityIcons style={styles.membersButtonIcon} name="account-plus-outline" />
+                        <EditableText
+                            text={group ? group.description : ""}
+                            placeholder={
+                                group
+                                    ? isAdmin
+                                        ? i18n.t("groups.description.placeholder")
+                                        : i18n.t("groups.description.none")
+                                    : ""
                             }
-                            onPress={() =>
-                                group &&
-                                rootNavigate("TabGroups", {
-                                    screen: "GroupInviteScreen",
-                                    params: {groupId: group.id},
-                                })
-                            }
+                            nonEditable={!isAdmin}
+                            fontSize={16}
+                            numberOfLines={4}
+                            maxLength={150}
+                            onSubmit={(description: string) => {
+                                if (group) dispatch(updateGroup(group.id, {description}));
+                            }}
                         />
-                        <Button
-                            style={styles.membersButton}
-                            icon={
-                                <>
-                                    <MaterialIcons
+                        <View style={styles.members}>
+                            <Text style={styles.groupInfo}>
+                                {numApprovedMembers === null || numApprovedMembers === undefined
+                                    ? ""
+                                    : numApprovedMembers === 0
+                                    ? i18n.t("groups.members.zero")
+                                    : numApprovedMembers === 1
+                                    ? i18n.t("groups.members.singular")
+                                    : i18n.t("groups.members.plural", {num: numApprovedMembers})}
+                            </Text>
+                            <Button
+                                style={styles.membersButton}
+                                icon={
+                                    <MaterialCommunityIcons
                                         style={styles.membersButtonIcon}
-                                        name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
+                                        name="dots-horizontal-circle-outline"
                                     />
-                                    {pendingMemberIds.length > 0 && (
-                                        <View style={styles.approbationRequestIndicatorContainer}>
-                                            <FontAwesome
-                                                size={APPROBATION_REQ_INDICATOR_SIZE - 4}
-                                                name="exclamation"
-                                                color={theme.textWhite}
-                                            />
-                                        </View>
-                                    )}
-                                </>
-                            }
-                            onPress={() =>
-                                group &&
-                                rootNavigate("TabGroups", {
-                                    screen: "GroupMembersApprovalScreen",
-                                    params: {groupId: group.id},
-                                })
-                            }
-                        />
+                                }
+                                onPress={() =>
+                                    group &&
+                                    rootNavigate("TabGroups", {
+                                        screen: "GroupMembersScreen",
+                                        params: {groupId: group.id},
+                                    })
+                                }
+                            />
+                            <Button
+                                style={styles.membersButton}
+                                icon={
+                                    <MaterialCommunityIcons
+                                        style={styles.membersButtonIcon}
+                                        name="account-plus-outline"
+                                    />
+                                }
+                                onPress={() =>
+                                    group &&
+                                    rootNavigate("TabGroups", {
+                                        screen: "GroupInviteScreen",
+                                        params: {groupId: group.id},
+                                    })
+                                }
+                            />
+                            <Button
+                                style={styles.membersButton}
+                                icon={
+                                    <>
+                                        <MaterialIcons
+                                            style={styles.membersButtonIcon}
+                                            name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
+                                        />
+                                        {pendingMemberIds.length > 0 && (
+                                            <View style={styles.approbationRequestIndicatorContainer}>
+                                                <FontAwesome
+                                                    size={APPROBATION_REQ_INDICATOR_SIZE - 4}
+                                                    name="exclamation"
+                                                    color={theme.textWhite}
+                                                />
+                                            </View>
+                                        )}
+                                    </>
+                                }
+                                onPress={() =>
+                                    group &&
+                                    rootNavigate("TabGroups", {
+                                        screen: "GroupMembersApprovalScreen",
+                                        params: {groupId: group.id},
+                                    })
+                                }
+                            />
+                        </View>
                     </View>
-                </View>
+                </WavyHeader>
             </View>
         );
 
@@ -198,9 +223,11 @@ const themedStyles = preTheme((theme: Theme) => {
         top: {
             width: "100%",
             backgroundColor: theme.cardBackground,
+            marginBottom: 25,
         },
         topInfo: {
-            padding: 15,
+            paddingHorizontal: 15,
+            paddingTop: 10,
         },
         members: {
             flexDirection: "row",
