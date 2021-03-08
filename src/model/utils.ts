@@ -2,6 +2,7 @@ import {OfferValueDto} from "../api/dto";
 import {GroupPost, PostComment} from "./groups";
 import {UserProfile} from "./user-profile";
 import i18n from "i18n-js";
+import {capitalize} from "lodash";
 
 /**
  * Attempts to extract names from a given email.
@@ -98,7 +99,7 @@ export function formatPostDate({createdAt, updatedAt}: GroupPost): string {
     const isEdit = updatedAt.getTime() != createdAt.getTime();
 
     const createdAgo = formatDateAgo(createdAt);
-    let text = createdAgo === 0 ? i18n.t("groups.justPosted") : `${createdAgo}`;
+    let text = createdAgo === 0 ? i18n.t("groups.justPosted") : `${capitalize(createdAgo)}`;
 
     if (isEdit) {
         const updatedAgo = formatDateAgo(updatedAt);
