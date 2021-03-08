@@ -163,6 +163,7 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.cardBackground,
             paddingVertical: 10,
             paddingHorizontal: 10,
+            borderRadius: 10,
             flexDirection: "row",
             alignItems: "center",
         },

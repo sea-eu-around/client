@@ -154,6 +154,7 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.cardBackground,
             padding: 10,
             marginBottom: 15,
+            borderRadius: 10,
         },
         top: {
             flexDirection: "row",
