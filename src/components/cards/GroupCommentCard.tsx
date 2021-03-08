@@ -121,9 +121,20 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
                             }}
                         />
                         <View style={styles.content}>
-                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                            <View style={{flexDirection: "row"}}>
                                 <Text style={[styles.topText, styles.name]}>{name}</Text>
-                                <Text style={styles.topText}>{comment && ` - ${formatCommentDate(comment)}`}</Text>
+                                <Text style={[styles.topText, {flex: 1}]} numberOfLines={1}>
+                                    {comment && `, ${formatCommentDate(comment)}`}
+                                </Text>
+                                <Text style={styles.topText}>
+                                    {comment
+                                        ? comment.score === 0
+                                            ? i18n.t("groups.points.zero")
+                                            : comment.score === 1
+                                            ? i18n.t("groups.points.singular")
+                                            : i18n.t("groups.points.plural", {num: comment.score})
+                                        : ""}
+                                </Text>
                             </View>
                             <ReadMore
                                 numberOfLines={3}
@@ -248,10 +259,12 @@ const themedStyles = preTheme((theme: Theme) => {
             marginRight: 8,
         },
         topText: {
-            fontSize: 14,
+            fontSize: 13,
             color: theme.textLight,
         },
-        name: {},
+        name: {
+            fontWeight: "600",
+        },
         content: {
             flex: 1,
         },

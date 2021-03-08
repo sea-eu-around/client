@@ -115,8 +115,9 @@ export function formatCommentDate({createdAt, updatedAt}: PostComment): string {
     let text = createdAgo === 0 ? i18n.t("groups.justCommented") : `${createdAgo}`;
 
     if (isEdit) {
-        const updatedAgo = formatDateAgo(updatedAt);
-        text += ` (${updatedAgo === 0 ? i18n.t("groups.justEdited") : i18n.t("groups.editedAgo", {ago: updatedAgo})})`;
+        /*const updatedAgo = formatDateAgo(updatedAt);
+        text += ` (${updatedAgo === 0 ? i18n.t("groups.justEdited") : i18n.t("groups.editedAgo", {ago: updatedAgo})})`;*/
+        text += ` (${i18n.t("groups.edited")})`;
     }
     return text;
 }
