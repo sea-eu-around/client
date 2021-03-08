@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleProp, View, TextInput, ViewStyle, StyleSheet} from "react-native";
+import {StyleProp, View, TextInput, ViewStyle, StyleSheet, TextStyle, Platform} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
@@ -73,7 +73,11 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
             <View style={[styles.wrapper, {height}, style, this.state.focused ? styles.focusedStyle : {}]}>
                 <TextInput
                     ref={this.inputRef}
-                    style={[styles.input, this.state.focused ? styles.inputFocusedStyle : {}]}
+                    style={[
+                        styles.input,
+                        this.state.focused && Platform.OS === "web" && ({outline: "none"} as TextStyle),
+                        this.state.focused && styles.inputFocusedStyle,
+                    ]}
                     onBlur={() => {
                         this.onBlur();
                         this.setState({focused: false});
@@ -108,7 +112,10 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.onboardingInputBackground,
             borderRadius: 20,
         },
-        focusedStyle: {},
+        focusedStyle: {
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.componentBorder,
+        },
         inputFocusedStyle: {},
         input: {
             paddingLeft: 20,
