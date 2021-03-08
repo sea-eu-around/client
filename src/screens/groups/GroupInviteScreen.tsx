@@ -3,23 +3,22 @@ import * as React from "react";
 import {StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
-import {refreshFetchedHistory} from "../../state/matching/actions";
-import {AppState, MyThunkDispatch, PaginatedState} from "../../state/types";
+import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import i18n from "i18n-js";
 import {TabGroupsRoot} from "../../navigation/types";
-import {GROUPS_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
-import BufferedSearchBar from "../../components/BufferedSearchBar";
-import {fetchGroupMembers} from "../../state/groups/actions";
-import {Group, GroupMember} from "../../model/groups";
+import {Group} from "../../model/groups";
 import {getRouteParams} from "../../navigation/utils";
-import GroupMemberCard from "../../components/cards/GroupMemberCard";
+import {UserProfile} from "../../model/user-profile";
+import GroupProfileInviteCard from "../../components/cards/GroupProfileInviteCard";
+import {fetchAvailableMatches} from "../../state/groups/actions";
+import BufferedSearchBar from "../../components/BufferedSearchBar";
+import {SEARCH_BUFFER_DELAY} from "../../constants/config";
 
 const reduxConnector = connect((state: AppState) => ({
-    groups: state.groups.groups,
     groupsDict: state.groups.groupsDict,
 }));
 
@@ -55,20 +54,22 @@ class GroupInviteScreen extends React.Component<GroupInviteScreenProps, GroupInv
         return groupId ? groupsDict[groupId] || null : null;
     }
 
+    private fetch(): void {
+        const dispatch = this.props.dispatch as MyThunkDispatch;
+        const {groupId, search} = this.state;
+        if (groupId) dispatch(fetchAvailableMatches(groupId, search));
+    }
+
     render(): JSX.Element {
-        const {theme, navigation, dispatch} = this.props;
+        const {theme, navigation} = this.props;
         const {search} = this.state;
         const styles = themedStyles(theme);
-
         const group = this.getGroup();
-        const pagination: PaginatedState = group
-            ? group.membersPagination
-            : {canFetchMore: true, fetching: true, page: 1};
 
         return (
             <ScreenWrapper>
                 <BufferedSearchBar
-                    onBufferedUpdate={() => dispatch(refreshFetchedHistory())} // TODO
+                    onBufferedUpdate={() => this.fetch()}
                     bufferDelay={SEARCH_BUFFER_DELAY}
                     placeholder={i18n.t("search")}
                     onChangeText={(search: string) => this.setState({...this.state, search})}
@@ -77,29 +78,28 @@ class GroupInviteScreen extends React.Component<GroupInviteScreenProps, GroupInv
                     inputContainerStyle={styles.searchBarInputContainer}
                     inputStyle={styles.searchBarInput}
                 />
-                <InfiniteScroller
-                    navigation={navigation}
-                    fetchLimit={GROUPS_FETCH_LIMIT}
-                    fetchMore={() => group && (dispatch as MyThunkDispatch)(fetchGroupMembers(group.id))}
-                    fetching={pagination.fetching}
-                    canFetchMore={pagination.canFetchMore}
-                    currentPage={pagination.page}
-                    items={group && group.members ? group.members : []}
-                    id={(member: GroupMember): string => member.profile.id}
-                    hideScrollIndicator
-                    noResultsComponent={
-                        <>
-                            <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
-                        </>
-                    }
-                    refresh={() => /*dispatch(refreshFetchedProfiles())*/ console.log("refresh")}
-                    refreshOnFocus
-                    renderItem={(member: GroupMember) => (
-                        <>{/*<GroupMemberCard key={`${group?.id}-${member.profile.id}`} member={member} />*/}</>
-                    )}
-                    itemsContainerStyle={styles.itemsContainer}
-                />
+                {group && (
+                    <InfiniteScroller
+                        navigation={navigation}
+                        fetchLimit={1}
+                        fetchMore={() => this.fetch()}
+                        fetching={group.availableMatches.fetching}
+                        canFetchMore={group.availableMatches.profiles === null}
+                        currentPage={1}
+                        items={group.availableMatches.profiles || []}
+                        id={(p: UserProfile): string => p.id}
+                        hideScrollIndicator
+                        noResultsComponent={
+                            <Text style={styles.noResultsText}>{i18n.t("groups.invite.nobodyToInvite")}</Text>
+                        }
+                        refresh={() => this.fetch()}
+                        refreshOnFocus
+                        renderItem={(p: UserProfile) => (
+                            <GroupProfileInviteCard key={`invite-${p.id}`} group={group} profile={p} />
+                        )}
+                        itemsContainerStyle={styles.itemsContainer}
+                    />
+                )}
             </ScreenWrapper>
         );
     }
@@ -115,16 +115,12 @@ const themedStyles = preTheme((theme: Theme) => {
             paddingHorizontal: 20,
             marginTop: 10,
         },
-        noResultsText1: {
-            fontSize: 20,
-            letterSpacing: 0.75,
-            color: theme.text,
-            marginVertical: 5,
-        },
-        noResultsText2: {
+        noResultsText: {
             fontSize: 16,
-            letterSpacing: 0.5,
-            color: theme.text,
+            color: theme.textLight,
+            marginVertical: 5,
+            textAlign: "center",
+            maxWidth: 300,
         },
         // Search bar
         searchBarContainer: {
