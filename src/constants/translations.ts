@@ -900,6 +900,7 @@ export default {
                 none: "When you join a group, it will appear here.",
             },
             explore: {
+                button: "Explore",
                 none: "No groups found.",
             },
             invites: "Invites",
@@ -1260,6 +1261,30 @@ export default {
             other: "Autre",
         },
         dateOfBirth: "Date de naissance",
+        dateUnits: {
+            singular: {
+                second: "seconde",
+                minute: "minute",
+                hour: "heure",
+                day: "jour",
+                week: "semaine",
+                month: "mois",
+                year: "année",
+            },
+            plural: {
+                second: "secondes",
+                minute: "minutes",
+                hour: "heures",
+                day: "jours",
+                week: "semaines",
+                month: "mois",
+                year: "années",
+            },
+        },
+        dateRelative: {
+            precise: "{{day}} {{month}} {{year}}",
+            ago: "il y a {{amount}} {{unit}}",
+        },
         months: {
             0: "Janvier",
             1: "Février",
@@ -1991,10 +2016,11 @@ export default {
                 none: "Lorsque vous aurez rejoint un groupe, il apparaîtra ici.",
             },
             explore: {
+                button: "Explorer",
                 none: "Aucun groupe n'a été trouvé.",
             },
             invites: "Invitations",
-            inviteNew: "Invitations",
+            inviteNew: "Inviter",
             invite: {
                 decline: "Refuser",
                 accept: "Rejoindre",
