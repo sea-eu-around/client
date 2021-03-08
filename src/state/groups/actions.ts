@@ -1384,7 +1384,7 @@ const fetchAvailableMatchesFailure = (groupId: string): FetchAvailableMatchesFai
     groupId,
 });
 
-export const fetchAvailableMatches = (groupId: string): AppThunk => async (dispatch, getState) => {
+export const fetchAvailableMatches = (groupId: string, search?: string): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {groupsDict},
@@ -1396,7 +1396,14 @@ export const fetchAvailableMatches = (groupId: string): AppThunk => async (dispa
 
     dispatch(fetchAvailableMatchesBegin(groupId));
 
-    const response = await requestBackend(`groups/${groupId}/availableMatches`, "GET", {}, {}, token, true);
+    const response = await requestBackend(
+        `groups/${groupId}/availableMatches`,
+        "GET",
+        {search: search && search.length > 0 ? search : undefined},
+        {},
+        token,
+        true,
+    );
 
     // TODO remove 201
     if (response.status === HttpStatusCode.OK || response.status === 201) {
