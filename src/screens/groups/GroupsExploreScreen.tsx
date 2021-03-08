@@ -71,8 +71,6 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     refreshOnFocus
                     renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
                     itemsContainerStyle={styles.itemsContainer}
-                    // Compensate for the header
-                    progressViewOffset={100}
                 />
             </ScreenWrapper>
         );
