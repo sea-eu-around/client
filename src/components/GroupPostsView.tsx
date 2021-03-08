@@ -101,11 +101,14 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                     renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} />}
                     progressViewOffset={350} // Compensate for the header
                     keyboardShouldPersistTaps="handled"
+                    itemsContainerStyle={styles.itemsContainer}
                 />
             </>
         );
     }
 }
+
+const CONTENT_MAX_WIDTH = 800;
 
 export const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -116,6 +119,8 @@ export const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             paddingHorizontal: 15,
             paddingVertical: 10,
+            maxWidth: CONTENT_MAX_WIDTH,
+            alignSelf: "center",
         },
         title: {
             fontSize: 20,
@@ -138,6 +143,10 @@ export const themedStyles = preTheme((theme: Theme) => {
         noResultsText: {
             color: theme.textLight,
             fontSize: 16,
+        },
+        itemsContainer: {
+            maxWidth: CONTENT_MAX_WIDTH,
+            alignSelf: "center",
         },
     });
 });
