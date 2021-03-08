@@ -525,10 +525,10 @@ const fetchGroupSuccess = (group: Group): FetchGroupSuccessAction => ({
     group,
 });
 
-export const fetchGroup = (groupId: string): AppThunk => async (dispatch, getState) => {
+export const fetchGroup = (groupId: string): AppThunk<Promise<Group | null>> => async (dispatch, getState) => {
     const {token} = getState().auth;
 
-    if (!token) return;
+    if (!token) return null;
 
     const response = await requestBackend(`groups/${groupId}`, "GET", {}, {}, token);
 
@@ -536,7 +536,8 @@ export const fetchGroup = (groupId: string): AppThunk => async (dispatch, getSta
         const payload = (response as SuccessfulRequestResponse).data;
         const group = convertDtoToGroup(payload as ResponseGroupDto);
         dispatch(fetchGroupSuccess(group));
-    }
+        return group;
+    } else return null;
 };
 
 const fetchPostsFeedBegin = (): PaginatedFetchBeginAction => ({
@@ -786,19 +787,32 @@ const deleteGroupMemberSuccess = (
     isLocalUser,
 });
 
-export const deleteGroupMember = (groupId: string, profileId: string): AppThunk<Promise<boolean>> => async (
-    dispatch,
-    getState,
-) => {
+export const deleteGroupMember = (
+    groupId: string,
+    profileId: string,
+    deleteData?: boolean,
+): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
     const {
         auth: {token},
         profile: {user},
     } = getState();
 
-    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "DELETE", {}, {}, token, true);
+    const response = await requestBackend(
+        `groups/${groupId}/members/${profileId}`,
+        "DELETE",
+        {cascade: deleteData},
+        {},
+        token,
+        true,
+    );
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(deleteGroupMemberSuccess(groupId, profileId, profileId === user?.id));
+        // If we're deleting the user's data, force a refresh on the feed and posts to ensure it's not there anymore
+        if (deleteData) {
+            dispatch(refreshFetchedPostsFeed());
+            dispatch(refreshFetchedGroupPosts(groupId));
+        }
         return true;
     } else {
         return false;
@@ -832,6 +846,11 @@ export const setGroupMemberStatus = (
 
     if (response.status === HttpStatusCode.OK) {
         dispatch(setGroupMemberStatusSuccess(groupId, profileId, status, profileId === user?.id));
+        // If banned, force a refresh on the feed and posts to ensure the user's content is not there anymore
+        if (status === GroupMemberStatus.Banned) {
+            dispatch(refreshFetchedPostsFeed());
+            dispatch(refreshFetchedGroupPosts(groupId));
+        }
         return true;
     } else {
         return false;
@@ -933,7 +952,7 @@ export const refreshFetchedMyGroups = (invites = false): FetchMyGroupsRefreshAct
 export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
-        groups: {myGroupsPagination},
+        groups: {myGroupsPagination, myGroupInvitesPagination},
         profile: {user},
     } = getState();
 
@@ -942,7 +961,8 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         return;
     }
 
-    if (myGroupsPagination.fetching || !myGroupsPagination.canFetchMore) return;
+    const pagination = invites ? myGroupInvitesPagination : myGroupsPagination;
+    if (pagination.fetching || !pagination.canFetchMore) return;
 
     dispatch(beginFetchMyGroups(invites));
 
@@ -950,7 +970,7 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         "groups",
         "GET",
         {
-            page: myGroupsPagination.page,
+            page: pagination.page,
             limit: GROUPS_FETCH_LIMIT,
             profileId: user.id,
             statuses: invites
