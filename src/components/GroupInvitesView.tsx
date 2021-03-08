@@ -26,22 +26,21 @@ export type GroupInvitesViewProps = ThemeProps &
 
 class GroupInvitesView extends React.Component<GroupInvitesViewProps> {
     render() {
-        const {theme, invites, groupsDict, pagination, navigation, dispatch} = this.props;
+        const {theme, invites, groupsDict, pagination, navigation} = this.props;
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const hasInvites = invites.length > 0;
 
-        if (!hasInvites) return <></>;
-
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, !hasInvites && {display: "none"}]}>
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>{i18n.t("groups.invites")}</Text>
                 </View>
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={GROUPS_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchMyGroups(true))}
+                    fetchMore={() => dispatch(fetchMyGroups(true))}
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
