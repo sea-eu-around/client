@@ -1,4 +1,4 @@
-import {StyleSheet, Platform, TextStyle} from "react-native";
+import {StyleSheet} from "react-native";
 import {Theme} from "../types";
 import {FormCheckBoxProps} from "../components/forms/FormCheckBox";
 import {preTheme} from "./utils";
@@ -48,7 +48,6 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             fontSize: 16,
             color: theme.accent,
         },
-        inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
         showPasswordButtonStyle: {
             padding: 8,
         },
@@ -118,9 +117,6 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleP
             fontSize: 18,
             color: theme.text,
             marginHorizontal: 15,
-        },
-        inputFocusedStyle: {
-            ...(Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {}),
         },
     };
 }

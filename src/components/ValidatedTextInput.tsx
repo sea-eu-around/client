@@ -1,5 +1,14 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInputProps, TextInput, ViewStyle, TouchableOpacity} from "react-native";
+import {
+    TextStyle,
+    StyleProp,
+    View,
+    TextInputProps,
+    TextInput,
+    ViewStyle,
+    TouchableOpacity,
+    Platform,
+} from "react-native";
 import InputLabel from "./InputLabel";
 import InputErrorText from "./InputErrorText";
 import {FontAwesome} from "@expo/vector-icons";
@@ -113,6 +122,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                         style={[
                             {flex: 1, height: "100%", backgroundColor: "transparent"},
                             inputStyle,
+                            this.state.focused && Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
                             this.state.focused ? inputFocusedStyle : {},
                             // untouched ? {} : error ? errorStyle : value.length > 0 ? validStyle : {},
                         ]}
@@ -124,7 +134,10 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                             if (onFocus) onFocus(e);
                             this.setState({focused: true});
                         }}
-                        value={value}
+                        // Workaround to prevent the input from getting slow with large amounts of text (use defaultValue instead of value)
+                        // TODO test that this doesn't break anything
+                        defaultValue={value}
+                        // value={value}
                         placeholderTextColor={placeholderTextColor}
                         {...(isSecureEntry ? {secureTextEntry: !showSecureEntry} : {})}
                         {...otherProps}

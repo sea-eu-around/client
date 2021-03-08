@@ -1,6 +1,6 @@
 import React from "react";
 import {CustomModalClass, CustomModalProps} from "./CustomModal";
-import {Platform, StyleSheet, TextStyle} from "react-native";
+import {StyleSheet} from "react-native";
 import {ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import {GroupPost, PostComment} from "../../model/groups";
@@ -48,7 +48,6 @@ export class EditCommentModalClass extends React.Component<EditCommentModalProps
                 color: theme.text,
                 textAlignVertical: "top",
             },
-            inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
             placeholderTextColor: theme.inputPlaceholder,
         };
 

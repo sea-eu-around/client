@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Platform, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -128,7 +128,6 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                     textAlignVertical: "top",
                                 },
                                 errorTextStyle: {textAlign: "center", marginBottom: 0},
-                                inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
                                 placeholderTextColor: theme.inputPlaceholder,
                             };
                             this.setFieldError = setFieldError;
