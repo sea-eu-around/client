@@ -145,7 +145,11 @@ export class GroupPostCommentsModalClass extends React.Component<
                             </View>
                             <View style={{flexDirection: "row", alignItems: "center"}}>
                                 <Text style={styles.points}>
-                                    {post.score} {i18n.t("groups.points")}
+                                    {post.score === 0
+                                        ? i18n.t("groups.points.zero")
+                                        : post.score === 1
+                                        ? i18n.t("groups.points.singular")
+                                        : i18n.t("groups.points.plural", {num: post.score})}
                                 </Text>
                                 <GroupVoteButton
                                     groupId={groupId}

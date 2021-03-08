@@ -978,13 +978,18 @@ export default {
             justPosted: "Just posted",
             justCommented: "just commented",
             justEdited: "just edited",
+            edited: "edited",
             editedAgo: "edited {{ago}}",
             postsSorting: {
                 newest: "Newest",
                 oldest: "Oldest",
                 popular: "Most popular",
             },
-            points: "points",
+            points: {
+                zero: "0 points",
+                singular: "1 point",
+                plural: "{{num}} points",
+            },
             feed: {
                 title: "Trending",
                 help:
@@ -2094,13 +2099,18 @@ export default {
             justPosted: "Posté à l'instant",
             justCommented: "commenté à l'instant",
             justEdited: "modifié à l'instant",
+            edited: "modifié",
             editedAgo: "modifié {{ago}}",
             postsSorting: {
                 newest: "Récent",
                 oldest: "Ancien",
                 popular: "Populaire",
             },
-            points: "points",
+            points: {
+                zero: "0 points",
+                singular: "1 point",
+                plural: "{{num}} points",
+            },
             feed: {
                 title: "En tendance",
                 help:

@@ -93,7 +93,13 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                 <View style={styles.bottom}>
                     <TouchableOpacity onPress={() => this.openComments()}>
                         <Text style={styles.bottomText}>
-                            {post?.score} {i18n.t("groups.points")}
+                            {post
+                                ? post.score === 0
+                                    ? i18n.t("groups.points.zero")
+                                    : post.score === 1
+                                    ? i18n.t("groups.points.singular")
+                                    : i18n.t("groups.points.plural", {num: post.score})
+                                : ""}
                         </Text>
                         <Text style={styles.bottomText}>
                             {post &&
