@@ -146,6 +146,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         itemsContainer: {
             maxWidth: CONTENT_MAX_WIDTH,
+            width: "100%",
             alignSelf: "center",
         },
     });
