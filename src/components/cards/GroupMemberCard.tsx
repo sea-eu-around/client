@@ -13,7 +13,7 @@ import DeleteGroupMemberModal from "../modals/DeleteGroupMemberModal";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState, MyThunkDispatch} from "../../state/types";
 import BanGroupMemberModal from "../modals/BanGroupMemberModal";
-import {GroupMemberStatus} from "../../api/dto";
+import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import {deleteGroupMember, setGroupMemberStatus} from "../../state/groups/actions";
 import GroupPromoteAdminModal from "../modals/GroupPromoteAdminModal";
 
@@ -36,8 +36,9 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
         const {theme, groupId, localUserId, member, adminView, style, ...otherProps} = this.props;
 
         const styles = themedStyles(theme);
-        const isLocalUser = member && localUserId === member.profile.id;
         const dispatch = this.props.dispatch as MyThunkDispatch;
+        const isLocalUser = member && localUserId === member.profile.id;
+        const isMemberAdmin = member && member.role === GroupRole.Admin;
 
         const deleteMemberButton = member && (
             <DeleteGroupMemberModal
@@ -133,13 +134,16 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
                             )}
                         </View>
                         <View style={{flexDirection: "row", alignItems: "center"}}>
-                            {adminView && member.status === GroupMemberStatus.Approved && !isLocalUser && (
-                                <>
-                                    {promoteAdminButton}
-                                    {deleteMemberButton}
-                                    {banMemberButton}
-                                </>
-                            )}
+                            {adminView &&
+                                member.status === GroupMemberStatus.Approved &&
+                                !isLocalUser &&
+                                !isMemberAdmin && (
+                                    <>
+                                        {promoteAdminButton}
+                                        {deleteMemberButton}
+                                        {banMemberButton}
+                                    </>
+                                )}
                             {adminView && member.status === GroupMemberStatus.Banned && <>{unbanMemberButton}</>}
                             {adminView && member.status === GroupMemberStatus.Pending && (
                                 <>
