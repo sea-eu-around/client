@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import {Platform} from "react-native";
-import {openChat} from "./navigation/utils";
+import {openChat, rootNavigate} from "./navigation/utils";
 import {ResponseChatMessageDto} from "./api/dto";
 import {receiveChatMessage} from "./state/messaging/actions";
 import {areNotificationsSupported, getNotificationData} from "./notifications-utils";
@@ -36,17 +36,19 @@ export function configureNotifications(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = response.notification ? getNotificationData(response.notification) : (response as any).body;
 
-        if (data.roomId) openChat(data.roomId as string);
+        if (data.roomId) {
+            openChat(data.roomId as string);
 
-        Notifications.getPresentedNotificationsAsync().then((notifs: Notifications.Notification[]) => {
-            if (data.roomId) {
+            Notifications.getPresentedNotificationsAsync().then((notifs: Notifications.Notification[]) => {
                 // Dismiss all notifications of the same room
                 notifs
                     .filter((n) => getNotificationData(n).roomId === data.roomId)
                     .map((n) => n.request.identifier)
                     .forEach(Notifications.dismissNotificationAsync);
-            }
-        });
+            });
+        }
+
+        if (data.groupId) rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
     });
 
     if (Platform.OS === "android") {
