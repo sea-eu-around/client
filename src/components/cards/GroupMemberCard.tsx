@@ -166,6 +166,7 @@ const themedStyles = preTheme((theme: Theme) => {
             borderRadius: 10,
             flexDirection: "row",
             alignItems: "center",
+            marginBottom: 5,
         },
         avatarContainer: {
             marginRight: 10,
