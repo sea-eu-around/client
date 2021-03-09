@@ -1033,7 +1033,7 @@ export const createGroupPost = (groupId: string, dto: CreateGroupPostDto): Valid
 
     dispatch(createGroupPostBegin(groupId));
 
-    const response = await requestBackend(`groups/${groupId}/posts`, "POST", {}, dto, token, true);
+    const response = await requestBackend(`groups/${groupId}/posts`, "POST", {}, dto, token);
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data;
@@ -1061,7 +1061,7 @@ export const updateGroupPost = (
 
     if (!token) return {success: false};
 
-    const response = await requestBackend(`groups/${groupId}/posts/${postId}`, "PATCH", {}, dto, token, true);
+    const response = await requestBackend(`groups/${groupId}/posts/${postId}`, "PATCH", {}, dto, token);
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseGroupPostDto;
@@ -1087,7 +1087,7 @@ export const deleteGroupPost = (groupId: string, postId: string): ValidatedThunk
 
     if (!token) return {success: false};
 
-    const response = await requestBackend(`groups/${groupId}/posts/${postId}`, "DELETE", {}, {}, token, true);
+    const response = await requestBackend(`groups/${groupId}/posts/${postId}`, "DELETE", {}, {}, token);
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(deletePostSuccess(groupId, postId));
@@ -1142,7 +1142,7 @@ export const createPostComment = (
         if (parent) depth = parent.depth + 1;
     }
 
-    const response = await requestBackend(`groups/${groupId}/posts/${postId}/comments`, "POST", {}, dto, token, true);
+    const response = await requestBackend(`groups/${groupId}/posts/${postId}/comments`, "POST", {}, dto, token);
 
     if (response.status === HttpStatusCode.CREATED) {
         const payload = response as SuccessfulRequestResponse;
@@ -1190,7 +1190,6 @@ export const updatePostComment = (
         {},
         dto,
         token,
-        true,
     );
 
     const comment = findComment(groups, groupId, postId, commentId);
@@ -1232,7 +1231,6 @@ export const deletePostComment = (groupId: string, postId: string, commentId: st
         {},
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
@@ -1278,7 +1276,7 @@ export const setGroupCover = (groupId: string, image: ImageInfo): AppThunk => as
 
     if (fileName) {
         // Submit the filename to the server
-        const response = await requestBackend(`groups/${groupId}/cover`, "POST", {}, {fileName}, token, true);
+        const response = await requestBackend(`groups/${groupId}/cover`, "POST", {}, {fileName}, token);
 
         if (response.status === HttpStatusCode.CREATED) {
             const {cover} = (response as SuccessfulRequestResponse).data as GroupCoverSuccessfullyUpdatedDto;
@@ -1355,12 +1353,12 @@ export const setVote = (
     const response =
         status === GroupVoteStatus.Neutral
             ? // If setting to neutral, simply DELETE the entity
-              await requestBackend(url, "DELETE", {}, {}, token, true)
+              await requestBackend(url, "DELETE", {}, {}, token)
             : currentStatus === GroupVoteStatus.Neutral
             ? // If currently neutral, POST a new entity
-              await requestBackend(url, "POST", {}, {voteType: status}, token, true)
+              await requestBackend(url, "POST", {}, {voteType: status}, token)
             : // If already set, PATCH the entity
-              await requestBackend(url, "PATCH", {}, {voteType: status}, token, true);
+              await requestBackend(url, "PATCH", {}, {voteType: status}, token);
 
     if (response.status === HttpStatusCode.OK) {
         if (commentId) dispatch(setCommentVoteSuccess(groupId, postId, commentId, status));
@@ -1399,10 +1397,9 @@ export const fetchAvailableMatches = (groupId: string, search?: string): AppThun
     const response = await requestBackend(
         `groups/${groupId}/availableMatches`,
         "GET",
-        {search: search && search.length > 0 ? search : undefined},
+        {search: search || ""},
         {},
         token,
-        true,
     );
 
     // TODO remove 201
