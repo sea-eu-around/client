@@ -383,7 +383,6 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             const {groupId, profileId, isLocalUser} = action as DeleteGroupMemberSuccessAction;
 
             // If this user is us, remove the group from the arrays
-            // TODO test this (refuse an invite)
             if (isLocalUser) {
                 state = {
                     ...state,

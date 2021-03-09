@@ -28,8 +28,6 @@ type QuickFormReportState = {
     selectedType: ReportType | null;
 };
 
-// TODO try on web (maybe usable when not wide)
-
 export class QuickFormReportClass extends React.Component<QuickFormReportProps, QuickFormReportState> {
     quickFormRef = React.createRef<QuickFormClass>();
 

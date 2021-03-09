@@ -445,8 +445,6 @@ export const leaveGroup = (id: string, deleteData: boolean): AppThunk<Promise<bo
 
     if (!user) return false;
 
-    // TODO test by having another member in the group and checking on that account if the user's content was deleted
-
     const response = await requestBackend(
         `groups/${id}/members/${user.id}`,
         "DELETE",
@@ -1400,10 +1398,10 @@ export const fetchAvailableMatches = (groupId: string, search?: string): AppThun
         {search: search || ""},
         {},
         token,
+        true,
     );
 
-    // TODO remove 201
-    if (response.status === HttpStatusCode.OK || response.status === 201) {
+    if (response.status === HttpStatusCode.OK) {
         const payload = response as SuccessfulRequestResponse;
         const profiles = (payload.data as ResponseProfileDto[]).map(convertDtoToProfile);
         dispatch(fetchAvailableMatchesSuccess(groupId, profiles));

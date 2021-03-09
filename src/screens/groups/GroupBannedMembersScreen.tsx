@@ -34,7 +34,6 @@ class GroupBannedMembersScreen extends React.Component<GroupBannedMembersScreenP
     componentDidMount() {
         const {navigation, route} = this.props;
 
-        // TODO test if this also needs to run on first mount
         navigation.addListener("focus", () => {
             const groupId = getRouteParams(route).groupId as string;
             this.setState({...this.state, groupId});
