@@ -171,33 +171,35 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                     })
                                 }
                             />
-                            <Button
-                                style={styles.membersButton}
-                                icon={
-                                    <>
-                                        <MaterialIcons
-                                            style={styles.membersButtonIcon}
-                                            name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
-                                        />
-                                        {pendingMemberIds.length > 0 && (
-                                            <View style={styles.approbationRequestIndicatorContainer}>
-                                                <FontAwesome
-                                                    size={APPROBATION_REQ_INDICATOR_SIZE - 4}
-                                                    name="exclamation"
-                                                    color={theme.textWhite}
-                                                />
-                                            </View>
-                                        )}
-                                    </>
-                                }
-                                onPress={() =>
-                                    group &&
-                                    rootNavigate("TabGroups", {
-                                        screen: "GroupMembersApprovalScreen",
-                                        params: {groupId: group.id},
-                                    })
-                                }
-                            />
+                            {isAdmin && (
+                                <Button
+                                    style={styles.membersButton}
+                                    icon={
+                                        <>
+                                            <MaterialIcons
+                                                style={styles.membersButtonIcon}
+                                                name={pendingMemberIds.length > 0 ? "person" : "person-outline"}
+                                            />
+                                            {pendingMemberIds.length > 0 && (
+                                                <View style={styles.approbationRequestIndicatorContainer}>
+                                                    <FontAwesome
+                                                        size={APPROBATION_REQ_INDICATOR_SIZE - 4}
+                                                        name="exclamation"
+                                                        color={theme.textWhite}
+                                                    />
+                                                </View>
+                                            )}
+                                        </>
+                                    }
+                                    onPress={() =>
+                                        group &&
+                                        rootNavigate("TabGroups", {
+                                            screen: "GroupMembersApprovalScreen",
+                                            params: {groupId: group.id},
+                                        })
+                                    }
+                                />
+                            )}
                         </View>
                     </View>
                 </WavyHeader>
