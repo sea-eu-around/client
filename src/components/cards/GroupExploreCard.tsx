@@ -13,6 +13,9 @@ import SwipeableCard, {SwipeableCardClass, SwipeableLooks, SwipeActionContainer}
 import GroupDescriptionModal, {GroupDescriptionModalClass} from "../modals/GroupDescriptionModal";
 import LocalImage from "../LocalImage";
 import {BlurView} from "expo-blur";
+import {GroupMemberStatus} from "../../api/dto";
+import {MaterialIcons} from "@expo/vector-icons";
+import i18n from "i18n-js";
 
 // Component props
 type GroupExploreCardProps = {
@@ -41,8 +44,9 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
         const {theme, group} = this.props;
 
         const styles = themedStyles(theme);
-
         const looks: Partial<SwipeableLooks> = {verticalSpacing: 5, sideMargin: 15};
+        const status = group?.myStatus;
+        const statusTextKey = "groups.explore.statusText";
 
         return (
             <SwipeableCard
@@ -50,7 +54,9 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
                 looks={looks}
                 renderRightActions={() => <SwipeActionContainer side="right" looks={looks} fullCardWidth />}
                 style={styles.card}
-                onPress={() => this.descriptionModalRef.current?.show()}
+                {...(status !== GroupMemberStatus.Approved && status !== GroupMemberStatus.Banned
+                    ? {onPress: () => this.descriptionModalRef.current?.show()}
+                    : {})}
             >
                 {group && group.cover && (
                     <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />
@@ -66,11 +72,31 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
                             {group.name}
                         </Text>
                     )}
-                    {group && group.description.length > 0 && (
-                        <Text style={styles.groupDescription} numberOfLines={1}>
-                            {group.description}
-                        </Text>
-                    )}
+                    <View style={styles.subtitleContainer}>
+                        {status === GroupMemberStatus.Pending ? (
+                            <>
+                                <Text style={styles.statusSpecific}>{i18n.t(`${statusTextKey}.pending`)}</Text>
+                                <MaterialIcons name="check" style={styles.statusSpecificIcon} />
+                            </>
+                        ) : status === GroupMemberStatus.Banned ? (
+                            <>
+                                <Text style={styles.statusSpecific}>{i18n.t(`${statusTextKey}.banned`)}</Text>
+                                <MaterialIcons name="block" style={[styles.statusSpecificIcon, {color: theme.error}]} />
+                            </>
+                        ) : status === GroupMemberStatus.Invited || status === GroupMemberStatus.InvitedByAdmin ? (
+                            <>
+                                <Text style={styles.statusSpecific}>{i18n.t(`${statusTextKey}.invited`)}</Text>
+                                <MaterialIcons name="person-add" style={styles.statusSpecificIcon} />
+                            </>
+                        ) : (
+                            group &&
+                            group.description.length > 0 && (
+                                <Text style={styles.groupDescription} numberOfLines={1}>
+                                    {group.description}
+                                </Text>
+                            )
+                        )}
+                    </View>
                 </View>
 
                 <GroupJoinRequestSentModal
@@ -123,9 +149,23 @@ const themedStyles = preTheme((theme: Theme) => {
             fontFamily: "RalewaySemiBold",
             fontSize: 16,
         },
+        subtitleContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+        },
         groupDescription: {
             color: theme.textWhite,
             fontSize: 14,
+        },
+        statusSpecific: {
+            fontFamily: "RalewaySemiBold",
+            color: theme.textWhite,
+            fontSize: 14,
+        },
+        statusSpecificIcon: {
+            color: theme.textWhite,
+            fontSize: 14,
+            marginLeft: 4,
         },
     });
 });
