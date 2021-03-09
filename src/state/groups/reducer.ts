@@ -432,9 +432,12 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
             }
 
             // Change the member's status in the group
-            return updateGroup(state, groupId, ({members, memberIds}) => {
+            return updateGroup(state, groupId, ({members, memberIds, numApprovedMembers}) => {
                 const member = members[profileId];
+
                 if (member) {
+                    const wasApproved = member.status === GroupMemberStatus.Approved;
+                    const isApproved = memberStatus === GroupMemberStatus.Approved;
                     return {
                         members: {...members, [profileId]: {...member, status: memberStatus}},
                         memberIds: {
@@ -442,6 +445,11 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                             [member.status]: memberIds[member.status].filter((id) => id !== profileId),
                             [memberStatus]: memberIds[memberStatus].concat([profileId]),
                         },
+                        numApprovedMembers:
+                            numApprovedMembers === null
+                                ? null
+                                : numApprovedMembers +
+                                  (!wasApproved && isApproved ? 1 : wasApproved && !isApproved ? -1 : 0),
                         ...(isLocalUser
                             ? {
                                   myStatus: memberStatus,
