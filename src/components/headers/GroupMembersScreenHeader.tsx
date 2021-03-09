@@ -7,7 +7,7 @@ import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../../types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToGroup, rootNavigate} from "../../navigation/utils";
 
 const reduxConnector = connect((state: AppState) => ({
     groupsDict: state.groups.groupsDict,
@@ -29,7 +29,7 @@ class GroupMembersScreenHeaderClass extends React.Component<GroupMembersScreenHe
     }
 
     render(): JSX.Element {
-        const {keepScreenTitle, noInviteButton, ...stackProps} = this.props;
+        const {keepScreenTitle, noInviteButton, groupId, ...stackProps} = this.props;
 
         const group = this.getGroup();
 
@@ -41,6 +41,7 @@ class GroupMembersScreenHeaderClass extends React.Component<GroupMembersScreenHe
                 noShadow
                 {...(!keepScreenTitle ? {overrideTitle: group ? group.name : ""} : {})}
                 titleStyle={{fontSize: 18}}
+                navigateBackFallback={groupId ? () => navigateToGroup(groupId) : undefined}
                 rightButtons={
                     group && !noInviteButton
                         ? [

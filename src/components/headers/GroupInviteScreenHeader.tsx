@@ -7,6 +7,7 @@ import {ThemeProps} from "../../types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import i18n from "i18n-js";
+import {navigateToGroup} from "../../navigation/utils";
 
 const reduxConnector = connect((state: AppState) => ({
     groupsDict: state.groups.groupsDict,
@@ -26,7 +27,7 @@ class GroupInviteScreenHeaderClass extends React.Component<GroupInviteScreenHead
     }
 
     render(): JSX.Element {
-        const {theme, ...stackProps} = this.props;
+        const {theme, groupId, ...stackProps} = this.props;
 
         // const group = this.getGroup();
 
@@ -38,6 +39,7 @@ class GroupInviteScreenHeaderClass extends React.Component<GroupInviteScreenHead
                 noShadow
                 noSettingsButton
                 overrideTitle={i18n.t("groups.inviteNew")}
+                navigateBackFallback={groupId ? () => navigateToGroup(groupId) : undefined}
                 rightButtons={[
                     () => (
                         <TouchableOpacity style={{padding: 5}} onPress={() => stackProps.navigation?.goBack()}>

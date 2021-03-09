@@ -44,8 +44,10 @@ class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
                     wrapperStyle={{position: "absolute", backgroundColor: "transparent", top: 0, left: 0, right: 0}}
                     color={theme.textWhite}
                     buttonBackgroundColor="transparent"
-                    // overrideTitle={group ? group.name : ""}
                     overrideTitle=""
+                    navigateBackFallback={(nav) =>
+                        nav.navigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}})
+                    }
                     rightButtons={
                         group
                             ? [

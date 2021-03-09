@@ -65,6 +65,9 @@ class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
                     }
                     overrideTitle={user.name}
                     titleStyle={styles.name}
+                    navigateBackFallback={(nav) =>
+                        nav.navigate("MainScreen", {screen: "TabMessaging", params: {screen: "ChatRoomsScreen"}})
+                    }
                 />
             );
         } else return <></>;

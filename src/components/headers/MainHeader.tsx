@@ -6,13 +6,13 @@ import {StackHeaderProps} from "@react-navigation/stack";
 import {AppState} from "../../state/types";
 import {ThemeProps} from "../../types";
 import ProfileAvatar from "../ProfileAvatar";
-import {headerTitle, navigateBack, rootNavigate} from "../../navigation/utils";
+import {headerTitle, navigateBackOr, rootNavigate} from "../../navigation/utils";
 import {NavigatorRoute} from "../../navigation/types";
 import {headerStyles} from "../../styles/headers";
 import {MaterialIcons} from "@expo/vector-icons";
 import {BlurProps, BlurView} from "expo-blur";
 import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
-import {Route} from "@react-navigation/native";
+import {NavigationContainerRef, Route} from "@react-navigation/native";
 import {BLUR_HEADER_INTENSITY} from "../../styles/general";
 
 // Map props from store
@@ -38,6 +38,7 @@ type AdditionalProps = {
     titleStyle?: StyleProp<TextStyle>;
     color?: string;
     buttonBackgroundColor?: string;
+    navigateBackFallback?: (nav: NavigationContainerRef) => void;
 };
 
 export type MainHeaderStackProps = Partial<StackHeaderProps> & {route?: Route<string, undefined>};
@@ -49,7 +50,7 @@ export type MainHeaderProps = ConnectedProps<typeof reduxConnector> &
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
-        navigateBack("MainScreen");
+        navigateBackOr(this.props.navigateBackFallback || ((nav) => nav.navigate("MainScreen")));
     }
 
     render(): JSX.Element {
