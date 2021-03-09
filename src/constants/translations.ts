@@ -902,6 +902,11 @@ export default {
             explore: {
                 button: "Explore",
                 none: "No groups found.",
+                statusText: {
+                    pending: "Demande envoyée",
+                    banned: "Banni",
+                    invited: "Invitation reçue",
+                },
             },
             invites: "Invites",
             inviteNew: "Invite new members",
@@ -2023,6 +2028,11 @@ export default {
             explore: {
                 button: "Explorer",
                 none: "Aucun groupe n'a été trouvé.",
+                statusText: {
+                    pending: "Request sent",
+                    banned: "Banned",
+                    invited: "Invited",
+                },
             },
             invites: "Invitations",
             inviteNew: "Inviter",
@@ -2114,7 +2124,7 @@ export default {
             feed: {
                 title: "En tendance",
                 help:
-                    "Nous vous montrons seulement les posts de vos groupes, selon leur popularité et leur date de création.",
+                    "Nous vous montrons seulement les posts de vos groupes, en fonction de leur popularité et leur date de création.",
             },
             leave: {
                 title: "Quitter le groupe",
@@ -2122,7 +2132,7 @@ export default {
                 deleteData: "Supprimer tous mes posts et commentaires de ce groupe.",
             },
             delete: {
-                title: "Supprimer le Groupe",
+                title: "Supprimer le groupe",
                 text: "Si vous voulez vraiment supprimer ce groupe, entrez son nom ci-dessous :",
             },
         },
