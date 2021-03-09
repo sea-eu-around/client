@@ -23,6 +23,14 @@ export function navigateBack(fallback?: NavigatorRoute): void {
     }
 }
 
+export function navigateBackOr(fallback: (nac: NavigationContainerRef) => void): void {
+    const nav = rootNavigationRef.current;
+    if (nav) {
+        if (nav.canGoBack()) nav.goBack();
+        else fallback(nav);
+    }
+}
+
 export function getRouteParams(route: Route<string>): {[key: string]: unknown} {
     const params = route.params;
     return params ? (params as {[key: string]: unknown}) : {};
