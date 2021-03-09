@@ -15,6 +15,7 @@ import BufferedSearchBar from "../../components/BufferedSearchBar";
 import {fetchGroups, refreshFetchedGroups} from "../../state/groups/actions";
 import {Group} from "../../model/groups";
 import GroupExploreCard from "../../components/cards/GroupExploreCard";
+import {GroupMemberStatus} from "../../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
     pagination: state.groups.pagination,
@@ -69,7 +70,13 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.none")}</Text>}
                     refresh={() => dispatch(refreshFetchedGroups())}
                     refreshOnFocus
-                    renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
+                    renderItem={(group: Group) =>
+                        group.myStatus === GroupMemberStatus.Approved ? (
+                            <></>
+                        ) : (
+                            <GroupExploreCard key={group.id} group={group} />
+                        )
+                    }
                     itemsContainerStyle={styles.itemsContainer}
                 />
             </ScreenWrapper>
