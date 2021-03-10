@@ -39,7 +39,7 @@ export const GroupsNavigator = (): JSX.Element => {
 
     return (
         <>
-            <GroupsStack.Navigator>
+            <GroupsStack.Navigator headerMode="screen">
                 <GroupsStack.Screen
                     name="TabGroupsScreen"
                     options={() => ({
