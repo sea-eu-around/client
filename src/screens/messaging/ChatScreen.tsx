@@ -90,7 +90,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
     private getRoom(): ChatRoom | null {
         const {rooms, activeRoomId} = this.props;
         const id = activeRoomId || this.getRoomId();
-        return id ? rooms[id] : null;
+        return id ? rooms[id] || null : null;
     }
 
     private connectToRoom(): void {
