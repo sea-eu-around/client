@@ -36,9 +36,25 @@ type MatchHistoryScreenState = {
 };
 
 class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchHistoryScreenState> {
+    private unsubscribeBlurEvent: null | (() => void) = null;
+
     constructor(props: MatchHistoryScreenProps) {
         super(props);
         this.state = {search: ""};
+    }
+
+    private onBlur(): void {
+        // This removes the previously fetched items in order to avoid a slow render
+        // when returning to the screen
+        this.props.dispatch(refreshFetchedHistory());
+    }
+
+    componentDidMount(): void {
+        this.unsubscribeBlurEvent = this.props.navigation.addListener("blur", () => this.onBlur());
+    }
+
+    componentWillUnmount(): void {
+        if (this.unsubscribeBlurEvent) this.unsubscribeBlurEvent();
     }
 
     render(): JSX.Element {
@@ -50,10 +66,11 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
             canFetchMore,
             currentPage,
             navigation,
-            dispatch,
         } = this.props;
         const {search} = this.state;
+
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const filters = MATCH_ACTION_HISTORY_STATUSES;
 
@@ -86,7 +103,7 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={HISTORY_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchHistory(search))}
+                    fetchMore={() => dispatch(fetchHistory(search))}
                     fetching={fetchingHistory}
                     canFetchMore={canFetchMore}
                     currentPage={currentPage}
