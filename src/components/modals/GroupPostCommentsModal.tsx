@@ -19,6 +19,7 @@ import {MAX_COMMENTS_DEPTH} from "../../constants/config";
 import Animated, {Easing} from "react-native-reanimated";
 import {animateValue} from "../../polyfills";
 import {TouchableOpacity} from "react-native";
+import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 
 // Component props
 export type GroupPostCommentsModalProps = {
@@ -123,109 +124,127 @@ export class GroupPostCommentsModalClass extends React.Component<
         const pagination = post.commentsPagination;
 
         return (
-            <CustomModal
-                ref={this.modalRef}
-                animationType="slide"
-                fullHeight
-                statusBarTranslucent={false}
-                modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0, width: "100%", maxWidth: 1000}}
-                onShow={() => this.fetchFirstComments()}
-                onHide={() => {
-                    this.setReplyingTo(null);
-                }}
-                renderContent={(hide) => (
-                    <View style={styles.container}>
-                        <View style={styles.top}>
-                            <View style={{flexDirection: "row", alignItems: "center"}}>
-                                <Button
-                                    style={styles.topButton}
-                                    icon={<MaterialIcons name="close" style={styles.topButtonIcon} />}
-                                    onPress={hide}
-                                />
-                            </View>
-                            <View style={{flexDirection: "row", alignItems: "center"}}>
-                                <Text style={styles.points}>
-                                    {post.score === 0
-                                        ? i18n.t("groups.points.zero")
-                                        : post.score === 1
-                                        ? i18n.t("groups.points.singular")
-                                        : i18n.t("groups.points.plural", {num: post.score})}
-                                </Text>
-                                <GroupVoteButton
-                                    groupId={groupId}
-                                    post={post}
-                                    currentStatus={post.voteStatus}
-                                    vote={GroupVoteStatus.Upvote}
-                                    style={styles.topButton}
-                                    iconStyle={styles.topButtonIcon}
-                                />
-                                <GroupVoteButton
-                                    groupId={groupId}
-                                    post={post}
-                                    currentStatus={post.voteStatus}
-                                    vote={GroupVoteStatus.Downvote}
-                                    style={styles.topButton}
-                                    iconStyle={styles.topButtonIcon}
-                                />
-                            </View>
-                        </View>
-                        <ScrollView
-                            keyboardShouldPersistTaps="handled"
-                            contentContainerStyle={styles.comments}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={pagination.fetching}
-                                    onRefresh={() => dispatch(fetchPostCommentsRefresh(groupId, post.id))}
-                                />
-                            }
-                        >
-                            {post.commentIds.length === 0 && !pagination.fetching && (
-                                <Text style={styles.noCommentsText}>{i18n.t("groups.comments.none")}</Text>
-                            )}
-                            {post.commentIds.map(
-                                // Render all parent comments (this will recursively render the children)
-                                (id) => !post.comments[id].parentId && this.createCommentComponent(id, hide),
-                            )}
-                            {pagination.fetching && post.commentIds.length > 0 && (
-                                <ActivityIndicator size="large" color={theme.accent} />
-                            )}
-                            {pagination.canFetchMore && !pagination.fetching && (
-                                <TouchableOpacity style={styles.viewMoreComments} onPress={() => this.fetchMore()}>
-                                    <Text style={styles.viewMoreCommentsText}>
-                                        View more ({post.commentsCount - post.commentIds.length})
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </ScrollView>
-                        <View style={styles.bottom}>
-                            <View style={styles.replyToContainer}>
-                                {replyingTo && (
-                                    <>
+            <SafeAreaInsetsContext.Consumer>
+                {(insets) => (
+                    <CustomModal
+                        ref={this.modalRef}
+                        animationType="slide"
+                        fullHeight
+                        statusBarTranslucent
+                        modalViewStyle={{
+                            paddingTop: insets?.top,
+                            paddingBottom: insets?.bottom,
+                            paddingHorizontal: 0,
+                            width: "100%",
+                            maxWidth: 1000,
+                        }}
+                        onShow={() => this.fetchFirstComments()}
+                        onHide={() => {
+                            this.setReplyingTo(null);
+                        }}
+                        renderContent={(hide) => (
+                            <View style={styles.container}>
+                                <View style={styles.top}>
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
                                         <Button
-                                            style={styles.replyToClose}
-                                            icon={<MaterialIcons name="close" style={styles.replyToCloseIcon} />}
-                                            onPress={() => this.setReplyingTo(null)}
+                                            style={styles.topButton}
+                                            icon={<MaterialIcons name="close" style={styles.topButtonIcon} />}
+                                            onPress={hide}
                                         />
-                                        <Text style={styles.replyToText}>
-                                            {i18n.t("groups.comments.replyTo", {
-                                                name: `${replyingTo.creator.firstName} ${replyingTo.creator.lastName}`,
-                                            })}
+                                    </View>
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <Text style={styles.points}>
+                                            {post.score === 0
+                                                ? i18n.t("groups.points.zero")
+                                                : post.score === 1
+                                                ? i18n.t("groups.points.singular")
+                                                : i18n.t("groups.points.plural", {num: post.score})}
                                         </Text>
-                                    </>
-                                )}
+                                        <GroupVoteButton
+                                            groupId={groupId}
+                                            post={post}
+                                            currentStatus={post.voteStatus}
+                                            vote={GroupVoteStatus.Upvote}
+                                            style={styles.topButton}
+                                            iconStyle={styles.topButtonIcon}
+                                        />
+                                        <GroupVoteButton
+                                            groupId={groupId}
+                                            post={post}
+                                            currentStatus={post.voteStatus}
+                                            vote={GroupVoteStatus.Downvote}
+                                            style={styles.topButton}
+                                            iconStyle={styles.topButtonIcon}
+                                        />
+                                    </View>
+                                </View>
+                                <ScrollView
+                                    keyboardShouldPersistTaps="handled"
+                                    contentContainerStyle={styles.comments}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={pagination.fetching}
+                                            onRefresh={() => dispatch(fetchPostCommentsRefresh(groupId, post.id))}
+                                        />
+                                    }
+                                >
+                                    {post.commentIds.length === 0 && !pagination.fetching && (
+                                        <Text style={styles.noCommentsText}>{i18n.t("groups.comments.none")}</Text>
+                                    )}
+                                    {post.commentIds.map(
+                                        // Render all parent comments (this will recursively render the children)
+                                        (id) => !post.comments[id].parentId && this.createCommentComponent(id, hide),
+                                    )}
+                                    {pagination.fetching && post.commentIds.length > 0 && (
+                                        <ActivityIndicator size="large" color={theme.accent} />
+                                    )}
+                                    {pagination.canFetchMore && !pagination.fetching && (
+                                        <TouchableOpacity
+                                            style={styles.viewMoreComments}
+                                            onPress={() => this.fetchMore()}
+                                        >
+                                            <Text style={styles.viewMoreCommentsText}>
+                                                View more ({post.commentsCount - post.commentIds.length})
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </ScrollView>
+                                <View style={styles.bottom}>
+                                    <View style={styles.replyToContainer}>
+                                        {replyingTo && (
+                                            <>
+                                                <Button
+                                                    style={styles.replyToClose}
+                                                    icon={
+                                                        <MaterialIcons name="close" style={styles.replyToCloseIcon} />
+                                                    }
+                                                    onPress={() => this.setReplyingTo(null)}
+                                                />
+                                                <Text style={styles.replyToText}>
+                                                    {i18n.t("groups.comments.replyTo", {
+                                                        name: `${replyingTo.creator.firstName} ${replyingTo.creator.lastName}`,
+                                                    })}
+                                                </Text>
+                                            </>
+                                        )}
+                                    </View>
+                                    <CommentTextInput
+                                        ref={this.commentTextInputRef}
+                                        onSend={(text) => {
+                                            const dto: CreatePostCommentDto = {
+                                                text,
+                                                parentId: replyingTo?.id || undefined,
+                                            };
+                                            dispatch(createPostComment(groupId, post.id, dto));
+                                            this.setState({...this.state, replyingTo: null});
+                                        }}
+                                    />
+                                </View>
                             </View>
-                            <CommentTextInput
-                                ref={this.commentTextInputRef}
-                                onSend={(text) => {
-                                    const dto: CreatePostCommentDto = {text, parentId: replyingTo?.id || undefined};
-                                    dispatch(createPostComment(groupId, post.id, dto));
-                                    this.setState({...this.state, replyingTo: null});
-                                }}
-                            />
-                        </View>
-                    </View>
+                        )}
+                    />
                 )}
-            />
+            </SafeAreaInsetsContext.Consumer>
         );
     }
 }

@@ -8,6 +8,7 @@ import {GroupPost} from "../../model/groups";
 import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import i18n from "i18n-js";
+import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 
 export type EditPostModalProps = ThemeProps & Partial<CustomModalProps> & {groupId: string; post?: GroupPost};
 
@@ -31,25 +32,29 @@ export class EditPostModalClass extends React.Component<EditPostModalProps> {
                 nonDismissable
                 fullWidth
                 fullHeight
-                statusBarTranslucent={false}
+                statusBarTranslucent
                 modalViewStyle={{paddingVertical: 0, paddingHorizontal: 0}}
                 renderContent={(hide) => (
-                    <>
-                        <View style={styles.top}>
-                            <TouchableOpacity style={styles.backButton} onPress={hide}>
-                                <MaterialIcons name="arrow-back" style={styles.backButtonIcon} />
-                            </TouchableOpacity>
-                            <Text style={styles.title}>
-                                {i18n.t(`groups.${createMode ? "newPost" : "editPost"}.title`)}
-                            </Text>
-                        </View>
-                        <EditPostForm
-                            containerStyle={styles.form}
-                            groupId={groupId}
-                            post={post}
-                            onSuccessfulSubmit={hide}
-                        />
-                    </>
+                    <SafeAreaInsetsContext.Consumer>
+                        {(insets) => (
+                            <>
+                                <View style={[styles.top, {paddingTop: insets?.top}]}>
+                                    <TouchableOpacity style={styles.backButton} onPress={hide}>
+                                        <MaterialIcons name="arrow-back" style={styles.backButtonIcon} />
+                                    </TouchableOpacity>
+                                    <Text style={styles.title}>
+                                        {i18n.t(`groups.${createMode ? "newPost" : "editPost"}.title`)}
+                                    </Text>
+                                </View>
+                                <EditPostForm
+                                    containerStyle={[styles.form, {paddingBottom: insets?.bottom}]}
+                                    groupId={groupId}
+                                    post={post}
+                                    onSuccessfulSubmit={hide}
+                                />
+                            </>
+                        )}
+                    </SafeAreaInsetsContext.Consumer>
                 )}
                 {...otherProps}
             />
@@ -65,10 +70,11 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             paddingVertical: 5,
             marginBottom: 10,
+            backgroundColor: theme.accent,
         },
         title: {
             fontSize: 18,
-            color: theme.text,
+            color: theme.textWhite,
         },
         backButton: {
             padding: 10,
@@ -76,11 +82,12 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         backButtonIcon: {
             fontSize: 24,
-            color: theme.text,
+            color: theme.textWhite,
         },
         form: {
             width: "90%",
             flex: 1,
+            marginTop: 10,
         },
     });
 });
