@@ -8,6 +8,7 @@ import {
     FetchEarlierMessagesBeginAction,
     FetchEarlierMessagesFailureAction,
     FetchEarlierMessagesSuccessAction,
+    FetchMatchRoomSuccessAction,
     FetchNewMessagesSuccessAction,
     JoinChatRoomBeginAction,
     MessagingAction,
@@ -44,14 +45,17 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             const {user} = action as LogInSuccessAction;
             return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
         }
+
         case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
             const {user} = action as FetchUserSuccessAction;
             return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
         }
+
         case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
             const {profile} = action as CreateProfileSuccessAction;
             return {...state, localChatUser: toLocalChatUser(profile)};
         }
+
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN: {
             return {...state, matchRoomsPagination: {...state.matchRoomsPagination, fetching: true}};
         }
@@ -90,6 +94,21 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 matchRoomsPagination: initialPaginatedState(),
             };
         }
+
+        case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOM_SUCCESS: {
+            const {room} = action as FetchMatchRoomSuccessAction;
+
+            return {
+                ...state,
+                matchRooms: {
+                    ...state.matchRooms,
+                    [room.id]: state.matchRooms[room.id]
+                        ? {...state.matchRooms[room.id], lastMessage: room.lastMessage}
+                        : room,
+                },
+            };
+        }
+
         case MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_BEGIN: {
             return {...state, socketState: {connected: false, connecting: true}};
         }
@@ -99,9 +118,11 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_SUCCESS: {
             return {...state, socketState: {connected: true, connecting: false}};
         }
+
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
             return {...state, socketState: {connected: false, connecting: false}};
         }
+
         case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
             const {room} = action as JoinChatRoomBeginAction;
             return {...state, activeRoomId: room.id};
@@ -110,6 +131,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.LEAVE_ROOM: {
             return {...state, activeRoomId: null};
         }
+
         case MESSAGING_ACTION_TYPES.SEND_MESSAGE_SUCCESS: {
             const {message} = action as SendMessageSuccessAction;
             if (state.activeRoomId) {
@@ -183,6 +205,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             }
             return state;
         }
+
         case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_BEGIN: {
             const {room} = action as FetchEarlierMessagesBeginAction;
             return updateRoom(state, false, {
@@ -206,6 +229,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 messagePagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             });
         }
+
         case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_BEGIN: {
             return {
                 ...state,
@@ -241,6 +265,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
                 ...(filteredMessages.length > 0 ? {lastMessage: filteredMessages[0]} : {}),
             });
         }
+
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,

@@ -25,6 +25,7 @@ export enum MESSAGING_ACTION_TYPES {
     FETCH_MATCH_ROOMS_FAILURE = "MESSAGING/FETCH_MATCH_ROOMS_FAILURE",
     FETCH_MATCH_ROOMS_SUCCESS = "MESSAGING/FETCH_MATCH_ROOMS_SUCCESS",
     FETCH_MATCH_ROOMS_REFRESH = "MESSAGING/FETCH_MATCH_ROOMS_REFRESH",
+    FETCH_MATCH_ROOM_SUCCESS = "MESSAGING/FETCH_MATCH_ROOM_SUCCESS",
     CONNECT_TO_CHAT_BEGIN = "MESSAGING/CONNECT_TO_CHAT_BEGIN",
     CONNECT_TO_CHAT_FAILURE = "MESSAGING/CONNECT_TO_CHAT_FAILURE",
     CONNECT_TO_CHAT_SUCCESS = "MESSAGING/CONNECT_TO_CHAT_SUCCESS",
@@ -45,6 +46,8 @@ export enum MESSAGING_ACTION_TYPES {
     FETCH_NEW_MESSAGES_FAILURE = "MESSAGING/FETCH_NEW_MESSAGES_FAILURE",
     FETCH_NEW_MESSAGES_SUCCESS = "MESSAGING/FETCH_NEW_MESSAGES_SUCCESS",
 }
+
+export type FetchMatchRoomSuccessAction = {type: string; room: ChatRoom};
 
 export type ConnectToChatBeginAction = {type: string};
 export type ConnectToChatFailureAction = {type: string};
@@ -72,6 +75,7 @@ export type FetchNewMessagesFailureAction = {room: ChatRoom} & PaginatedFetchFai
 export type FetchNewMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuccessAction<ChatRoomMessage>;
 
 export type MessagingAction =
+    | FetchMatchRoomSuccessAction
     | PaginatedFetchBeginAction
     | PaginatedFetchSuccessAction<ChatRoom>
     | PaginatedFetchRefreshAction
@@ -400,6 +404,11 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
     }
 };
 
+const fetchMatchRoomSuccess = (room: ChatRoom): FetchMatchRoomSuccessAction => ({
+    type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOM_SUCCESS,
+    room,
+});
+
 export const fetchMatchRoom = (roomId: string): AppThunk<Promise<ChatRoom | null>> => async (dispatch, getState) => {
     const {token} = getState().auth;
 
@@ -407,6 +416,8 @@ export const fetchMatchRoom = (roomId: string): AppThunk<Promise<ChatRoom | null
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
-        return convertDtoToRoom(payload as ResponseRoomDto);
+        const room = convertDtoToRoom(payload as ResponseRoomDto);
+        dispatch(fetchMatchRoomSuccess(room));
+        return room;
     } else return null;
 };
