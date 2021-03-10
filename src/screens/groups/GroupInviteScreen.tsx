@@ -2,30 +2,24 @@ import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState, MyThunkDispatch} from "../../state/types";
+import {MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import i18n from "i18n-js";
 import {TabGroupsRoot} from "../../navigation/types";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
-import {Group} from "../../model/groups";
 import {getRouteParams} from "../../navigation/utils";
 import {UserProfile} from "../../model/user-profile";
 import GroupProfileInviteCard from "../../components/cards/GroupProfileInviteCard";
 import {fetchAvailableMatches} from "../../state/groups/actions";
 import BufferedSearchBar from "../../components/BufferedSearchBar";
 import {SEARCH_BUFFER_DELAY} from "../../constants/config";
-
-const reduxConnector = connect((state: AppState) => ({
-    groupsDict: state.groups.groupsDict,
-}));
+import GroupProvider from "../../components/providers/GroupProvider";
+import store from "../../state/store";
 
 // Component props
-type GroupInviteScreenProps = ConnectedProps<typeof reduxConnector> &
-    ThemeProps &
-    StackScreenProps<TabGroupsRoot, "GroupInviteScreen">;
+type GroupInviteScreenProps = ThemeProps & StackScreenProps<TabGroupsRoot, "GroupInviteScreen">;
 
 // Component state
 type GroupInviteScreenState = {
@@ -39,7 +33,7 @@ class GroupInviteScreen extends React.Component<GroupInviteScreenProps, GroupInv
         this.state = {search: "", groupId: null};
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         const {navigation, route} = this.props;
 
         navigation.addListener("focus", () => {
@@ -48,23 +42,16 @@ class GroupInviteScreen extends React.Component<GroupInviteScreenProps, GroupInv
         });
     }
 
-    private getGroup(): Group | null {
-        const {groupsDict} = this.props;
-        const {groupId} = this.state;
-        return groupId ? groupsDict[groupId] || null : null;
-    }
-
     private fetch(): void {
-        const dispatch = this.props.dispatch as MyThunkDispatch;
+        const dispatch = store.dispatch as MyThunkDispatch;
         const {groupId, search} = this.state;
         if (groupId) dispatch(fetchAvailableMatches(groupId, search));
     }
 
     render(): JSX.Element {
         const {theme, navigation} = this.props;
-        const {search} = this.state;
+        const {search, groupId} = this.state;
         const styles = themedStyles(theme);
-        const group = this.getGroup();
 
         return (
             <ScreenWrapper>
@@ -78,28 +65,32 @@ class GroupInviteScreen extends React.Component<GroupInviteScreenProps, GroupInv
                     inputContainerStyle={styles.searchBarInputContainer}
                     inputStyle={styles.searchBarInput}
                 />
-                {group && (
-                    <InfiniteScroller
-                        navigation={navigation}
-                        fetchLimit={1}
-                        fetchMore={() => this.fetch()}
-                        fetching={group.availableMatches.fetching}
-                        canFetchMore={group.availableMatches.profiles === null}
-                        currentPage={1}
-                        items={group.availableMatches.profiles || []}
-                        id={(p: UserProfile): string => p.id}
-                        hideScrollIndicator
-                        noResultsComponent={
-                            <Text style={styles.noResultsText}>{i18n.t("groups.invite.nobodyToInvite")}</Text>
-                        }
-                        refresh={() => this.fetch()}
-                        refreshOnFocus
-                        renderItem={(p: UserProfile) => (
-                            <GroupProfileInviteCard key={`invite-${p.id}`} group={group} profile={p} />
-                        )}
-                        itemsContainerStyle={styles.itemsContainer}
-                    />
-                )}
+                <GroupProvider groupId={groupId} redirectIfNotApproved>
+                    {({group}) =>
+                        group && (
+                            <InfiniteScroller
+                                navigation={navigation}
+                                fetchLimit={1}
+                                fetchMore={() => this.fetch()}
+                                fetching={group.availableMatches.fetching}
+                                canFetchMore={group.availableMatches.profiles === null}
+                                currentPage={1}
+                                items={group.availableMatches.profiles || []}
+                                id={(p: UserProfile): string => p.id}
+                                hideScrollIndicator
+                                noResultsComponent={
+                                    <Text style={styles.noResultsText}>{i18n.t("groups.invite.nobodyToInvite")}</Text>
+                                }
+                                refresh={() => this.fetch()}
+                                refreshOnFocus
+                                renderItem={(p: UserProfile) => (
+                                    <GroupProfileInviteCard key={`invite-${p.id}`} group={group} profile={p} />
+                                )}
+                                itemsContainerStyle={styles.itemsContainer}
+                            />
+                        )
+                    }
+                </GroupProvider>
             </ScreenWrapper>
         );
     }
@@ -144,4 +135,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(GroupInviteScreen));
+export default withTheme(GroupInviteScreen);

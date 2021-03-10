@@ -1,24 +1,18 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {connect, ConnectedProps} from "react-redux";
-import {AppState} from "../../state/types";
 import {TabGroupsRoot} from "../../navigation/types";
 import ScreenWrapper from "../ScreenWrapper";
-import {Group, GroupMember} from "../../model/groups";
+import {GroupMember} from "../../model/groups";
 import {getRouteParams} from "../../navigation/utils";
 import GroupMembersView from "../../components/GroupMembersView";
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import {NavigationProp} from "@react-navigation/native";
 import GroupMemberCard from "../../components/cards/GroupMemberCard";
 import i18n from "i18n-js";
-
-const reduxConnector = connect((state: AppState) => ({
-    groupsDict: state.groups.groupsDict,
-}));
+import GroupProvider from "../../components/providers/GroupProvider";
 
 // Component props
-type GroupBannedMembersScreenProps = ConnectedProps<typeof reduxConnector> &
-    StackScreenProps<TabGroupsRoot, "GroupBannedMembersScreen">;
+type GroupBannedMembersScreenProps = StackScreenProps<TabGroupsRoot, "GroupBannedMembersScreen">;
 
 // Component state
 type GroupBannedMembersScreenState = {
@@ -31,7 +25,7 @@ class GroupBannedMembersScreen extends React.Component<GroupBannedMembersScreenP
         this.state = {groupId: null};
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         const {navigation, route} = this.props;
 
         navigation.addListener("focus", () => {
@@ -40,40 +34,37 @@ class GroupBannedMembersScreen extends React.Component<GroupBannedMembersScreenP
         });
     }
 
-    private getGroup(): Group | null {
-        const {groupsDict} = this.props;
-        const {groupId} = this.state;
-        return groupId ? groupsDict[groupId] || null : null;
-    }
-
     render(): JSX.Element {
         const {navigation} = this.props;
-
-        const group = this.getGroup();
+        const {groupId} = this.state;
 
         return (
             <ScreenWrapper>
-                <GroupMembersView
-                    group={group}
-                    navigation={(navigation as unknown) as NavigationProp<never>}
-                    status={GroupMemberStatus.Banned}
-                    renderItem={(member: GroupMember) =>
-                        group ? (
-                            <GroupMemberCard
-                                key={`${group.id}-${member.profile.id}`}
-                                groupId={group.id}
-                                member={member}
-                                adminView={group.myRole === GroupRole.Admin}
-                            />
-                        ) : (
-                            <></>
-                        )
-                    }
-                    noResultsText={i18n.t("groups.members.banned.noResults")}
-                />
+                <GroupProvider groupId={groupId} redirectIfNotApproved>
+                    {({group}) => (
+                        <GroupMembersView
+                            group={group}
+                            navigation={(navigation as unknown) as NavigationProp<never>}
+                            status={GroupMemberStatus.Banned}
+                            renderItem={(member: GroupMember) =>
+                                group ? (
+                                    <GroupMemberCard
+                                        key={`${group.id}-${member.profile.id}`}
+                                        groupId={group.id}
+                                        member={member}
+                                        adminView={group.myRole === GroupRole.Admin}
+                                    />
+                                ) : (
+                                    <></>
+                                )
+                            }
+                            noResultsText={i18n.t("groups.members.banned.noResults")}
+                        />
+                    )}
+                </GroupProvider>
             </ScreenWrapper>
         );
     }
 }
 
-export default reduxConnector(GroupBannedMembersScreen);
+export default GroupBannedMembersScreen;

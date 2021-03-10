@@ -1,6 +1,5 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {connect, ConnectedProps} from "react-redux";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
 import ScreenWrapper from "../ScreenWrapper";
@@ -9,8 +8,8 @@ import {Text, View, StyleSheet} from "react-native";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {getRouteParams, rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
-import {AppState, MyThunkDispatch} from "../../state/types";
-import {fetchGroup, fetchGroupMembers, fetchGroupMembersRefresh, updateGroup} from "../../state/groups/actions";
+import {MyThunkDispatch} from "../../state/types";
+import {fetchGroupMembers, fetchGroupMembersRefresh, updateGroup} from "../../state/groups/actions";
 import GroupPostsView from "../../components/GroupPostsView";
 import EditableText from "../../components/EditableText";
 import GroupCover from "../../components/GroupCover";
@@ -19,18 +18,17 @@ import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-i
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import Button from "../../components/Button";
 import WavyHeader from "../../components/headers/WavyHeader";
-
-const reduxConnector = connect((state: AppState) => ({
-    groupsDict: state.groups.groupsDict,
-}));
+import GroupProvider from "../../components/providers/GroupProvider";
+import store from "../../state/store";
 
 // Component props
-type GroupScreenProps = ConnectedProps<typeof reduxConnector> & ThemeProps & StackScreenProps<RootNavigatorScreens>;
+type GroupScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
 // Component state
 type GroupScreenState = {
     groupId: string | null;
 };
+
 const APPROBATION_REQ_INDICATOR_SIZE = 12;
 
 class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
@@ -48,56 +46,28 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
         });
     }
 
-    componentDidUpdate(oldProps: GroupScreenProps, oldState: GroupScreenState): void {
-        const {groupsDict} = this.props;
-        const {groupId} = this.state;
-        const dispatch = this.props.dispatch as MyThunkDispatch;
-
-        if (groupId && oldState.groupId !== groupId) {
-            const isGroupLoaded = groupsDict[groupId];
-            if (isGroupLoaded) this.fetchFirstGroupMembers();
-            else {
-                dispatch(fetchGroup(groupId)).then((group) => {
-                    // Redirect away if we're not supposed to be on this group
-                    if (!group || group.myStatus !== GroupMemberStatus.Approved)
-                        rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
-                    else this.fetchFirstGroupMembers();
-                });
-            }
+    private fetchFirstGroupMembers(group: Group, refresh = false): void {
+        const dispatch = store.dispatch as MyThunkDispatch;
+        if (refresh) {
+            dispatch(fetchGroupMembersRefresh(group.id, GroupMemberStatus.Approved));
+            dispatch(fetchGroupMembersRefresh(group.id, GroupMemberStatus.Pending));
         }
+        dispatch(fetchGroupMembers(group.id, GroupMemberStatus.Approved));
+        dispatch(fetchGroupMembers(group.id, GroupMemberStatus.Pending));
     }
 
-    private fetchFirstGroupMembers(refresh = false): void {
-        const dispatch = this.props.dispatch as MyThunkDispatch;
-        const group = this.getGroup();
-        if (group) {
-            if (refresh) {
-                dispatch(fetchGroupMembersRefresh(group.id, GroupMemberStatus.Approved));
-                dispatch(fetchGroupMembersRefresh(group.id, GroupMemberStatus.Pending));
-            }
-            dispatch(fetchGroupMembers(group.id, GroupMemberStatus.Approved));
-            dispatch(fetchGroupMembers(group.id, GroupMemberStatus.Pending));
-        }
-    }
-
-    private getGroup(): Group | null {
-        const {groupsDict} = this.props;
+    private renderTop(group: Group | null): JSX.Element {
+        const {theme} = this.props;
         const {groupId} = this.state;
-        return groupId ? groupsDict[groupId] || null : null;
-    }
-
-    render(): JSX.Element {
-        const {theme, navigation} = this.props;
         const styles = themedStyles(theme);
 
-        const dispatch = this.props.dispatch as MyThunkDispatch;
-        const group = this.getGroup();
+        const dispatch = store.dispatch as MyThunkDispatch;
 
         const pendingMemberIds = group ? group.memberIds[GroupMemberStatus.Pending] : [];
         const isAdmin = group && group.myRole === GroupRole.Admin;
         const numApprovedMembers = group?.numApprovedMembers;
 
-        const top = (
+        return (
             <View style={styles.top}>
                 <GroupCover group={group} />
                 <WavyHeader color={theme.cardBackground} wavePatternIndex={[2, 4, 6, 7]}>
@@ -108,26 +78,16 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                             fontSize={22}
                             numberOfLines={1}
                             maxLength={30}
-                            onSubmit={(name: string) => {
-                                if (group) dispatch(updateGroup(group.id, {name}));
-                            }}
+                            onSubmit={(name: string) => group && dispatch(updateGroup(group.id, {name}))}
                         />
                         <EditableText
                             text={group ? group.description : ""}
-                            placeholder={
-                                group
-                                    ? isAdmin
-                                        ? i18n.t("groups.description.placeholder")
-                                        : i18n.t("groups.description.none")
-                                    : ""
-                            }
+                            placeholder={group ? i18n.t(`groups.description.${isAdmin ? "placeholder" : "none"}`) : ""}
                             nonEditable={!isAdmin}
                             fontSize={16}
                             numberOfLines={4}
                             maxLength={150}
-                            onSubmit={(description: string) => {
-                                if (group) dispatch(updateGroup(group.id, {description}));
-                            }}
+                            onSubmit={(description: string) => group && dispatch(updateGroup(group.id, {description}))}
                         />
                         <View style={styles.members}>
                             <Text style={styles.groupInfo}>
@@ -148,11 +108,8 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                     />
                                 }
                                 onPress={() =>
-                                    group &&
-                                    rootNavigate("TabGroups", {
-                                        screen: "GroupMembersScreen",
-                                        params: {groupId: group.id},
-                                    })
+                                    groupId &&
+                                    rootNavigate("TabGroups", {screen: "GroupMembersScreen", params: {groupId}})
                                 }
                             />
                             <Button
@@ -164,11 +121,8 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                     />
                                 }
                                 onPress={() =>
-                                    group &&
-                                    rootNavigate("TabGroups", {
-                                        screen: "GroupInviteScreen",
-                                        params: {groupId: group.id},
-                                    })
+                                    groupId &&
+                                    rootNavigate("TabGroups", {screen: "GroupInviteScreen", params: {groupId}})
                                 }
                             />
                             {isAdmin && (
@@ -192,10 +146,10 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                         </>
                                     }
                                     onPress={() =>
-                                        group &&
+                                        groupId &&
                                         rootNavigate("TabGroups", {
                                             screen: "GroupMembersApprovalScreen",
-                                            params: {groupId: group.id},
+                                            params: {groupId},
                                         })
                                     }
                                 />
@@ -205,16 +159,31 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                 </WavyHeader>
             </View>
         );
+    }
 
+    render(): JSX.Element {
+        const {theme, navigation} = this.props;
+        const {groupId} = this.state;
+        const styles = themedStyles(theme);
         return (
             <ScreenWrapper forceFullWidth>
-                <GroupPostsView
-                    top={top}
-                    navigation={navigation as never}
-                    group={group}
-                    titleContainerStyle={styles.postsTitle}
-                    onRefresh={() => this.fetchFirstGroupMembers(true)}
-                />
+                <GroupProvider
+                    groupId={groupId}
+                    onGroupReady={(group) =>
+                        group.myStatus === GroupMemberStatus.Approved && this.fetchFirstGroupMembers(group)
+                    }
+                    redirectIfNotApproved
+                >
+                    {({group}) => (
+                        <GroupPostsView
+                            top={this.renderTop(group)}
+                            navigation={navigation as never}
+                            group={group}
+                            titleContainerStyle={styles.postsTitle}
+                            onRefresh={() => group && this.fetchFirstGroupMembers(group, true)}
+                        />
+                    )}
+                </GroupProvider>
             </ScreenWrapper>
         );
     }
@@ -264,4 +233,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(GroupScreen));
+export default withTheme(GroupScreen);
