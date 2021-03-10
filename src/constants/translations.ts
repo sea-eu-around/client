@@ -2151,7 +2151,7 @@ export default {
                 title: "Nouveau match !",
                 offersTitle: "Ouvert à:",
                 offersMore: "autres",
-                chat: "Ouvrir le chat",
+                chat: "Discuter",
                 continue: "Continuer",
             },
             history: {
