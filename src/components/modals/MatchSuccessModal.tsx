@@ -65,8 +65,8 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
     }
 
     hide(): void {
-        this.modalRef.current?.hide();
         this.setState({...this.state, profile: null});
+        this.modalRef.current?.hide();
     }
 
     async chat(): Promise<void> {
@@ -284,6 +284,7 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
             width: "85%",
             maxWidth: 400,
+            marginTop: 10,
         },
         title: {
             width: "100%",
@@ -316,7 +317,7 @@ const themedStyles = preTheme((theme: Theme) => {
             borderRadius: 20,
             paddingVertical: OFFERS_CARD_VERTICAL_PADDING,
             paddingHorizontal: 20,
-            marginVertical: 10,
+            marginTop: 10,
             flexShrink: 1,
             overflow: "hidden",
         },
