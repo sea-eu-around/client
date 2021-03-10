@@ -1,6 +1,7 @@
 import * as React from "react";
 import {ActivityIndicator, StyleProp, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
+import {makePromiseCancelable} from "../general-utils";
 import {ThemeProps} from "../types";
 import Button, {ButtonProps} from "./Button";
 
@@ -18,15 +19,35 @@ type AsyncButtonState = {
 };
 
 class AsyncButton extends React.Component<AsyncButtonProps, AsyncButtonState> {
+    private cancelPressPromise: (() => void) | null = null;
+
     constructor(props: AsyncButtonProps) {
         super(props);
         this.state = {loading: false};
     }
 
-    onPress() {
+    componentDidMount(): void {
+        // Reset the state to loading: false
+        this.setState({loading: false});
+    }
+
+    componentWillUnmount(): void {
+        if (this.cancelPressPromise) {
+            this.cancelPressPromise();
+            this.cancelPressPromise = null;
+        }
+    }
+
+    onPress(): void {
         if (!this.state.loading) {
             this.setState({...this.state, loading: true});
-            this.props.onPress().then(() => this.setState({...this.state, loading: false}));
+            // Use a cancelable promise to avoid triggering a state update on an unmounted component
+            const promise = makePromiseCancelable(this.props.onPress());
+            promise.then(() => {
+                this.setState({...this.state, loading: false});
+                this.cancelPressPromise = null;
+            });
+            this.cancelPressPromise = promise.cancel;
         }
     }
 
