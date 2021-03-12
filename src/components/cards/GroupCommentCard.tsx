@@ -1,5 +1,5 @@
 import * as React from "react";
-import {TouchableOpacity, StyleSheet, Text, View} from "react-native";
+import {TouchableOpacity, StyleSheet, Text, View, Platform} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -263,7 +263,7 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
         },
         name: {
-            fontWeight: "600",
+            ...(Platform.OS === "ios" ? {fontWeight: "600"} : {}),
         },
         content: {
             flex: 1,
