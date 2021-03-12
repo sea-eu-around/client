@@ -18,10 +18,16 @@ import {MAX_POST_LENGTH, VALIDATOR_POST_TEXT} from "../../validators";
 import {GroupPost} from "../../model/groups";
 import ProfileAvatar from "../ProfileAvatar";
 import {connect, ConnectedProps} from "react-redux";
+import {noop} from "lodash";
 
-const reduxConnector = connect((state: AppState) => ({
-    localUser: state.profile.user,
-}));
+const reduxConnector = connect(
+    (state: AppState) => ({
+        localUser: state.profile.user,
+    }),
+    null,
+    null,
+    {forwardRef: true},
+);
 
 type FormState = {text: string};
 
@@ -42,8 +48,10 @@ type EditPostFormProps = FormProps<FormState> &
 // Component state
 type EditPostFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
 
-class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState> {
+export class EditPostFormClass extends React.Component<EditPostFormProps, EditPostFormState> {
     setFieldError?: (field: string, message: string) => void;
+    submitForm: () => void = noop;
+    textInputRef = React.createRef<FormTextInput>();
 
     constructor(props: EditPostFormProps) {
         super(props);
@@ -61,7 +69,7 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
         else return {text: ""};
     }
 
-    submit(values: FormState) {
+    private submit(values: FormState): void {
         const {groupId, post, onSuccessfulSubmit} = this.props;
         const dispatch = store.dispatch as MyThunkDispatch;
 
@@ -80,6 +88,11 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                 if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
             },
         );
+    }
+
+    triggerSubmit(): void {
+        this.textInputRef.current?.blur();
+        this.submitForm();
     }
 
     render(): JSX.Element {
@@ -131,10 +144,21 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                 placeholderTextColor: theme.inputPlaceholder,
                             };
                             this.setFieldError = setFieldError;
+                            this.submitForm = formikProps.submitForm;
 
                             return (
                                 <>
+                                    <Text
+                                        style={[
+                                            styles.lengthText,
+                                            values.text.length > MAX_POST_LENGTH ? styles.lengthTextError : {},
+                                        ]}
+                                    >
+                                        {values.text.length}/{MAX_POST_LENGTH}
+                                    </Text>
+
                                     <FormTextInput
+                                        ref={this.textInputRef}
                                         field="text"
                                         placeholder={i18n.t("groups.editPost.contentPlaceholder")}
                                         error={errors.text}
@@ -145,15 +169,6 @@ class EditPostForm extends React.Component<EditPostFormProps, EditPostFormState>
                                     />
 
                                     <FormError error={generalError(remoteErrors)} />
-
-                                    <Text
-                                        style={[
-                                            styles.lengthText,
-                                            values.text.length > MAX_POST_LENGTH ? styles.lengthTextError : {},
-                                        ]}
-                                    >
-                                        {values.text.length}/{MAX_POST_LENGTH}
-                                    </Text>
 
                                     <View style={styles.actionsContainer}>
                                         <FormSubmitButton
@@ -193,6 +208,7 @@ const themedStyles = preTheme((theme: Theme) => {
         lengthText: {
             fontSize: 14,
             color: theme.textLight,
+            marginTop: 10,
         },
         lengthTextError: {
             color: theme.error,
@@ -207,4 +223,4 @@ const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(EditPostForm));
+export default reduxConnector(withTheme(EditPostFormClass));

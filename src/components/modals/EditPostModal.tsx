@@ -3,7 +3,7 @@ import CustomModal, {CustomModalClass, CustomModalProps} from "./CustomModal";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {withTheme} from "react-native-elements";
-import EditPostForm from "../forms/EditPostForm";
+import EditPostForm, {EditPostFormClass} from "../forms/EditPostForm";
 import {GroupPost} from "../../model/groups";
 import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -14,6 +14,7 @@ export type EditPostModalProps = ThemeProps & Partial<CustomModalProps> & {group
 
 export class EditPostModalClass extends React.Component<EditPostModalProps> {
     modalRef = React.createRef<CustomModalClass>();
+    editPostFormRef = React.createRef<EditPostFormClass>();
 
     show(): void {
         this.modalRef.current?.show();
@@ -39,14 +40,26 @@ export class EditPostModalClass extends React.Component<EditPostModalProps> {
                         {(insets) => (
                             <>
                                 <View style={[styles.top, {paddingTop: insets?.top}]}>
-                                    <TouchableOpacity style={styles.backButton} onPress={hide}>
-                                        <MaterialIcons name="arrow-back" style={styles.backButtonIcon} />
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <TouchableOpacity style={styles.topButton} onPress={hide}>
+                                            <MaterialIcons name="arrow-back" style={styles.topButtonIcon} />
+                                        </TouchableOpacity>
+                                        <Text style={styles.title}>
+                                            {i18n.t(`groups.${createMode ? "newPost" : "editPost"}.title`)}
+                                        </Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        style={styles.topButton}
+                                        onPress={() => this.editPostFormRef.current?.triggerSubmit()}
+                                    >
+                                        <MaterialIcons
+                                            name={createMode ? "send" : "check"}
+                                            style={styles.topButtonIcon}
+                                        />
                                     </TouchableOpacity>
-                                    <Text style={styles.title}>
-                                        {i18n.t(`groups.${createMode ? "newPost" : "editPost"}.title`)}
-                                    </Text>
                                 </View>
                                 <EditPostForm
+                                    ref={this.editPostFormRef}
                                     containerStyle={[styles.form, {paddingBottom: insets?.bottom}]}
                                     groupId={groupId}
                                     post={post}
@@ -68,6 +81,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "space-between",
             paddingVertical: 5,
             marginBottom: 10,
             backgroundColor: theme.accent,
@@ -76,11 +90,11 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 18,
             color: theme.textWhite,
         },
-        backButton: {
+        topButton: {
             padding: 10,
             marginRight: 5,
         },
-        backButtonIcon: {
+        topButtonIcon: {
             fontSize: 24,
             color: theme.textWhite,
         },
