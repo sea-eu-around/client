@@ -34,7 +34,9 @@ type AdditionalProps = {
     blur?: boolean;
     overrideAvatar?: JSX.Element;
     overrideTitle?: string;
+    onPressTitle?: () => void;
     wrapperStyle?: StyleProp<ViewStyle>;
+    titleContainerStyle?: StyleProp<ViewStyle>;
     titleStyle?: StyleProp<TextStyle>;
     color?: string;
     buttonBackgroundColor?: string;
@@ -66,7 +68,9 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
             blur,
             overrideAvatar,
             overrideTitle,
+            onPressTitle,
             wrapperStyle,
+            titleContainerStyle,
             titleStyle,
             color,
         } = this.props;
@@ -114,9 +118,14 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                             onPress={() => rootNavigate("MyProfileScreen")}
                         />
                     ))}
-                <Text style={[styles.title, {marginLeft: 12, color: textColor}, titleStyle]} numberOfLines={1}>
-                    {overrideTitle === undefined ? title : overrideTitle}
-                </Text>
+                <TouchableOpacity
+                    style={[styles.titleContainer, {marginLeft: 12}, titleContainerStyle]}
+                    onPress={onPressTitle}
+                >
+                    <Text style={[styles.title, {color: textColor}, titleStyle]} numberOfLines={1}>
+                        {overrideTitle === undefined ? title : overrideTitle}
+                    </Text>
+                </TouchableOpacity>
                 {rightButtons?.map((ButtonComponent, i) => (
                     <ButtonComponent
                         key={`header-button-${routeName.toLowerCase()}-${i}`}

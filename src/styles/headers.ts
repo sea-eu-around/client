@@ -41,8 +41,10 @@ export const headerStyles = preTheme((theme: Theme) => {
         avatarTitle: {
             color: theme.textWhite,
         },
-        title: {
+        titleContainer: {
             flex: 1,
+        },
+        title: {
             color: theme.text,
             fontWeight: "600",
             fontSize: 20,
