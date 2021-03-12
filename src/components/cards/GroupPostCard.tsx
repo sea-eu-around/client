@@ -22,7 +22,7 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-type GroupPostCardProps = {post: GroupPost | null; showGroup?: boolean} & ThemeProps &
+type GroupPostCardProps = {post: GroupPost | null; isFeed?: boolean} & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
 
 class GroupPostCard extends React.Component<GroupPostCardProps> {
@@ -54,7 +54,7 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
     }
 
     render(): JSX.Element {
-        const {post, showGroup, groupsDict, theme} = this.props;
+        const {post, isFeed, groupsDict, theme} = this.props;
 
         const styles = themedStyles(theme);
         // const fromLocal = post && localUser && post.creator.id === localUser.id;
@@ -69,7 +69,7 @@ class GroupPostCard extends React.Component<GroupPostCardProps> {
                         profile={post?.creator || null}
                         subtitle={post && formatPostDate(post)}
                         group={group}
-                        showGroup={showGroup}
+                        isFeed={isFeed}
                         openPostMenu={() => group && post && this.menuRef.current?.show(group, post)}
                     />
                 </View>

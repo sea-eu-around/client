@@ -61,7 +61,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
                 noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
                 refresh={() => dispatch(refreshFetchedPostsFeed())}
-                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} showGroup />}
+                renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} isFeed />}
                 // Compensate for the top
                 progressViewOffset={250}
                 keyboardShouldPersistTaps="handled"

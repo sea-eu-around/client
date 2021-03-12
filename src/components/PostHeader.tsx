@@ -1,5 +1,5 @@
 import * as React from "react";
-import {TouchableOpacity, StyleSheet, Text, View} from "react-native";
+import {TouchableOpacity, StyleSheet, Text, View, Image} from "react-native";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -9,40 +9,64 @@ import {UserProfile} from "../model/user-profile";
 import {Group} from "../model/groups";
 import Button from "./Button";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
+import LocalImage from "./LocalImage";
+import {GroupMemberStatus} from "../api/dto";
 
 // Component props
 type PostHeaderProps = {
     profile: UserProfile | null;
     subtitle?: string | null;
     group: Group | null;
-    showGroup?: boolean;
+    isFeed?: boolean;
     openPostMenu?: () => void;
 } & ThemeProps;
 
 class PostHeader extends React.Component<PostHeaderProps> {
     render(): JSX.Element {
-        const {profile, subtitle, showGroup, group, openPostMenu, theme} = this.props;
+        const {profile, subtitle, isFeed, group, openPostMenu, theme} = this.props;
 
         const styles = themedStyles(theme);
-        // const fromLocal = profile && localUser && profile.id === localUser.id;
-        const name = profile ? `${profile.firstName} ${profile.lastName}` : "";
+        const profileName = profile ? `${profile.firstName} ${profile.lastName}` : "";
+        const name = isFeed ? (group ? group.name : "") : profileName;
+
+        const toGroup = () => group && group.myStatus === GroupMemberStatus.Approved && navigateToGroup(group.id);
+        const toProfile = () => profile && rootNavigate("ProfileScreen", {id: profile.id});
 
         return (
             <View style={styles.container}>
                 <View style={styles.left}>
-                    <EnlargeableAvatar
-                        profile={profile || undefined}
-                        size={42}
-                        containerStyle={styles.avatarContainer}
-                        rounded
-                    />
+                    {isFeed ? (
+                        <TouchableOpacity onPress={toGroup}>
+                            {group && group.cover && (
+                                <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />
+                            )}
+                            {group && !group.cover && (
+                                <LocalImage style={styles.groupCover} imageKey="group-placeholder" resizeMode="cover" />
+                            )}
+                        </TouchableOpacity>
+                    ) : (
+                        <EnlargeableAvatar
+                            profile={profile || undefined}
+                            size={40}
+                            containerStyle={styles.avatarContainer}
+                            rounded
+                        />
+                    )}
+
                     <View>
-                        <TouchableOpacity onPress={() => profile && rootNavigate("ProfileScreen", {id: profile.id})}>
+                        <TouchableOpacity onPress={isFeed ? toGroup : toProfile}>
                             <Text style={styles.name}>{name}</Text>
                         </TouchableOpacity>
-                        {showGroup && group && (
-                            <TouchableOpacity onPress={() => navigateToGroup(group.id)}>
-                                <Text style={styles.subtitle}>{group.name}</Text>
+
+                        {isFeed && (
+                            <TouchableOpacity style={{flexDirection: "row", alignItems: "center"}} onPress={toProfile}>
+                                <EnlargeableAvatar
+                                    profile={profile || undefined}
+                                    size={20}
+                                    containerStyle={styles.avatarContainerSmall}
+                                    rounded
+                                />
+                                <Text style={styles.subtitle}>{profileName}</Text>
                             </TouchableOpacity>
                         )}
                         <Text style={styles.subtitle}>{subtitle}</Text>
@@ -67,12 +91,16 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         left: {
             flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
         },
         avatarContainer: {
-            width: 40,
-            height: 40,
             backgroundColor: theme.accentSlight,
             marginRight: 10,
+        },
+        avatarContainerSmall: {
+            backgroundColor: theme.accentSlight,
+            marginRight: 5,
         },
         name: {
             fontSize: 16,
@@ -89,6 +117,13 @@ const themedStyles = preTheme((theme: Theme) => {
         menuButtonIcon: {
             fontSize: 24,
             color: theme.textLight,
+        },
+
+        groupCover: {
+            width: 45,
+            height: 45,
+            borderRadius: 45,
+            marginRight: 10,
         },
     });
 });
