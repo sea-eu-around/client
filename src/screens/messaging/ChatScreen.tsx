@@ -54,6 +54,7 @@ import ScreenWrapper from "../ScreenWrapper";
 import {normalizeWheelEvent} from "../../polyfills";
 import {getRouteParams} from "../../navigation/utils";
 import {noop} from "lodash";
+import ChatUserAvatar from "../../components/ChatUserAvatar";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -377,11 +378,12 @@ function ChatMessage({
                     ]}
                 >
                     {seenBy.map((u: ChatRoomUser) => (
-                        <GiftedAvatar
+                        <ChatUserAvatar
                             key={`read-message-${u._id}`}
+                            titleStyle={styles.messageReadAvatarText}
                             user={u}
-                            avatarStyle={styles.messageReadAvatar}
-                            textStyle={styles.messageReadAvatarText}
+                            size={20}
+                            rounded
                         />
                     ))}
                 </View>
@@ -455,8 +457,6 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         textInput: {
             backgroundColor: theme.cardBackground,
-            //borderWidth: 1,
-            //borderColor: theme.cardBackground,
             borderRadius: 20,
             marginVertical: INPUT_VERTICAL_MARGIN,
             marginHorizontal: 20,
@@ -514,10 +514,6 @@ const themedStyles = preTheme((theme: Theme) => {
             position: "absolute",
             right: 5,
             bottom: 3,
-        },
-        messageReadAvatar: {
-            width: 20,
-            height: 20,
         },
         messageReadAvatarText: {
             fontSize: 12,

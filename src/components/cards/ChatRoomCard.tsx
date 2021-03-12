@@ -6,12 +6,12 @@ import {preTheme} from "../../styles/utils";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
-import {GiftedAvatar} from "react-native-gifted-chat";
 import {openChat} from "../../navigation/utils";
 import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
 import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
 import {ReportEntityType} from "../../constants/reports";
 import i18n from "i18n-js";
+import ChatUserAvatar from "../ChatUserAvatar";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -108,9 +108,7 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
                 }}
             >
                 <View style={styles.cardContent}>
-                    <View style={styles.avatarContainer}>
-                        <GiftedAvatar avatarStyle={styles.avatar} user={user}></GiftedAvatar>
-                    </View>
+                    <ChatUserAvatar containerStyle={styles.avatarContainer} user={user} size={45} rounded />
                     <View style={styles.infoContainer}>
                         <Text style={styles.name}>{user.name}</Text>
                         <View style={styles.lastMessage}>{lastMessageComponent}</View>
@@ -134,13 +132,7 @@ const themedStyles = preTheme((theme: Theme) => {
             padding: 10,
         },
         avatarContainer: {
-            justifyContent: "center",
-        },
-        avatar: {
             backgroundColor: theme.accentSecondary,
-            width: 45,
-            height: 45,
-            borderRadius: 50,
         },
         infoContainer: {
             flex: 1,

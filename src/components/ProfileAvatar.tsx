@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ActivityIndicator, View} from "react-native";
-import {Avatar, AvatarProps} from "react-native-elements";
+import {AvatarProps} from "react-native-elements";
 import {UserProfile} from "../model/user-profile";
+import GeneralAvatar from "./GeneralAvatar";
 
 // Component props
 export type ProfileAvatarProps = {profile?: UserProfile; loading?: boolean} & AvatarProps;
@@ -10,20 +10,13 @@ class ProfileAvatar extends React.Component<ProfileAvatarProps> {
     render(): JSX.Element {
         const {children, profile, loading, ...avatarProps} = this.props;
 
-        const avatarTitle =
-            avatarProps.title || (profile ? (profile.firstName[0] + profile.lastName[0]).toUpperCase() : undefined);
-
-        const avatarSourceProp = profile && profile.avatarUrl ? {source: {uri: profile.avatarUrl}} : {};
+        const name = profile ? (profile.firstName[0] + profile.lastName[0]).toUpperCase() : undefined;
+        const sourceProp = profile && profile.avatarUrl ? {source: {uri: profile.avatarUrl}} : {};
 
         return (
-            <Avatar {...avatarProps} title={avatarTitle} {...avatarSourceProp}>
+            <GeneralAvatar {...avatarProps} name={name} {...sourceProp} loading={loading}>
                 {children}
-                {loading && (
-                    <View style={{position: "absolute", left: "50%", top: "50%"}}>
-                        <ActivityIndicator size={40} color="white" style={{right: 20, bottom: 20}} />
-                    </View>
-                )}
-            </Avatar>
+            </GeneralAvatar>
         );
     }
 }

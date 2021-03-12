@@ -5,15 +5,15 @@ import {AppState} from "../../state/types";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
-import {GiftedAvatar} from "react-native-gifted-chat";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import {headerStyles} from "../../styles/headers";
-import {getRouteParams, rootNavigate} from "../../navigation/utils";
+import {getRouteParams, navigateToProfile} from "../../navigation/utils";
 import MainHeader, {MainHeaderStackProps} from "./MainHeader";
 import {RootNavigatorScreens} from "../../navigation/types";
 import {StackScreenProps} from "@react-navigation/stack";
 import store from "../../state/store";
 import {Route} from "@react-navigation/native";
+import ChatUserAvatar from "../ChatUserAvatar";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -57,14 +57,16 @@ class ChatScreenHeaderClass extends React.Component<ChatScreenHeaderProps> {
                     backButton={true}
                     blur={true}
                     overrideAvatar={
-                        <GiftedAvatar
-                            avatarStyle={hstyles.avatarContainer}
+                        <ChatUserAvatar
+                            containerStyle={hstyles.avatarContainer}
                             user={user}
-                            onPress={() => rootNavigate("ProfileScreen", {id: user._id})}
+                            rounded
+                            onPress={() => navigateToProfile(user._id, store.getState())}
                         />
                     }
                     overrideTitle={user.name}
                     titleStyle={styles.name}
+                    onPressTitle={() => navigateToProfile(user._id, store.getState())}
                     navigateBackFallback={(nav) =>
                         nav.navigate("MainScreen", {screen: "TabMessaging", params: {screen: "ChatRoomsScreen"}})
                     }
