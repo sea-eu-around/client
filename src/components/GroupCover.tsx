@@ -11,6 +11,7 @@ import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 import {setGroupCover} from "../state/groups/actions";
+import {GroupRole} from "../api/dto";
 
 // Component props
 export type GroupCoverProps = ThemeProps & {group: Group | null};
@@ -22,7 +23,7 @@ class GroupCover extends React.Component<GroupCoverProps> {
 
         const showLoading = group?.uploadingCover;
         const showPlaceholder = !showLoading && (!group || !group.cover);
-        const allowEditing = group !== null;
+        const allowEditing = group !== null && group.myRole === GroupRole.Admin;
 
         return (
             <View style={styles.container}>
