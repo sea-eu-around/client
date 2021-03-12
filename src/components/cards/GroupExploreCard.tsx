@@ -48,15 +48,18 @@ class GroupExploreCard extends React.Component<GroupExploreCardProps> {
         const status = group?.myStatus;
         const statusTextKey = "groups.explore.statusText";
 
+        const canRequestJoin =
+            status !== GroupMemberStatus.Approved &&
+            status !== GroupMemberStatus.Banned &&
+            status !== GroupMemberStatus.Pending;
+
         return (
             <SwipeableCard
                 ref={this.cardRef}
                 looks={looks}
                 renderRightActions={() => <SwipeActionContainer side="right" looks={looks} fullCardWidth />}
                 style={styles.card}
-                {...(status !== GroupMemberStatus.Approved && status !== GroupMemberStatus.Banned
-                    ? {onPress: () => this.descriptionModalRef.current?.show()}
-                    : {})}
+                {...(canRequestJoin ? {onPress: () => this.descriptionModalRef.current?.show()} : {})}
             >
                 {group && group.cover && (
                     <Image style={styles.groupCover} source={{uri: group.cover}} resizeMode="cover" />

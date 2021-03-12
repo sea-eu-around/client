@@ -13,6 +13,7 @@ import LeaveGroupConfirmModal, {LeaveGroupConfirmModalClass} from "./modals/Leav
 import DeleteGroupConfirmModal, {DeleteGroupConfirmModalClass} from "./modals/DeleteGroupConfirmModal";
 import {rootNavigate} from "../navigation/utils";
 import {ReportEntityType} from "../constants/reports";
+import GroupSettingsModal, {GroupSettingsModalClass} from "./modals/GroupSettingsModal";
 
 const reduxConnector = connect(
     (state: AppState) => ({
@@ -32,6 +33,7 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
     private leaveModalRef = React.createRef<LeaveGroupConfirmModalClass>();
     private deleteGroupModalRef = React.createRef<DeleteGroupConfirmModalClass>();
     private reportFormRef = React.createRef<QuickFormReportClass>();
+    private settingsModalRef = React.createRef<GroupSettingsModalClass>();
 
     constructor(props: GroupSettingsMenuProps) {
         super(props);
@@ -40,7 +42,6 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
 
     show(group: Group): void {
         this.actionMenuRef.current?.show();
-        console.log("show");
         this.setState({...this.state, group});
     }
 
@@ -75,6 +76,11 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
                     params: {groupId: group.id},
                 }),
         };
+        const settingsAction: ActionMenuItem = {
+            icon: (style) => <MaterialIcons style={style} name="settings" />,
+            text: i18n.t("groups.settings.title"),
+            onSelect: () => this.settingsModalRef.current?.show(),
+        };
         const deleteAction: ActionMenuItem = {
             icon: (style) => <MaterialIcons style={style} name="delete" />,
             text: i18n.t("groups.delete.title"),
@@ -94,6 +100,7 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
 
         if (isAdmin) actions.push(manageMembersAction);
         if (isAdmin) actions.push(manageBansAction);
+        actions.push(settingsAction);
         actions.push(leaveAction);
         if (isAdmin) actions.push(deleteAction);
         actions.push(reportAction);
@@ -106,6 +113,7 @@ export class GroupSettingsMenuClass extends React.Component<GroupSettingsMenuPro
                     <>
                         <LeaveGroupConfirmModal ref={this.leaveModalRef} groupId={group.id} />
                         <DeleteGroupConfirmModal ref={this.deleteGroupModalRef} group={group} />
+                        <GroupSettingsModal ref={this.settingsModalRef} group={group} />
                         <QuickFormReport
                             ref={this.reportFormRef}
                             entity={group}

@@ -852,7 +852,7 @@ export default {
                 name: "Name",
                 visible: "Visible",
                 requireApproval: "Requires approval",
-                visibleDescription: "Whether or not everyone will be able to find your group.",
+                visibleDescription: "Whether or not everyone will be able to find the group.",
                 requireApprovalDescription:
                     "If checked, a group moderator will have to manually approve requests to join this group.",
                 submit: "Create",
@@ -1008,6 +1008,9 @@ export default {
             delete: {
                 title: "Delete Group",
                 text: "If you really want to delete this group, type its name below:",
+            },
+            settings: {
+                title: "Group settings",
             },
         },
         // Matching tab
@@ -1978,9 +1981,9 @@ export default {
                 name: "Nom",
                 visible: "Visible",
                 requireApproval: "Approbation requise",
-                visibleDescription: "Si coché, tout le monde pourra voir votre groupe.",
+                visibleDescription: "Si coché, tout le monde pourra voir le groupe.",
                 requireApprovalDescription:
-                    "Si coché, un modérateur de votre groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
+                    "Si coché, un modérateur du groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
                 submit: "Créer",
             },
             newPost: {
@@ -2134,6 +2137,9 @@ export default {
             delete: {
                 title: "Supprimer le groupe",
                 text: "Si vous voulez vraiment supprimer ce groupe, entrez son nom ci-dessous :",
+            },
+            settings: {
+                title: "Paramètres du groupe",
             },
         },
         // Matching tab
