@@ -6,10 +6,11 @@ import {withTheme} from "react-native-elements";
 import {Group} from "../../model/groups";
 import EnlargeableAvatar from "../EnlargeableAvatar";
 import {MaterialIcons} from "@expo/vector-icons";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToProfile} from "../../navigation/utils";
 import Button from "../Button";
 import {UserProfile} from "../../model/user-profile";
 import GroupInviteModal from "../modals/GroupInviteModal";
+import store from "../../state/store";
 
 // Component props
 type GroupProfileInviteCardProps = {
@@ -27,7 +28,7 @@ class GroupProfileInviteCard extends React.Component<GroupProfileInviteCardProps
         return (
             <TouchableOpacity
                 style={[styles.container, style]}
-                onPress={() => rootNavigate("ProfileScreen", {id: profile.id})}
+                onPress={() => navigateToProfile(profile.id, store.getState())}
                 {...otherProps}
             >
                 <EnlargeableAvatar profile={profile} size={50} rounded containerStyle={styles.avatarContainer} />

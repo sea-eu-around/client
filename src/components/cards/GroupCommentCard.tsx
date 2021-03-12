@@ -7,7 +7,7 @@ import {GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
 import i18n from "i18n-js";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToProfile} from "../../navigation/utils";
 import {formatCommentDate} from "../../model/utils";
 import ReAnimated, {Easing} from "react-native-reanimated";
 import {animateValue} from "../../polyfills";
@@ -20,6 +20,7 @@ import EditCommentModal from "../modals/EditCommentModal";
 import DeleteCommentConfirmModal from "../modals/DeleteCommentConfirmModal";
 import Button from "../Button";
 import {ReadMore} from "../ReadMore";
+import store from "../../state/store";
 
 const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
@@ -116,7 +117,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
                             onPress={() => {
                                 if (comment) {
                                     closeComments();
-                                    rootNavigate("ProfileScreen", {id: comment.creator.id});
+                                    navigateToProfile(comment.creator.id, store.getState());
                                 }
                             }}
                         />

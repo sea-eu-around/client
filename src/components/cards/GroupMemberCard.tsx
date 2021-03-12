@@ -7,7 +7,7 @@ import {GroupMember} from "../../model/groups";
 import i18n from "i18n-js";
 import EnlargeableAvatar from "../EnlargeableAvatar";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToProfile} from "../../navigation/utils";
 import Button from "../Button";
 import DeleteGroupMemberModal from "../modals/DeleteGroupMemberModal";
 import {connect, ConnectedProps} from "react-redux";
@@ -16,6 +16,7 @@ import BanGroupMemberModal from "../modals/BanGroupMemberModal";
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import {deleteGroupMember, setGroupMemberStatus} from "../../state/groups/actions";
 import GroupPromoteAdminModal from "../modals/GroupPromoteAdminModal";
+import store from "../../state/store";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -109,7 +110,7 @@ class GroupMemberCard extends React.Component<GroupMemberCardProps> {
         return (
             <TouchableOpacity
                 style={[styles.container, style]}
-                onPress={() => member && rootNavigate("ProfileScreen", {id: member.profile.id})}
+                onPress={() => member && navigateToProfile(member.profile.id, store.getState())}
                 {...otherProps}
             >
                 {member && (

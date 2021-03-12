@@ -4,6 +4,7 @@ import {NavigatorRoute, RootNavigatorScreens} from "./types";
 import {Platform} from "react-native";
 import {APP_SCHEME, WEB_TO_APP_TIMEOUT} from "../constants/config";
 import i18n from "i18n-js";
+import {AppState} from "../state/types";
 
 // Store a ref to the root navigator
 export const rootNavigationRef = React.createRef<NavigationContainerRef>();
@@ -75,4 +76,10 @@ export function openChat(roomId: string): void {
 
 export function navigateToGroup(groupId: string): void {
     rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "GroupScreen", params: {groupId}}});
+}
+
+export function navigateToProfile(profileId: string, state: AppState): void {
+    const isLocalUser = state.profile.user?.id === profileId;
+    if (isLocalUser) rootNavigate("MyProfileScreen");
+    else rootNavigate("ProfileScreen", {id: profileId});
 }

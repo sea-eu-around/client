@@ -5,7 +5,7 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import FormattedUniversity from "../FormattedUniversity";
 import ProfileAvatar from "../ProfileAvatar";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToProfile} from "../../navigation/utils";
 import {MatchHistoryItem} from "../../model/matching";
 import FormattedMatchStatus from "../FormattedMatchStatus";
 import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
@@ -105,7 +105,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                                 size={60}
                                 rounded
                                 containerStyle={styles.avatar}
-                                onPress={() => rootNavigate("ProfileScreen", {id: profile.id})}
+                                onPress={() => navigateToProfile(profile.id, store.getState())}
                             />
                         </View>
                         <View style={styles.infoContainer}>

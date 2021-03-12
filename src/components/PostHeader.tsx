@@ -4,13 +4,14 @@ import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import EnlargeableAvatar from "./EnlargeableAvatar";
-import {navigateToGroup, rootNavigate} from "../navigation/utils";
+import {navigateToGroup, navigateToProfile} from "../navigation/utils";
 import {UserProfile} from "../model/user-profile";
 import {Group} from "../model/groups";
 import Button from "./Button";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import LocalImage from "./LocalImage";
 import {GroupMemberStatus} from "../api/dto";
+import store from "../state/store";
 
 // Component props
 type PostHeaderProps = {
@@ -30,7 +31,7 @@ class PostHeader extends React.Component<PostHeaderProps> {
         const name = isFeed ? (group ? group.name : "") : profileName;
 
         const toGroup = () => group && group.myStatus === GroupMemberStatus.Approved && navigateToGroup(group.id);
-        const toProfile = () => profile && rootNavigate("ProfileScreen", {id: profile.id});
+        const toProfile = () => profile && navigateToProfile(profile.id, store.getState());
 
         return (
             <View style={styles.container}>
