@@ -47,6 +47,10 @@ export class FormTextInput extends React.Component<FormTextInputProps> {
         this.inputRef.current?.focus();
     }
 
+    blur(): void {
+        this.inputRef.current?.blur();
+    }
+
     render(): JSX.Element {
         const {
             field,

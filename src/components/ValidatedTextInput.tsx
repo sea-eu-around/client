@@ -69,6 +69,10 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
         this.inputRef.current?.focus();
     }
 
+    blur(): void {
+        this.inputRef.current?.blur();
+    }
+
     render(): JSX.Element {
         const {
             showErrorText,
