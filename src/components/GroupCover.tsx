@@ -16,6 +16,8 @@ import {GroupRole} from "../api/dto";
 // Component props
 export type GroupCoverProps = ThemeProps & {group: Group | null};
 
+export const GROUP_COVER_HEIGHT = 250;
+
 class GroupCover extends React.Component<GroupCoverProps> {
     render() {
         const {theme, group} = this.props;
@@ -52,7 +54,7 @@ export const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: "#0001",
             justifyContent: "center",
             alignItems: "center",
-            height: 250,
+            height: GROUP_COVER_HEIGHT,
             borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: theme.componentBorder,
         },
