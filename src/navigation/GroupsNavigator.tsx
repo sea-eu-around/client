@@ -12,7 +12,6 @@ import {useRef} from "react";
 import CreateGroupModal from "../components/modals/CreateGroupModal";
 import GroupsExploreScreen from "../screens/groups/GroupsExploreScreen";
 import GroupScreen from "../screens/groups/GroupScreen";
-import GroupScreenHeader from "../components/headers/GroupScreenHeader";
 import GroupMembersScreen from "../screens/groups/GroupMembersScreen";
 import GroupMembersScreenHeader from "../components/headers/GroupMembersScreenHeader";
 import GroupInviteScreenHeader from "../components/headers/GroupInviteScreenHeader";
@@ -62,14 +61,8 @@ export const GroupsNavigator = (): JSX.Element => {
                         title: screenTitle("GroupScreen"),
                         headerShown: false,
                     })}
-                >
-                    {(props) => (
-                        <>
-                            <GroupScreen {...props} />
-                            <GroupScreenHeader groupId={getRouteParams(props.route).groupId as string} {...props} />
-                        </>
-                    )}
-                </GroupsStack.Screen>
+                    component={GroupScreen}
+                />
                 <GroupsStack.Screen
                     name="GroupMembersScreen"
                     options={(screenProps) => ({

@@ -12,7 +12,7 @@ import {MyThunkDispatch} from "../../state/types";
 import {fetchGroupMembers, fetchGroupMembersRefresh, updateGroup} from "../../state/groups/actions";
 import GroupPostsView from "../../components/GroupPostsView";
 import EditableText from "../../components/EditableText";
-import GroupCover from "../../components/GroupCover";
+import GroupCover, {GROUP_COVER_HEIGHT} from "../../components/GroupCover";
 import i18n from "i18n-js";
 import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
@@ -20,6 +20,7 @@ import Button from "../../components/Button";
 import WavyHeader from "../../components/headers/WavyHeader";
 import GroupProvider from "../../components/providers/GroupProvider";
 import store from "../../state/store";
+import GroupScreenHeader, {GroupScreenHeaderClass} from "../../components/headers/GroupScreenHeader";
 
 // Component props
 type GroupScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
@@ -32,6 +33,8 @@ type GroupScreenState = {
 const APPROBATION_REQ_INDICATOR_SIZE = 12;
 
 class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
+    headerRef = React.createRef<GroupScreenHeaderClass>();
+
     constructor(props: GroupScreenProps) {
         super(props);
         this.state = {groupId: null};
@@ -181,9 +184,11 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                             group={group}
                             titleContainerStyle={styles.postsTitle}
                             onRefresh={() => group && this.fetchFirstGroupMembers(group, true)}
+                            onScroll={(y) => this.headerRef.current?.toggleTransparentMode(y <= GROUP_COVER_HEIGHT)}
                         />
                     )}
                 </GroupProvider>
+                <GroupScreenHeader ref={this.headerRef} groupId={getRouteParams(this.props.route).groupId as string} />
             </ScreenWrapper>
         );
     }

@@ -8,10 +8,16 @@ import {ThemeProps} from "../../types";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import GroupSettingsMenu, {GroupSettingsMenuClass} from "../GroupSettingsMenu";
+import {statusBarRef} from "../ThemedStatusBar";
 
-const reduxConnector = connect((state: AppState) => ({
-    groupsDict: state.groups.groupsDict,
-}));
+const reduxConnector = connect(
+    (state: AppState) => ({
+        groupsDict: state.groups.groupsDict,
+    }),
+    null,
+    null,
+    {forwardRef: true},
+);
 
 // Component props
 export type GroupScreenHeaderProps = MainHeaderStackProps &
@@ -20,16 +26,31 @@ export type GroupScreenHeaderProps = MainHeaderStackProps &
         groupId: string | null;
     };
 
-class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
+type GroupScreenHeaderState = {transparent: boolean};
+
+export class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps, GroupScreenHeaderState> {
     settingsMenuRef = React.createRef<GroupSettingsMenuClass>();
+
+    constructor(props: GroupScreenHeaderProps) {
+        super(props);
+        this.state = {transparent: true};
+    }
 
     private getGroup(): Group | null {
         const {groupsDict, groupId} = this.props;
         return groupId ? groupsDict[groupId] || null : null;
     }
 
+    toggleTransparentMode(transparent: boolean): void {
+        if (this.state.transparent !== transparent) {
+            this.setState({transparent});
+            statusBarRef.current?.setStyle(transparent ? "light" : undefined); // setting undefined will use the default depending on the theme
+        }
+    }
+
     render(): JSX.Element {
         const {theme, ...stackProps} = this.props;
+        const {transparent} = this.state;
 
         const group = this.getGroup();
 
@@ -41,10 +62,19 @@ class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
                     noAvatar
                     noShadow
                     noSettingsButton
-                    wrapperStyle={{position: "absolute", backgroundColor: "transparent", top: 0, left: 0, right: 0}}
-                    color={theme.textWhite}
+                    wrapperStyle={[
+                        {
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            zIndex: 10,
+                        },
+                        transparent && {backgroundColor: "transparent"},
+                    ]}
+                    color={transparent ? theme.textWhite : theme.text}
                     buttonBackgroundColor="transparent"
-                    overrideTitle=""
+                    overrideTitle={transparent ? "" : group?.name || ""}
                     navigateBackFallback={(nav) =>
                         nav.navigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}})
                     }
@@ -72,4 +102,4 @@ class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderProps> {
     }
 }
 
-export default reduxConnector(withTheme((props: GroupScreenHeaderProps) => <GroupScreenHeaderClass {...props} />));
+export default reduxConnector(withTheme(GroupScreenHeaderClass));
