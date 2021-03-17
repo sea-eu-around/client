@@ -36,6 +36,10 @@ class ThemedStatusBarClass extends React.Component<ThemedStatusBarProps, ThemedS
         }
     }
 
+    getStyle(): ThemeKey {
+        return this.state.style;
+    }
+
     componentDidMount(): void {
         const nav = rootNavigationRef.current;
 
