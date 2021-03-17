@@ -33,7 +33,7 @@ class FilteringScreenHeaderClass extends React.Component<FilteringScreenHeaderPr
                 <TouchableOpacity style={{}} onPress={() => this.back()}>
                     <MaterialIcons name="close" style={styles.actionIcon} />
                 </TouchableOpacity>
-                <Text style={[hstyles.title, {textAlign: "center"}]} numberOfLines={1}>
+                <Text style={[hstyles.title, {textAlign: "center", flex: 1}]} numberOfLines={1}>
                     {title}
                 </Text>
                 <TouchableOpacity
