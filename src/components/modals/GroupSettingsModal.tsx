@@ -46,11 +46,12 @@ export class GroupSettingsModalClass extends React.Component<GroupSettingsModalP
         const styles = themedStyles(theme);
         const dispatch = store.dispatch as MyThunkDispatch;
 
+        const isAdmin = group.myRole === GroupRole.Admin;
         const checkboxProps = getFormCheckBoxStyleProps(theme);
 
         const buttons: ConfirmationModalButton[] = [];
 
-        if (group.myRole === GroupRole.Admin) {
+        if (isAdmin) {
             buttons.push({preset: "cancel"});
             buttons.push({
                 backgroundColor: theme.accent,
@@ -76,26 +77,28 @@ export class GroupSettingsModalClass extends React.Component<GroupSettingsModalP
                 additionalContent={() => (
                     <>
                         <TouchableOpacity
-                            onPress={() => this.setState({visible: !this.state.visible})}
+                            onPress={() => isAdmin && this.setState({visible: !this.state.visible})}
                             activeOpacity={0.75}
                         >
                             <ValidatedCheckBox
                                 value={this.state.visible}
                                 label={i18n.t("groups.create.visible")}
-                                onPress={() => this.setState({visible: !this.state.visible})}
+                                onPress={() => isAdmin && this.setState({visible: !this.state.visible})}
                                 {...checkboxProps}
                             />
                             <Text style={styles.fieldDescription}>{i18n.t("groups.create.visibleDescription")}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => this.setState({requiresApproval: !this.state.requiresApproval})}
+                            onPress={() => isAdmin && this.setState({requiresApproval: !this.state.requiresApproval})}
                             activeOpacity={0.75}
                         >
                             <ValidatedCheckBox
                                 value={this.state.requiresApproval}
                                 label={i18n.t("groups.create.requireApproval")}
-                                onPress={() => this.setState({requiresApproval: !this.state.requiresApproval})}
+                                onPress={() =>
+                                    isAdmin && this.setState({requiresApproval: !this.state.requiresApproval})
+                                }
                                 {...checkboxProps}
                             />
                             <Text style={styles.fieldDescription}>
