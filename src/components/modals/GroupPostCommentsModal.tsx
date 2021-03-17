@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ActivityIndicator, Keyboard, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
-import {Theme, ThemeProps} from "../../types";
+import {Theme, ThemeKey, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
 import {GroupPost, GroupVoteStatus, PostComment} from "../../model/groups";
@@ -20,6 +20,7 @@ import Animated, {Easing} from "react-native-reanimated";
 import {animateValue} from "../../polyfills";
 import {TouchableOpacity} from "react-native";
 import {SafeAreaInsetsContext} from "react-native-safe-area-context";
+import {statusBarRef} from "../ThemedStatusBar";
 
 // Component props
 export type GroupPostCommentsModalProps = {
@@ -40,6 +41,7 @@ export class GroupPostCommentsModalClass extends React.Component<
     modalRef = React.createRef<CustomModalClass>();
     commentTextInputRef = React.createRef<CommentTextInputClass>();
     collapseCurrentlyExpanded: (() => void) | null = null;
+    initialStatusBarStyle: ThemeKey | undefined = undefined;
 
     constructor(props: GroupPostCommentsModalProps) {
         super(props);
@@ -48,6 +50,10 @@ export class GroupPostCommentsModalClass extends React.Component<
 
     show(): void {
         this.modalRef.current?.show();
+
+        const {theme} = this.props;
+        this.initialStatusBarStyle = statusBarRef.current?.getStyle();
+        statusBarRef.current?.setStyle(theme.id === "dark" ? "light" : "dark");
     }
 
     private setReplyingTo(comment: PostComment | null): void {
@@ -145,6 +151,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                         onShow={() => this.fetchFirstComments()}
                         onHide={() => {
                             this.setReplyingTo(null);
+                            statusBarRef.current?.setStyle(this.initialStatusBarStyle);
                         }}
                         renderContent={(hide) => (
                             <View style={styles.container}>
