@@ -1,6 +1,6 @@
 import {BlurView} from "expo-blur";
 import React from "react";
-import {Modal, TouchableOpacity, ViewStyle, StyleSheet, StyleProp} from "react-native";
+import {Modal, TouchableOpacity, ViewStyle, StyleSheet, StyleProp, KeyboardAvoidingView} from "react-native";
 import {withTheme} from "react-native-elements";
 import {BLUR_MODAL_INTENSITY} from "../../styles/general";
 import {preTheme} from "../../styles/utils";
@@ -99,23 +99,32 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
             </TouchableOpacity>
         );
 
+        // Default to true if not given
+        const finalStatusBarTranslucent = statusBarTranslucent === undefined ? true : statusBarTranslucent;
+
         return (
             <Modal
                 animationType={animationType}
-                transparent={true}
-                statusBarTranslucent={statusBarTranslucent === undefined ? true : statusBarTranslucent}
+                transparent
+                statusBarTranslucent={finalStatusBarTranslucent}
                 visible={modalVisible}
                 onRequestClose={() => {
                     if (!nonDismissable) this.setModalVisible(false);
                 }}
             >
-                {backdropBlur ? (
-                    <BlurView style={{flex: 1}} tint={"dark"} intensity={BLUR_MODAL_INTENSITY}>
-                        {content}
-                    </BlurView>
-                ) : (
-                    content
-                )}
+                <KeyboardAvoidingView
+                    enabled={finalStatusBarTranslucent} // statusBarTranslucent prop breaks the keyboard avoidance
+                    behavior="height"
+                    style={{width: "100%", height: "100%", flex: 1, backgroundColor: "red"}}
+                >
+                    {backdropBlur ? (
+                        <BlurView style={{flex: 1}} tint={"dark"} intensity={BLUR_MODAL_INTENSITY}>
+                            {content}
+                        </BlurView>
+                    ) : (
+                        content
+                    )}
+                </KeyboardAvoidingView>
             </Modal>
         );
     }
