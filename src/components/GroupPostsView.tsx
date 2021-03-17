@@ -7,7 +7,7 @@ import {preTheme} from "../styles/utils";
 import {Group, GroupPost, PostSortingOrder} from "../model/groups";
 import {MaterialIcons} from "@expo/vector-icons";
 import EditPostModal from "./modals/EditPostModal";
-import InfiniteScroller from "./InfiniteScroller";
+import InfiniteScroller, {OnScroll} from "./InfiniteScroller";
 import {NavigationProp} from "@react-navigation/native";
 import {GROUPS_POSTS_FETCH_LIMIT} from "../constants/config";
 import {AppState, MyThunkDispatch, PaginatedState} from "../state/types";
@@ -30,11 +30,12 @@ export type GroupPostsViewProps = ThemeProps &
         navigation: NavigationProp<never>;
         top?: JSX.Element;
         onRefresh?: () => void;
+        onScroll?: OnScroll;
     };
 
 class GroupPostsView extends React.Component<GroupPostsViewProps> {
     render(): JSX.Element {
-        const {group, top, navigation, titleContainerStyle, sortOrder, onRefresh, theme} = this.props;
+        const {group, top, navigation, titleContainerStyle, sortOrder, onRefresh, onScroll, theme} = this.props;
         const styles = themedStyles(theme);
         const dispatch = this.props.dispatch as MyThunkDispatch;
 
@@ -102,6 +103,7 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                     progressViewOffset={350} // Compensate for the header
                     keyboardShouldPersistTaps="handled"
                     itemsContainerStyle={styles.itemsContainer}
+                    onScroll={onScroll}
                 />
             </>
         );

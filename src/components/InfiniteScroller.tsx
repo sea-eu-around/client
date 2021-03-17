@@ -37,7 +37,10 @@ export type InfiniteScrollerProps<T> = {
     hideScrollIndicator?: boolean;
     top?: JSX.Element;
     keyboardShouldPersistTaps?: "always" | "never" | "handled";
+    onScroll?: OnScroll;
 };
+
+export type OnScroll = (distanceToStart: number, distanceToEnd: number) => void;
 
 // Component state
 type InfiniteScrollerState = {
@@ -48,6 +51,7 @@ const SCROLL_DISTANCE_TO_LOAD = 150; //50;
 
 export default class InfiniteScroller<T> extends React.Component<InfiniteScrollerProps<T>, InfiniteScrollerState> {
     scrollViewRef: React.RefObject<ScrollView> = React.createRef<ScrollView>();
+    scrollListenerEnabled = false;
 
     constructor(props: InfiniteScrollerProps<T>) {
         super(props);
@@ -73,10 +77,13 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
     componentDidMount(): void {
         const {navigation} = this.props;
         navigation.addListener("focus", () => this.onFocus());
+        navigation.addListener("blur", () => this.onBlur());
         this.onFocus();
     }
 
     onFocus(): void {
+        this.scrollListenerEnabled = true;
+
         const {items, fetchLimit, fetching, refreshOnFocus, currentPage, refresh, id} = this.props;
         const shown = items.filter((it) => !this.state.hiddenIds[id(it)]).length;
 
@@ -85,6 +92,10 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             if (currentPage === 1) this.fetchMore();
             else refresh(); // We don't refresh if the current page is 1 because that means we haven't fetched anything yet
         } else if (shown < fetchLimit && !fetching) this.fetchMore();
+    }
+
+    onBlur(): void {
+        this.scrollListenerEnabled = false;
     }
 
     componentDidUpdate(oldProps: InfiniteScrollerProps<T>): void {
@@ -116,6 +127,7 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
             hideScrollIndicator,
             top,
             keyboardShouldPersistTaps,
+            onScroll,
         } = this.props;
 
         return (
@@ -137,11 +149,16 @@ export default class InfiniteScroller<T> extends React.Component<InfiniteScrolle
                                     />
                                 }
                                 onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
-                                    const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
-                                    const distanceToEnd = horizontal
-                                        ? contentSize.width - contentOffset.x - layoutMeasurement.width
-                                        : contentSize.height - contentOffset.y - layoutMeasurement.height;
-                                    if (distanceToEnd < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+                                    if (this.scrollListenerEnabled) {
+                                        const {layoutMeasurement, contentOffset, contentSize} = e.nativeEvent;
+                                        const distanceToStart = horizontal ? contentOffset.x : contentOffset.y;
+                                        const distanceToEnd = horizontal
+                                            ? contentSize.width - contentOffset.x - layoutMeasurement.width
+                                            : contentSize.height - contentOffset.y - layoutMeasurement.height;
+                                        if (distanceToEnd < SCROLL_DISTANCE_TO_LOAD) this.fetchMore();
+
+                                        if (onScroll) onScroll(distanceToStart, distanceToEnd);
+                                    }
                                 }}
                                 horizontal={horizontal}
                                 // horizontal centering of noResultsContainer and loading indicator
