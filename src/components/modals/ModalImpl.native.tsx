@@ -115,7 +115,7 @@ class ModalImpl extends React.Component<ModalImplProps, ModalImplState> {
                 <KeyboardAvoidingView
                     enabled={finalStatusBarTranslucent} // statusBarTranslucent prop breaks the keyboard avoidance
                     behavior="height"
-                    style={{width: "100%", height: "100%", flex: 1, backgroundColor: "red"}}
+                    style={{width: "100%", height: "100%", flex: 1}}
                 >
                     {backdropBlur ? (
                         <BlurView style={{flex: 1}} tint={"dark"} intensity={BLUR_MODAL_INTENSITY}>
