@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Keyboard, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {withTheme} from "react-native-elements";
@@ -82,8 +82,12 @@ export class GroupPostCommentsModalClass extends React.Component<
                     onExpand={(collapse) => {
                         if (this.collapseCurrentlyExpanded) this.collapseCurrentlyExpanded();
                         this.collapseCurrentlyExpanded = collapse;
+                        Keyboard.dismiss();
                     }}
-                    onCollapse={() => (this.collapseCurrentlyExpanded = null)}
+                    onCollapse={() => {
+                        this.collapseCurrentlyExpanded = null;
+                        Keyboard.dismiss();
+                    }}
                     toggleChildren={() => childrenContainerRef.current?.toggle()}
                     adminView={adminView}
                 />
