@@ -6,36 +6,52 @@ import {NavigatorRoute} from "../navigation/types";
 import {rootNavigationRef} from "../navigation/utils";
 import {ThemeKey, ThemeProps} from "../types";
 
+export const statusBarRef = React.createRef<ThemedStatusBarClass>();
+
 // Component props
 export type ThemedStatusBarProps = ThemeProps;
 
-class ThemedStatusBar extends React.Component<ThemedStatusBarProps> {
-    previousThemeOverride: ThemeKey | undefined;
+type ThemedStatusBarState = {style: ThemeKey};
 
-    getThemeOverride(): ThemeKey | undefined {
+class ThemedStatusBarClass extends React.Component<ThemedStatusBarProps, ThemedStatusBarState> {
+    constructor(props: ThemedStatusBarProps) {
+        super(props);
+        this.state = {style: this.getDefaultStyle()};
+    }
+
+    private getThemeOverride(): ThemeKey | undefined {
         const routeName = rootNavigationRef.current?.getCurrentRoute()?.name as NavigatorRoute;
         return STATUS_BAR_THEME_OVERRIDES[routeName];
     }
 
-    componentDidMount() {
+    private getDefaultStyle(): ThemeKey {
+        return this.props.theme.id == "dark" ? "light" : "dark";
+    }
+
+    setStyle(style?: ThemeKey): void {
+        const newStyle = style || this.getDefaultStyle();
+        if (newStyle !== this.state.style) {
+            this.setState({style: newStyle});
+            this.forceUpdate();
+        }
+    }
+
+    componentDidMount(): void {
         const nav = rootNavigationRef.current;
 
         if (nav) {
             // Ensure we update the status bar theme when needed
             nav.addListener("state", () => {
                 const override = this.getThemeOverride();
-                if (override !== this.previousThemeOverride) this.forceUpdate();
-                this.previousThemeOverride = override;
+                this.setStyle(override);
             });
         }
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
-        const defaultStyle: ThemeKey = theme.id == "dark" ? "light" : "dark";
-
-        return <StatusBar style={this.getThemeOverride() || defaultStyle} />;
+        const {style} = this.state;
+        return <StatusBar style={style} />;
     }
 }
 
-export default withTheme(ThemedStatusBar);
+export default withTheme((props: ThemedStatusBarProps) => <ThemedStatusBarClass ref={statusBarRef} {...props} />);
