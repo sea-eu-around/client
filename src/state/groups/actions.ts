@@ -484,7 +484,6 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
     const {
         auth: {token},
         groups: {pagination},
-        profile: {user},
     } = getState();
 
     if (!token) {
@@ -503,7 +502,8 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
             page: pagination.page,
             limit: GROUPS_FETCH_LIMIT,
             search: search && search.length > 0 ? search : undefined,
-            profileId: user?.id || undefined,
+            explore: true,
+            statuses: [GroupMemberStatus.Invited, GroupMemberStatus.InvitedByAdmin, GroupMemberStatus.Pending],
         },
         {},
         token,
@@ -951,10 +951,9 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
     const {
         auth: {token},
         groups: {myGroupsPagination, myGroupInvitesPagination},
-        profile: {user},
     } = getState();
 
-    if (!token || !user) {
+    if (!token) {
         dispatch(fetchMyGroupsFailure(invites));
         return;
     }
@@ -970,7 +969,6 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         {
             page: pagination.page,
             limit: GROUPS_FETCH_LIMIT,
-            profileId: user.id,
             statuses: invites
                 ? [GroupMemberStatus.Invited, GroupMemberStatus.InvitedByAdmin]
                 : [GroupMemberStatus.Approved],
