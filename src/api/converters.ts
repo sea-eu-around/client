@@ -167,6 +167,7 @@ export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchIn
 export function convertDtoToGroup(dto: ResponseGroupDto): Group {
     return {
         ...dto,
+        description: dto.description || "",
         membersPaginations: {
             approved: initialPaginatedState(),
             banned: initialPaginatedState(),
