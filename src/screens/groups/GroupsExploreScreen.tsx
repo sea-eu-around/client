@@ -15,7 +15,6 @@ import BufferedSearchBar from "../../components/BufferedSearchBar";
 import {fetchGroups, refreshFetchedGroups} from "../../state/groups/actions";
 import {Group} from "../../model/groups";
 import GroupExploreCard from "../../components/cards/GroupExploreCard";
-import {GroupMemberStatus} from "../../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
     pagination: state.groups.pagination,
@@ -68,15 +67,10 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     id={(group: Group): string => group.id}
                     hideScrollIndicator
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.none")}</Text>}
+                    endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.noMore")}</Text>}
                     refresh={() => dispatch(refreshFetchedGroups())}
                     refreshOnFocus
-                    renderItem={(group: Group) =>
-                        group.myStatus === GroupMemberStatus.Approved ? (
-                            <></>
-                        ) : (
-                            <GroupExploreCard key={group.id} group={group} />
-                        )
-                    }
+                    renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
                     itemsContainerStyle={styles.itemsContainer}
                 />
             </ScreenWrapper>
@@ -91,6 +85,7 @@ const themedStyles = preTheme((theme: Theme) => {
             maxWidth: 600,
             alignSelf: "center",
             alignItems: "center",
+            paddingBottom: 40,
         },
         noResultsText: {
             fontSize: 20,
