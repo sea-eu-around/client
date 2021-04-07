@@ -19,6 +19,7 @@ import {RemoteValidationErrors} from "../../api/dto";
 import {MaterialIcons} from "@expo/vector-icons";
 import {navigateBack} from "../../navigation/utils";
 import Button from "../Button";
+import {noop} from "lodash";
 
 type FormState = {
     email: string;
@@ -49,6 +50,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
     pwdField1Ref = React.createRef<FormTextInput>();
     pwdField2Ref = React.createRef<FormTextInput>();
     setFieldError?: (field: string, message: string) => void;
+    resetForm: () => void = noop;
 
     constructor(props: SignupFormProps) {
         super(props);
@@ -64,7 +66,10 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                 }
-                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                if (success) {
+                    this.resetForm();
+                    if (this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                }
             },
         );
     }
@@ -97,6 +102,7 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
                         } = formikProps;
                         const textInputProps = {handleChange, handleBlur, ...getLoginTextInputsStyleProps(theme, 5)};
                         this.setFieldError = setFieldError;
+                        this.resetForm = formikProps.resetForm;
 
                         return (
                             <>
