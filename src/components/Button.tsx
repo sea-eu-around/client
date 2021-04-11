@@ -1,6 +1,7 @@
 import * as React from "react";
 import {StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
+import themes from "../constants/themes";
 import {Theme, ThemeProps} from "../types";
 
 export type ButtonSkinStyle = {button: ViewStyle; text: TextStyle};
@@ -20,7 +21,7 @@ export const BUTTON_SKINS = {
         text: {
             fontSize: 18,
             letterSpacing: 1,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
     }),
     "rounded-hollow": (theme: Theme): ButtonSkinStyle => ({

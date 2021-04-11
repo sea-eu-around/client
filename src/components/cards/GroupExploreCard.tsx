@@ -16,6 +16,7 @@ import {BlurView} from "expo-blur";
 import {GroupMemberStatus} from "../../api/dto";
 import {MaterialIcons} from "@expo/vector-icons";
 import i18n from "i18n-js";
+import themes from "../../constants/themes";
 
 // Component props
 type GroupExploreCardProps = {
@@ -148,7 +149,7 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: "rgba(0, 0, 0, 0.2)",
         },
         groupName: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontFamily: "RalewaySemiBold",
             fontSize: 16,
         },
@@ -157,16 +158,16 @@ const themedStyles = preTheme((theme: Theme) => {
             alignItems: "center",
         },
         groupDescription: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 14,
         },
         statusSpecific: {
             fontFamily: "RalewaySemiBold",
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 14,
         },
         statusSpecificIcon: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 14,
             marginLeft: 4,
         },

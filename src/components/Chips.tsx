@@ -2,6 +2,7 @@ import {MaterialIcons} from "@expo/vector-icons";
 import * as React from "react";
 import {StyleProp, Text, View, ViewStyle, StyleSheet, TextStyle, TouchableOpacity} from "react-native";
 import {ThemeConsumer, withTheme} from "react-native-elements";
+import themes from "../constants/themes";
 import {preTheme} from "../styles/utils";
 import {Theme, ThemeProps} from "../types";
 
@@ -104,7 +105,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         chipText: {
             fontSize: 14,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
         chipRemoveButton: {
             position: "absolute",
@@ -116,7 +117,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         chipRemoveIcon: {
             fontSize: 22,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
     });
 });

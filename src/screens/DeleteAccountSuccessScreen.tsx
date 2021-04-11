@@ -10,6 +10,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import ScreenWrapper from "./ScreenWrapper";
 import Button from "../components/Button";
 import {rootNavigate} from "../navigation/utils";
+import themes from "../constants/themes";
 
 type DeleteAccountSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -57,7 +58,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         buttonIcon: {
             fontSize: 20,
-            color: theme.textWhite,
+            color: themes.dark.text,
             marginLeft: 5,
         },
     });

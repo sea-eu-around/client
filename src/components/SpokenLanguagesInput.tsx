@@ -12,6 +12,7 @@ import {MAX_SPOKEN_LANGUAGES} from "../constants/config";
 import i18n from "i18n-js";
 import {PickerButtonStyleVariant} from "../styles/picker";
 import {ONBOARDING_INPUT_BORDER_RADIUS} from "../styles/onboarding";
+import themes from "../constants/themes";
 
 // Component props
 export type SpokenLanguagesInputProps = ThemeProps & {
@@ -139,7 +140,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         deleteIcon: {
             fontSize: 16,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         languagePicker: {},
         languageLabelContainer: {

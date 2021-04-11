@@ -17,6 +17,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import CustomModal, {CustomModalClass} from "./CustomModal";
 import {getMatchingOffers} from "../../model/utils";
 import Wave from "../Wave";
+import themes from "../../constants/themes";
 
 // Map props from store
 const reduxConnector = connect(
@@ -291,7 +292,7 @@ const themedStyles = preTheme((theme: Theme) => {
             textAlign: "center",
             ...styleTextThin,
             fontSize: 26,
-            color: theme.textWhite,
+            color: themes.dark.text,
             letterSpacing: 1,
             textTransform: "uppercase",
         },
@@ -300,15 +301,15 @@ const themedStyles = preTheme((theme: Theme) => {
             marginBottom: 20,
             height: 1,
             width: "80%",
-            backgroundColor: theme.textWhite,
+            backgroundColor: themes.dark.text,
             opacity: 0.4,
         },
         avatarContainer: {
-            borderColor: theme.textWhite,
+            borderColor: themes.dark.text,
             borderWidth: 0.5,
         },
         name: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 24,
             marginVertical: 5,
         },
@@ -322,7 +323,7 @@ const themedStyles = preTheme((theme: Theme) => {
             overflow: "hidden",
         },
         offerText: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 16,
             lineHeight: OFFERS_CARD_LINE_HEIGHT,
         },
@@ -332,7 +333,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         actionIcon: {
             fontSize: 22,
-            color: theme.textWhite,
+            color: themes.dark.text,
             marginLeft: 10,
         },
     });

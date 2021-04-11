@@ -16,6 +16,7 @@ import InfiniteScroller from "../components/InfiniteScroller";
 import {MATCH_ACTION_HISTORY_STATUSES} from "../api/dto";
 import {MatchHistoryItem} from "../model/matching";
 import BufferedSearchBar from "../components/BufferedSearchBar";
+import themes from "../constants/themes";
 
 const reduxConnector = connect((state: AppState) => ({
     historyItems: state.matching.historyItems,
@@ -218,7 +219,7 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.6,
         },
         filterLabelSelected: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontWeight: "600",
         },
         filterIcon: {
@@ -227,7 +228,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginRight: 4,
         },
         filterIconSelected: {
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         // Search bar
         searchBarContainer: {

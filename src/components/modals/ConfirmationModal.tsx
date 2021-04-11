@@ -7,6 +7,7 @@ import {preTheme} from "../../styles/utils";
 import CustomModal, {CustomModalClass, CustomModalProps} from "./CustomModal";
 import {IconProps} from "@expo/vector-icons/build/createIconSet";
 import {styleTextLight} from "../../styles/general";
+import themes from "../../constants/themes";
 
 export type ConfirmationModalButtonPreset = "cancel" | "confirm" | "delete";
 
@@ -50,7 +51,7 @@ export class ConfirmationModalClass extends React.Component<ConfirmationModalPro
                 return {
                     text: i18n.t("ok"),
                     backgroundColor: theme.okay,
-                    color: theme.textWhite,
+                    color: themes.dark.text,
                     onPress: (hide) => hide(),
                 };
             }
@@ -58,7 +59,7 @@ export class ConfirmationModalClass extends React.Component<ConfirmationModalPro
                 return {
                     text: i18n.t("delete"),
                     backgroundColor: theme.error,
-                    color: theme.textWhite,
+                    color: themes.dark.text,
                     onPress: (hide) => hide(),
                 };
             }
@@ -83,7 +84,7 @@ export class ConfirmationModalClass extends React.Component<ConfirmationModalPro
         } = this.props;
         const styles = themedStyles(theme);
 
-        const buttonDefaults = {backgroundColor: theme.okay, color: theme.textWhite};
+        const buttonDefaults = {backgroundColor: theme.okay, color: themes.dark.text};
 
         return (
             <CustomModal

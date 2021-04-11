@@ -1,6 +1,7 @@
 import {Theme} from "../types";
 import {preTheme} from "./utils";
 import {StyleSheet} from "react-native";
+import themes from "../constants/themes";
 
 export const headerStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -39,7 +40,7 @@ export const headerStyles = preTheme((theme: Theme) => {
             borderColor: theme.componentBorder,
         },
         avatarTitle: {
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         titleContainer: {
             flex: 1,

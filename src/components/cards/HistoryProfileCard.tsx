@@ -18,6 +18,7 @@ import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
 import {ReportEntityType} from "../../constants/reports";
 import {cancelMatchAction} from "../../state/matching/actions";
 import SwipeTip from "../SwipeTip";
+import themes from "../../constants/themes";
 
 // Component props
 export type HistoryProfileCardProps = ThemeProps & {
@@ -49,21 +50,21 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
             icon: "report",
             text: i18n.t("matching.history.actions.report"),
             backgroundColor: theme.error,
-            color: theme.textWhite,
+            color: themes.dark.text,
             onPress: () => this.reportFormRef.current?.open(),
         };
         const blockButton = {
             icon: "block",
             text: i18n.t("matching.history.actions.block"),
             backgroundColor: theme.error,
-            color: theme.textWhite,
+            color: themes.dark.text,
             onPress: () => this.blockModalRef.current?.show(),
         };
         const cancelButton = {
             icon: "close",
             text: i18n.t(`matching.history.actions.cancel.${status}`),
             backgroundColor: theme.accent,
-            color: theme.textWhite,
+            color: themes.dark.text,
             onPress: () => {
                 hideCard();
                 dispatch(cancelMatchAction(id));
@@ -88,7 +89,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                     looks={LOOKS}
                     rightThreshold={100}
                     overshootRight={false}
-                    rightActions={(hideCard) => (
+                    rightActions={(hideCard: () => void) => (
                         <SwipeActionButtons
                             id={`${item.profile.id}-${item.status}`}
                             looks={LOOKS}

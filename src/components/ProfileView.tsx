@@ -18,6 +18,7 @@ import Chips from "./Chips";
 import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../state/types";
 import WavyHeader from "./headers/WavyHeader";
+import themes from "../constants/themes";
 
 // Component props
 export type ProfileViewProps = ThemeProps & {
@@ -47,7 +48,7 @@ class ProfileView extends React.Component<ProfileViewProps> {
                         activeOpacity={0.8}
                     />
                     {!profile && (
-                        <ActivityIndicator size="large" color={theme.textWhite} style={styles.loadingIndicator} />
+                        <ActivityIndicator size="large" color={themes.dark.text} style={styles.loadingIndicator} />
                     )}
                     <Text style={styles.name}>{fullName}</Text>
                     <FormattedUniversity
@@ -250,20 +251,20 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         name: {
             fontSize: 24,
-            color: theme.textWhite,
+            color: themes.dark.text,
             marginTop: 10,
             height: 30,
         },
         university: {
             fontSize: 14,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         universityContainer: {
             height: 25,
             marginTop: 5,
         },
         avatarContainer: {
-            borderColor: theme.textWhite,
+            borderColor: themes.dark.text,
             borderWidth: 1,
             backgroundColor: theme.accentSecondary,
         },

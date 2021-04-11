@@ -13,6 +13,7 @@ import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
 import layout from "../../constants/layout";
 import {animateValue} from "../../polyfills";
+import themes from "../../constants/themes";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -156,11 +157,11 @@ export const themedStyles = preTheme((theme: Theme, wideDevice: boolean) => {
             marginLeft: -15,
         },
         navigationIcon: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 50,
         },
         title: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 38,
             maxWidth: 210,
             fontFamily: "RalewaySemiBold",

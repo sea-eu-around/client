@@ -55,6 +55,7 @@ import {normalizeWheelEvent} from "../../polyfills";
 import {getRouteParams} from "../../navigation/utils";
 import {noop} from "lodash";
 import ChatUserAvatar from "../../components/ChatUserAvatar";
+import themes from "../../constants/themes";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -524,7 +525,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         messageTick: {
             fontSize: 14,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
     });
 });

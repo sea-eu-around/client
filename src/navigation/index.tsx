@@ -30,6 +30,7 @@ import {DEBUG_FORCE_INITIAL_ROUTE, DEBUG_MODE} from "../constants/config";
 import {BackHandler} from "react-native";
 import BackendUnreachableScreen from "../screens/BackendUnreachableScreen";
 import ResendVerifyEmailScreen from "../screens/ResendVerifyEmailScreen";
+import themes from "../constants/themes";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -140,7 +141,7 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
                                 noShadow={true}
                                 buttonBackgroundColor={theme.accent}
                                 wrapperStyle={{backgroundColor: theme.accent}}
-                                color={theme.textWhite}
+                                color={themes.dark.text}
                             />
                         ),
                     }}
@@ -158,7 +159,7 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
                                 noShadow={true}
                                 buttonBackgroundColor={theme.accent}
                                 wrapperStyle={{backgroundColor: theme.accent}}
-                                color={theme.textWhite}
+                                color={themes.dark.text}
                             />
                         ),
                     }}

@@ -8,6 +8,7 @@ import {ChatRoomUser} from "../../model/chat-room";
 import {MainTabBarIcon} from "./MainTabBar";
 import {View, StyleSheet} from "react-native";
 import {preTheme} from "../../styles/utils";
+import themes from "../../constants/themes";
 
 const reduxConnector = connect(({messaging}: AppState) => ({
     firstRoom:
@@ -42,7 +43,7 @@ class MessagingTabIcon extends React.Component<MessagingTabIconProps> {
         if (isNotRead) {
             indicator = (
                 <View style={styles.indicatorContainer}>
-                    <FontAwesome size={INDICATOR_SIZE - 4} name="exclamation" color={theme.textWhite} />
+                    <FontAwesome size={INDICATOR_SIZE - 4} name="exclamation" color={themes.dark.text} />
                 </View>
             );
         }

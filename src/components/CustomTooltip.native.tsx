@@ -1,8 +1,9 @@
 import React from "react";
 import {Text, StyleSheet} from "react-native";
 import {Tooltip, withTheme} from "react-native-elements";
+import themes from "../constants/themes";
 import {preTheme} from "../styles/utils";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 
 // Component props
 export type CustomTooltipProps = {
@@ -51,13 +52,13 @@ class CustomTooltip extends React.Component<CustomTooltipProps, CustomTooltipSta
     }
 }
 
-export const tooltipStyles = preTheme((theme: Theme) => {
+export const tooltipStyles = preTheme(() => {
     return StyleSheet.create({
         text: {
             textAlign: "justify",
             paddingVertical: 10,
             fontSize: 14,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
         container: {
             alignContent: "center",

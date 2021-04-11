@@ -15,6 +15,7 @@ import AsyncButton from "../components/AsyncButton";
 import {MyThunkDispatch} from "../state/types";
 import {requestSendVerificationEmail} from "../state/auth/actions";
 import store from "../state/store";
+import themes from "../constants/themes";
 
 export type ResendVerifyEmailScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -43,7 +44,7 @@ class ResendVerifyEmailScreen extends React.Component<ResendVerifyEmailScreenPro
                         icon={
                             <MaterialIcons
                                 name="mail-outline"
-                                style={{color: theme.textWhite, fontSize: 24, marginLeft: 10}}
+                                style={{color: themes.dark.text, fontSize: 24, marginLeft: 10}}
                             />
                         }
                     />
