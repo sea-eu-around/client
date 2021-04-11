@@ -92,9 +92,10 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
-            const {needsRecovery} = action as LogInFailureAction;
+            const {needsRecovery, email} = action as LogInFailureAction;
             return {
                 ...state,
+                registerEmail: email || state.registerEmail, // change the registerEmail if one is provided
                 accountNeedsRecovery: needsRecovery,
             };
         }
