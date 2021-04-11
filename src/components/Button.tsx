@@ -55,12 +55,25 @@ export type ButtonProps = {
     skin?: ButtonSkin;
     iconLeft?: boolean;
     contentOpacity?: number;
+    disabled?: boolean;
     TouchableComponent?: typeof React.Component;
 } & ThemeProps;
 
 class Button extends React.Component<ButtonProps> {
     render(): JSX.Element {
-        const {onPress, text, icon, skin, style, textStyle, iconLeft, contentOpacity, children, theme} = this.props;
+        const {
+            onPress,
+            text,
+            icon,
+            skin,
+            style,
+            textStyle,
+            iconLeft,
+            contentOpacity,
+            disabled,
+            children,
+            theme,
+        } = this.props;
 
         const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
@@ -72,6 +85,7 @@ class Button extends React.Component<ButtonProps> {
                 accessibilityLabel={text}
                 onPress={onPress}
                 style={[{alignItems: "center"}, skinStyles.button, style]}
+                disabled={disabled}
             >
                 {children}
                 {/* if content opacity is set, render content AND children anyway */}
