@@ -14,10 +14,14 @@ export enum AUTH_ACTION_TYPES {
     REGISTER_FAILURE = "AUTH/REGISTER_FAILURE",
     LOG_IN_SUCCESS = "AUTH/LOG_IN_SUCCESS",
     LOG_IN_FAILURE = "AUTH/LOG_IN_FAILURE",
+    LOG_IN_RECOVER_CANCEL = "AUTH/LOG_IN_RECOVER_CANCEL",
     LOG_OUT = "AUTH/LOG_OUT",
     VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    BEGIN_ONBOARDING = "AUTH/BEGIN_ONBOARDING",
+    NEXT_ONBOARDING_SLIDE = "AUTH/NEXT_ONBOARDING_SLIDE",
+    PREVIOUS_ONBOARDING_SLIDE = "AUTH/PREVIOUS_ONBOARDING_SLIDE",
     SET_ONBOARDING_VALUES = "AUTH/SET_ONBOARDING_VALUES",
     SET_ONBOARDING_OFFER_VALUE = "AUTH/SET_ONBOARDING_OFFER_VALUE",
     FORGOT_PASSWORD_FAILURE = "AUTH/FORGOT_PASSWORD_FAILURE",
@@ -31,9 +35,7 @@ export type RegisterBeginAction = {
     email: string;
     password: string;
 };
-
 export type RegisterSuccessAction = {type: string; user: User};
-
 export type RegisterFailureAction = {type: string};
 
 export type LogInSuccessAction = {
@@ -42,17 +44,20 @@ export type LogInSuccessAction = {
     user: User;
     usingCachedCredentials: boolean;
 };
+export type LogInFailureAction = {type: string; needsRecovery: boolean};
+export type LogInRecoverCancelAction = {type: string};
 
-export type LogOutAction = {type: string};
-
-export type LogInFailureAction = {type: string};
+export type LogOutAction = {type: string; redirect: boolean};
 
 export type ValidateAccountSuccessAction = {
     type: string;
     email: string;
 };
-
 export type ValidateAccountFailureAction = {type: string};
+
+export type BeginOnboardingAction = {type: string};
+export type NextOnboardingSlideAction = {type: string};
+export type PreviousOnboardingSlideAction = {type: string};
 
 export type SetOnboardingValuesAction = {
     type: string;
@@ -66,7 +71,6 @@ export type SetOnboardingOfferValueAction = {
 };
 
 export type ForgotPasswordFailureAction = {type: string};
-
 export type ForgotPasswordSuccessAction = {
     type: string;
     email: string;
@@ -82,6 +86,7 @@ export type AuthAction =
     | RegisterFailureAction
     | LogInSuccessAction
     | LogInFailureAction
+    | LogInRecoverCancelAction
     | LogOutAction
     | ValidateAccountSuccessAction
     | ValidateAccountFailureAction
@@ -138,8 +143,9 @@ const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boole
     usingCachedCredentials,
 });
 
-const loginFailure = (): LogInFailureAction => ({
+const loginFailure = (needsRecovery = false): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
+    needsRecovery,
 });
 
 export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => async (
@@ -164,21 +170,30 @@ export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => 
     return undefined;
 };
 
-export const requestLogin = (email: string, password: string): ValidatedThunkAction => async (dispatch) => {
-    const response = await requestBackend("auth/login", "POST", {}, {email, password});
+export const requestLogin = (email: string, password: string, recover = false): ValidatedThunkAction => async (
+    dispatch,
+) => {
+    const response = await requestBackend("auth/login", "POST", {}, {email, password, recover});
 
     if (response.status == HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as LoginDto;
         dispatch(loginSuccess(payload.token, convertDtoToUser(payload.user), false));
         return {success: true};
     } else {
-        dispatch(loginFailure());
+        const needsRecovery =
+            response.status === HttpStatusCode.FORBIDDEN && response.errorType === "error.user_being_deleted";
+        dispatch(loginFailure(needsRecovery));
         return {success: false, errors: gatherValidationErrors(response)};
     }
 };
 
-export const logout = (): LogOutAction => ({
+export const cancelLoginRecovery = (): LogInRecoverCancelAction => ({
+    type: AUTH_ACTION_TYPES.LOG_IN_RECOVER_CANCEL,
+});
+
+export const logout = (redirect = true): LogOutAction => ({
     type: AUTH_ACTION_TYPES.LOG_OUT,
+    redirect,
 });
 
 // Account validation actions
@@ -247,6 +262,7 @@ export const deleteAccount = (password: string): ValidatedThunkAction => async (
     const response = await requestBackend("users", "DELETE", {}, {password}, token, true);
 
     if (response.status == HttpStatusCode.NO_CONTENT) {
+        dispatch(logout(false));
         dispatch(deleteAccountSuccess());
         return {success: true};
     } else {
@@ -259,6 +275,18 @@ const deleteAccountSuccess = (): DeleteAccountSuccessAction => ({
 });
 
 // Onboarding actions
+
+export const beginOnboarding = (): BeginOnboardingAction => ({
+    type: AUTH_ACTION_TYPES.BEGIN_ONBOARDING,
+});
+
+export const nextOnboardingSlide = (): NextOnboardingSlideAction => ({
+    type: AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE,
+});
+
+export const previousOnboardingSlide = (): PreviousOnboardingSlideAction => ({
+    type: AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE,
+});
 
 export const setOnboardingValues = (values: Partial<OnboardingState>): SetOnboardingValuesAction => ({
     type: AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES,
@@ -327,4 +355,14 @@ export const debugConnect = (): AppThunk => async (dispatch, getState) => {
             }),
         );
     }
+};
+
+/**
+ * Verifies that the server is alive and reachable by the client.
+ */
+export const verifyBackendConnection = (): AppThunk<Promise<boolean>> => async () => {
+    const response = await requestBackend("ping", "GET", {}, {}, undefined, false, true);
+
+    if (response.status == HttpStatusCode.OK) return true;
+    else return false;
 };

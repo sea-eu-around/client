@@ -90,7 +90,12 @@ export type ResponseProfileDtoStudent = ResponseProfileDtoCommon & CreateProfile
 export type ResponseProfileDtoStaff = ResponseProfileDtoCommon & CreateProfileDtoStaff;
 export type ResponseProfileDto = ResponseProfileDtoStudent | ResponseProfileDtoStaff;
 
-export type ResponseProfileWithMatchInfoDto = {isMatched: boolean; roomId: string | null; profile: ResponseProfileDto};
+export type ResponseProfileWithMatchInfoDto = {
+    isMatched: boolean;
+    roomId: string | null;
+    matchingId: string | null;
+    profile: ResponseProfileDto;
+};
 
 export enum OfferCategory {
     Discover = "discover",
@@ -208,4 +213,87 @@ export type MatchHistoryItemDto = {
     status: MatchActionStatus;
     date: string;
     id: string;
+};
+
+export type ResponseGroupDto = {
+    id: string;
+    name: string;
+    description: string;
+    cover: string | null;
+    visible: boolean;
+    requiresApproval: boolean;
+    members: null;
+    isMember: boolean;
+    role: GroupRole | null;
+    status: GroupMemberStatus | null;
+};
+
+export type CreateGroupDto = {
+    name: string;
+    description: string;
+    visible: boolean;
+    requiresApproval: boolean;
+};
+
+export type CreateGroupPostDto = {
+    type: string;
+    text: string;
+};
+
+export type ResponseGroupPostDto = {
+    id: string;
+    groupId: string;
+    type: string;
+    status: string;
+    text: string;
+    createdAt: string;
+    updatedAt: string;
+    creator: ResponseProfileDto;
+    commentsCount: number;
+    upVotesCount: number;
+    downVotesCount: number;
+    isVoted: boolean;
+    voteType?: "up" | "down";
+};
+
+export type ResponsePostCommentDto = {
+    id: string;
+    text: string;
+    createdAt: string;
+    updatedAt: string;
+    creator: ResponseProfileDto;
+    children: ResponsePostCommentDto[] | null;
+    upVotesCount: number;
+    downVotesCount: number;
+    isVoted: boolean;
+    voteType?: "up" | "down";
+};
+
+export type CreatePostCommentDto = {
+    text: string;
+    parentId?: string;
+};
+
+export enum GroupRole {
+    Admin = "admin",
+    Basic = "basic",
+}
+
+export enum GroupMemberStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Banned = "banned",
+    Invited = "invited",
+    InvitedByAdmin = "invited-by-admin",
+}
+
+export type ResponseGroupMemberDto = {
+    profile: ResponseProfileDto;
+    profileId: string;
+    role: GroupRole;
+    status: GroupMemberStatus;
+};
+
+export type GroupCoverSuccessfullyUpdatedDto = {
+    cover: string;
 };

@@ -14,6 +14,8 @@ import store from "../../state/store";
 import {reportEntity} from "../../state/reports/actions";
 import {MyThunkDispatch} from "../../state/types";
 import QuickForm, {QuickFormClass} from "./QuickForm";
+import {Group, GroupPost, PostComment} from "../../model/groups";
+import BottomSheetTouchableOpacity from "../bottom-sheet/BottomSheetTouchableOpacity";
 
 export type QuickFormReportProps = ThemeProps & {
     entityType: ReportEntityType;
@@ -40,7 +42,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
         if (!entity) return null;
 
         switch (entityType) {
-            case ReportEntityType.PROFILE_ENTITY:
+            case ReportEntityType.PROFILE_ENTITY: {
                 if ((entity as ChatRoomUser)._id) {
                     const u = entity as ChatRoomUser;
                     return {name: u.name, id: u._id};
@@ -48,7 +50,21 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                     const p = entity as UserProfile;
                     return {name: `${p.firstName} ${p.lastName}`, id: p.id};
                 }
-                break;
+            }
+            case ReportEntityType.POST_ENTITY: {
+                const post = entity as GroupPost;
+                const {firstName, lastName} = post.creator;
+                return {name: i18n.t("report.postFrom", {name: `${firstName} ${lastName}`}), id: post.id};
+            }
+            case ReportEntityType.COMMENT_ENTITY: {
+                const comment = entity as PostComment;
+                const {firstName, lastName} = comment.creator;
+                return {name: i18n.t("report.commentFrom", {name: `${firstName} ${lastName}`}), id: comment.id};
+            }
+            case ReportEntityType.GROUP_ENTITY: {
+                const group = entity as Group;
+                return {name: i18n.t("report.group", {name: group.name}), id: group.id};
+            }
             default:
                 return null;
         }
@@ -86,8 +102,8 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
         return (
             <>
                 <QuickForm
-                    ref={this.quickFormRef}
                     activator={activator}
+                    ref={this.quickFormRef}
                     submit={() => this.submit()}
                     titleIcon={{component: MaterialIcons, name: "report"}}
                     title={i18n.t("report.title")}
@@ -97,6 +113,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                     failureTitle={i18n.t("report.failureTitle")}
                     failureText={i18n.t("report.failure")}
                     hideSubmit={!selectedType}
+                    sheetHeight={330}
                 >
                     <View style={styles.inputItem}>
                         <InputLabel>{i18n.t("report.what")}</InputLabel>
@@ -116,6 +133,8 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                                 if (values.length > 0)
                                     this.setState({...this.state, selectedType: values[0] as ReportType});
                             }}
+                            buttonStyleVariant="onboarding"
+                            TouchableComponent={BottomSheetTouchableOpacity}
                         />
                     </View>
                 </QuickForm>

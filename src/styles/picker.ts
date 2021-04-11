@@ -1,6 +1,9 @@
 import {Theme} from "../types";
-import {StyleSheet, ViewStyle} from "react-native";
+import {StyleSheet, TextStyle, ViewStyle} from "react-native";
 import {preTheme} from "./utils";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
+
+export type PickerButtonStyleVariant = "classic" | "onboarding";
 
 export const pickerStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -32,23 +35,53 @@ export const pickerStyles = preTheme((theme: Theme) => {
             fontSize: 20,
             color: theme.textWhite,
         },
-        openButton: {
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            borderWidth: 1,
-            borderRadius: 2,
-            backgroundColor: theme.background,
-            borderColor: theme.componentBorder,
-        },
-        openButtonText: {
-            fontSize: 14,
-            color: theme.text,
-        },
         chipContainer: {
             marginTop: 10,
         },
     });
 });
+
+export function getPickerButtonStyleProps(
+    variant: PickerButtonStyleVariant = "classic",
+    theme: Theme,
+): {button: ViewStyle; text: TextStyle; textNoneSelected: TextStyle} {
+    if (variant === "onboarding") {
+        return {
+            button: {
+                width: "100%",
+                height: 48,
+                alignItems: "flex-start",
+                justifyContent: "center",
+                paddingHorizontal: 20,
+                borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+                backgroundColor: theme.onboardingInputBackground,
+            },
+            text: {
+                fontSize: 14,
+                color: theme.text,
+            },
+            textNoneSelected: {
+                color: theme.textLight,
+            },
+        };
+    } else {
+        return {
+            button: {
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingHorizontal: 20,
+                height: 40,
+                borderWidth: 1,
+                borderRadius: 2,
+                backgroundColor: theme.background,
+                borderColor: theme.componentBorder,
+            },
+            text: {
+                fontSize: 14,
+                color: theme.text,
+            },
+            textNoneSelected: {},
+        };
+    }
+}

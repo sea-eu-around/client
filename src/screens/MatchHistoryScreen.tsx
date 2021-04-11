@@ -11,8 +11,6 @@ import i18n from "i18n-js";
 import {TabMatchingRoot} from "../navigation/types";
 import {HISTORY_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
-import {styleTextLight} from "../styles/general";
-import {MaterialIcons} from "@expo/vector-icons";
 import HistoryProfileCard from "../components/cards/HistoryProfileCard";
 import InfiniteScroller from "../components/InfiniteScroller";
 import {MATCH_ACTION_HISTORY_STATUSES} from "../api/dto";
@@ -22,6 +20,7 @@ import BufferedSearchBar from "../components/BufferedSearchBar";
 const reduxConnector = connect((state: AppState) => ({
     historyItems: state.matching.historyItems,
     fetchingHistory: state.matching.historyPagination.fetching,
+    canFetchMore: state.matching.historyPagination.canFetchMore,
     currentPage: state.matching.historyPagination.page,
     historyFilters: state.matching.historyFilters,
 }));
@@ -37,15 +36,41 @@ type MatchHistoryScreenState = {
 };
 
 class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchHistoryScreenState> {
+    private unsubscribeBlurEvent: null | (() => void) = null;
+
     constructor(props: MatchHistoryScreenProps) {
         super(props);
         this.state = {search: ""};
     }
 
+    private onBlur(): void {
+        // This removes the previously fetched items in order to avoid a slow render
+        // when returning to the screen
+        this.props.dispatch(refreshFetchedHistory());
+    }
+
+    componentDidMount(): void {
+        this.unsubscribeBlurEvent = this.props.navigation.addListener("blur", () => this.onBlur());
+    }
+
+    componentWillUnmount(): void {
+        if (this.unsubscribeBlurEvent) this.unsubscribeBlurEvent();
+    }
+
     render(): JSX.Element {
-        const {historyItems, theme, historyFilters, fetchingHistory, currentPage, navigation, dispatch} = this.props;
+        const {
+            historyItems,
+            theme,
+            historyFilters,
+            fetchingHistory,
+            canFetchMore,
+            currentPage,
+            navigation,
+        } = this.props;
         const {search} = this.state;
+
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         const filters = MATCH_ACTION_HISTORY_STATUSES;
 
@@ -78,8 +103,9 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                 <InfiniteScroller
                     navigation={navigation}
                     fetchLimit={HISTORY_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchHistory(search))}
+                    fetchMore={() => dispatch(fetchHistory(search))}
                     fetching={fetchingHistory}
+                    canFetchMore={canFetchMore}
                     currentPage={currentPage}
                     items={historyItems}
                     id={(it: MatchHistoryItem): string => it.id}
@@ -96,8 +122,10 @@ class MatchHistoryScreen extends React.Component<MatchHistoryScreenProps, MatchH
                             key={`history-card-${item.id}-${item.status}`}
                             item={item}
                             onHidden={hide}
+                            showSwipeTip={item.id === historyItems[0].id}
                         />
                     )}
+                    itemsContainerStyle={styles.itemsContainer}
                 />
             </ScreenWrapper>
         );
@@ -123,13 +151,7 @@ function Filter({
             containerStyle={styles.filterButtonContainer}
             buttonStyle={[styles.filterButton, selected ? styles.filterButtonSelected : {}]}
             titleStyle={[styles.filterLabel, selected ? styles.filterLabelSelected : {}]}
-            icon={
-                <MaterialIcons
-                    name={selected ? "check" : "close"}
-                    style={[styles.filterIcon, selected ? styles.filterIconSelected : {}]}
-                />
-            }
-            raised={true}
+            raised={false}
         />
     );
 }
@@ -151,10 +173,10 @@ const themedStyles = preTheme((theme: Theme) => {
             height: 1,
             width: "100%",
         },
-        filtersIcon: {
-            paddingHorizontal: 5,
-            fontSize: 26,
-            color: theme.textLight,
+        itemsContainer: {
+            width: "100%",
+            maxWidth: 600,
+            alignSelf: "center",
         },
         headerContainer: {
             flexDirection: "row",
@@ -171,6 +193,7 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.5,
             color: theme.text,
         },
+        // Filters
         filtersContainer: {
             width: "100%",
             marginVertical: 10,
@@ -179,6 +202,7 @@ const themedStyles = preTheme((theme: Theme) => {
         filterButtonContainer: {
             flex: 1,
             marginHorizontal: 15,
+            borderRadius: 25,
         },
         filterButton: {
             height: 40,
@@ -192,11 +216,10 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: 0.6,
-            ...styleTextLight,
         },
         filterLabelSelected: {
             color: theme.textWhite,
-            fontWeight: "bold",
+            fontWeight: "600",
         },
         filterIcon: {
             fontSize: 18,

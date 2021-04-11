@@ -1,6 +1,8 @@
 /**
  * University education fields as specified by the International Standard Classification of Education (ISCED), 2013.
  * @see {@link https://ec.europa.eu/eurostat/statistics-explained/index.php/International_Standard_Classification_of_Education_(ISCED)}
+ * @see page 18 of {@link https://eqe.ge/res/docs/228085e.pdf}
+ * @see page 18 of {@link http://uis.unesco.org/fr/file/1390} for french translations
  * See translations for the actual display name of each field.
  */
 
@@ -45,6 +47,7 @@ export enum EducationFieldSubCategory {
     "fisheries",
     "veterinary",
     "health",
+    "welfare",
     "personal-services",
     "hygiene-occupational-health-services",
     "security-services",
@@ -392,6 +395,21 @@ export const EDUCATION_FIELDS: EducationField[] = [
         id: "traditional-complementary-medicine-therapy",
         category: EducationFieldCategory.HW,
         subCategory: EducationFieldSubCategory["health"],
+    },
+    {
+        id: "care-elderly-disabled-adults",
+        category: EducationFieldCategory.HW,
+        subCategory: EducationFieldSubCategory["welfare"],
+    },
+    {
+        id: "child-care-youth-services",
+        category: EducationFieldCategory.HW,
+        subCategory: EducationFieldSubCategory["welfare"],
+    },
+    {
+        id: "social-work-counselling",
+        category: EducationFieldCategory.HW,
+        subCategory: EducationFieldSubCategory["welfare"],
     },
     {
         id: "domestic-services",

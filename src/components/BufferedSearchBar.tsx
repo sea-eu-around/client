@@ -1,4 +1,5 @@
 import * as React from "react";
+import {Platform, ViewStyle} from "react-native";
 import {SearchBar, SearchBarProps} from "react-native-elements";
 
 // Component props
@@ -30,6 +31,7 @@ class BufferedSearchBar extends React.Component<BufferedSearchBarProps> {
                     if (onChangeText) onChangeText(search);
                     this.onChange(search);
                 }}
+                style={[Platform.OS === "web" && ({outline: "none"} as ViewStyle), searchBarProps.style]}
                 {...searchBarProps}
             />
         );

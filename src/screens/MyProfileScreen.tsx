@@ -31,7 +31,7 @@ class MyProfileScreen extends React.Component<MyProfileScreenProps> {
         const {user, dispatch} = this.props;
 
         return (
-            <ScreenWrapper>
+            <ScreenWrapper forceFullWidth>
                 <EditProfileForm
                     user={user}
                     onChange={(fields) => (dispatch as MyThunkDispatch)(setProfileFields(fields))}

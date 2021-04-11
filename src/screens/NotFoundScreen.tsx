@@ -1,6 +1,6 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text} from "react-native";
 import i18n from "i18n-js";
 import {RootNavigatorScreens} from "../navigation/types";
 import {Theme, ThemeProps} from "../types";
@@ -8,6 +8,8 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import ScreenWrapper from "./ScreenWrapper";
 import {styleTextLight} from "../styles/general";
+import store from "../state/store";
+import Button from "../components/Button";
 
 export type NotFoundScreenProps = StackScreenProps<RootNavigatorScreens, "NotFoundScreen"> & ThemeProps;
 
@@ -17,14 +19,21 @@ class NotFoundScreen extends React.Component<NotFoundScreenProps> {
         const styles = themedStyles(theme);
 
         return (
-            <ScreenWrapper>
-                <View style={styles.container}>
-                    <Text style={styles.title}>{i18n.t("pageNotFound")}</Text>
-                    <Text style={styles.subtitle}>{i18n.t("pageDoesntExist")}</Text>
-                    <TouchableOpacity onPress={() => navigation.replace("LoginScreen")} style={styles.link}>
-                        <Text style={styles.linkText}>{i18n.t("goHome")}</Text>
-                    </TouchableOpacity>
-                </View>
+            <ScreenWrapper containerStyle={styles.container}>
+                <Text style={styles.title}>{i18n.t("notFoundScreen.title")}</Text>
+                <Text style={styles.subtitle}>{i18n.t("notFoundScreen.subtitle")}</Text>
+                <Button
+                    onPress={() => {
+                        const {authenticated, onboarded} = store.getState().auth;
+                        if (authenticated) {
+                            if (onboarded) navigation.replace("MainScreen");
+                            else navigation.replace("OnboardingScreen");
+                        } else navigation.replace("LoginRoot");
+                    }}
+                    skin="rounded-filled"
+                    style={styles.redirectButton}
+                    text={i18n.t("notFoundScreen.redirect")}
+                />
             </ScreenWrapper>
         );
     }
@@ -33,9 +42,7 @@ class NotFoundScreen extends React.Component<NotFoundScreenProps> {
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
-            flex: 1,
             justifyContent: "center",
-            alignItems: "center",
             padding: 20,
         },
         title: {
@@ -47,14 +54,11 @@ const themedStyles = preTheme((theme: Theme) => {
         subtitle: {
             fontSize: 20,
             marginTop: 50,
+            marginBottom: 20,
             color: theme.text,
         },
-        link: {
-            paddingVertical: 10,
-        },
-        linkText: {
-            fontSize: 16,
-            color: "#2e78b7",
+        redirectButton: {
+            maxWidth: 280,
         },
     });
 });

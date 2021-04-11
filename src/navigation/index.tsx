@@ -1,76 +1,65 @@
 /* eslint-disable react/display-name */
-import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
-import {CardStyleInterpolators, createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
+import {NavigationContainer, DefaultTheme, DarkTheme, NavigationState} from "@react-navigation/native";
+import {createStackNavigator, StackHeaderProps} from "@react-navigation/stack";
 import * as React from "react";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ValidateEmailScreen from "../screens/ValidateEmailScreen";
 import ValidationEmailSentScreen from "../screens/ValidationEmailSentScreen";
-import {RootNavigatorScreens} from "../navigation/types";
+import {NavigatorRoute, RootNavigatorScreens} from "../navigation/types";
 import LinkingConfiguration from "./linking-config";
 import LoginNavigator from "./LoginNavigator";
 import MainNavigator from "./MainNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
-import {rootNavigationRef, screenTitle} from "./utils";
+import {rootNavigationRef, screenTitle, unauthorizedRedirect} from "./utils";
 import {withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
 import OnboardingSuccessfulScreen from "../screens/onboarding/OnboardingSuccessfulScreen";
-import MatchSuccessScreen from "../screens/MatchSuccessScreen";
-import {AppState, AppStateStatus, Platform} from "react-native";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import ForgotPasswordEmailSentScreen from "../screens/ForgotPasswordEmailSentScreen";
 import ResetPasswordSuccessScreen from "../screens/ResetPasswordSuccessScreen";
 import MyProfileScreen from "../screens/MyProfileScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import {CHAT_CONNECTED_ROUTES} from "../constants/config";
-import {MyThunkDispatch} from "../state/types";
-import {connectToChat, disconnectFromChat} from "../state/messaging/actions";
+import {AUTHENTICATED_ROUTES} from "../constants/route-settings";
 import store from "../state/store";
 import MainHeader from "../components/headers/MainHeader";
 import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
+import {handleRouteChangeForChat} from "./MessagingNavigator";
+import {DEBUG_MODE} from "../constants/config";
+import {BackHandler} from "react-native";
+import BackendUnreachableScreen from "../screens/BackendUnreachableScreen";
+
+type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
+    onReady?: () => void;
+};
 
 // The root stack navigator
 const Stack = createStackNavigator<RootNavigatorScreens>();
 
 let consumedInitialRoute = false;
-let previousRoute: string | undefined = undefined;
-let previousAppStatus: AppStateStatus;
+let previousRoute: NavigatorRoute | undefined = undefined;
+let prePreviousRoute: NavigatorRoute | undefined = undefined;
+let savedNavigationState: NavigationState | undefined = undefined;
 
 // Handle route changes
-function onStateChange() {
-    const route = rootNavigationRef.current?.getCurrentRoute();
+function onStateChange(state: NavigationState | undefined) {
+    if (state) savedNavigationState = state;
+    const route = rootNavigationRef.current?.getCurrentRoute()?.name as NavigatorRoute | undefined;
     if (route) {
-        const toChat = CHAT_CONNECTED_ROUTES.find((r) => r === route.name);
-        const fromChat = previousRoute && CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
-        if (!fromChat && toChat) (store.dispatch as MyThunkDispatch)(connectToChat());
-        if (fromChat && !toChat) (store.dispatch as MyThunkDispatch)(disconnectFromChat());
-        previousRoute = route.name;
+        // Handle redirecting when not authenticated
+        if (!DEBUG_MODE) {
+            if (!store.getState().auth.authenticated && AUTHENTICATED_ROUTES.includes(route)) unauthorizedRedirect();
+        }
+
+        handleRouteChangeForChat(route, previousRoute);
+
+        prePreviousRoute = previousRoute;
+        previousRoute = route;
     }
 }
 
-// Handle app state changes (active / inactive)
-function onAppStateChange(status: AppStateStatus) {
-    const state = store.getState();
-    const dispatch = store.dispatch as MyThunkDispatch;
-    const connectedToChat = state.messaging.socketState.connected;
-
-    // If the app is now active
-    if (previousAppStatus !== "active" && status === "active") {
-        // Reconnect to chat if needed
-        const isChat = CHAT_CONNECTED_ROUTES.find((r) => r === previousRoute);
-        if (isChat && !connectedToChat) dispatch(connectToChat());
-    }
-
-    // If the app is no longer active
-    if (previousAppStatus === "active" && status !== "active") {
-        // Disconnect from the chat
-        if (connectedToChat) dispatch(disconnectFromChat());
-    }
-    previousAppStatus = status;
-}
-
-function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof RootNavigatorScreens}): JSX.Element {
+function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
     const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
     consumedInitialRoute = true;
@@ -86,16 +75,27 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
     return (
         <NavigationContainer
             ref={rootNavigationRef}
+            initialState={savedNavigationState}
             linking={LinkingConfiguration}
             theme={reactNavigationTheme}
             onReady={() => {
-                AppState.addEventListener("change", onAppStateChange);
-                onStateChange();
+                onStateChange(undefined);
+                // Prevent going back to a screen where the user shouldn't go
+                BackHandler.addEventListener("hardwareBackPress", () => {
+                    if (prePreviousRoute) {
+                        const toAuthRoute = AUTHENTICATED_ROUTES.indexOf(prePreviousRoute) !== -1;
+                        const authenticated = store.getState().auth.authenticated;
+                        if (toAuthRoute && !authenticated) return true;
+                        if (!toAuthRoute && authenticated) return true;
+                    }
+                    return false;
+                });
+                if (onReady) onReady();
             }}
             onStateChange={onStateChange}
         >
             <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRouteName}>
-                <Stack.Screen name="LoginScreen" component={LoginNavigator} />
+                <Stack.Screen name="LoginRoot" component={LoginNavigator} />
                 <Stack.Screen
                     name="ForgotPasswordEmailSentScreen"
                     component={ForgotPasswordEmailSentScreen}
@@ -191,21 +191,14 @@ function Navigation({theme, initialRoute}: ThemeProps & {initialRoute?: keyof Ro
                     options={{title: screenTitle("OnboardingSuccessfulScreen")}}
                 />
                 <Stack.Screen
+                    name="BackendUnreachableScreen"
+                    component={BackendUnreachableScreen}
+                    options={{title: screenTitle("BackendUnreachableScreen")}}
+                />
+                <Stack.Screen
                     name="NotFoundScreen"
                     component={NotFoundScreen}
                     options={{title: screenTitle("NotFoundScreen")}}
-                />
-                <Stack.Screen
-                    name="MatchSuccessScreen"
-                    component={MatchSuccessScreen}
-                    options={{
-                        headerShown: false,
-                        cardStyleInterpolator:
-                            Platform.OS == "ios"
-                                ? CardStyleInterpolators.forVerticalIOS
-                                : CardStyleInterpolators.forFadeFromBottomAndroid,
-                        title: screenTitle("MatchSuccessScreen"),
-                    }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

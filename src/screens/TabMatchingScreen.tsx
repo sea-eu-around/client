@@ -4,7 +4,7 @@ import {LayoutRectangle, StyleSheet, Text} from "react-native";
 import {withTheme} from "react-native-elements";
 import {connect, ConnectedProps} from "react-redux";
 import {UserProfile} from "../model/user-profile";
-import ProfilePreview from "../components/cards/MatchProfileCard";
+import MatchProfileCard from "../components/cards/MatchProfileCard";
 import {dislikeProfile, fetchProfiles, likeProfile, refreshFetchedProfiles} from "../state/matching/actions";
 import {AppState, MyThunkDispatch} from "../state/types";
 import {preTheme} from "../styles/utils";
@@ -14,11 +14,13 @@ import {TabMatchingRoot} from "../navigation/types";
 import {PROFILES_FETCH_LIMIT} from "../constants/config";
 import ScreenWrapper from "./ScreenWrapper";
 import InfiniteScroller from "../components/InfiniteScroller";
+import MatchSuccessModal, {MatchSuccessModalClass} from "../components/modals/MatchSuccessModal";
+import {MatchActionStatus} from "../api/dto";
 
 const reduxConnector = connect((state: AppState) => ({
-    profiles: state.matching.fetchedProfiles,
-    fetchingProfiles: state.matching.profilesPagination.fetching,
-    currentPage: state.matching.profilesPagination.page,
+    profiles: state.matching.profiles,
+    profileIds: state.matching.orderedProfileIds,
+    pagination: state.matching.profilesPagination,
 }));
 
 // Component props
@@ -28,46 +30,61 @@ type TabMatchingScreenProps = ConnectedProps<typeof reduxConnector> &
 
 class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     scrollerRef = React.createRef<InfiniteScroller<UserProfile>>();
+    successModalRef = React.createRef<MatchSuccessModalClass>();
 
     render(): JSX.Element {
-        const {profiles, theme, fetchingProfiles, currentPage, navigation, dispatch} = this.props;
+        const {profileIds, profiles, theme, pagination, navigation, dispatch} = this.props;
         const styles = themedStyles(theme);
 
         return (
-            <ScreenWrapper>
+            <ScreenWrapper forceFullWidth>
                 <InfiniteScroller
                     ref={this.scrollerRef}
                     navigation={navigation}
                     fetchLimit={PROFILES_FETCH_LIMIT}
                     fetchMore={() => (dispatch as MyThunkDispatch)(fetchProfiles())}
-                    fetching={fetchingProfiles}
-                    currentPage={currentPage}
-                    items={profiles}
+                    fetching={pagination.fetching}
+                    canFetchMore={pagination.canFetchMore}
+                    currentPage={pagination.page}
+                    // refreshOnFocus
+                    items={profileIds.map((id) => profiles[id])}
                     id={(profile: UserProfile): string => profile.id}
                     noResultsComponent={
                         <>
                             <Text style={styles.noResultsText1}>{i18n.t("matching.noResults")}</Text>
-                            <Text style={styles.noResultsText2}>{i18n.t("matching.noResultsAdvice")}</Text>
+                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
+                        </>
+                    }
+                    endOfItemsComponent={
+                        <>
+                            <Text style={styles.noResultsText1}>{i18n.t("matching.noMoreItems")}</Text>
+                            <Text style={styles.noResultsText2}>{i18n.t("matching.noItemsAdvice")}</Text>
                         </>
                     }
                     refresh={() => dispatch(refreshFetchedProfiles())}
                     renderItem={(profile: UserProfile, hide: () => void) => (
-                        <ProfilePreview
+                        <MatchProfileCard
                             key={`match-profile-card-${profile.id}`}
                             profile={profile}
                             onExpand={(layout: LayoutRectangle) => {
                                 const scroll = this.scrollerRef.current?.scrollViewRef.current;
                                 if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
                             }}
-                            onSwipeRight={() => (dispatch as MyThunkDispatch)(likeProfile(profile.id))}
-                            onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile.id))}
+                            onSwipeRight={async () => {
+                                const response = await (dispatch as MyThunkDispatch)(likeProfile(profile));
+                                if (response && response.status === MatchActionStatus.Matched)
+                                    this.successModalRef.current?.show(profile, response.roomId);
+                            }}
+                            onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
                             onHidden={() => hide()}
+                            showSwipeTip={profile.id == profileIds[0]}
                         />
                     )}
                     // Compensate for the header
-                    itemsContainerStyle={{paddingTop: 100}}
+                    itemsContainerStyle={styles.itemsContainer}
                     progressViewOffset={100}
                 />
+                <MatchSuccessModal ref={this.successModalRef} />
             </ScreenWrapper>
         );
     }
@@ -85,6 +102,13 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 16,
             letterSpacing: 0.5,
             color: theme.text,
+        },
+        itemsContainer: {
+            width: "100%",
+            maxWidth: 600,
+            alignSelf: "center",
+            paddingTop: 100,
+            paddingBottom: 25,
         },
     });
 });

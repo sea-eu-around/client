@@ -50,7 +50,7 @@ class NationalityPicker extends React.Component<NationalityPickerProps, National
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, onSelect} = this.props;
         const {open} = this.state;
         const styles = themedStyles(theme);
 
@@ -62,14 +62,14 @@ class NationalityPicker extends React.Component<NationalityPickerProps, National
                 withFilter={true}
                 withEmoji={false}
                 onSelect={(country: Country) => {
-                    if (this.props.onSelect) this.props.onSelect(country.cca2);
+                    if (onSelect) onSelect(country.cca2);
                 }}
                 onClose={() => this.hideModal()}
                 translation={i18n.t("countryPickerLanguageCode") as TranslationLanguageCode}
                 visible={open}
                 containerButtonStyle={styles.pickerContainerButton}
                 theme={theme.id === "dark" ? DARK_THEME : DEFAULT_THEME}
-            ></CountryPicker>
+            />
         );
     }
 }

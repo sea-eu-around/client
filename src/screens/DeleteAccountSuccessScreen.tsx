@@ -6,11 +6,10 @@ import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootNavigatorScreens} from "../navigation/types";
-import store from "../state/store";
-import {logout} from "../state/auth/actions";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import ScreenWrapper from "./ScreenWrapper";
 import Button from "../components/Button";
+import {rootNavigate} from "../navigation/utils";
 
 type DeleteAccountSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -27,7 +26,7 @@ class DeleteAccountSuccessScreen extends React.Component<DeleteAccountSuccessScr
                     <Button
                         text={i18n.t("deleteAccount.leave")}
                         icon={<MaterialCommunityIcons name="logout" style={styles.buttonIcon} />}
-                        onPress={() => store.dispatch(logout())}
+                        onPress={() => rootNavigate("LoginRoot", {screen: "WelcomeScreen"})}
                         skin="rounded-filled"
                         style={styles.button}
                     />

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Dimensions, Platform, StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {rootNavigate} from "../navigation/utils";
 import {preTheme} from "../styles/utils";
@@ -11,6 +11,7 @@ import ScreenWrapper from "./ScreenWrapper";
 import SemiHighlightedText from "../components/SemiHighlightedText";
 import {getLocalSvg} from "../assets";
 import Button from "../components/Button";
+import MobileStoreButton from "../components/MobileStoreButton";
 
 export type WelcomeScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -20,28 +21,53 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
         const styles = themedStyles(theme);
 
         const WelcomeImage = getLocalSvg("welcome", () => this.forceUpdate());
+        const storeButtonWidth = Math.min(Dimensions.get("window").width * 0.4, 200);
 
         return (
             <ScreenWrapper>
                 <View style={styles.container}>
-                    <View style={styles.imageContainer}>
-                        <WelcomeImage />
+                    <View style={styles.imageAndTextContainer}>
+                        <View style={styles.imageContainer}>
+                            <WelcomeImage />
+                        </View>
+                        <View style={styles.textContainer}>
+                            <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
+                            <Text style={styles.subtitle}>{i18n.t("welcomeScreen.subtitle")}</Text>
+                        </View>
                     </View>
-                    <View style={styles.textContainer}>
-                        <SemiHighlightedText text={i18n.t("appName")} fontSize={32} textStyle={styles.appName} />
-                        <Text style={styles.subtitle} numberOfLines={2}>
-                            {i18n.t("welcomeScreen.subtitle")}
-                        </Text>
-                    </View>
+                    {Platform.OS === "web" && (
+                        <View style={styles.mobileStoresContainer}>
+                            <MobileStoreButton
+                                store="android"
+                                url="https://play.google.com/store/apps/details?id=com.sea_eu.around"
+                                width={storeButtonWidth}
+                            />
+                            <MobileStoreButton
+                                store="ios"
+                                url="https://apps.apple.com/fr/app/sea-eu-around/id1543605955"
+                                width={storeButtonWidth}
+                            />
+                        </View>
+                    )}
                     <View style={styles.actionsContainer}>
                         <Button
                             text={i18n.t("welcomeScreen.signIn")}
-                            onPress={() => rootNavigate("SigninScreen")}
+                            onPress={() => {
+                                rootNavigate("LoginRoot", {
+                                    screen: "LoginScreens",
+                                    params: {screen: "SigninScreen"},
+                                });
+                            }}
                             skin="rounded-filled"
                         />
                         <Button
                             text={i18n.t("welcomeScreen.signUp")}
-                            onPress={() => rootNavigate("SignupScreen")}
+                            onPress={() => {
+                                rootNavigate("LoginRoot", {
+                                    screen: "LoginScreens",
+                                    params: {screen: "SignupScreen"},
+                                });
+                            }}
                             skin="rounded-hollow"
                         />
                     </View>
@@ -56,15 +82,22 @@ const themedStyles = preTheme((theme: Theme) => {
         container: {
             flex: 1,
             width: "85%",
-            alignItems: "center",
             justifyContent: "space-between",
-            paddingTop: "20%",
+            alignItems: "center",
+        },
+        imageAndTextContainer: {
+            flex: 1,
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
         },
         imageContainer: {
             width: "100%",
             height: 300,
         },
-        textContainer: {},
+        textContainer: {
+            marginVertical: 20,
+        },
         appName: {
             color: theme.accent,
             fontFamily: "RalewayBold",
@@ -77,6 +110,11 @@ const themedStyles = preTheme((theme: Theme) => {
             alignSelf: "center",
             maxWidth: 250,
             marginTop: 10,
+        },
+
+        mobileStoresContainer: {
+            flexDirection: "row",
+            marginVertical: 20,
         },
 
         actionsContainer: {

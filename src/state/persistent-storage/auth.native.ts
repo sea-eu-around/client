@@ -35,7 +35,13 @@ export function discardAuthInformation(): void {
 export async function readCachedCredentials(): Promise<false | CredentialsStorageObject> {
     const available = await SecureStore.isAvailableAsync();
     if (available) {
-        const raw = await SecureStore.getItemAsync("auth");
+        let raw;
+        try {
+            raw = await SecureStore.getItemAsync("auth");
+        } catch {
+            console.log("An error occurred while retrieving authentication data from secure storage. Discarding info.");
+            discardAuthInformation();
+        }
         return raw ? JSON.parse(raw) : false;
     } else return false;
 }

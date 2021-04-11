@@ -210,8 +210,19 @@ let entries = {};
 $("#Table > tbody").children().each((i,tr) => {
     const code = tr.children[4].innerText.trim();
     if(code.length == 2) {
-        const english = tr.children[2].innerText.trim();
-        entries[code] = english;
+        entries[code] = tr.children[2].innerText.trim();
+    }
+});
+console.log(entries);
+*/
+
+/* French translations from https://fr.wikipedia.org/wiki/Liste_des_codes_ISO_639-1 */
+/*
+let entries = {};
+$("#mw-content-text > div.mw-parser-output > table > tbody").children().each((i,tr) => {
+    const code = tr.children[0].innerText.trim();
+    if(code.length == 2) {
+        entries[code] = tr.children[3].innerText.trim();
     }
 });
 console.log(entries);

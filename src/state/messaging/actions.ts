@@ -12,13 +12,20 @@ import {requestBackend} from "../../api/utils";
 import {MESSAGES_FETCH_LIMIT, ROOMS_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
 import {ChatRoom, ChatRoomMessage} from "../../model/chat-room";
-import {AppThunk} from "../types";
+import {
+    AppThunk,
+    PaginatedFetchBeginAction,
+    PaginatedFetchFailureAction,
+    PaginatedFetchRefreshAction,
+    PaginatedFetchSuccessAction,
+} from "../types";
 
 export enum MESSAGING_ACTION_TYPES {
     FETCH_MATCH_ROOMS_BEGIN = "MESSAGING/FETCH_MATCH_ROOMS_BEGIN",
     FETCH_MATCH_ROOMS_FAILURE = "MESSAGING/FETCH_MATCH_ROOMS_FAILURE",
     FETCH_MATCH_ROOMS_SUCCESS = "MESSAGING/FETCH_MATCH_ROOMS_SUCCESS",
     FETCH_MATCH_ROOMS_REFRESH = "MESSAGING/FETCH_MATCH_ROOMS_REFRESH",
+    FETCH_MATCH_ROOM_SUCCESS = "MESSAGING/FETCH_MATCH_ROOM_SUCCESS",
     CONNECT_TO_CHAT_BEGIN = "MESSAGING/CONNECT_TO_CHAT_BEGIN",
     CONNECT_TO_CHAT_FAILURE = "MESSAGING/CONNECT_TO_CHAT_FAILURE",
     CONNECT_TO_CHAT_SUCCESS = "MESSAGING/CONNECT_TO_CHAT_SUCCESS",
@@ -35,23 +42,19 @@ export enum MESSAGING_ACTION_TYPES {
     FETCH_EARLIER_MESSAGES_BEGIN = "MESSAGING/FETCH_EARLIER_MESSAGES_BEGIN",
     FETCH_EARLIER_MESSAGES_FAILURE = "MESSAGING/FETCH_EARLIER_MESSAGES_FAILURE",
     FETCH_EARLIER_MESSAGES_SUCCESS = "MESSAGING/FETCH_EARLIER_MESSAGES_SUCCESS",
+    FETCH_NEW_MESSAGES_BEGIN = "MESSAGING/FETCH_NEW_MESSAGES_BEGIN",
+    FETCH_NEW_MESSAGES_FAILURE = "MESSAGING/FETCH_NEW_MESSAGES_FAILURE",
+    FETCH_NEW_MESSAGES_SUCCESS = "MESSAGING/FETCH_NEW_MESSAGES_SUCCESS",
 }
 
-export type FetchMatchRoomsBeginAction = {type: string};
-export type FetchMatchRoomsFailureAction = {type: string};
-export type FetchMatchRoomsSuccessAction = {
-    type: string;
-    rooms: ChatRoom[];
-    canFetchMore: boolean;
-};
-export type FetchMatchRoomsRefreshAction = {type: string};
+export type FetchMatchRoomSuccessAction = {type: string; room: ChatRoom};
 
 export type ConnectToChatBeginAction = {type: string};
 export type ConnectToChatFailureAction = {type: string};
 export type ConnectToChatSuccessAction = {type: string};
 
 export type JoinChatRoomBeginAction = {type: string; room: ChatRoom};
-export type JoinChatRoomFailureAction = {type: string};
+export type JoinChatRoomFailureAction = {type: string; room: ChatRoom};
 export type JoinChatRoomSuccessAction = {type: string; room: ChatRoom};
 export type LeaveChatRoomAction = {type: string};
 
@@ -63,19 +66,19 @@ export type ReceiveChatMessageAction = {type: string; message: ResponseChatMessa
 export type ReceiveChatWritingAction = {type: string; payload: ResponseChatWritingDto};
 export type ReadChatMessageAction = {type: string; payload: ResponseChatMessageReadDto};
 
-export type FetchEarlierMessagesBeginAction = {type: string; room: ChatRoom};
-export type FetchEarlierMessagesFailureAction = {type: string; room: ChatRoom};
-export type FetchEarlierMessagesSuccessAction = {
-    type: string;
-    room: ChatRoom;
-    messages: ChatRoomMessage[];
-    canFetchMore: boolean;
-};
+export type FetchEarlierMessagesBeginAction = {room: ChatRoom} & PaginatedFetchBeginAction;
+export type FetchEarlierMessagesFailureAction = {room: ChatRoom} & PaginatedFetchFailureAction;
+export type FetchEarlierMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuccessAction<ChatRoomMessage>;
+
+export type FetchNewMessagesBeginAction = {room: ChatRoom} & PaginatedFetchBeginAction;
+export type FetchNewMessagesFailureAction = {room: ChatRoom} & PaginatedFetchFailureAction;
+export type FetchNewMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuccessAction<ChatRoomMessage>;
 
 export type MessagingAction =
-    | FetchMatchRoomsFailureAction
-    | FetchMatchRoomsSuccessAction
-    | FetchMatchRoomsRefreshAction
+    | FetchMatchRoomSuccessAction
+    | PaginatedFetchBeginAction
+    | PaginatedFetchSuccessAction<ChatRoom>
+    | PaginatedFetchRefreshAction
     | ConnectToChatBeginAction
     | ConnectToChatFailureAction
     | ConnectToChatSuccessAction
@@ -89,19 +92,22 @@ export type MessagingAction =
     | ReceiveChatMessageAction
     | FetchEarlierMessagesBeginAction
     | FetchEarlierMessagesFailureAction
-    | FetchEarlierMessagesSuccessAction;
+    | FetchEarlierMessagesSuccessAction
+    | FetchNewMessagesBeginAction
+    | FetchNewMessagesFailureAction
+    | FetchNewMessagesSuccessAction;
 
-const beginFetchMatchRooms = (): FetchMatchRoomsBeginAction => ({
+const beginFetchMatchRooms = (): PaginatedFetchBeginAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN,
 });
 
-const fetchMatchRoomsFailure = (): FetchMatchRoomsFailureAction => ({
+const fetchMatchRoomsFailure = (): PaginatedFetchFailureAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_FAILURE,
 });
 
-const fetchMatchRoomsSuccess = (rooms: ChatRoom[], canFetchMore: boolean): FetchMatchRoomsSuccessAction => ({
+const fetchMatchRoomsSuccess = (items: ChatRoom[], canFetchMore: boolean): PaginatedFetchSuccessAction<ChatRoom> => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS,
-    rooms,
+    items,
     canFetchMore,
 });
 
@@ -130,7 +136,7 @@ export const fetchMatchRooms = (search?: string): AppThunk => async (dispatch, g
     } else dispatch(fetchMatchRoomsFailure());
 };
 
-export const refreshMatchRooms = (): FetchMatchRoomsRefreshAction => ({
+export const refreshMatchRooms = (): PaginatedFetchRefreshAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_REFRESH,
 });
 
@@ -147,7 +153,6 @@ const connectToChatSuccess = (): ConnectToChatSuccessAction => ({
 });
 
 export const connectToChat = (callback?: (connected: boolean) => void): AppThunk => async (dispatch, getState) => {
-    const {connected, connecting} = getState().messaging.socketState;
     const authToken = getState().auth.token;
 
     const fail = () => {
@@ -155,19 +160,20 @@ export const connectToChat = (callback?: (connected: boolean) => void): AppThunk
         if (callback) callback(false);
     };
 
-    if (connected) {
+    if (chatSocket.isConnected()) {
         if (callback) callback(true);
     } else if (authToken) {
-        if (!connecting) {
+        if (chatSocket.isConnecting()) {
+            if (callback) chatSocket.addConnectCallback(callback);
+        } else {
             dispatch(connectToChatBegin());
             chatSocket.connect(
                 authToken,
                 {
                     onMessageReceived: (m) => {
-                        const {activeRoom} = getState().messaging;
+                        const {activeRoomId} = getState().messaging;
                         // Tell the server we've read the message if this is the active room
-                        if (activeRoom && m.roomId == activeRoom.id)
-                            chatSocket.readMessage(activeRoom.id, m.id, m.updatedAt);
+                        if (m.roomId == activeRoomId) chatSocket.readMessage(activeRoomId, m.id, m.updatedAt);
                         dispatch(receiveChatMessage(m));
                     },
                     onMessageRead: (p) => dispatch(readChatMessage(p)),
@@ -194,8 +200,9 @@ const joinChatRoomBegin = (room: ChatRoom): JoinChatRoomBeginAction => ({
     room,
 });
 
-const joinChatRoomFailure = (): JoinChatRoomFailureAction => ({
+const joinChatRoomFailure = (room: ChatRoom): JoinChatRoomFailureAction => ({
     type: MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_FAILURE,
+    room,
 });
 
 const joinChatRoomSuccess = (room: ChatRoom): JoinChatRoomSuccessAction => ({
@@ -203,18 +210,12 @@ const joinChatRoomSuccess = (room: ChatRoom): JoinChatRoomSuccessAction => ({
     room,
 });
 
-export const joinChatRoom = (room: ChatRoom): AppThunk => async (dispatch, getState) => {
-    const {
-        socketState: {connected},
-        activeRoom,
-    } = getState().messaging;
-
-    if (activeRoom || !connected) dispatch(joinChatRoomFailure());
-    else {
+export const joinChatRoom = (room: ChatRoom): AppThunk => async (dispatch) => {
+    if (chatSocket.isConnected()) {
         dispatch(joinChatRoomBegin(room));
         chatSocket.joinRoom(room);
         dispatch(joinChatRoomSuccess(room));
-    }
+    } else dispatch(joinChatRoomFailure(room));
 };
 
 export const leaveChatRoom = (room: ChatRoom): LeaveChatRoomAction => {
@@ -232,13 +233,9 @@ const sendChatMessageSuccess = (message: ChatRoomMessage): SendMessageSuccessAct
 });
 
 export const sendChatMessage = (id: string, text: string, createdAt: Date): AppThunk => async (dispatch, getState) => {
-    const {
-        socketState: {connected},
-        activeRoom,
-        localChatUser,
-    } = getState().messaging;
+    const {activeRoomId, localChatUser} = getState().messaging;
 
-    if (connected && activeRoom && localChatUser) {
+    if (chatSocket.isConnected() && activeRoomId && localChatUser) {
         const message: ChatRoomMessage = {
             _id: id,
             createdAt,
@@ -247,11 +244,11 @@ export const sendChatMessage = (id: string, text: string, createdAt: Date): AppT
             sent: false,
         };
         dispatch(sendChatMessageSuccess(message));
-        chatSocket.sendMessage(activeRoom.id, id, text);
+        chatSocket.sendMessage(activeRoomId, id, text);
     } else dispatch(sendChatMessageFailure());
 };
 
-const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
+export const receiveChatMessage = (message: ResponseChatMessageDto): ReceiveChatMessageAction => ({
     type: MESSAGING_ACTION_TYPES.RECEIVE_MESSAGE,
     message,
 });
@@ -266,7 +263,7 @@ const readChatMessage = (payload: ResponseChatMessageReadDto): ReadChatMessageAc
     payload,
 });
 
-const beginFetchEarlierMessages = (room: ChatRoom): FetchEarlierMessagesBeginAction => ({
+const fetchEarlierMessagesBegin = (room: ChatRoom): FetchEarlierMessagesBeginAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_BEGIN,
     room,
 });
@@ -278,28 +275,104 @@ const fetchEarlierMessagesFailure = (room: ChatRoom): FetchEarlierMessagesFailur
 
 const fetchEarlierMessagesSuccess = (
     room: ChatRoom,
-    messages: ChatRoomMessage[],
+    items: ChatRoomMessage[],
     canFetchMore: boolean,
 ): FetchEarlierMessagesSuccessAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_SUCCESS,
     room,
-    messages,
+    items,
     canFetchMore,
 });
+
+const fetchNewMessagesBegin = (room: ChatRoom): FetchNewMessagesBeginAction => ({
+    type: MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_BEGIN,
+    room,
+});
+
+const fetchNewMessagesFailure = (room: ChatRoom): FetchNewMessagesFailureAction => ({
+    type: MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_FAILURE,
+    room,
+});
+
+const fetchNewMessagesSuccess = (
+    room: ChatRoom,
+    items: ChatRoomMessage[],
+    canFetchMore: boolean,
+): FetchNewMessagesSuccessAction => ({
+    type: MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS,
+    room,
+    items,
+    canFetchMore,
+});
+
+/**
+ * Fetch all messages that are more recent than the last one we have for a given room.
+ * @param room a ChatRoom
+ */
+export const fetchNewMessages = (room: ChatRoom): AppThunk => async (dispatch, getState) => {
+    const state = getState();
+    const {fetchingNewMessages} = state.messaging;
+    const token = state.auth.token;
+
+    if (fetchingNewMessages) return;
+    const lastMessage = room.lastMessage;
+
+    if (chatSocket.isConnected() && lastMessage) {
+        dispatch(fetchNewMessagesBegin(room));
+
+        // Fetch messages only after the date of the latest message we have
+        const afterDate = lastMessage.createdAt.toJSON();
+
+        const fetchPage = async (page: number) => {
+            const response = await requestBackend(
+                `rooms/${room.id}/messages`,
+                "GET",
+                {page, limit: MESSAGES_FETCH_LIMIT, afterDate},
+                {},
+                token,
+            );
+
+            const convertDto = (dto: ResponseChatMessageDto): ChatRoomMessage | undefined => {
+                const user = room.users.find((u) => u._id === dto.senderId);
+                return user ? convertDtoToChatMessage(user, dto) : undefined;
+            };
+
+            if (response.status === HttpStatusCode.OK) {
+                const paginated = response as PaginatedRequestResponse;
+                const messages = (paginated.data as ResponseChatMessageDto[])
+                    .map(convertDto)
+                    .filter((m) => m !== undefined);
+
+                // Keep fetching if there are more messages to fetch
+                if (page < paginated.meta.totalPages) fetchPage(page + 1);
+                else if (messages.length > 0 && messages[0]) {
+                    // Inform the server that we've read the last message
+                    chatSocket.readMessage(room.id, messages[0]._id, messages[0].createdAt.toJSON());
+                }
+                dispatch(
+                    fetchNewMessagesSuccess(room, messages as ChatRoomMessage[], page < paginated.meta.totalPages),
+                );
+            } else dispatch(fetchNewMessagesFailure(room));
+        };
+
+        fetchPage(1);
+    } else {
+        dispatch(fetchNewMessagesFailure(room));
+    }
+};
 
 export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatch, getState) => {
     const state = getState();
     const {
         socketState: {connected},
-        localChatUser,
     } = state.messaging;
     const token = state.auth.token;
     const pagination = room.messagePagination;
 
     if (pagination.fetching || !pagination.canFetchMore) return;
 
-    if (connected && localChatUser) {
-        dispatch(beginFetchEarlierMessages(room));
+    if (connected) {
+        dispatch(fetchEarlierMessagesBegin(room));
 
         // Fetch messages only before the date of the earliest message we have
         const beforeDate =
@@ -308,7 +381,7 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
         const response = await requestBackend(
             `rooms/${room.id}/messages`,
             "GET",
-            {page: pagination.page, limit: MESSAGES_FETCH_LIMIT, beforeDate},
+            {page: 1, limit: MESSAGES_FETCH_LIMIT, beforeDate},
             {},
             token,
         );
@@ -325,12 +398,16 @@ export const fetchEarlierMessages = (room: ChatRoom): AppThunk => async (dispatc
                 .filter((m) => m !== undefined);
             const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
             dispatch(fetchEarlierMessagesSuccess(room, messages as ChatRoomMessage[], canFetchMore));
-            return;
-        }
+        } else dispatch(fetchEarlierMessagesFailure(room));
+    } else {
+        dispatch(fetchEarlierMessagesFailure(room));
     }
-
-    dispatch(fetchEarlierMessagesFailure(room));
 };
+
+const fetchMatchRoomSuccess = (room: ChatRoom): FetchMatchRoomSuccessAction => ({
+    type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOM_SUCCESS,
+    room,
+});
 
 export const fetchMatchRoom = (roomId: string): AppThunk<Promise<ChatRoom | null>> => async (dispatch, getState) => {
     const {token} = getState().auth;
@@ -339,6 +416,8 @@ export const fetchMatchRoom = (roomId: string): AppThunk<Promise<ChatRoom | null
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
-        return convertDtoToRoom(payload as ResponseRoomDto);
+        const room = convertDtoToRoom(payload as ResponseRoomDto);
+        dispatch(fetchMatchRoomSuccess(room));
+        return room;
     } else return null;
 };

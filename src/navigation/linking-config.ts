@@ -6,16 +6,16 @@ const config: LinkingOptions = {
     prefixes: [Linking.makeUrl("/"), CLIENT_URL, `${APP_SCHEME}://`],
     config: {
         screens: {
-            LoginScreen: {
+            LoginRoot: {
                 screens: {
                     WelcomeScreen: "welcome",
-                    SigninScreen: {
+                    LoginScreens: {
                         screens: {
-                            LoginScreen: "login",
+                            SigninScreen: "login",
                             ForgotPasswordScreen: "forgot-password",
+                            SignupScreen: "signup",
                         },
                     },
-                    SignupScreen: "signup",
                 },
             },
             ForgotPasswordEmailSentScreen: "password-email-sent",
@@ -30,7 +30,19 @@ const config: LinkingOptions = {
                     TabMatching: {
                         screens: {
                             TabMatchingScreen: "match",
-                            MAtchFilteringScren: "match/filters",
+                            MatchFilteringScreen: "match/filters",
+                            MatchHistoryScreen: "match/history",
+                        },
+                    },
+                    TabGroups: {
+                        screens: {
+                            TabGroupsScreen: "groups",
+                            GroupsExploreScreen: "groups/explore",
+                            GroupScreen: "group/:groupId",
+                            GroupMembersScreen: "group/:groupId/members",
+                            GroupBannedMembersScreen: "group/:groupId/banned",
+                            GroupMembersApprovalScreen: "group/:groupId/requests",
+                            GroupInviteScreen: "group/:groupId/invite",
                         },
                     },
                     TabMessaging: {
@@ -58,20 +70,20 @@ const config: LinkingOptions = {
             OnboardingScreen: {
                 screens: {
                     OnboardingNameScreen: "onboarding/name",
-                    OnboardingPersonalInfoScreen: "onboarding/info",
-                    OnboardingLanguageScreen: "onboarding/language",
-                    OnboardingInterestsScreen: "onboarding/interests",
+                    OnboardingProfileScreen1: "onboarding/profile/1",
+                    OnboardingProfileScreen2: "onboarding/profile/2",
                     OnboardingRoleScreen: "onboarding/role/1",
                     OnboardingRoleSpecificScreen: "onboarding/role/2",
                     OnboardingOffersScreen1: "onboarding/offers/1",
                     OnboardingOffersScreen2: "onboarding/offers/2",
                     OnboardingOffersScreen3: "onboarding/offers/3",
-                    OnboardingTosScreen: "onboarding/tos",
-                    OnboardingPrivacyScreen: "onboarding/privacy",
+                    OnboardingLegalScreen1: "onboarding/tos",
+                    OnboardingLegalScreen2: "onboarding/data",
+                    OnboardingLegalScreen3: "onboarding/cookies",
                 },
             },
             OnboardingSuccessfulScreen: "onboarding/success",
-            MatchSuccessScreen: "match/success",
+            BackendUnreachableScreen: "cannot-reach-server",
             NotFoundScreen: "*",
         },
     },

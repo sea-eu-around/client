@@ -1,46 +1,55 @@
 import * as React from "react";
 import {OnboardingScreens} from "../navigation/types";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
-import {ONBOARDING_ORDER, ONBOARDING_SCREENS} from "../screens/onboarding";
-import {rootNavigate, screenTitle} from "./utils";
+import {ONBOARDING_ORDER} from "../screens/onboarding";
+import {screenTitle} from "./utils";
+import OnboardingProgressBar from "../components/OnboardingProgressBar";
+import {nextOnboardingSlide, previousOnboardingSlide} from "../state/auth/actions";
+import store from "../state/store";
+import {connect} from "react-redux";
+import {AppState} from "../state/types";
+import {ONBOARDING_SCREENS} from "../screens/onboarding/screens";
 
 const OnboardingStack = createMaterialTopTabNavigator<OnboardingScreens>();
 
 const screens = ONBOARDING_ORDER.map((name: keyof OnboardingScreens, i: number) => {
-    const ComponentClass = ONBOARDING_SCREENS[name];
     const hasNext = i < ONBOARDING_ORDER.length - 1;
-    const next = () => {
-        if (hasNext) rootNavigate(ONBOARDING_ORDER[i + 1]);
-    };
-    const previous = () => {
-        if (i > 0) rootNavigate(ONBOARDING_ORDER[i - 1]);
-    };
+    const next = () => hasNext && store.dispatch(nextOnboardingSlide());
+    const previous = () => i > 0 && store.dispatch(previousOnboardingSlide());
 
-    class temp extends React.Component {
-        render(): JSX.Element {
-            return <ComponentClass next={next} previous={previous} index={i} hasNext={hasNext} />;
-        }
+    const ComponentClass = ONBOARDING_SCREENS[name] as typeof React.Component;
+    function Wrapper(): JSX.Element {
+        return <ComponentClass next={next} previous={previous} index={i} hasNext={hasNext} />;
     }
 
-    return <OnboardingStack.Screen key={i} name={name} component={temp} options={{title: screenTitle(name)}} />;
+    return <OnboardingStack.Screen key={i} name={name} component={Wrapper} options={{title: screenTitle(name)}} />;
 });
 
-export default function OnboardingNavigator(): JSX.Element {
+const reduxConnector = connect((state: AppState) => ({
+    onboardingIndex: state.auth.onboardingIndex,
+}));
+
+function OnboardingNavigator({onboardingIndex}: {onboardingIndex: number}): JSX.Element {
     return (
-        <OnboardingStack.Navigator
-            initialRouteName={ONBOARDING_ORDER[0]}
-            tabBarOptions={{showLabel: false, showIcon: false}}
-            tabBar={() => <></>}
-            springConfig={{
-                stiffness: 500,
-                damping: 2000,
-                mass: 5,
-            }}
-            swipeEnabled={false}
-            lazy={true}
-            lazyPreloadDistance={0}
-        >
-            {screens}
-        </OnboardingStack.Navigator>
+        <>
+            <OnboardingStack.Navigator
+                initialRouteName={ONBOARDING_ORDER[onboardingIndex]}
+                tabBarOptions={{showLabel: false, showIcon: false}}
+                tabBar={() => <></>}
+                springConfig={{
+                    stiffness: 500,
+                    damping: 2000,
+                    mass: 5,
+                }}
+                swipeEnabled={false}
+                lazy={true}
+                lazyPreloadDistance={0}
+            >
+                {screens}
+            </OnboardingStack.Navigator>
+            <OnboardingProgressBar index={onboardingIndex} />
+        </>
     );
 }
+
+export default reduxConnector(OnboardingNavigator);

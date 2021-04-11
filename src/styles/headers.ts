@@ -9,8 +9,8 @@ export const headerStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: 15,
-            paddingBottom: 10,
-            height: 100,
+            height: 90,
+            paddingBottom: 5,
         },
         wrapperBlur: {
             backgroundColor: "transparent",
@@ -41,8 +41,10 @@ export const headerStyles = preTheme((theme: Theme) => {
         avatarTitle: {
             color: theme.textWhite,
         },
-        title: {
+        titleContainer: {
             flex: 1,
+        },
+        title: {
             color: theme.text,
             fontWeight: "600",
             fontSize: 20,

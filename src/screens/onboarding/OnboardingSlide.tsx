@@ -1,16 +1,5 @@
-import {FontAwesome} from "@expo/vector-icons";
 import * as React from "react";
-import {
-    Text,
-    View,
-    TouchableOpacity,
-    ScrollView,
-    KeyboardAvoidingView,
-    ViewStyle,
-    StyleProp,
-    Alert,
-    Dimensions,
-} from "react-native";
+import {Text, View, ScrollView, KeyboardAvoidingView, ViewStyle, StyleProp, Alert, Platform} from "react-native";
 import {withTheme} from "react-native-elements";
 import {onboardingStyle} from "../../styles/onboarding";
 import {ThemeProps} from "../../types";
@@ -19,8 +8,9 @@ import i18n from "i18n-js";
 import store from "../../state/store";
 import ScreenWrapper from "../ScreenWrapper";
 import {logout} from "../../state/auth/actions";
-import {getLocalSvg} from "../../assets";
-import WavyHeader from "../../components/headers/WavyHeader";
+import Button from "../../components/Button";
+import layout from "../../constants/layout";
+import {SafeAreaInsetsContext} from "react-native-safe-area-context";
 
 export type OnboardingScreenProps = {
     index: number;
@@ -36,8 +26,15 @@ export type OnboardingSlideProps = {
     handleSubmit?: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
     hideNavNext?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
+    background?: JSX.Element;
+    illustration?: JSX.Element;
+    textColor?: string;
 } & OnboardingScreenProps &
     ThemeProps;
+
+function ButtonSpacer(): JSX.Element {
+    return <View style={{width: 10, height: 1}}></View>;
+}
 
 class OnboardingSlide extends React.Component<OnboardingSlideProps> {
     render(): JSX.Element {
@@ -50,6 +47,9 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             handleSubmit,
             next,
             containerStyle,
+            background,
+            illustration,
+            textColor,
             noKeyboardAvoidance,
             theme,
         } = this.props;
@@ -62,75 +62,106 @@ class OnboardingSlide extends React.Component<OnboardingSlideProps> {
             else if (hasNext) next();
         };
 
-        const Background = getLocalSvg("background.onboarding", () => this.forceUpdate());
-        const {width, height} = Dimensions.get("screen");
+        const wide = layout.isWideDevice;
+
         return (
-            <ScreenWrapper>
-                {/*<WavyHeader style={styles.wavyHeader} color={theme.accent} />*/}
-                <View style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 1, zIndex: 0}}>
-                    <Background
-                        preserveAspectRatio={"true"}
-                        viewBox={`${50} ${50} ${width * 1.25} ${height * 1.25}`}
-                        style={{width, height}}
-                    />
-                </View>
-                <ScrollView
-                    style={styles.slideScrollView}
-                    contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
-                >
-                    <KeyboardAvoidingView
-                        behavior="position"
-                        keyboardVerticalOffset={70}
-                        enabled={!noKeyboardAvoidance}
+            <ScreenWrapper forceFullWidth containerStyle={styles.root}>
+                {wide ? <View style={styles.wideDeviceLeftPanel}>{illustration}</View> : <></>}
+                <View style={styles.slideWrapper}>
+                    {background}
+                    <ScrollView
+                        style={styles.slideScrollView}
+                        contentContainerStyle={[containerStyle, styles.slideContentWrapper]}
                     >
-                        <View style={styles.header}>
-                            {title && typeof title === "string" && <Text style={styles.title}>{title}</Text>}
-                            {title && typeof title !== "string" && title}
-                            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-                        </View>
-                        {this.props.children}
-                    </KeyboardAvoidingView>
-                </ScrollView>
-                <View style={styles.slideNavWrapper}>
-                    {hasPrevious && (
-                        <TouchableOpacity style={styles.navButton} onPress={() => this.props.previous()}>
-                            <FontAwesome style={styles.navButtonIcon} name="arrow-circle-left"></FontAwesome>
-                        </TouchableOpacity>
-                    )}
-                    {!hasPrevious && (
-                        <TouchableOpacity style={styles.navButton} onPress={() => this.quitOnboarding()}>
-                            <FontAwesome style={styles.navButtonIcon} name="arrow-circle-left"></FontAwesome>
-                        </TouchableOpacity>
-                    )}
-                    {!hideNavNext && hasNext && (
-                        <TouchableOpacity style={styles.navButton} onPress={navigateRight}>
-                            <FontAwesome style={styles.navButtonIcon} name="arrow-circle-right"></FontAwesome>
-                        </TouchableOpacity>
-                    )}
-                    {!hasNext && (
-                        <TouchableOpacity
-                            style={styles.navButton}
-                            onPress={() => {
-                                if (handleSubmit) handleSubmit();
-                                finishOnboarding(store.getState().auth.onboarding);
-                            }}
+                        <KeyboardAvoidingView
+                            behavior="position"
+                            keyboardVerticalOffset={70}
+                            enabled={!noKeyboardAvoidance}
+                            style={styles.slideContentContainer}
                         >
-                            <Text style={styles.finishButtonText}>{i18n.t("onboarding.submit")}</Text>
-                        </TouchableOpacity>
-                    )}
+                            <View style={styles.header}>
+                                {title && typeof title === "string" && (
+                                    <Text style={[styles.title, textColor ? {color: textColor} : {}]}>{title}</Text>
+                                )}
+                                {title && typeof title !== "string" && title}
+                                {subtitle && (
+                                    <Text style={[styles.subtitle, textColor ? {color: textColor} : {}]}>
+                                        {subtitle}
+                                    </Text>
+                                )}
+                            </View>
+                            {!wide && illustration}
+                            {this.props.children}
+                        </KeyboardAvoidingView>
+                    </ScrollView>
+                    <SafeAreaInsetsContext.Consumer>
+                        {(insets) => (
+                            <View style={[styles.slideNavWrapper, {marginBottom: (insets?.bottom || 0) + 40}]}>
+                                <View style={styles.slideNavButtons}>
+                                    {hasPrevious && (
+                                        <Button
+                                            style={[styles.navButton, styles.navButtonBack]}
+                                            skin="rounded-hollow"
+                                            text={i18n.t("onboarding.back")}
+                                            onPress={() => this.props.previous()}
+                                        />
+                                    )}
+                                    {!hasPrevious && (
+                                        <Button
+                                            style={[styles.navButton, styles.navButtonBack]}
+                                            skin="rounded-hollow"
+                                            text={i18n.t("onboarding.leave")}
+                                            onPress={() => this.quitOnboarding()}
+                                        />
+                                    )}
+                                    {!hideNavNext && hasNext && (
+                                        <>
+                                            <ButtonSpacer />
+                                            <Button
+                                                style={styles.navButton}
+                                                skin="rounded-filled"
+                                                text={i18n.t("onboarding.next")}
+                                                onPress={navigateRight}
+                                            />
+                                        </>
+                                    )}
+                                    {!hasNext && (
+                                        <>
+                                            <ButtonSpacer />
+                                            <Button
+                                                style={styles.navButton}
+                                                skin="rounded-filled"
+                                                text={i18n.t("onboarding.submit")}
+                                                onPress={() => {
+                                                    if (handleSubmit) handleSubmit();
+                                                    finishOnboarding(store.getState().auth.onboarding);
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        )}
+                    </SafeAreaInsetsContext.Consumer>
                 </View>
             </ScreenWrapper>
         );
     }
 
     quitOnboarding() {
-        Alert.alert(i18n.t("onboarding.quit.title"), i18n.t("onboarding.quit.text"), [
-            {
-                text: i18n.t("onboarding.quit.cancel"),
-                style: "cancel",
-            },
-            {text: i18n.t("onboarding.quit.yes"), onPress: () => store.dispatch(logout()), style: "destructive"},
-        ]);
+        const quit = () => store.dispatch(logout());
+
+        if (Platform.OS === "web") {
+            quit(); // no alerts on web
+        } else {
+            Alert.alert(i18n.t("onboarding.quit.title"), i18n.t("onboarding.quit.text"), [
+                {
+                    text: i18n.t("onboarding.quit.cancel"),
+                    style: "cancel",
+                },
+                {text: i18n.t("onboarding.quit.yes"), onPress: quit, style: "destructive"},
+            ]);
+        }
     }
 }
 

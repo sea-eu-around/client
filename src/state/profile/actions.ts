@@ -7,7 +7,6 @@ import {
     RequestResponse,
     ResponseProfileDto,
     ResponseUserDto,
-    SignedUrlResponseDto,
     SuccessfulRequestResponse,
     ResponseProfileWithMatchInfoDto,
 } from "../../api/dto";
@@ -23,6 +22,7 @@ import {
 import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {HttpStatusCode} from "../../constants/http-status";
 import {readCachedStaticData} from "../persistent-storage/static";
+import {uploadImage} from "../../api/media-upload";
 
 export enum PROFILE_ACTION_TYPES {
     LOAD_USER_PROFILE = "PROFILE/LOAD_USER_PROFILE",
@@ -37,6 +37,7 @@ export enum PROFILE_ACTION_TYPES {
     FETCH_USER_SUCCESS = "PROFILE/FETCH_USER_SUCCESS",
     FETCH_PROFILE_SUCCESS = "PROFILE/FETCH_PROFILE_SUCCESS",
     SET_AVATAR = "PROFILE/SET_AVATAR",
+    SET_AVATAR_BEGIN = "PROFILE/SET_AVATAR_BEGIN",
     SET_AVATAR_SUCCESS = "PROFILE/SET_AVATAR_SUCCESS",
     SET_AVATAR_FAILURE = "PROFILE/SET_AVATAR_FAILURE",
 }
@@ -50,11 +51,9 @@ export type SetProfileFieldsAction = {
     type: string;
     fields: Partial<UserProfile>;
 };
-
 export type SetProfileFieldsFailureAction = {
     type: string;
 };
-
 export type SetProfileFieldsSuccessAction = {
     type: string;
     fields: Partial<UserProfile>;
@@ -64,26 +63,19 @@ export type CreateProfileAction = {
     type: string;
     profile: CreateProfileDto;
 };
-
 export type CreateProfileSuccessAction = {
     type: string;
     profile: UserProfile;
 };
 
-export type LoadProfileOffersAction = {
-    type: string;
-};
-
+export type LoadProfileOffersAction = {type: string};
 export type LoadProfileOffersSuccessAction = {
     type: string;
     offers: OfferDto[];
     fromCache: boolean;
 };
 
-export type LoadProfileInterestsAction = {
-    type: string;
-};
-
+export type LoadProfileInterestsAction = {type: string};
 export type LoadProfileInterestsSuccessAction = {
     type: string;
     interests: InterestDto[];
@@ -100,14 +92,12 @@ export type FetchProfileSuccessAction = {
     profile: UserProfileWithMatchInfo;
 };
 
+export type SetAvatarBeginAction = {type: string};
 export type SetAvatarSuccessAction = {
     type: string;
     avatarUrl: string;
 };
-
-export type SetAvatarFailureAction = {
-    type: string;
-};
+export type SetAvatarFailureAction = {type: string};
 
 export type ProfileAction =
     | SetProfileFieldsAction
@@ -121,6 +111,7 @@ export type ProfileAction =
     | LoadProfileInterestsSuccessAction
     | FetchUserSuccessAction
     | FetchProfileSuccessAction
+    | SetAvatarBeginAction
     | SetAvatarSuccessAction
     | SetAvatarFailureAction;
 
@@ -159,7 +150,9 @@ export const createProfile = (profile: CreateProfileDto): AppThunk => async (dis
 };
 
 export const loadProfileOffers = (): AppThunk => async (dispatch) => {
-    const fromCache = await readCachedStaticData<OfferDto[]>("offers");
+    let fromCache = await readCachedStaticData<OfferDto[]>("offers");
+    if (!Array.isArray(fromCache)) fromCache = false; // fix corrupt cache
+
     const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
     requestBackend("offers", "GET", params).then((response: RequestResponse) => {
@@ -181,7 +174,9 @@ const loadProfileOffersSuccess = (offers: OfferDto[], fromCache = false): LoadPr
 });
 
 export const loadProfileInterests = (): AppThunk => async (dispatch) => {
-    const fromCache = await readCachedStaticData<InterestDto[]>("interests");
+    let fromCache = await readCachedStaticData<InterestDto[]>("interests");
+    if (!Array.isArray(fromCache)) fromCache = false; // fix corrupt cache
+
     const params = fromCache ? {updatedAt: fromCache.updatedAt} : {};
 
     requestBackend("interests", "GET", params).then((response: RequestResponse) => {
@@ -225,7 +220,7 @@ export const fetchProfile = (id: string): AppThunk<Promise<UserProfileWithMatchI
     getState,
 ) => {
     const token = getState().auth.token;
-    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token, true);
+    const response = await requestBackend(`profiles/${id}`, "GET", {}, {}, token);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseProfileWithMatchInfoDto;
         const profileWithMatchInfo = convertDtoToProfileWithMatchInfo(payload);
@@ -240,6 +235,10 @@ const fetchProfileSuccess = (profile: UserProfileWithMatchInfo): FetchProfileSuc
     profile,
 });
 
+const setAvatarBegin = (): SetAvatarBeginAction => ({
+    type: PROFILE_ACTION_TYPES.SET_AVATAR_BEGIN,
+});
+
 const setAvatarSuccess = (avatarUrl: string): SetAvatarSuccessAction => ({
     type: PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS,
     avatarUrl,
@@ -250,37 +249,29 @@ const setAvatarFailure = (): SetAvatarFailureAction => ({
 });
 
 export const setAvatar = (image: ImageInfo): AppThunk => async (dispatch, getState) => {
-    const token = getState().auth.token;
-    const response = await requestBackend("common/signedUrl", "GET", {mimeType: "image/jpeg"}, {}, token);
+    const {
+        auth: {token},
+        profile: {uploadingAvatar},
+    } = getState();
 
     const fail = () => dispatch(setAvatarFailure());
 
-    if (response.status === HttpStatusCode.OK) {
-        const payload = (response as SuccessfulRequestResponse).data;
-        const {fileName, s3Url} = payload as SignedUrlResponseDto;
+    if (!token || uploadingAvatar) {
+        fail();
+        return;
+    }
 
-        try {
-            // Fetch the image from the device and convert it to a blob
-            const imageBlob = await (await fetch(image.uri)).blob();
+    dispatch(setAvatarBegin());
 
-            // PUT the image in the aws bucket
-            await fetch(s3Url, {
-                method: "PUT",
-                body: imageBlob,
-            });
+    const fileName = await uploadImage(token, image, fail);
 
-            // Submit the file name to the server
-            const response2 = await requestBackend("profiles/avatar", "POST", {}, {fileName}, token);
+    if (fileName) {
+        // Submit the filename to the server
+        const response = await requestBackend("profiles/avatar", "POST", {}, {fileName}, token);
 
-            if (response2.status === HttpStatusCode.OK) {
-                const payload2 = (response2 as SuccessfulRequestResponse).data;
-                const {avatar} = payload2 as AvatarSuccessfulUpdatedDto;
-                dispatch(setAvatarSuccess(avatar));
-            } else fail();
-        } catch (error) {
-            console.error(error);
-            console.error("An unexpected error occured with a request to the avatar bucket.");
-            fail();
-        }
-    } else fail();
+        if (response.status === HttpStatusCode.OK) {
+            const {avatar} = (response as SuccessfulRequestResponse).data as AvatarSuccessfulUpdatedDto;
+            dispatch(setAvatarSuccess(avatar));
+        } else fail();
+    }
 };

@@ -6,9 +6,12 @@ import {preTheme} from "../../styles/utils";
 import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import {AppState} from "../../state/types";
 import {connect, ConnectedProps} from "react-redux";
-import {GiftedAvatar} from "react-native-gifted-chat";
 import {openChat} from "../../navigation/utils";
-import SwipeableCard, {SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
+import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
+import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
+import {ReportEntityType} from "../../constants/reports";
+import i18n from "i18n-js";
+import ChatUserAvatar from "../ChatUserAvatar";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -31,21 +34,24 @@ const LOOKS = {
 };
 
 class ChatRoomCard extends React.Component<ChatRoomCardProps> {
+    reportFormRef = React.createRef<QuickFormReportClass>();
+    swipeableCardRef = React.createRef<SwipeableCardClass>();
+
     private getActions(hideCard: () => void): SwipeActionProps[] {
-        /*const {theme} = this.props;
+        const {theme} = this.props;
 
         return [
             // TODO implement chat mute
-            {
+            /*{
                 icon: "notifications-off",
                 backgroundColor: "#ccc",
-            },
+            },*/
             {
                 icon: "report",
                 backgroundColor: theme.error,
+                onPress: () => this.reportFormRef.current?.open(),
             },
-        ];*/
-        return [];
+        ];
     }
 
     render() {
@@ -77,13 +83,14 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
         } else {
             lastMessageComponent = (
                 <Text style={styles.noMessageText} numberOfLines={1}>
-                    {room.users.length === 2 ? `Say hi to ${user.name}!` : "Say hi"}
+                    {room.users.length === 2 ? i18n.t("messaging.sayHiTo", {name: user.name}) : i18n.t("sayHi")}
                 </Text>
             );
         }
 
         return (
             <SwipeableCard
+                ref={this.swipeableCardRef}
                 looks={LOOKS}
                 rightThreshold={100}
                 overshootRight={false}
@@ -101,14 +108,18 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
                 }}
             >
                 <View style={styles.cardContent}>
-                    <View style={styles.avatarContainer}>
-                        <GiftedAvatar avatarStyle={styles.avatar} user={user}></GiftedAvatar>
-                    </View>
+                    <ChatUserAvatar containerStyle={styles.avatarContainer} user={user} size={45} rounded />
                     <View style={styles.infoContainer}>
                         <Text style={styles.name}>{user.name}</Text>
                         <View style={styles.lastMessage}>{lastMessageComponent}</View>
                     </View>
                 </View>
+                <QuickFormReport
+                    ref={this.reportFormRef}
+                    entityType={ReportEntityType.PROFILE_ENTITY}
+                    entity={user}
+                    onSubmit={() => this.swipeableCardRef.current?.resetSwipe()}
+                />
             </SwipeableCard>
         );
     }
@@ -121,13 +132,7 @@ const themedStyles = preTheme((theme: Theme) => {
             padding: 10,
         },
         avatarContainer: {
-            justifyContent: "center",
-        },
-        avatar: {
             backgroundColor: theme.accentSecondary,
-            width: 45,
-            height: 45,
-            borderRadius: 50,
         },
         infoContainer: {
             flex: 1,

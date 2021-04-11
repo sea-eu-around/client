@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {DEBUG_MODE} from "../../constants/config";
 
 type StaticDataObject<T> = {
     updatedAt: string;
@@ -13,7 +14,7 @@ type StaticDataObject<T> = {
  */
 export function storeStaticData<T>(key: string, data: T, cookieConsent: boolean): void {
     if (cookieConsent) {
-        console.log(`Updating static storage '${key}'.`);
+        if (DEBUG_MODE) console.log(`Updating static storage '${key}'.`);
 
         // Store the data along with the date
         const storageObject = {
@@ -30,7 +31,7 @@ export function storeStaticData<T>(key: string, data: T, cookieConsent: boolean)
  * @param keys - The keys to clear.
  */
 export function clearStaticData<T>(...keys: string[]): void {
-    console.log(`Clearing static storage: ${keys.map((s) => `'${s}'`).join(", ")}.`);
+    if (DEBUG_MODE) console.log(`Clearing static storage: ${keys.map((s) => `'${s}'`).join(", ")}.`);
     AsyncStorage.multiRemove(keys);
 }
 

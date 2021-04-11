@@ -1,5 +1,5 @@
 import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
-import {UniversityKey} from "../constants/universities";
+import {University} from "../constants/universities";
 import {CountryCode} from "./country-codes";
 import {SpokenLanguageDto, OfferValueDto} from "../api/dto";
 
@@ -15,7 +15,7 @@ export type UserProfileCommon = {
     avatarUrl: string;
     languages: SpokenLanguageDto[];
     educationFields: string[];
-    university: UniversityKey;
+    university: University;
     profileOffers: OfferValueDto[];
 };
 
@@ -33,4 +33,5 @@ export type UserProfileWithMatchInfo = {
     profile: UserProfile;
     isMatched: boolean;
     roomId: string | null;
+    matchingId: string | null;
 };

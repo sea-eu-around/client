@@ -59,12 +59,12 @@ class SignupForm extends React.Component<SignupFormProps, SignupFormState> {
         this.setState({...this.state, submitting: true});
         (store.dispatch as MyThunkDispatch)(requestRegister(values.email, values.password)).then(
             ({success, errors}: ValidatedActionReturn) => {
-                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                this.setState({remoteErrors: errors, submitting: false});
                 if (errors && errors.fields) {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                 }
-                this.setState({remoteErrors: errors, submitting: false});
+                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
             },
         );
     }

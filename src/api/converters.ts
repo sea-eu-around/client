@@ -12,6 +12,10 @@ import {
     ResponseRoomDto,
     ResponseUserDto,
     ResponseProfileWithMatchInfoDto,
+    ResponseGroupDto,
+    ResponseGroupMemberDto,
+    ResponseGroupPostDto,
+    ResponsePostCommentDto,
 } from "./dto";
 import {
     UserProfile,
@@ -25,6 +29,8 @@ import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../model/chat-room";
 import {initialPaginatedState} from "../state/types";
 import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
+import {PARTNER_UNIVERSITIES} from "../constants/universities";
+import {Group, GroupMember, GroupPost, PostComment, GroupVoteStatus} from "../model/groups";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -41,6 +47,7 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         profileOffers: dto.profileOffers || [],
         interests: (dto.interests || []).map((i) => i.id),
         languages: dto.languages || [],
+        university: PARTNER_UNIVERSITIES.find((u) => u.key === dto.university) || PARTNER_UNIVERSITIES[0],
     };
 
     let complete: UserProfile;
@@ -92,7 +99,7 @@ export function convertPartialProfileToCreateDto(
     let complete: Partial<CreateProfileDto>;
     if (type === "staff") {
         const staff = profile as Partial<UserProfileStaff>;
-        complete = {...common, staffRoles: (staff.staffRoles || []).map((id: string) => ({id}))};
+        complete = {...common, staffRoles: staff.staffRoles ? staff.staffRoles.map((id: string) => ({id})) : undefined};
     } else {
         const student = profile as Partial<UserProfileStudent>;
         complete = {...common, degree: student.degree};
@@ -154,8 +161,95 @@ export function convertDtoToHistoryItem(dto: MatchHistoryItemDto): MatchHistoryI
 }
 
 export function convertDtoToProfileWithMatchInfo(dto: ResponseProfileWithMatchInfoDto): UserProfileWithMatchInfo {
+    return {...dto, profile: convertDtoToProfile(dto.profile)};
+}
+
+export function convertDtoToGroup(dto: ResponseGroupDto): Group {
     return {
         ...dto,
-        profile: convertDtoToProfile(dto.profile),
+        membersPaginations: {
+            approved: initialPaginatedState(),
+            banned: initialPaginatedState(),
+            pending: initialPaginatedState(),
+            "invited-by-admin": initialPaginatedState(),
+            invited: initialPaginatedState(),
+        },
+        memberIds: {
+            approved: [],
+            banned: [],
+            pending: [],
+            "invited-by-admin": [],
+            invited: [],
+        },
+        members: {},
+        posts: {},
+        postIds: [],
+        postsPagination: initialPaginatedState(),
+        uploadingCover: false,
+        myRole: dto.isMember ? dto.role : null,
+        myStatus: dto.status || null,
+        numApprovedMembers: null,
+        availableMatches: {
+            fetching: false,
+            profiles: null,
+        },
     };
+}
+
+export function convertDtoToGroupMember(dto: ResponseGroupMemberDto): GroupMember {
+    return {...dto, profile: convertDtoToProfile(dto.profile)};
+}
+
+export function convertDtoToGroupPost(dto: ResponseGroupPostDto, creator?: UserProfile): GroupPost {
+    return {
+        ...dto,
+        comments: {},
+        commentIds: [],
+        commentsPagination: initialPaginatedState(),
+        createdAt: new Date(dto.createdAt),
+        updatedAt: new Date(dto.updatedAt),
+        creator: creator && !dto.creator ? creator : convertDtoToProfile(dto.creator),
+        score: dto.upVotesCount - dto.downVotesCount,
+        voteStatus: dto.isVoted
+            ? dto.voteType === "up"
+                ? GroupVoteStatus.Upvote
+                : dto.voteType === "down"
+                ? GroupVoteStatus.Downvote
+                : GroupVoteStatus.Neutral
+            : GroupVoteStatus.Neutral,
+    };
+}
+
+export function convertDtoToPostComments(
+    dto: ResponsePostCommentDto,
+    parentId: string | null = null,
+    depth = 0,
+    creator?: UserProfile,
+): PostComment[] {
+    const comment: PostComment = {
+        id: dto.id,
+        text: dto.text,
+        createdAt: new Date(dto.createdAt),
+        updatedAt: new Date(dto.updatedAt),
+        creator: creator && !dto.creator ? creator : convertDtoToProfile(dto.creator),
+        score: dto.upVotesCount - dto.downVotesCount,
+        voteStatus: dto.isVoted
+            ? dto.voteType === "up"
+                ? GroupVoteStatus.Upvote
+                : dto.voteType === "down"
+                ? GroupVoteStatus.Downvote
+                : GroupVoteStatus.Neutral
+            : GroupVoteStatus.Neutral,
+        childrenIds: dto.children?.map((c) => c.id) || [],
+        parentId,
+        depth,
+    };
+
+    if (dto.children && dto.children.length > 0) {
+        // Get all children, including nested
+        const allChildren = dto.children.flatMap((childDto) =>
+            convertDtoToPostComments(childDto, comment.id, depth + 1, creator),
+        );
+        return [comment].concat(allChildren);
+    } else return [comment];
 }

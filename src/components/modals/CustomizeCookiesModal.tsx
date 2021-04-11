@@ -1,6 +1,6 @@
 import React from "react";
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
-import CustomModal, {CustomModalProps} from "./CustomModal";
+import {CustomModalProps} from "./CustomModal";
 import i18n from "i18n-js";
 import {Theme, ThemeProps} from "../../types";
 import {CheckBox, withTheme} from "react-native-elements";
@@ -10,7 +10,7 @@ import store from "../../state/store";
 import {CookiesPreferences, COOKIES_PREFERENCES_KEYS} from "../../model/user-settings";
 import {connect, ConnectedProps} from "react-redux";
 import {saveCookiesPreferences} from "../../state/settings/actions";
-import Button from "../Button";
+import ConfirmationModal from "./ConfirmationModal";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -49,20 +49,12 @@ class CustomizeCookiesModal extends React.Component<CustomizeCookiesModalProps, 
             this.setState({...this.state, cookies: {...cookies, [key]: !cookieDict[key]}});
 
         return (
-            <CustomModal
-                {...otherProps}
-                modalViewStyle={[{paddingHorizontal: 20, alignItems: "flex-start"}, otherProps.modalViewStyle]}
-                onShow={() => {
-                    this.onShow();
-                    if (otherProps.onShow) otherProps.onShow();
-                }}
-                renderContent={(hide: () => void) => (
+            <ConfirmationModal
+                title={i18n.t("cookies.title")}
+                text={i18n.t("cookies.preferences.text")}
+                justifyText
+                additionalContent={() => (
                     <>
-                        <Text style={styles.title}>Cookies</Text>
-                        <Text style={styles.text}>
-                            We offer you the ability to choose what information will be stored on your device when using
-                            SEA-EU Around.
-                        </Text>
                         {COOKIES_PREFERENCES_KEYS.map((k) => (
                             <View style={styles.preferenceRow} key={`cookie-preference-${k}`}>
                                 <TouchableOpacity style={styles.preferenceRowButton} onPress={() => toggleCookie(k)}>
@@ -78,30 +70,30 @@ class CustomizeCookiesModal extends React.Component<CustomizeCookiesModalProps, 
                                 </Text>
                             </View>
                         ))}
-                        <View style={styles.actions}>
-                            <Button
-                                text={i18n.t("save")}
-                                onPress={() => {
-                                    hide();
-                                    store.dispatch(saveCookiesPreferences(cookies));
-                                }}
-                                skin="rounded-filled"
-                                textStyle={styles.buttonText}
-                                style={styles.button}
-                            />
-                            <Button
-                                text={i18n.t("cancel")}
-                                onPress={() => {
-                                    hide();
-                                    this.setState({...this.state, cookies: this.props.cookies});
-                                }}
-                                skin="rounded-hollow"
-                                textStyle={styles.buttonText}
-                                style={styles.button}
-                            />
-                        </View>
                     </>
                 )}
+                buttons={[
+                    {
+                        preset: "cancel",
+                        onPress: (hide) => {
+                            hide();
+                            this.setState({...this.state, cookies: this.props.cookies});
+                        },
+                    },
+                    {
+                        preset: "confirm",
+                        text: i18n.t("save"),
+                        onPress: (hide) => {
+                            hide();
+                            store.dispatch(saveCookiesPreferences(cookies));
+                        },
+                    },
+                ]}
+                onShow={() => {
+                    this.onShow();
+                    if (otherProps.onShow) otherProps.onShow();
+                }}
+                {...otherProps}
             />
         );
     }
@@ -109,21 +101,8 @@ class CustomizeCookiesModal extends React.Component<CustomizeCookiesModalProps, 
 
 const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
-        title: {
-            fontSize: 20,
-            textAlign: "left",
-            marginBottom: 10,
-            color: theme.text,
-        },
-        text: {
-            fontSize: 14,
-            lineHeight: 18,
-            textAlign: "justify",
-            color: theme.text,
-        },
-
         preferenceRow: {
-            marginTop: 10,
+            marginBottom: 10,
         },
         preferenceRowButton: {
             flexDirection: "row",
@@ -143,22 +122,6 @@ const themedStyles = preTheme((theme: Theme) => {
         preferenceDescription: {
             fontSize: 14,
             color: theme.textLight,
-        },
-
-        actions: {
-            flexDirection: "row",
-            marginTop: 20,
-            width: "100%",
-            maxWidth: 350,
-        },
-        button: {
-            flex: 1,
-            height: 40,
-            marginHorizontal: 10,
-            marginVertical: 0,
-        },
-        buttonText: {
-            fontSize: 16,
         },
     });
 });

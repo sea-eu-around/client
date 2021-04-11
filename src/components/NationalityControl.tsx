@@ -1,17 +1,20 @@
 import * as React from "react";
-import {TouchableOpacity, View, StyleSheet} from "react-native";
+import {TouchableOpacity, View, StyleSheet, StyleProp, ViewStyle, Text} from "react-native";
 import NationalityPicker from "./NationalityPicker";
 import FormattedNationality from "./FormattedNationality";
 import {CountryCode} from "../model/country-codes";
 import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {withTheme} from "react-native-elements";
+import i18n from "i18n-js";
 
 // Component props
 export type NationalityControlProps = ThemeProps & {
     nationality?: CountryCode;
     onSelect?: (countryCode: CountryCode) => void;
     onHide?: () => void;
+    buttonStyle?: StyleProp<ViewStyle>;
+    buttonValidStyle?: StyleProp<ViewStyle>;
 };
 
 // Component state
@@ -39,18 +42,18 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
     }
 
     render(): JSX.Element {
-        const {onSelect, onHide, nationality, theme} = this.props;
+        const {onSelect, onHide, nationality, buttonStyle, buttonValidStyle, theme} = this.props;
         const {open} = this.state;
         const styles = themedStyles(theme);
 
         return (
             <View style={styles.wrapper}>
                 <TouchableOpacity
-                    style={[styles.button, nationality ? styles.buttonOk : {}]}
+                    style={[styles.button, buttonStyle, nationality ? [styles.buttonOk, buttonValidStyle] : {}]}
                     onPress={() => this.showModal()}
                 >
                     {nationality && <FormattedNationality countryCode={nationality} style={styles.nationality} />}
-                    {/*!date && <Text>Click to change value</Text>*/}
+                    {!nationality && <Text style={styles.placeholder}>{i18n.t("nationalityPicker.placeholder")}</Text>}
                 </TouchableOpacity>
                 <NationalityPicker
                     nationality={this.props.nationality}
@@ -62,7 +65,7 @@ class NationalityControl extends React.Component<NationalityControlProps, Nation
                         this.hideModal();
                         if (onHide) onHide();
                     }}
-                ></NationalityPicker>
+                />
             </View>
         );
     }
@@ -84,11 +87,17 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
         },
         buttonOk: {
+            borderBottomWidth: 1,
             borderBottomColor: theme.okay,
         },
         nationality: {
-            fontSize: 20,
+            fontSize: 16,
             color: theme.text,
+        },
+        placeholder: {
+            fontSize: 16,
+            color: theme.textLight,
+            paddingHorizontal: 10,
         },
     });
 });

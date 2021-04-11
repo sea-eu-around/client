@@ -9,6 +9,7 @@ class OnboardingLegalScreen1 extends React.Component<OnboardingScreenProps> {
             <OnboardingLegalSlide
                 title={i18n.t("onboarding.legal1.title")}
                 text={i18n.t("onboarding.legal1.text")}
+                specialBackground={true}
                 {...this.props}
             />
         );

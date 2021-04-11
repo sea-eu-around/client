@@ -22,12 +22,44 @@ async function assetDictCommon(theme: ThemeKey, key: string): Promise<unknown> {
             return import("@assets/images/offers/collaborate.svg");
         case "background.onboarding":
             return import("@assets/images/background.svg");
-        case "logos.junior-atlantique":
-            return theme === "light"
-                ? import("@assets/images/logos/junior-atlantique-light.png")
-                : import("@assets/images/logos/junior-atlantique-dark.png");
+        case "large-wave-bg":
+            return import("@assets/images/large-wave-bg.svg");
+        case "woman-holding-phone":
+            return import("@assets/images/woman-holding-phone.svg");
+        case "woman-holding-phone-2":
+            return import("@assets/images/woman-holding-phone-2.svg");
+        case "woman-holding-phone-3":
+            return import("@assets/images/woman-holding-phone-3.svg");
+        case "woman-holding-phone-4":
+            return import("@assets/images/woman-holding-phone-4.svg");
+        case "man-holding-phone":
+            return import("@assets/images/man-holding-phone.svg");
+        case "blob-4":
+            return import("@assets/images/blob-4.svg");
+        case "blob-5":
+            return import("@assets/images/blob-5.svg");
+        case "blob-6":
+            return import("@assets/images/blob-6.svg");
+        case "blob-8":
+            return import("@assets/images/blob-8.svg");
+        case "blob-9":
+            return import("@assets/images/blob-9.svg");
+        case "blob-10":
+            return import("@assets/images/blob-10.svg");
+        case "blob-11":
+            return import("@assets/images/blob-11.svg");
+        case "staff":
+            return import("@assets/images/staff.svg");
+        case "student":
+            return import("@assets/images/student.svg");
         case "logos.sea-eu-around.small":
             return import("@assets/images/logos/sea-eu-around.small.png");
+        case "store-button.android":
+            return import("@assets/images/store-android.png");
+        case "store-button.ios":
+            return import("@assets/images/store-ios.svg");
+        case "group-placeholder":
+            return import("@assets/images/group-placeholder.png");
         default:
             return import("@assets/images/placeholder.png");
     }

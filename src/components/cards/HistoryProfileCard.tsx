@@ -4,10 +4,8 @@ import {withTheme} from "react-native-elements";
 import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import FormattedUniversity from "../FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import ProfileAvatar from "../ProfileAvatar";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {rootNavigate} from "../../navigation/utils";
+import {navigateToProfile} from "../../navigation/utils";
 import {MatchHistoryItem} from "../../model/matching";
 import FormattedMatchStatus from "../FormattedMatchStatus";
 import SwipeableCard, {SwipeableCardClass, SwipeActionButtons, SwipeActionProps} from "./SwipeableCard";
@@ -19,12 +17,14 @@ import {MatchActionStatus} from "../../api/dto";
 import QuickFormReport, {QuickFormReportClass} from "../forms/QuickFormReport";
 import {ReportEntityType} from "../../constants/reports";
 import {cancelMatchAction} from "../../state/matching/actions";
+import SwipeTip from "../SwipeTip";
 
 // Component props
 export type HistoryProfileCardProps = ThemeProps & {
     item: MatchHistoryItem;
     style?: ViewStyle;
     onHidden?: () => void;
+    showSwipeTip?: boolean;
 };
 
 const LOOKS = {
@@ -75,11 +75,10 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
     }
 
     render() {
-        const {theme, item} = this.props;
+        const {theme, item, showSwipeTip} = this.props;
         const styles = themedStyles(theme);
 
         const profile = item.profile;
-        const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
 
         return (
@@ -106,17 +105,17 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                                 size={60}
                                 rounded
                                 containerStyle={styles.avatar}
-                                onPress={() => rootNavigate("ProfileScreen", {id: profile.id})}
+                                onPress={() => navigateToProfile(profile.id, store.getState())}
                             />
                         </View>
                         <View style={styles.infoContainer}>
                             <Text style={styles.name}>{fullName}</Text>
-                            {university && (
+                            {profile && (
                                 <FormattedUniversity
                                     flagSize={14}
                                     flagEmoji={true}
                                     style={[styles.infoText, {marginLeft: -10}]}
-                                    university={university}
+                                    university={profile.university}
                                 />
                             )}
                             <FormattedMatchStatus
@@ -125,7 +124,7 @@ class HistoryProfileCard extends React.Component<HistoryProfileCardProps> {
                                 iconStyle={styles.infoText}
                             />
                         </View>
-                        <MaterialCommunityIcons name="gesture-swipe-left" style={styles.swipeLeftIcon} />
+                        {showSwipeTip && <SwipeTip direction="left" iconStyle={styles.swipeTipIcon} />}
                     </View>
                 </SwipeableCard>
                 <QuickFormReport
@@ -175,10 +174,9 @@ const themedStyles = preTheme((theme: Theme) => {
             flexShrink: 1, // Ensures text wrapping
         },
 
-        swipeLeftIcon: {
-            color: theme.text,
-            opacity: 0.25,
-            fontSize: 20,
+        swipeTipIcon: {
+            color: theme.textLight,
+            fontSize: 18,
         },
 
         actionButton: {

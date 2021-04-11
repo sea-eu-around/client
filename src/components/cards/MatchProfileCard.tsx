@@ -9,12 +9,12 @@ import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import BlockProfileModal from "../modals/BlockProfileModal";
 import FormattedUniversity from "../FormattedUniversity";
-import {PARTNER_UNIVERSITIES, University} from "../../constants/universities";
 import {OfferValueDto, SpokenLanguageDto} from "../../api/dto";
 import {styleTextLight, styleTextThin} from "../../styles/general";
 import ProfileAvatar from "../ProfileAvatar";
 import Chips from "../Chips";
 import SwipeableCard, {SwipeableCardClass, SwipeActionContainer} from "./SwipeableCard";
+import SwipeTip from "../SwipeTip";
 
 // Component props
 export type MatchProfileCardProps = ThemeProps & {
@@ -23,6 +23,7 @@ export type MatchProfileCardProps = ThemeProps & {
     onSwipeLeft?: () => void;
     onSwipeRight?: () => void;
     onHidden?: () => void;
+    showSwipeTip?: boolean;
 };
 
 // Component state
@@ -54,24 +55,40 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
 
     expand() {
         const duration = 200;
-        this.setState({...this.state, animating: true});
-        ReAnimated.timing(this.state.height, {
-            toValue: PROFILE_PREVIEW_EXPANDED_HEIGHT,
-            duration,
-            easing: Easing.elastic(1.0),
-        }).start();
-        setTimeout(() => this.setState({...this.state, animating: false, expanded: true}), duration);
+        if (Platform.OS === "web") {
+            this.setState({
+                ...this.state,
+                expanded: true,
+                height: new ReAnimated.Value(PROFILE_PREVIEW_EXPANDED_HEIGHT),
+            });
+        } else {
+            this.setState({...this.state, animating: true});
+            ReAnimated.timing(this.state.height, {
+                toValue: PROFILE_PREVIEW_EXPANDED_HEIGHT,
+                duration,
+                easing: Easing.elastic(1.0),
+            }).start();
+            setTimeout(() => this.setState({...this.state, animating: false, expanded: true}), duration);
+        }
     }
 
     collapse() {
-        const duration = 100;
-        this.setState({...this.state, animating: true, expanded: false});
-        ReAnimated.timing(this.state.height, {
-            toValue: PROFILE_PREVIEW_COLLAPSED_HEIGHT,
-            duration,
-            easing: Easing.out(Easing.linear),
-        }).start();
-        setTimeout(() => this.setState({...this.state, animating: false}), duration);
+        if (Platform.OS === "web") {
+            this.setState({
+                ...this.state,
+                expanded: false,
+                height: new ReAnimated.Value(PROFILE_PREVIEW_COLLAPSED_HEIGHT),
+            });
+        } else {
+            const duration = 100;
+            this.setState({...this.state, animating: true, expanded: false});
+            ReAnimated.timing(this.state.height, {
+                toValue: PROFILE_PREVIEW_COLLAPSED_HEIGHT,
+                duration,
+                easing: Easing.out(Easing.linear),
+            }).start();
+            setTimeout(() => this.setState({...this.state, animating: false}), duration);
+        }
     }
 
     hide(onFinish?: () => void, right?: boolean) {
@@ -98,14 +115,90 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
     }
 
     render() {
-        const {theme, profile} = this.props;
+        const {theme, profile, showSwipeTip} = this.props;
         const {expanded, animating, height} = this.state;
         const styles = themedStyles(theme);
 
-        const university = PARTNER_UNIVERSITIES.find((univ: University) => univ.key == profile.university);
         const fullName = profile.firstName + " " + profile.lastName;
 
         const chipStyleProps = {chipStyle: styles.chip};
+
+        const content = (
+            <>
+                <View style={styles.collapsedContent}>
+                    <View style={styles.avatarContainer}>
+                        <ProfileAvatar profile={profile} size={120} rounded containerStyle={styles.avatar} />
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.name}>{fullName}</Text>
+                        {profile && <FormattedUniversity style={styles.infoText} university={profile.university} />}
+                        <Text style={styles.infoText}>
+                            {i18n.t(`genders.${profile.gender}`)}
+                            {", "}
+                            {i18n.t(`allRoles.${profile.type}`)}
+                            {profile.type == "student"
+                                ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
+                                : ""}
+                        </Text>
+                        {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
+                    </View>
+                    {showSwipeTip && (
+                        <SwipeTip direction="horizontal" style={styles.swipeTip} iconStyle={styles.swipeTipIcon} />
+                    )}
+                </View>
+                {(expanded || animating) && (
+                    <View style={styles.expandedContent}>
+                        <Text style={styles.expandedSectionTitle}>{i18n.t("spokenLanguages")}</Text>
+                        <Chips
+                            items={profile.languages}
+                            label={(v: SpokenLanguageDto) =>
+                                `${i18n.t(`languageNames.${v.code}`)}${
+                                    v.level != "native" ? ` (${v.level.toUpperCase()})` : ""
+                                }`
+                            }
+                            {...chipStyleProps}
+                        />
+                        <Text style={styles.expandedSectionTitle}>{i18n.t("offers")}</Text>
+                        <Chips
+                            items={profile.profileOffers}
+                            label={(o: OfferValueDto) => i18n.t(`allOffers.${o.offerId}.name`)}
+                            {...chipStyleProps}
+                        />
+
+                        {/*<Text style={styles.expandedSectionTitle}>{i18n.t("fieldsOfEducation")}</Text>
+                                <View style={styles.chipsContainer}>
+                                    {profile.educationFields.map((fieldId: string) => (
+                                        <ItemChip
+                                            key={`${profile.id}-${fieldId}`}
+                                            text={i18n.t(`educationFields.${fieldId}`)}
+                                        />
+                                    ))}
+                                </View>
+                                */}
+                        {/*
+                                <Text style={styles.expandedSectionTitle}>{i18n.t("interests")}</Text>
+                                <View style={styles.chipsContainer}>
+                                    {profile.interests.map((interestId: string) => (
+                                        <ItemChip
+                                            key={`${profile.id}-${interestId}`}
+                                            text={i18n.t(`interests.${interestId}`)}
+                                        />
+                                    ))}
+                                </View>
+                                */}
+                        <BlockProfileModal
+                            profile={profile}
+                            activator={(open) => (
+                                <TouchableOpacity style={styles.blockButton} onPress={() => open()}>
+                                    <MaterialIcons style={styles.blockButtonIcon} name="block" />
+                                </TouchableOpacity>
+                            )}
+                            onBlock={() => this.hide()}
+                        />
+                    </View>
+                )}
+            </>
+        );
 
         return (
             <SwipeableCard
@@ -150,91 +243,14 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                         <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
                     </SwipeActionContainer>
                 )}
-                /*<Animated.View style={[styles.swipeAction, styles.swipeActionRight]}>
-                        <View style={[styles.swipeActionContent, styles.swipeActionContentRight]}>
-                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionHide")}</Text>
-                        </View>
-                </Animated.View>*/
-                /*renderLeftActions={() => (
-                    <View style={[styles.swipeAction, styles.swipeActionLeft]}>
-                        <View style={[styles.swipeActionContent, styles.swipeActionContentLeft]}>
-                            <Text style={styles.swipeActionText}>{i18n.t("matching.actionLike")}</Text>
-                        </View>
-                    </View>
-                )}*/
                 onPress={() => this.toggleExpanded()}
             >
-                <ReAnimated.View style={[styles.cardContent, {height}]}>
-                    <View style={styles.collapsedContent}>
-                        <View style={styles.avatarContainer}>
-                            <ProfileAvatar profile={profile} size={120} rounded containerStyle={styles.avatar} />
-                        </View>
-                        <View style={styles.infoContainer}>
-                            <Text style={styles.name}>{fullName}</Text>
-                            {university && <FormattedUniversity style={styles.infoText} university={university} />}
-                            <Text style={styles.infoText}>
-                                {i18n.t(`genders.${profile.gender}`)}
-                                {", "}
-                                {i18n.t(`allRoles.${profile.type}`)}
-                                {profile.type == "student"
-                                    ? ` (${i18n.t(`degrees.${(profile as UserProfileStudent).degree}`)})`
-                                    : ""}
-                            </Text>
-                            {/*<Text style={styles.infoText}>{i18n.t(`genders.${profile.gender}`)}</Text>*/}
-                        </View>
-                    </View>
-                    {(expanded || animating) && (
-                        <View style={styles.expandedContent}>
-                            <Text style={styles.expandedSectionTitle}>{i18n.t("spokenLanguages")}</Text>
-                            <Chips
-                                items={profile.languages}
-                                label={(v: SpokenLanguageDto) =>
-                                    `${i18n.t(`languageNames.${v.code}`)}${
-                                        v.level != "native" ? ` (${v.level.toUpperCase()})` : ""
-                                    }`
-                                }
-                                {...chipStyleProps}
-                            />
-                            <Text style={styles.expandedSectionTitle}>{i18n.t("offers")}</Text>
-                            <Chips
-                                items={profile.profileOffers}
-                                label={(o: OfferValueDto) => i18n.t(`allOffers.${o.offerId}.name`)}
-                                {...chipStyleProps}
-                            />
-
-                            {/*<Text style={styles.expandedSectionTitle}>{i18n.t("fieldsOfEducation")}</Text>
-                                <View style={styles.chipsContainer}>
-                                    {profile.educationFields.map((fieldId: string) => (
-                                        <ItemChip
-                                            key={`${profile.id}-${fieldId}`}
-                                            text={i18n.t(`educationFields.${fieldId}`)}
-                                        />
-                                    ))}
-                                </View>
-                                */}
-                            {/*
-                                <Text style={styles.expandedSectionTitle}>{i18n.t("interests")}</Text>
-                                <View style={styles.chipsContainer}>
-                                    {profile.interests.map((interestId: string) => (
-                                        <ItemChip
-                                            key={`${profile.id}-${interestId}`}
-                                            text={i18n.t(`interests.${interestId}`)}
-                                        />
-                                    ))}
-                                </View>
-                                */}
-                            <BlockProfileModal
-                                profile={profile}
-                                activator={(open) => (
-                                    <TouchableOpacity style={styles.blockButton} onPress={() => open()}>
-                                        <MaterialIcons style={styles.blockButtonIcon} name="block" />
-                                    </TouchableOpacity>
-                                )}
-                                onBlock={() => this.hide()}
-                            />
-                        </View>
-                    )}
-                </ReAnimated.View>
+                {Platform.OS !== "web" && (
+                    <ReAnimated.View style={[styles.cardContent, {height}]}>{content}</ReAnimated.View>
+                )}
+                {Platform.OS === "web" && (
+                    <View style={[styles.cardContent, {height: height[" __value"]}]}>{content}</View>
+                )}
             </SwipeableCard>
         );
     }
@@ -301,6 +317,16 @@ const themedStyles = preTheme((theme: Theme) => {
             letterSpacing: 0.5,
             color: theme.textLight,
             flexShrink: 1, // Ensures text wrapping
+        },
+
+        swipeTip: {
+            position: "absolute",
+            top: 0,
+            right: 5,
+        },
+        swipeTipIcon: {
+            fontSize: 22,
+            color: theme.textLight,
         },
 
         separator: {

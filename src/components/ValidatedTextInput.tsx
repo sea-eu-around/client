@@ -1,7 +1,17 @@
 import React from "react";
-import {TextStyle, StyleProp, View, TextInputProps, TextInput, ViewStyle} from "react-native";
+import {
+    TextStyle,
+    StyleProp,
+    View,
+    TextInputProps,
+    TextInput,
+    ViewStyle,
+    TouchableOpacity,
+    Platform,
+} from "react-native";
 import InputLabel from "./InputLabel";
 import InputErrorText from "./InputErrorText";
+import {FontAwesome} from "@expo/vector-icons";
 
 export type TextInputStyleProps = {
     style?: StyleProp<ViewStyle>;
@@ -13,6 +23,8 @@ export type TextInputStyleProps = {
     labelStyle?: StyleProp<TextStyle>;
     inputStyle?: StyleProp<TextStyle>;
     inputFocusedStyle?: StyleProp<TextStyle>;
+    showPasswordButtonStyle?: StyleProp<TextStyle>;
+    showPasswordIconStyle?: StyleProp<TextStyle>;
     placeholderTextColor?: string;
 };
 
@@ -28,6 +40,7 @@ export type ValidatedTextInputProps = {
 
 type ValidatedTextInputState = {
     focused: boolean;
+    showSecureEntry: boolean;
 };
 
 /**
@@ -49,11 +62,15 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
 
     constructor(props: ValidatedTextInputProps) {
         super(props);
-        this.state = {focused: false} as ValidatedTextInputState;
+        this.state = {focused: false, showSecureEntry: false} as ValidatedTextInputState;
     }
 
     focus(): void {
         this.inputRef.current?.focus();
+    }
+
+    blur(): void {
+        this.inputRef.current?.blur();
     }
 
     render(): JSX.Element {
@@ -64,6 +81,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
             label,
             icon,
             untouched,
+            secureTextEntry,
             style,
             wrapperStyle,
             inputStyle,
@@ -73,13 +91,18 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
             focusedStyle,
             errorTextStyle,
             labelStyle,
+            showPasswordButtonStyle,
+            showPasswordIconStyle,
             placeholderTextColor,
             onBlur,
             onFocus,
             ...otherProps
         } = this.props;
 
+        const {showSecureEntry} = this.state;
+
         const showError = showErrorText && !untouched && error;
+        const isSecureEntry = secureTextEntry === true;
 
         return (
             <View
@@ -103,6 +126,7 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                         style={[
                             {flex: 1, height: "100%", backgroundColor: "transparent"},
                             inputStyle,
+                            this.state.focused && Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
                             this.state.focused ? inputFocusedStyle : {},
                             // untouched ? {} : error ? errorStyle : value.length > 0 ? validStyle : {},
                         ]}
@@ -114,10 +138,22 @@ class ValidatedTextInput extends React.Component<ValidatedTextInputProps, Valida
                             if (onFocus) onFocus(e);
                             this.setState({focused: true});
                         }}
-                        value={value}
+                        // Workaround to prevent the input from getting slow with large amounts of text (use defaultValue instead of value)
+                        // TODO test that this doesn't break anything
+                        defaultValue={value}
+                        // value={value}
                         placeholderTextColor={placeholderTextColor}
+                        {...(isSecureEntry ? {secureTextEntry: !showSecureEntry} : {})}
                         {...otherProps}
                     />
+                    {isSecureEntry && (
+                        <TouchableOpacity
+                            style={showPasswordButtonStyle}
+                            onPress={() => this.setState({...this.state, showSecureEntry: !showSecureEntry})}
+                        >
+                            <FontAwesome name={showSecureEntry ? "eye-slash" : "eye"} style={showPasswordIconStyle} />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {showError && <InputErrorText style={errorTextStyle} error={error} />}
             </View>

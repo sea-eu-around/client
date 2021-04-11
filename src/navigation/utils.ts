@@ -1,9 +1,10 @@
 import * as React from "react";
-import {NavigationContainerRef} from "@react-navigation/native";
-import {NavigatorRoute} from "./types";
+import {NavigationContainerRef, Route} from "@react-navigation/native";
+import {NavigatorRoute, RootNavigatorScreens} from "./types";
 import {Platform} from "react-native";
 import {APP_SCHEME, WEB_TO_APP_TIMEOUT} from "../constants/config";
 import i18n from "i18n-js";
+import {AppState} from "../state/types";
 
 // Store a ref to the root navigator
 export const rootNavigationRef = React.createRef<NavigationContainerRef>();
@@ -23,6 +24,19 @@ export function navigateBack(fallback?: NavigatorRoute): void {
     }
 }
 
+export function navigateBackOr(fallback: (nac: NavigationContainerRef) => void): void {
+    const nav = rootNavigationRef.current;
+    if (nav) {
+        if (nav.canGoBack()) nav.goBack();
+        else fallback(nav);
+    }
+}
+
+export function getRouteParams(route: Route<string>): {[key: string]: unknown} {
+    const params = route.params;
+    return params ? (params as {[key: string]: unknown}) : {};
+}
+
 export function attemptRedirectToApp(routeName: string, fallbackRoute: NavigatorRoute): void {
     const fallback = () => rootNavigate(fallbackRoute);
 
@@ -40,6 +54,14 @@ export function attemptRedirectToApp(routeName: string, fallbackRoute: Navigator
     } else fallback();
 }
 
+export function unauthorizedRedirect(): void {
+    rootNavigate("LoginRoot", {screen: "WelcomeScreen"});
+}
+
+export function getInitialRoute(loggedIn: boolean, onboarded: boolean): keyof RootNavigatorScreens {
+    return loggedIn ? (onboarded ? "MainScreen" : "OnboardingScreen") : "LoginRoot";
+}
+
 export function screenTitle(route: NavigatorRoute): string {
     return i18n.t(`screenTitles.${route}`) + i18n.t("screenTitles.suffix");
 }
@@ -49,5 +71,15 @@ export function headerTitle(route: NavigatorRoute): string {
 }
 
 export function openChat(roomId: string): void {
-    rootNavigate("TabMessaging", {screen: "ChatScreen", params: {roomId}});
+    rootNavigate("MainScreen", {screen: "TabMessaging", params: {screen: "ChatScreen", params: {roomId}}});
+}
+
+export function navigateToGroup(groupId: string): void {
+    rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "GroupScreen", params: {groupId}}});
+}
+
+export function navigateToProfile(profileId: string, state: AppState): void {
+    const isLocalUser = state.profile.user?.id === profileId;
+    if (isLocalUser) rootNavigate("MyProfileScreen");
+    else rootNavigate("ProfileScreen", {id: profileId});
 }

@@ -1,8 +1,8 @@
-import {ONBOARDING_SCREENS} from "../screens/onboarding";
+import {ONBOARDING_SCREENS} from "../screens/onboarding/screens";
 
 export type RootNavigatorScreens = {
     MainScreen: undefined;
-    LoginScreen: undefined;
+    LoginRoot: undefined;
     ForgotPasswordEmailSentScreen: undefined;
     ValidationEmailSentScreen: undefined;
     ValidateEmailScreen: undefined;
@@ -15,13 +15,14 @@ export type RootNavigatorScreens = {
     SettingsScreen: undefined;
     OnboardingScreen: undefined;
     OnboardingSuccessfulScreen: undefined;
-    MatchSuccessScreen: undefined;
     NotFoundScreen: undefined;
+    BackendUnreachableScreen: undefined;
 };
 
 export type MainNavigatorTabs = {
     TabHome: undefined;
     TabMatching: undefined;
+    TabGroups: undefined;
     TabMessaging: undefined;
     TabNotifications: undefined;
 };
@@ -40,6 +41,18 @@ export type TabMatchingRoot = {
     MatchHistoryScreen: undefined;
 };
 
+// TAB: Groups
+
+export type TabGroupsRoot = {
+    TabGroupsScreen: undefined;
+    GroupsExploreScreen: undefined;
+    GroupScreen: undefined;
+    GroupMembersScreen: undefined;
+    GroupBannedMembersScreen: undefined;
+    GroupMembersApprovalScreen: undefined;
+    GroupInviteScreen: undefined;
+};
+
 // TAB: Messaging
 
 export type TabMessagingRoot = {
@@ -55,14 +68,14 @@ export type TabNotificationsRoot = {
 
 // Login screen
 
-export type TabLoginRoot = {
+export type LoginRoot = {
     WelcomeScreen: undefined;
-    SigninScreen: undefined;
+    LoginScreens: undefined;
 };
 
-export type TabLoginSigninScreens = {
-    LoginScreen: undefined;
+export type LoginScreens = {
     ForgotPasswordScreen: undefined;
+    SigninScreen: undefined;
     SignupScreen: undefined;
 };
 
@@ -72,11 +85,12 @@ export type OnboardingScreens = typeof ONBOARDING_SCREENS;
 
 export type NavigatorRoute =
     | keyof RootNavigatorScreens
+    | keyof LoginRoot
+    | keyof LoginScreens
     | keyof MainNavigatorTabs
     | keyof TabHomeRoot
-    | keyof TabLoginRoot
     | keyof TabMatchingRoot
-    | keyof TabNotificationsRoot
+    | keyof TabGroupsRoot
     | keyof TabMessagingRoot
-    | keyof TabLoginSigninScreens
+    | keyof TabNotificationsRoot
     | keyof OnboardingScreens;

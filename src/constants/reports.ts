@@ -20,4 +20,7 @@ export const REPORT_TYPES = [
 
 export enum ReportEntityType {
     PROFILE_ENTITY = "ProfileEntity",
+    POST_ENTITY = "PostEntity",
+    COMMENT_ENTITY = "CommentEntity",
+    GROUP_ENTITY = "GroupEntity",
 }

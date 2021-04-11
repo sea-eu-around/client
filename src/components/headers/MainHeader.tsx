@@ -6,13 +6,13 @@ import {StackHeaderProps} from "@react-navigation/stack";
 import {AppState} from "../../state/types";
 import {ThemeProps} from "../../types";
 import ProfileAvatar from "../ProfileAvatar";
-import {headerTitle, navigateBack, rootNavigate} from "../../navigation/utils";
+import {headerTitle, navigateBackOr, rootNavigate} from "../../navigation/utils";
 import {NavigatorRoute} from "../../navigation/types";
 import {headerStyles} from "../../styles/headers";
 import {MaterialIcons} from "@expo/vector-icons";
 import {BlurProps, BlurView} from "expo-blur";
 import {useSafeAreaInsets, EdgeInsets} from "react-native-safe-area-context";
-import {Route} from "@react-navigation/native";
+import {NavigationContainerRef, Route} from "@react-navigation/native";
 import {BLUR_HEADER_INTENSITY} from "../../styles/general";
 
 // Map props from store
@@ -34,10 +34,13 @@ type AdditionalProps = {
     blur?: boolean;
     overrideAvatar?: JSX.Element;
     overrideTitle?: string;
+    onPressTitle?: () => void;
     wrapperStyle?: StyleProp<ViewStyle>;
+    titleContainerStyle?: StyleProp<ViewStyle>;
     titleStyle?: StyleProp<TextStyle>;
     color?: string;
     buttonBackgroundColor?: string;
+    navigateBackFallback?: (nav: NavigationContainerRef) => void;
 };
 
 export type MainHeaderStackProps = Partial<StackHeaderProps> & {route?: Route<string, undefined>};
@@ -49,7 +52,7 @@ export type MainHeaderProps = ConnectedProps<typeof reduxConnector> &
 
 class MainHeaderClass extends React.Component<MainHeaderProps> {
     back(): void {
-        navigateBack("MainScreen");
+        navigateBackOr(this.props.navigateBackFallback || ((nav) => nav.navigate("MainScreen")));
     }
 
     render(): JSX.Element {
@@ -65,7 +68,9 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
             blur,
             overrideAvatar,
             overrideTitle,
+            onPressTitle,
             wrapperStyle,
+            titleContainerStyle,
             titleStyle,
             color,
         } = this.props;
@@ -113,9 +118,14 @@ class MainHeaderClass extends React.Component<MainHeaderProps> {
                             onPress={() => rootNavigate("MyProfileScreen")}
                         />
                     ))}
-                <Text style={[styles.title, {marginLeft: 12, color: textColor}, titleStyle]} numberOfLines={1}>
-                    {overrideTitle || title}
-                </Text>
+                <TouchableOpacity
+                    style={[styles.titleContainer, {marginLeft: 12}, titleContainerStyle]}
+                    onPress={onPressTitle}
+                >
+                    <Text style={[styles.title, {color: textColor}, titleStyle]} numberOfLines={1}>
+                        {overrideTitle === undefined ? title : overrideTitle}
+                    </Text>
+                </TouchableOpacity>
                 {rightButtons?.map((ButtonComponent, i) => (
                     <ButtonComponent
                         key={`header-button-${routeName.toLowerCase()}-${i}`}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, TextInput} from "react-native";
+import {StyleProp, StyleSheet, Text, TextInput, View, ViewStyle} from "react-native";
 import i18n from "i18n-js";
 import * as Yup from "yup";
 import {Formik, FormikProps} from "formik";
@@ -34,7 +34,8 @@ const ResetPasswordFormSchema = Yup.object().shape({
 });
 
 // Component props
-type ResetPasswordFormProps = {token?: string} & FormProps<FormState> & ThemeProps;
+type ResetPasswordFormProps = {token?: string; containerStyle?: StyleProp<ViewStyle>} & FormProps<FormState> &
+    ThemeProps;
 
 // Component state
 type ResetPasswordFormState = {remoteErrors?: RemoteValidationErrors; submitting: boolean};
@@ -55,12 +56,12 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
         if (token) {
             (store.dispatch as MyThunkDispatch)(resetPassword(token, values.password)).then(
                 ({success, errors}: ValidatedActionReturn) => {
-                    if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
+                    this.setState({remoteErrors: errors, submitting: false});
                     if (errors && errors.fields) {
                         const f = errors.fields;
                         Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                     }
-                    this.setState({remoteErrors: errors, submitting: false});
+                    if (success && onSuccessfulSubmit) onSuccessfulSubmit(values);
                 },
             );
         } else {
@@ -69,12 +70,12 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
     }
 
     render(): JSX.Element {
-        const {theme} = this.props;
+        const {theme, containerStyle} = this.props;
         const {remoteErrors, submitting} = this.state;
         const styles = themedStyles(theme);
 
         return (
-            <>
+            <View style={containerStyle}>
                 <Text style={styles.title}>{i18n.t("resetPassword.title")}</Text>
                 <Formik
                     initialValues={initialState()}
@@ -97,7 +98,7 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                         this.setFieldError = setFieldError;
 
                         return (
-                            <React.Fragment>
+                            <>
                                 <FormTextInput
                                     field="password"
                                     placeholder={i18n.t("password")}
@@ -136,11 +137,11 @@ class ResetPasswordForm extends React.Component<ResetPasswordFormProps, ResetPas
                                     text={i18n.t("resetPassword.button")}
                                     submitting={submitting}
                                 />
-                            </React.Fragment>
+                            </>
                         );
                     }}
                 </Formik>
-            </>
+            </View>
         );
     }
 }

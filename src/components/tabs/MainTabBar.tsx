@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, StyleSheet} from "react-native";
+import {Text, StyleSheet, Platform} from "react-native";
 import {BottomTabBar, BottomTabBarProps} from "@react-navigation/bottom-tabs";
 import {BlurView} from "expo-blur";
 import {ThemeProps} from "../../types";
@@ -43,12 +43,15 @@ class MainTabBarClass extends React.Component<MainTabBarProps> {
 
 const themedStyles = preTheme(() => {
     return StyleSheet.create({
-        blurViewStyle: {
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-        },
+        blurViewStyle:
+            Platform.OS === "web"
+                ? {} // On web, scrolling on certain pages breaks if the tab bar is position absolutely
+                : {
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                  },
         tabBar: {
             borderTopWidth: 0,
             elevation: 0,

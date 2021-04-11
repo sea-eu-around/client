@@ -17,10 +17,11 @@ export type ProfileActionBarProps = {
     profile: UserProfile | null;
     isMatched: boolean;
     roomId: string | null;
+    matchId: string | null;
 } & ThemeProps;
 
 function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
-    const {profile, isMatched, roomId, theme} = props;
+    const {profile, isMatched, roomId, matchId, theme} = props;
     const styles = themedStyles(theme);
 
     let buttons;
@@ -63,7 +64,7 @@ function ProfileActionBar(props: ProfileActionBarProps): JSX.Element {
         const buttonUnmatch = (
             <UnmatchProfileModal
                 profile={profile}
-                roomId={roomId}
+                matchId={matchId}
                 onSubmit={(block: boolean) => {
                     if (block) navigateBack();
                 }}
@@ -127,7 +128,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             flexDirection: "row",
             justifyContent: "center",
-            marginTop: 20,
+            marginVertical: 15,
         },
         button: {
             width: 75,
@@ -141,6 +142,7 @@ const themedStyles = preTheme((theme: Theme) => {
             textTransform: "uppercase",
             letterSpacing: 0.5,
             color: theme.textWhite,
+            textAlign: "center",
             ...styleTextLight,
         },
         buttonTop: {

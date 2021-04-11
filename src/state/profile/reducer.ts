@@ -18,6 +18,7 @@ export const initialState: ProfileState = {
     offers: [],
     offerIdToCategory: new Map(),
     interests: [],
+    uploadingAvatar: false,
 };
 
 export const profileReducer = (
@@ -58,6 +59,12 @@ export const profileReducer = (
             const {user} = action as FetchUserSuccessAction;
             return {...state, user};
         }
+        case PROFILE_ACTION_TYPES.SET_AVATAR_BEGIN: {
+            return {...state, uploadingAvatar: true};
+        }
+        case PROFILE_ACTION_TYPES.SET_AVATAR_FAILURE: {
+            return {...state, uploadingAvatar: false};
+        }
         case PROFILE_ACTION_TYPES.SET_AVATAR_SUCCESS: {
             const {avatarUrl} = action as SetAvatarSuccessAction;
             if (state.user === null) return {...state};
@@ -65,6 +72,7 @@ export const profileReducer = (
                 return {
                     ...state,
                     user: {...state.user, profile: state.user.profile ? {...state.user.profile, avatarUrl} : undefined},
+                    uploadingAvatar: false,
                 };
             }
         }

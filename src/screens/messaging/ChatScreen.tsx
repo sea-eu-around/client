@@ -1,7 +1,16 @@
 import {MaterialIcons} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {StyleSheet, View} from "react-native";
+import {
+    Platform,
+    ScrollView,
+    ScrollViewProps,
+    StyleSheet,
+    TextStyle,
+    View,
+    FlatList,
+    KeyboardAvoidingView,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
 import {
@@ -9,6 +18,8 @@ import {
     ActionsProps,
     Bubble,
     BubbleProps,
+    Composer,
+    ComposerProps,
     GiftedAvatar,
     GiftedAvatarProps,
     GiftedChat,
@@ -27,6 +38,7 @@ import {
     connectToChat,
     fetchEarlierMessages,
     fetchMatchRoom,
+    fetchNewMessages,
     joinChatRoom,
     leaveChatRoom,
     sendChatMessage,
@@ -35,16 +47,23 @@ import {AppState, MyThunkDispatch} from "../../state/types";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
 import {TypingAnimation} from "react-native-typing-animation";
-import {ChatRoomUser} from "../../model/chat-room";
+import {ChatRoom, ChatRoomUser} from "../../model/chat-room";
 import store from "../../state/store";
 import {DEBUG_MODE, MESSAGES_FETCH_LIMIT} from "../../constants/config";
+import ScreenWrapper from "../ScreenWrapper";
+import {normalizeWheelEvent} from "../../polyfills";
+import {getRouteParams} from "../../navigation/utils";
+import {noop} from "lodash";
+import ChatUserAvatar from "../../components/ChatUserAvatar";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
-    activeRoom: state.messaging.activeRoom,
+    rooms: state.messaging.matchRooms,
+    activeRoomId: state.messaging.activeRoomId,
     localChatUser: state.messaging.localChatUser,
     connected: state.messaging.socketState.connected,
     connecting: state.messaging.socketState.connecting,
+    fetchingNewMessages: state.messaging.fetchingNewMessages,
 }));
 
 // Component props
@@ -57,73 +76,121 @@ const INPUT_VERTICAL_MARGIN = 10;
 
 class ChatScreen extends React.Component<ChatScreenProps> {
     ref = React.createRef<GiftedChat>();
+    listRef: FlatList | null = null;
+    removeScrollListener: () => void = noop;
 
-    connectToRoom() {
-        const {route} = this.props;
+    private unsubscribeBlurEvent: null | (() => void) = null;
+    private unsubscribeFocusEvent: null | (() => void) = null;
+
+    private getRoomId(): string | null {
+        // Get the room ID from the route parameters
+        const {roomId} = getRouteParams(this.props.route);
+        return (roomId as string) || null;
+    }
+
+    private getRoom(): ChatRoom | null {
+        const {rooms, activeRoomId} = this.props;
+        const id = activeRoomId || this.getRoomId();
+        return id ? rooms[id] || null : null;
+    }
+
+    private connectToRoom(): void {
+        const {rooms} = this.props;
         const dispatch = this.props.dispatch as MyThunkDispatch;
 
-        // Get the room ID from the route parameters
-        if (route.params) {
-            const params = route.params as {[key: string]: string};
-            const {roomId} = params;
+        const joinRoom = (room: ChatRoom) => dispatch(joinChatRoom(room));
 
-            // If a roomId parameter was given, we first ensure we have that room (in storage or we fetch it) before joining it.
-            if (roomId) {
-                const room = store.getState().messaging.matchRooms[roomId];
-                if (room) dispatch(joinChatRoom(room));
-                else {
-                    dispatch(fetchMatchRoom(roomId)).then((r) => {
-                        if (r) dispatch(joinChatRoom(r));
-                    });
-                }
-            }
+        const roomId = this.getRoomId();
+        // If a roomId parameter was given
+        if (roomId) {
+            const room = rooms[roomId];
+            // First ensure we have that room (in storage or we fetch it) before joining it.
+            if (room) joinRoom(room);
+            else dispatch(fetchMatchRoom(roomId)).then((room) => room && joinRoom(room));
         }
     }
 
-    componentDidMount() {
-        const {connected, connecting, dispatch} = this.props;
-
-        // If are already connected to the chat, connect to the room
-        if (connected) this.connectToRoom();
-        // If we are not connected nor connecting to the chat, connect to the chat first
-        else if (!connecting) (dispatch as MyThunkDispatch)(connectToChat());
-
-        this.props.navigation.addListener("blur", () => this.onBlur());
-        this.props.navigation.addListener("focus", () => this.onFocus());
+    componentDidMount(): void {
+        const {navigation} = this.props;
+        this.unsubscribeBlurEvent = navigation.addListener("blur", () => this.onBlur());
+        this.unsubscribeFocusEvent = navigation.addListener("focus", () => this.onFocus());
         this.onFocus();
     }
 
-    onBlur() {
-        // Leave the room when navigating to another screen
-        const {dispatch, activeRoom} = this.props;
-        if (activeRoom) (dispatch as MyThunkDispatch)(leaveChatRoom(activeRoom));
+    componentWillUnmount(): void {
+        if (this.unsubscribeBlurEvent) this.unsubscribeBlurEvent();
+        if (this.unsubscribeFocusEvent) this.unsubscribeFocusEvent();
     }
 
-    onFocus() {
+    componentDidUpdate(oldProps: ChatScreenProps): void {
+        const {activeRoomId, connected} = this.props;
+        // If we've just connected to the chat, connect to the room
+        if (!oldProps.connected && connected) this.connectToRoom();
+        // If we've just joined the room, ensure we have the latest messages
+        if (!oldProps.activeRoomId && activeRoomId) this.ensureLatestMessages();
+    }
+
+    private onBlur(): void {
+        // Leave the room when navigating to another screen
+        const {dispatch} = this.props;
+        const room = this.getRoom();
+        if (room) (dispatch as MyThunkDispatch)(leaveChatRoom(room));
+    }
+
+    private onFocus(): void {
+        const {dispatch} = this.props;
+
+        // If we are already connected to the chat, connect to the room
+        if (chatSocket.isConnected()) this.connectToRoom();
+        // If we are not connected nor connecting to the chat, connect to the chat first
+        else if (!chatSocket.isConnecting()) (dispatch as MyThunkDispatch)(connectToChat());
+    }
+
+    /**
+     * Ensures that the latest n messages are loaded
+     */
+    private ensureLatestMessages(): void {
+        const {dispatch, fetchingNewMessages} = this.props;
+        const room = this.getRoom();
+
+        // Fetch all messages that are more recent than the last one we have
+        if (room && !fetchingNewMessages) (dispatch as MyThunkDispatch)(fetchNewMessages(room));
+
         // Fetch earlier messages if we need to
-        const room = this.props.activeRoom;
         if (room && room.messages.length < MESSAGES_FETCH_LIMIT) this.fetchEarlier();
     }
 
-    componentDidUpdate(oldProps: ChatScreenProps) {
-        const {activeRoom, connected} = this.props;
-        // If we've just connected to the chat, connect to the room
-        if (!oldProps.connected && connected) this.connectToRoom();
-        // If we're at the beginning of the messages pagination
-        if (!oldProps.activeRoom && activeRoom && activeRoom.messagePagination.page == 1) this.fetchEarlier();
+    private fetchEarlier(): void {
+        const {dispatch} = this.props;
+        const room = this.getRoom();
+        if (room && !room.messagePagination.fetching) (dispatch as MyThunkDispatch)(fetchEarlierMessages(room));
     }
 
-    fetchEarlier() {
-        const {dispatch, activeRoom} = this.props;
-        if (activeRoom && !activeRoom.messagePagination.fetching)
-            (dispatch as MyThunkDispatch)(fetchEarlierMessages(activeRoom));
+    private setListRef(listRef: FlatList | null): void {
+        if (Platform.OS === "web") {
+            if (listRef === null) this.removeScrollListener();
+            else if (this.listRef === null) {
+                // fix scrolling being reversed with the mouse wheel
+                // taken from https://www.gitmemory.com/issue/necolas/react-native-web/995/511242048
+                const scrollNode = listRef.getScrollableNode();
+                const listener = scrollNode.addEventListener("wheel", (e: WheelEvent) => {
+                    const r = normalizeWheelEvent(e);
+                    scrollNode.scrollTop -= r.pixelY * 0.15;
+                    e.preventDefault();
+                });
+                this.removeScrollListener = () => scrollNode.removeEventListener("wheel", listener);
+                listRef.setNativeProps({style: {transform: "translate3d(0,0,0) scaleY(-1)"}});
+            }
+            this.listRef = listRef;
+        }
     }
 
     render(): JSX.Element {
         const {theme, localChatUser, dispatch} = this.props;
         const styles = themedStyles(theme);
 
-        const room = this.props.activeRoom;
+        const room = this.getRoom();
+
         let chatComponent = <></>;
         if (room && localChatUser) {
             const isWritingId = Object.keys(room.writing).find((id: string) => room.writing[id] === true);
@@ -143,6 +210,7 @@ class ChatScreen extends React.Component<ChatScreenProps> {
             chatComponent = (
                 <GiftedChat
                     ref={this.ref}
+                    isKeyboardInternallyHandled={false}
                     messages={room.messages}
                     user={localChatUser}
                     renderSend={(props: SendProps<IMessage>) => (
@@ -166,24 +234,8 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                         />
                     )}
                     renderMessage={(props: MessageProps<IMessage>) => {
-                        const lm = props.currentMessage ? lastMessageDict[props.currentMessage._id] : undefined;
-                        return lm ? (
-                            <View>
-                                <Message {...props} containerStyle={{right: {marginBottom: 0}, left: {}}} />
-                                <View style={styles.messageReadContainer}>
-                                    {lm.map((u: ChatRoomUser) => (
-                                        <GiftedAvatar
-                                            key={`read-message-${u._id}`}
-                                            user={u}
-                                            avatarStyle={styles.messageReadAvatar}
-                                            textStyle={styles.messageReadAvatarText}
-                                        />
-                                    ))}
-                                </View>
-                            </View>
-                        ) : (
-                            <Message {...props} />
-                        );
+                        const seenBy = props.currentMessage ? lastMessageDict[props.currentMessage._id] : [];
+                        return <ChatMessage theme={theme} seenBy={seenBy || []} messageProps={props} />;
                     }}
                     renderInputToolbar={(props: InputToolbarProps) => (
                         <InputToolbar
@@ -210,23 +262,62 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                     }}
                     timeFormat={"HH:mm"}
                     listViewProps={{
+                        ref: (el: unknown) => this.setListRef(el as FlatList | null),
                         onEndReached: () => this.fetchEarlier(),
-                        //onEndReachedThreshold: 1,
+                        renderScrollComponent: (props: ScrollViewProps) => (
+                            <ScrollView
+                                {...props}
+                                contentContainerStyle={[
+                                    props.contentContainerStyle,
+                                    // This is actually a paddingTop but gifted-chat flips the rendering.
+                                    // (compensates for the height of the transparent header)
+                                    {paddingBottom: 100},
+                                ]}
+                            />
+                        ),
                     }}
-                    textInputProps={{autoFocus: false, style: styles.textInput, multiline: true}}
+                    renderComposer={(props: ComposerProps) => (
+                        <Composer
+                            {...props}
+                            textInputProps={{
+                                ...props.textInputProps,
+                                autoFocus: false,
+                                style: [styles.textInput, Platform.OS === "web" && ({outline: "none"} as TextStyle)],
+                                multiline: true,
+                                ...(Platform.OS === "web"
+                                    ? {
+                                          onFocus: () => this.forceUpdate(), // workaround to get the ugly outline on web to disappear properly
+                                          onKeyPress: (ev) => {
+                                              const e = (ev as unknown) as KeyboardEvent;
+                                              if (e.key === "Enter" && !e.altKey && !e.shiftKey && props.text) {
+                                                  // The typing expects _id, createdAt and user properties, but gifted-chat creates them itself if not given
+                                                  this.ref.current?.onSend([{text: props.text.trim()} as never], true);
+                                              }
+                                          },
+                                      }
+                                    : {}),
+                            }}
+                        />
+                    )}
                     minInputToolbarHeight={MIN_INPUT_HEIGHT + INPUT_VERTICAL_MARGIN * 2}
                 />
             );
         }
 
-        return <View style={styles.container}>{chatComponent}</View>;
+        return (
+            <ScreenWrapper>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.container}>
+                    {chatComponent}
+                </KeyboardAvoidingView>
+            </ScreenWrapper>
+        );
     }
 }
 
 function ChatFooter({userWriting, theme}: {userWriting?: ChatRoomUser; theme: Theme}): JSX.Element {
     if (userWriting) {
         return (
-            <View style={{height: 50, paddingTop: 10}}>
+            <View style={{height: 50, paddingTop: 10, marginBottom: 5}}>
                 <Message
                     key="isWriting"
                     user={userWriting}
@@ -259,7 +350,51 @@ function ChatFooter({userWriting, theme}: {userWriting?: ChatRoomUser; theme: Th
     } else return <></>;
 }
 
+function ChatMessage({
+    theme,
+    seenBy,
+    messageProps,
+}: {
+    theme: Theme;
+    seenBy: ChatRoomUser[];
+    messageProps: MessageProps<IMessage>;
+}): JSX.Element {
+    const styles = themedStyles(theme);
+    return (
+        <View style={messageProps.position === "left" ? styles.messageContainerLeft : styles.messageContainerRight}>
+            <Message
+                {...messageProps}
+                containerStyle={{
+                    left: [messageProps.containerStyle?.left],
+                    right: [messageProps.containerStyle?.right, {marginBottom: 2}],
+                }}
+            />
+            {seenBy.length > 0 && (
+                <View
+                    style={[
+                        messageProps.position === "left"
+                            ? styles.messageReadContainerLeft
+                            : styles.messageReadContainerRight,
+                    ]}
+                >
+                    {seenBy.map((u: ChatRoomUser) => (
+                        <ChatUserAvatar
+                            key={`read-message-${u._id}`}
+                            titleStyle={styles.messageReadAvatarText}
+                            user={u}
+                            size={20}
+                            rounded
+                        />
+                    ))}
+                </View>
+            )}
+        </View>
+    );
+}
+
 function ChatActions({actionsProps, theme}: {actionsProps: ActionsProps; theme: Theme}): JSX.Element {
+    return <></>;
+
     const styles = themedStyles(theme);
     return (
         <>
@@ -310,8 +445,7 @@ const themedStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.background,
-            justifyContent: "center",
+            width: "100%",
         },
         inputToolbarContainer: {
             justifyContent: "center",
@@ -323,8 +457,6 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         textInput: {
             backgroundColor: theme.cardBackground,
-            //borderWidth: 1,
-            //borderColor: theme.cardBackground,
             borderRadius: 20,
             marginVertical: INPUT_VERTICAL_MARGIN,
             marginHorizontal: 20,
@@ -360,21 +492,28 @@ const themedStyles = preTheme((theme: Theme) => {
         bubbleWrapperLeft: {
             backgroundColor: theme.chatBubble,
         },
-        bubbleWrapperRight: {},
+        bubbleWrapperRight: {
+            paddingLeft: 10,
+        },
         bubbleTextLeft: {
             color: theme.text,
         },
-        bubbleTextRight: {},
-        messageReadContainer: {
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            paddingRight: 8,
-            paddingTop: 2,
-            paddingBottom: 8,
+        bubbleTextRight: {
+            marginLeft: 0,
         },
-        messageReadAvatar: {
-            width: 20,
-            height: 20,
+        messageContainerLeft: {},
+        messageContainerRight: {
+            paddingRight: 20,
+        },
+        messageReadContainerLeft: {
+            position: "absolute",
+            right: 5,
+            bottom: 3,
+        },
+        messageReadContainerRight: {
+            position: "absolute",
+            right: 5,
+            bottom: 3,
         },
         messageReadAvatarText: {
             fontSize: 12,

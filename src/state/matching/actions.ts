@@ -9,7 +9,14 @@ import {
 } from "../../api/dto";
 import {UserProfile} from "../../model/user-profile";
 import {requestBackend} from "../../api/utils";
-import {MatchingFiltersState, AppThunk} from "../types";
+import {
+    MatchingFiltersState,
+    AppThunk,
+    PaginatedFetchRefreshAction,
+    PaginatedFetchFailureAction,
+    PaginatedFetchBeginAction,
+    PaginatedFetchSuccessAction,
+} from "../types";
 import {HISTORY_FETCH_LIMIT, PROFILES_FETCH_LIMIT} from "../../constants/config";
 import {HttpStatusCode} from "../../constants/http-status";
 import {MatchHistoryItem} from "../../model/matching";
@@ -30,6 +37,7 @@ export enum MATCHING_ACTION_TYPES {
     FETCH_MY_MATCHES_BEGIN = "MATCHING/FETCH_MY_MATCHES_BEGIN",
     FETCH_MY_MATCHES_FAILURE = "MATCHING/FETCH_MY_MATCHES_FAILURE",
     FETCH_MY_MATCHES_SUCCESS = "MATCHING/FETCH_MY_MATCHES_SUCCESS",
+    FETCH_MY_MATCHES_REFRESH = "MATCHING/FETCH_MY_MATCHES_REFRESH",
 
     FETCH_HISTORY_BEGIN = "MATCHING/FETCH_HISTORY_BEGIN",
     FETCH_HISTORY_FAILURE = "MATCHING/FETCH_HISTORY_FAILURE",
@@ -48,9 +56,7 @@ export type SetOfferFilterAction = {
     value: boolean;
 };
 
-export type ResetMatchingFiltersAction = {
-    type: string;
-};
+export type ResetMatchingFiltersAction = {type: string};
 
 export type SetMatchingFiltersAction = {
     type: string;
@@ -59,68 +65,19 @@ export type SetMatchingFiltersAction = {
 
 export type LikeProfileSuccessAction = {
     type: string;
-    profileId: string;
+    profile: UserProfile;
     matchStatus: MatchActionStatus;
     roomId: string | null;
 };
 
 export type DislikeProfileSuccessAction = {
     type: string;
-    profileId: string;
+    profile: UserProfile;
 };
 
 export type BlockProfileSuccessAction = {
     type: string;
     profileId: string;
-};
-
-export type FetchProfilesRefreshAction = {
-    type: string;
-};
-
-export type BeginFetchProfilesAction = {
-    type: string;
-};
-
-export type FetchProfilesFailureAction = {
-    type: string;
-};
-
-export type FetchProfilesSuccessAction = {
-    type: string;
-    profiles: UserProfile[];
-    canFetchMore: boolean;
-};
-
-export type BeginFetchMyMatchesAction = {
-    type: string;
-};
-
-export type FetchMyMatchesFailureAction = {
-    type: string;
-};
-
-export type FetchMyMatchesSuccessAction = {
-    type: string;
-    profiles: UserProfile[];
-};
-
-export type BeginFetchHistoryAction = {
-    type: string;
-};
-
-export type FetchHistoryFailureAction = {
-    type: string;
-};
-
-export type FetchHistorySuccessAction = {
-    type: string;
-    items: MatchHistoryItem[];
-    canFetchMore: boolean;
-};
-
-export type FetchHistoryRefreshAction = {
-    type: string;
 };
 
 export type SetHistoryFiltersAction = {
@@ -131,8 +88,8 @@ export type SetHistoryFiltersAction = {
 export type ActionCancelSuccessAction = {
     type: string;
     historyItemId: string;
+    isMatch: boolean;
 };
-
 export type ActionCancelFailureAction = {
     type: string;
     historyItemId: string;
@@ -142,16 +99,14 @@ export type MatchingAction =
     | SetOfferFilterAction
     | SetMatchingFiltersAction
     | ResetMatchingFiltersAction
-    | BeginFetchProfilesAction
-    | FetchProfilesSuccessAction
-    | FetchProfilesFailureAction
-    | FetchProfilesRefreshAction
+    | PaginatedFetchBeginAction
+    | PaginatedFetchSuccessAction<UserProfile>
+    | PaginatedFetchSuccessAction<MatchHistoryItem>
+    | PaginatedFetchFailureAction
+    | PaginatedFetchRefreshAction
     | LikeProfileSuccessAction
     | DislikeProfileSuccessAction
     | BlockProfileSuccessAction
-    | BeginFetchMyMatchesAction
-    | FetchMyMatchesFailureAction
-    | FetchMyMatchesSuccessAction
     | SetHistoryFiltersAction
     | ActionCancelSuccessAction
     | ActionCancelFailureAction;
@@ -167,7 +122,7 @@ export const setMatchingFilters = (filters: Partial<MatchingFiltersState>): SetM
     filters,
 });
 
-const beginFetchProfiles = (): BeginFetchProfilesAction => ({
+const beginFetchProfiles = (): PaginatedFetchBeginAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_BEGIN,
 });
 
@@ -176,6 +131,11 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
         auth: {token},
         matching: {filters, profilesPagination},
     } = getState();
+
+    if (!token) {
+        dispatch(fetchProfilesFailure());
+        return;
+    }
 
     if (profilesPagination.fetching || !profilesPagination.canFetchMore) return;
 
@@ -187,11 +147,17 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
     }
 
     const offers = Object.keys(filters.offers).filter((k) => filters.offers[k] === true);
+    // Remove the "degrees" filters when not filtering for students
+    const degrees = filters.types && filters.types.indexOf("student") === -1 ? [] : filters.degrees;
+    // Same for staffRoles & staff
+    const staffRoles = filters.types && filters.types.indexOf("staff") === -1 ? [] : filters.staffRoles;
 
     const filterParams = {
         universities: notEmpty(filters.universities),
         spokenLanguages: notEmpty(filters.languages),
-        degrees: notEmpty(filters.degrees),
+        degrees: notEmpty(degrees),
+        educationFields: notEmpty(filters.educationFields),
+        staffRoles: notEmpty(staffRoles),
         types: notEmpty(filters.types),
         offers: notEmpty(offers),
     };
@@ -216,50 +182,58 @@ export const fetchProfiles = (): AppThunk => async (dispatch, getState) => {
     } else dispatch(fetchProfilesFailure());
 };
 
-const fetchProfilesFailure = (): FetchProfilesFailureAction => ({
+const fetchProfilesFailure = (): PaginatedFetchFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_FAILURE,
 });
 
-const fetchProfilesSuccess = (profiles: UserProfile[], canFetchMore: boolean): FetchProfilesSuccessAction => ({
+const fetchProfilesSuccess = (
+    items: UserProfile[],
+    canFetchMore: boolean,
+): PaginatedFetchSuccessAction<UserProfile> => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS,
-    profiles,
+    items,
     canFetchMore,
 });
 
-export const refreshFetchedProfiles = (): FetchProfilesRefreshAction => ({
+export const refreshFetchedProfiles = (): PaginatedFetchRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH,
 });
 
 const likeProfileSuccess = (
-    profileId: string,
+    profile: UserProfile,
     matchStatus: MatchActionStatus,
     roomId: string | null,
 ): LikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS,
-    profileId,
+    profile,
     matchStatus,
     roomId,
 });
 
-export const likeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
+export const likeProfile = (profile: UserProfile): AppThunk<Promise<MatchActionResponseDto | null>> => async (
+    dispatch,
+    getState,
+) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profileId}, token, true);
+    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profile.id}, token, true);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const {status, roomId} = payload as MatchActionResponseDto;
-        dispatch(likeProfileSuccess(profileId, status, roomId));
+        dispatch(likeProfileSuccess(profile, status, roomId));
+        return {status, roomId};
     }
+    return null;
 };
 
-const dislikeProfileSuccess = (profileId: string): DislikeProfileSuccessAction => ({
+const dislikeProfileSuccess = (profile: UserProfile): DislikeProfileSuccessAction => ({
     type: MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS,
-    profileId,
+    profile,
 });
 
-export const dislikeProfile = (profileId: string): AppThunk => async (dispatch, getState) => {
+export const dislikeProfile = (profile: UserProfile): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profileId}, token, true);
-    if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profileId));
+    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profile.id}, token, true);
+    if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profile));
 };
 
 const blockProfileSuccess = (profileId: string): BlockProfileSuccessAction => ({
@@ -273,17 +247,25 @@ export const blockProfile = (profileId: string): AppThunk => async (dispatch, ge
     if (response.status === HttpStatusCode.OK) dispatch(blockProfileSuccess(profileId));
 };
 
-const beginFetchMyMatches = (): BeginFetchMyMatchesAction => ({
+const beginFetchMyMatches = (): PaginatedFetchBeginAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN,
 });
 
-const fetchMyMatchesFailure = (): FetchMyMatchesFailureAction => ({
+const fetchMyMatchesFailure = (): PaginatedFetchFailureAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE,
 });
 
-const fetchMyMatchesSuccess = (profiles: UserProfile[]): FetchMyMatchesSuccessAction => ({
+const fetchMyMatchesSuccess = (
+    items: UserProfile[],
+    canFetchMore: boolean,
+): PaginatedFetchSuccessAction<UserProfile> => ({
     type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS,
-    profiles,
+    items,
+    canFetchMore,
+});
+
+export const fetchMyMatchesRefresh = (): PaginatedFetchRefreshAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_REFRESH,
 });
 
 export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
@@ -291,7 +273,9 @@ export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
         auth: {token},
         matching,
     } = getState();
-    if (matching.fetchingMyMatches) return;
+
+    const pagination = matching.myMatchesPagination;
+    if (pagination.fetching || !pagination.canFetchMore) return;
 
     dispatch(beginFetchMyMatches());
 
@@ -299,26 +283,29 @@ export const fetchMyMatches = (): AppThunk => async (dispatch, getState) => {
 
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
-        const profiles = (payload as ResponseProfileDto[]).map(convertDtoToProfile);
-        dispatch(fetchMyMatchesSuccess(profiles));
+        const items = (payload as ResponseProfileDto[]).map(convertDtoToProfile);
+        dispatch(fetchMyMatchesSuccess(items, false));
     } else dispatch(fetchMyMatchesFailure());
 };
 
-const beginFetchHistory = (): BeginFetchHistoryAction => ({
+const beginFetchHistory = (): PaginatedFetchBeginAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_BEGIN,
 });
 
-const fetchHistoryFailure = (): FetchHistoryFailureAction => ({
-    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE,
-});
-
-const fetchHistorySuccess = (items: MatchHistoryItem[], canFetchMore: boolean): FetchHistorySuccessAction => ({
+const fetchHistorySuccess = (
+    items: MatchHistoryItem[],
+    canFetchMore: boolean,
+): PaginatedFetchSuccessAction<MatchHistoryItem> => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS,
     items,
     canFetchMore,
 });
 
-export const refreshFetchedHistory = (): FetchHistoryRefreshAction => ({
+const fetchHistoryFailure = (): PaginatedFetchFailureAction => ({
+    type: MATCHING_ACTION_TYPES.FETCH_HISTORY_FAILURE,
+});
+
+export const refreshFetchedHistory = (): PaginatedFetchRefreshAction => ({
     type: MATCHING_ACTION_TYPES.FETCH_HISTORY_REFRESH,
 });
 
@@ -339,7 +326,7 @@ export const fetchHistory = (search?: string): AppThunk => async (dispatch, getS
             page: historyPagination.page,
             limit: HISTORY_FETCH_LIMIT,
             status: Object.keys(historyFilters).filter((k) => historyFilters[k]),
-            search,
+            search: search && search.length > 0 ? search : undefined,
         },
         {},
         token,
@@ -364,12 +351,16 @@ const cancelActionFailure = (historyItemId: string): ActionCancelFailureAction =
     historyItemId,
 });
 
-const cancelActionSuccess = (historyItemId: string): ActionCancelSuccessAction => ({
+const cancelActionSuccess = (historyItemId: string, isMatch: boolean): ActionCancelSuccessAction => ({
     type: MATCHING_ACTION_TYPES.ACTION_CANCEL_SUCCESS,
     historyItemId,
+    isMatch,
 });
 
-export const cancelMatchAction = (historyItemId: string): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
+export const cancelMatchAction = (historyItemId: string, isMatch = false): AppThunk<Promise<boolean>> => async (
+    dispatch,
+    getState,
+) => {
     const token = getState().auth.token;
     const response = await requestBackend(
         "matching/cancel",
@@ -381,7 +372,7 @@ export const cancelMatchAction = (historyItemId: string): AppThunk<Promise<boole
     );
 
     if (response.status === HttpStatusCode.OK) {
-        dispatch(cancelActionSuccess(historyItemId));
+        dispatch(cancelActionSuccess(historyItemId, isMatch));
         return true;
     } else {
         dispatch(cancelActionFailure(historyItemId));

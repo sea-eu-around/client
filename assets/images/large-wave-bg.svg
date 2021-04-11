@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="414px" height="634px" viewBox="0 0 414 634" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Path 2</title>
+    <defs>
+        <linearGradient x1="89.5687661%" y1="0%" x2="10.4312339%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#32C5FF" offset="0%"></stop>
+            <stop stop-color="#B620E0" offset="51.2583893%"></stop>
+            <stop stop-color="#F7B500" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.99">
+        <g id="Welcome" transform="translate(0.000000, -262.000000)" fill="url(#linearGradient-1)">
+            <path d="M-31,315.133499 C-4,299.95848 29.1439501,255.207591 95,264.011157 C160.85605,272.814723 173.053968,320.87465 239.5,352.437325 C305.946032,384 332.377911,425 342.188955,453 C352,481 346.642121,522 451.962914,588 C522.176777,632 567.256515,777 587.20213,1023 L-89,984.005831 C-68.3333333,548.207622 -49,325.250178 -31,315.133499 Z" id="Path-2"></path>
+        </g>
+    </g>
+</svg>

@@ -3,34 +3,60 @@ import {Theme} from "../types";
 import {preTheme} from "./utils";
 import {styleTextThin} from "./general";
 
-export const onboardingStyle = preTheme((theme: Theme) => {
+export const ONBOARDING_INPUT_BORDER_RADIUS = 12;
+
+export const onboardingStyle = preTheme((theme: Theme, wideDevice: boolean) => {
     return StyleSheet.create({
-        wavyHeader: {
-            height: 200,
+        root: {
+            flexDirection: "row",
+            justifyContent: "center",
+        },
+        wideDeviceLeftPanel: {
+            width: "50%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        slideWrapper: {
+            width: wideDevice ? "50%" : "100%",
+            height: "100%",
+            alignItems: "center",
         },
         header: {
             marginBottom: 20,
         },
         slideScrollView: {
             width: "100%",
-            marginBottom: 80, // leave some space for the navigation controls
         },
         slideContentWrapper: {
-            width: "75%",
+            width: "100%",
             flexDirection: "column",
-            alignSelf: "center",
-            paddingTop: 150,
+            paddingTop: 100,
+            paddingBottom: 20,
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        slideContentContainer: {
+            width: "80%",
         },
         slideNavWrapper: {
+            width: "80%",
+            alignItems: "center",
+            marginTop: 15,
+        },
+        slideNavButtons: {
             width: "100%",
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "center",
-            position: "absolute",
-            bottom: 20,
         },
         navButton: {
-            padding: 10,
+            flex: 1,
+            marginHorizontal: 0,
+            marginVertical: 0,
+        },
+        navButtonBack: {
+            backgroundColor: "#fff",
         },
         navButtonIcon: {
             fontSize: 40,
@@ -43,7 +69,6 @@ export const onboardingStyle = preTheme((theme: Theme) => {
             ...styleTextThin,
             fontSize: 40,
             letterSpacing: 1.75,
-            marginBottom: 20,
             color: theme.text,
         } as TextStyle,
         subtitle: {
@@ -56,8 +81,17 @@ export const onboardingStyle = preTheme((theme: Theme) => {
     });
 });
 
-export const onboardingOffersStyle = preTheme(() => {
+export const onboardingOffersStyle = preTheme((theme: Theme) => {
     return StyleSheet.create({
         categoryTitleText: {},
+        offerControl: {
+            marginVertical: 10,
+        },
+        offerControlPreText: {
+            fontSize: 18,
+            letterSpacing: 0.4,
+            color: theme.textLight,
+            marginVertical: 10,
+        },
     });
 });

@@ -10,6 +10,7 @@ import {
     SetOnboardingValuesAction,
     AUTH_ACTION_TYPES,
     SetOnboardingOfferValueAction,
+    LogInFailureAction,
 } from "./actions";
 
 const initialOnboardingState = (): OnboardingState => ({
@@ -33,14 +34,16 @@ export const initialState: AuthState = {
     validated: false,
     registerEmail: "",
     validatedEmail: null,
+    accountNeedsRecovery: false,
     onboarded: false,
     onboarding: initialOnboardingState(),
+    onboardingIndex: 0,
 };
 
 export const authReducer = (state: AuthState = initialState, action: AuthAction): AuthState => {
     switch (action.type) {
         case AUTH_ACTION_TYPES.REGISTER_BEGIN: {
-            const {email} = <RegisterBeginAction>action;
+            const {email} = action as RegisterBeginAction;
             return {
                 ...state,
                 registerEmail: email,
@@ -49,7 +52,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
         case AUTH_ACTION_TYPES.REGISTER_SUCCESS: {
             const {
                 user: {verificationToken, onboarded},
-            } = <RegisterSuccessAction>action;
+            } = action as RegisterSuccessAction;
             return {
                 ...state,
                 verificationToken,
@@ -57,7 +60,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             };
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
-            const {email} = <ValidateAccountSuccessAction>action;
+            const {email} = action as ValidateAccountSuccessAction;
             return {...state, validated: true, validatedEmail: email};
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE: {
@@ -67,7 +70,7 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             const {
                 token,
                 user: {onboarded, email},
-            } = <LogInSuccessAction>action;
+            } = action as LogInSuccessAction;
 
             // Pre-fill some of the on-boarding values
             const onboarding = {...state.onboarding};
@@ -82,27 +85,48 @@ export const authReducer = (state: AuthState = initialState, action: AuthAction)
             return {
                 ...state,
                 authenticated: true,
+                accountNeedsRecovery: false,
                 token,
                 onboarded,
                 onboarding,
             };
+        }
+        case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
+            const {needsRecovery} = action as LogInFailureAction;
+            return {
+                ...state,
+                accountNeedsRecovery: needsRecovery,
+            };
+        }
+        case AUTH_ACTION_TYPES.LOG_IN_RECOVER_CANCEL: {
+            return {...state, accountNeedsRecovery: false};
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,
                 token: null,
                 authenticated: false,
+                accountNeedsRecovery: false,
                 validated: false,
                 validatedEmail: null,
                 onboarded: false,
             };
         }
+        case AUTH_ACTION_TYPES.BEGIN_ONBOARDING: {
+            return {...state, onboardingIndex: 0};
+        }
+        case AUTH_ACTION_TYPES.PREVIOUS_ONBOARDING_SLIDE: {
+            return {...state, onboardingIndex: state.onboardingIndex - 1};
+        }
+        case AUTH_ACTION_TYPES.NEXT_ONBOARDING_SLIDE: {
+            return {...state, onboardingIndex: state.onboardingIndex + 1};
+        }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_VALUES: {
-            const {values} = <SetOnboardingValuesAction>action;
+            const {values} = action as SetOnboardingValuesAction;
             return {...state, onboarding: {...state.onboarding, ...values}};
         }
         case AUTH_ACTION_TYPES.SET_ONBOARDING_OFFER_VALUE: {
-            const {id, value} = <SetOnboardingOfferValueAction>action;
+            const {id, value} = action as SetOnboardingOfferValueAction;
             return {
                 ...state,
                 onboarding: {

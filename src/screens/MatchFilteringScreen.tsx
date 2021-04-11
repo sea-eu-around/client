@@ -11,12 +11,14 @@ import {Theme, ThemeProps} from "../types";
 import i18n from "i18n-js";
 import DegreeToggleMulti from "../components/DegreeToggleMulti";
 import LanguagePicker from "../components/LanguagePicker";
-import {Degree, Role} from "../constants/profile-constants";
+import {Degree, Role, StaffRole} from "../constants/profile-constants";
 import {MaterialIcons} from "@expo/vector-icons";
 import RoleToggleMulti from "../components/RoleToggleMulti";
 import {defaultMatchingFilters} from "../state/matching/reducer";
 import FormattedOfferCategory from "../components/FormattedOfferCategory";
 import ScreenWrapper from "./ScreenWrapper";
+import EducationFieldPicker from "../components/EducationFieldPicker";
+import StaffRolePicker from "../components/StaffRolePicker";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -126,12 +128,23 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             <Text style={styles.entryLabel}>{i18n.t("spokenLanguages")}</Text>
                             <View style={styles.entryControls}>
                                 <LanguagePicker
-                                    multiple={true}
                                     languages={filters.languages}
+                                    multiple
                                     showChips={false}
                                     onChange={(languages: string[]) => this.updateLocalFilters({languages})}
                                 />
                                 <ClearFilterButton onPress={() => this.updateLocalFilters({languages: []})} />
+                            </View>
+                        </View>
+                        <View style={styles.entryContainer}>
+                            <Text style={styles.entryLabel}>{i18n.t("fieldsOfEducation")}</Text>
+                            <View style={styles.entryControls}>
+                                <EducationFieldPicker
+                                    fields={filters.educationFields}
+                                    showChips={false}
+                                    onChange={(educationFields: string[]) => this.updateLocalFilters({educationFields})}
+                                />
+                                <ClearFilterButton onPress={() => this.updateLocalFilters({educationFields: []})} />
                             </View>
                         </View>
                         <View style={styles.twoLineEntryContainer}>
@@ -139,7 +152,7 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                             <RoleToggleMulti
                                 roles={filters.types}
                                 onSelect={(types: Role[]) => this.updateLocalFilters({types})}
-                                noButtonVariant={true}
+                                styleVariant="classic-rounded"
                             />
                         </View>
                         {filters.types.indexOf("student") != -1 && (
@@ -149,8 +162,23 @@ class MatchFilteringScreen extends React.Component<MatchFilteringScreenProps, Ma
                                     degrees={filters.degrees}
                                     onSelect={(degrees: Degree[]) => this.updateLocalFilters({degrees})}
                                     style={{width: "100%"}}
-                                    noButtonVariant={true}
+                                    styleVariant="classic-rounded"
                                 />
+                            </View>
+                        )}
+                        {filters.types.indexOf("staff") != -1 && (
+                            <View style={styles.twoLineEntryContainer}>
+                                <Text style={styles.entryLabel}>{i18n.t("positions")}</Text>
+                                <View style={styles.entryControls}>
+                                    <StaffRolePicker
+                                        staffRoles={filters.staffRoles}
+                                        onChange={(staffRoles: StaffRole[]) => this.updateLocalFilters({staffRoles})}
+                                        buttonStyle={{flex: 1}}
+                                        multiple
+                                        noOkUnderline
+                                    />
+                                    <ClearFilterButton onPress={() => this.updateLocalFilters({staffRoles: []})} />
+                                </View>
                             </View>
                         )}
                     </View>
@@ -168,7 +196,9 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         scrollContainer: {
             flexDirection: "column",
-            padding: 40,
+            paddingHorizontal: 40,
+            paddingTop: 10,
+            paddingBottom: 70,
             width: "100%",
         },
         sectionContainer: {
@@ -189,6 +219,7 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "column",
         },
         entryLabel: {
+            flex: 1,
             fontSize: 16,
             marginVertical: 7,
             marginRight: 10,
@@ -216,7 +247,7 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "center",
             alignItems: "center",
             alignSelf: "center",
-            borderRadius: 10,
+            borderRadius: 50,
             elevation: 1,
         },
         resetButtonText: {

@@ -11,11 +11,12 @@ import {
 } from "../api/dto";
 import {UserProfile} from "../model/user-profile";
 import {User} from "../model/user";
-import {Degree, Gender, Role} from "../constants/profile-constants";
+import {Degree, Gender, Role, StaffRole} from "../constants/profile-constants";
 import {CountryCode} from "../model/country-codes";
 import {ChatRoom, ChatRoomUser} from "../model/chat-room";
 import {UserSettings} from "../model/user-settings";
 import {MatchHistoryItem} from "../model/matching";
+import {Group, GroupPost, PostSortingOrder} from "../model/groups";
 
 export type FailableActionReturn = {success: boolean; errors?: string[]};
 export type FailableThunkAction = AppThunk<Promise<FailableActionReturn>>;
@@ -46,15 +47,19 @@ export type AuthState = {
     token: null | TokenDto;
     registerEmail: string;
     validatedEmail: string | null;
+    accountNeedsRecovery: boolean;
     // This is available only in DEBUG_MODE on the staging server
     verificationToken?: string;
     onboarded: boolean;
     onboarding: OnboardingState;
+    onboardingIndex: number;
 };
 
 export type SettingsState = {
     userSettings: UserSettings;
     localizedLanguageItems: {value: string; label: string}[];
+    previousVersion: string | null;
+    isFirstLaunch: boolean;
 };
 
 export type ProfileState = {
@@ -62,6 +67,7 @@ export type ProfileState = {
     offers: OfferDto[];
     offerIdToCategory: Map<string, OfferCategory>;
     interests: InterestDto[];
+    uploadingAvatar: boolean;
 };
 
 export type MatchingFiltersState = {
@@ -69,18 +75,21 @@ export type MatchingFiltersState = {
     universities: string[];
     degrees: Degree[];
     languages: string[];
+    educationFields: string[];
+    staffRoles: StaffRole[];
     types: Role[];
 };
 
 export type MatchingState = {
     filters: MatchingFiltersState;
-    fetchedProfiles: UserProfile[];
+    profiles: {[key: string]: UserProfile};
+    orderedProfileIds: string[];
     profilesPagination: PaginatedState;
     historyPagination: PaginatedState;
     historyFilters: {[key: string]: boolean};
     historyItems: MatchHistoryItem[];
     myMatches: UserProfile[];
-    fetchingMyMatches: boolean;
+    myMatchesPagination: PaginatedState;
 };
 
 export type MessagingState = {
@@ -88,8 +97,9 @@ export type MessagingState = {
     matchRooms: {[key: string]: ChatRoom}; // store by id for faster access
     matchRoomsOrdered: string[];
     matchRoomsPagination: PaginatedState;
-    activeRoom: ChatRoom | null;
+    activeRoomId: string | null;
     localChatUser: ChatRoomUser | null;
+    fetchingNewMessages: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -98,6 +108,20 @@ export type NotificationsState = {};
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ReportsState = {};
 
+export type GroupsState = {
+    groupsDict: {[key: string]: Group};
+    pagination: PaginatedState;
+    groups: string[];
+    myGroupsPagination: PaginatedState;
+    myGroups: string[];
+    myGroupInvitesPagination: PaginatedState;
+    myGroupInvites: string[];
+    postsSortOrder: PostSortingOrder;
+    feedPagination: PaginatedState;
+    postsFeed: {[key: string]: GroupPost};
+    postsFeedIds: string[];
+};
+
 export type AppState = {
     auth: AuthState;
     settings: SettingsState;
@@ -105,6 +129,8 @@ export type AppState = {
     matching: MatchingState;
     messaging: MessagingState;
     notifications: NotificationsState;
+    reports: ReportsState;
+    groups: GroupsState;
 };
 
 // Shortcut type for redux-thunk actions (async actions)
@@ -112,3 +138,13 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unkn
 
 // Shortcut type for redux-thunk dispatch (cast dispatch function to this for async actions)
 export type MyThunkDispatch = ThunkDispatch<AppState, void, AnyAction>;
+
+// Common action types
+export type PaginatedFetchBeginAction = {type: string};
+export type PaginatedFetchFailureAction = {type: string};
+export type PaginatedFetchSuccessAction<T> = {
+    type: string;
+    items: T[];
+    canFetchMore: boolean;
+};
+export type PaginatedFetchRefreshAction = {type: string};

@@ -1,5 +1,5 @@
 import {registerRootComponent} from "expo";
-import React from "react";
+import React, {useState} from "react";
 import useCachedResources from "./hooks/useCachedResources";
 import Navigation from "./navigation";
 import {Provider} from "react-redux";
@@ -9,14 +9,17 @@ import ConnectedThemeProvider from "./components/providers/ConnectedThemeProvide
 import store from "./state/store";
 import ThemedStatusBar from "./components/ThemedStatusBar";
 import {configureNotifications} from "./notifications";
-import {initPolyfills} from "./state/polyfills";
+import {initPolyfills} from "./polyfills";
 import CookieBanner from "./components/CookieBanner";
+import BottomSheetModalProvider from "./components/bottom-sheet/BottomSheetModalProvider";
 
 function App() {
     initPolyfills();
     const {isLoadingComplete, initialRoute} = useCachedResources();
     configureLocalization();
     configureNotifications();
+
+    const [navigationReady, setNavigationReady] = useState<boolean>(false);
 
     if (!isLoadingComplete) {
         return null;
@@ -25,8 +28,10 @@ function App() {
             <SafeAreaProvider>
                 <Provider store={store}>
                     <ConnectedThemeProvider>
-                        <Navigation initialRoute={initialRoute} />
-                        <ThemedStatusBar />
+                        <BottomSheetModalProvider>
+                            <Navigation onReady={() => setNavigationReady(true)} initialRoute={initialRoute} />
+                            {navigationReady && <ThemedStatusBar />}
+                        </BottomSheetModalProvider>
                         <CookieBanner />
                     </ConnectedThemeProvider>
                 </Provider>

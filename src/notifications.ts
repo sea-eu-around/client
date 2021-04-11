@@ -1,12 +1,11 @@
 import * as Notifications from "expo-notifications";
-import * as Permissions from "expo-permissions";
-import Constants from "expo-constants";
 import {Platform} from "react-native";
-import {openChat} from "./navigation/utils";
-
-function areNotificationsSupported(): boolean {
-    return Constants.isDevice && Platform.OS !== "web";
-}
+import {openChat, rootNavigate} from "./navigation/utils";
+import {ResponseChatMessageDto} from "./api/dto";
+import {receiveChatMessage} from "./state/messaging/actions";
+import {areNotificationsSupported, getNotificationData} from "./notifications-utils";
+import store from "./state/store";
+import {DEBUG_MODE} from "./constants/config";
 
 export function configureNotifications(): void {
     if (!areNotificationsSupported()) return;
@@ -20,15 +19,36 @@ export function configureNotifications(): void {
     });
 
     Notifications.addNotificationReceivedListener((notification) => {
-        console.log("Notification received:");
-        console.log(notification.request.content);
+        const data = getNotificationData(notification);
+
+        if (DEBUG_MODE) {
+            console.log("Notification received:");
+            console.log(data);
+        }
+
+        if (data.roomId && data.text) {
+            const message = data as ResponseChatMessageDto;
+            store.dispatch(receiveChatMessage(message));
+        }
     });
 
     Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Notification response received:");
-        const data = response.notification.request.content.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = response.notification ? getNotificationData(response.notification) : (response as any).body;
 
-        if (data.roomId) openChat(data.roomId as string);
+        if (data.roomId) {
+            openChat(data.roomId as string);
+
+            Notifications.getPresentedNotificationsAsync().then((notifs: Notifications.Notification[]) => {
+                // Dismiss all notifications of the same room
+                notifs
+                    .filter((n) => getNotificationData(n).roomId === data.roomId)
+                    .map((n) => n.request.identifier)
+                    .forEach(Notifications.dismissNotificationAsync);
+            });
+        }
+
+        if (data.groupId) rootNavigate("MainScreen", {screen: "TabGroups", params: {screen: "TabGroupsScreen"}});
     });
 
     if (Platform.OS === "android") {
@@ -38,20 +58,5 @@ export function configureNotifications(): void {
             vibrationPattern: [0, 250, 250, 250],
             lightColor: "#FF231F7C",
         });
-    }
-}
-
-export async function askForPushNotificationToken(): Promise<string | null> {
-    if (!areNotificationsSupported()) return null;
-
-    let status = (await Permissions.getAsync(Permissions.NOTIFICATIONS)).status;
-    if (status !== "granted") status = (await Permissions.askAsync(Permissions.NOTIFICATIONS)).status;
-
-    if (status === "granted") {
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
-        return token;
-    } else {
-        // User refused notifications
-        return null;
     }
 }

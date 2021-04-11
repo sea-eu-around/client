@@ -2,23 +2,23 @@ import * as React from "react";
 import i18n from "i18n-js";
 import {Degree, DEGREES} from "../constants/profile-constants";
 import {ButtonGroup, ButtonGroupProps, withTheme} from "react-native-elements";
-import {getToggleStyleProps} from "../styles/toggles";
+import {getToggleStyleProps, ToggleStyleVariant} from "../styles/toggles";
 import {ThemeProps} from "../types";
 import {ViewStyle} from "react-native";
 
 export type GenderToggleMultiProps = {
     degrees: Degree[];
     onSelect?: (degrees: Degree[]) => void;
-    noButtonVariant?: boolean;
+    styleVariant?: ToggleStyleVariant;
     style?: ViewStyle;
 } & Partial<ButtonGroupProps> &
     ThemeProps;
 
 function DegreeToggleMulti(props: GenderToggleMultiProps): JSX.Element {
     const buttonLabels = DEGREES.map((r: string) => i18n.t(`degrees.${r}`));
-    const {theme, style, degrees, noButtonVariant, onSelect, ...otherProps} = props;
+    const {theme, style, degrees, styleVariant, onSelect, ...otherProps} = props;
 
-    const styleProps = getToggleStyleProps(noButtonVariant || false, theme);
+    const styleProps = getToggleStyleProps(styleVariant, theme);
 
     return (
         <ButtonGroup
@@ -33,8 +33,6 @@ function DegreeToggleMulti(props: GenderToggleMultiProps): JSX.Element {
             buttons={buttonLabels}
             {...styleProps}
             containerStyle={[styleProps.containerStyle, style]}
-            buttonContainerStyle={[styleProps.buttonContainerStyle, {marginHorizontal: 2}]}
-            buttonStyle={[styleProps.buttonStyle, {paddingHorizontal: 0}]}
             {...otherProps}
         />
     );

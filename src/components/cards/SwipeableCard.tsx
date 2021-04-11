@@ -19,7 +19,7 @@ import {styleTextThin} from "../../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
 
 // Theses style elements are defined this way because they have to be set in very specific ways
-type SwipeableLooks = {
+export type SwipeableLooks = {
     sideMargin: number;
     borderRadius: number;
     verticalSpacing: number;
@@ -36,7 +36,9 @@ const DEFAULT_LOOKS: SwipeableLooks = {
 // Component props
 export type SwipeableCardProps = ThemeProps &
     SwipeableProperties & {
-        style?: ViewStyle;
+        wrapperStyle?: StyleProp<ViewStyle>;
+        touchableStyle?: StyleProp<ViewStyle>;
+        style?: StyleProp<ViewStyle>;
         onHidden?: () => void;
         onPress?: () => void;
         looks?: Partial<SwipeableLooks>;
@@ -54,6 +56,7 @@ export type SwipeableCardState = {
 
 export class SwipeableCardClass extends React.Component<SwipeableCardProps, SwipeableCardState> {
     swipeableRef = React.createRef<Swipeable>();
+    private hideTimeout: NodeJS.Timeout | null = null;
 
     constructor(props: SwipeableCardProps) {
         super(props);
@@ -65,6 +68,13 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             right: new ReAnimated.Value(0),
             hidden: false,
         };
+    }
+
+    componentWillUnmount(): void {
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+            this.hideTimeout = null;
+        }
     }
 
     hide(): void {
@@ -79,9 +89,10 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             duration,
             easing: Easing.ease,
         }).start();
-        setTimeout(() => {
+        this.hideTimeout = setTimeout(() => {
             if (onFinish) onFinish();
             this.hide();
+            this.hideTimeout = null;
         }, duration);
     }
 
@@ -95,10 +106,13 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             children,
             leftActions,
             rightActions,
+            wrapperStyle,
             style,
             looks,
             onPress,
             wrapperProps,
+            containerStyle,
+            touchableStyle,
             ...swipeableProps
         } = this.props;
         const {minHeight, right, hidden} = this.state;
@@ -110,35 +124,62 @@ export class SwipeableCardClass extends React.Component<SwipeableCardProps, Swip
             else this.collapse();
         };
 
-        return (
-            // Use flexBasis, acting as minHeight
-            <ReAnimated.View
-                style={[styles.wrapper, style, {flexBasis: minHeight, right}, hidden ? {display: "none"} : {}]}
-                {...wrapperProps}
+        const container = (
+            <Swipeable
+                ref={this.swipeableRef}
+                containerStyle={[
+                    styles.swipeableContainer,
+                    containerStyle,
+                    {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
+                ]}
+                childrenContainerStyle={[styles.swipeable, {borderRadius}, style]}
+                useNativeAnimations={Platform.OS !== "web"}
+                friction={1}
+                renderLeftActions={leftActions ? () => leftActions(hideCard) : swipeableProps.renderLeftActions}
+                renderRightActions={rightActions ? () => rightActions(hideCard) : swipeableProps.renderRightActions}
+                {...swipeableProps}
             >
-                <ReAnimated.View style={{}}>
-                    <Swipeable
-                        ref={this.swipeableRef}
-                        containerStyle={[
-                            styles.swipeableContainer,
-                            {paddingHorizontal: sideMargin, paddingVertical: verticalSpacing},
-                        ]}
-                        childrenContainerStyle={[styles.swipeable, {borderRadius}]}
-                        useNativeAnimations={Platform.OS !== "web"}
-                        friction={1}
-                        renderLeftActions={leftActions ? () => leftActions(hideCard) : swipeableProps.renderLeftActions}
-                        renderRightActions={
-                            rightActions ? () => rightActions(hideCard) : swipeableProps.renderRightActions
-                        }
-                        {...swipeableProps}
-                    >
-                        <TouchableOpacity activeOpacity={0.75} style={styles.touchable} {...(onPress ? {onPress} : {})}>
-                            {children}
-                        </TouchableOpacity>
-                    </Swipeable>
-                </ReAnimated.View>
-            </ReAnimated.View>
+                <TouchableOpacity
+                    activeOpacity={0.75}
+                    style={[styles.touchable, touchableStyle]}
+                    {...(onPress ? {onPress} : {})}
+                >
+                    {children}
+                </TouchableOpacity>
+            </Swipeable>
         );
+
+        if (Platform.OS === "web") {
+            return (
+                // Use flexBasis, acting as minHeight
+                <View
+                    style={[
+                        styles.wrapper,
+                        wrapperStyle,
+                        {flexBasis: minHeight[" __value"], right: right[" __value"]},
+                        hidden ? {display: "none"} : {},
+                    ]}
+                    {...wrapperProps}
+                >
+                    {container}
+                </View>
+            );
+        } else {
+            return (
+                // Use flexBasis, acting as minHeight
+                <ReAnimated.View
+                    style={[
+                        styles.wrapper,
+                        wrapperStyle,
+                        {flexBasis: minHeight, right},
+                        hidden ? {display: "none"} : {},
+                    ]}
+                    {...wrapperProps}
+                >
+                    {container}
+                </ReAnimated.View>
+            );
+        }
     }
 }
 

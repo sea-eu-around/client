@@ -1,19 +1,17 @@
 import {MATCH_ACTION_HISTORY_STATUSES} from "../../api/dto";
+import {arrayWithIdsToDict} from "../../general-utils";
 import {MatchHistoryItem} from "../../model/matching";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES} from "../auth/actions";
-import {initialPaginatedState, MatchingFiltersState, MatchingState} from "../types";
+import {initialPaginatedState, MatchingFiltersState, MatchingState, PaginatedFetchSuccessAction} from "../types";
 import {
     MatchingAction,
     MATCHING_ACTION_TYPES,
     SetOfferFilterAction,
     SetMatchingFiltersAction,
-    FetchProfilesSuccessAction,
     DislikeProfileSuccessAction,
     BlockProfileSuccessAction,
     LikeProfileSuccessAction,
-    FetchMyMatchesSuccessAction,
-    FetchHistorySuccessAction,
     SetHistoryFiltersAction,
     ActionCancelSuccessAction,
 } from "./actions";
@@ -23,6 +21,8 @@ export const defaultMatchingFilters = (): MatchingFiltersState => ({
     universities: [],
     degrees: [],
     languages: [],
+    educationFields: [],
+    staffRoles: [],
     types: [],
 });
 
@@ -34,19 +34,20 @@ const initialHistoryFilters = () => {
 
 export const initialState: MatchingState = {
     filters: defaultMatchingFilters(),
-    fetchedProfiles: [],
+    profiles: {},
+    orderedProfileIds: [],
     profilesPagination: initialPaginatedState(),
     historyPagination: initialPaginatedState(),
     historyFilters: initialHistoryFilters(),
     historyItems: [],
     myMatches: [],
-    fetchingMyMatches: false,
+    myMatchesPagination: initialPaginatedState(),
 };
 
 export const matchingReducer = (state: MatchingState = initialState, action: MatchingAction): MatchingState => {
     switch (action.type) {
         case MATCHING_ACTION_TYPES.SET_OFFER_FILTER: {
-            const {offerId, value} = <SetOfferFilterAction>action;
+            const {offerId, value} = action as SetOfferFilterAction;
             return {
                 ...state,
                 filters: {
@@ -56,7 +57,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             };
         }
         case MATCHING_ACTION_TYPES.SET_FILTERS: {
-            const {filters} = <SetMatchingFiltersAction>action;
+            const {filters} = action as SetMatchingFiltersAction;
             return {
                 ...state,
                 filters: {...state.filters, ...filters},
@@ -69,54 +70,66 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, profilesPagination: {...state.profilesPagination, fetching: false, canFetchMore: false}};
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_SUCCESS: {
-            const {profiles, canFetchMore} = <FetchProfilesSuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<UserProfile>;
+            const ids = items.map((p) => p.id);
             const pagination = state.profilesPagination;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.concat(profiles),
+                orderedProfileIds: state.orderedProfileIds.concat(
+                    // Remove duplicates
+                    ids.filter((id) => state.orderedProfileIds.indexOf(id) === -1),
+                ),
+                profiles: {...state.profiles, ...arrayWithIdsToDict(items)},
                 profilesPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_PROFILES_REFRESH: {
             return {
                 ...state,
-                fetchedProfiles: [],
+                orderedProfileIds: [],
                 profilesPagination: initialPaginatedState(),
             };
         }
+
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_BEGIN: {
-            return {...state, fetchingMyMatches: true};
+            return {...state, myMatchesPagination: {...state.myMatchesPagination, fetching: true}};
         }
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_FAILURE: {
-            return {...state, fetchingMyMatches: false};
+            return {
+                ...state,
+                myMatchesPagination: {...state.myMatchesPagination, fetching: false, canFetchMore: false},
+            };
         }
         case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_SUCCESS: {
-            const {profiles} = <FetchMyMatchesSuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<UserProfile>;
+            const pagination = state.historyPagination;
             return {
                 ...state,
-                myMatches: profiles,
-                fetchingMyMatches: false,
+                myMatches: state.myMatches.concat(items),
+                myMatchesPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
-        case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS: {
-            const {profileId} = <LikeProfileSuccessAction>action;
+        case MATCHING_ACTION_TYPES.FETCH_MY_MATCHES_REFRESH: {
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+                myMatches: [],
+                myMatchesPagination: initialPaginatedState(),
             };
         }
+
+        case MATCHING_ACTION_TYPES.LIKE_PROFILE_SUCCESS:
         case MATCHING_ACTION_TYPES.DISLIKE_PROFILE_SUCCESS: {
-            const {profileId} = <DislikeProfileSuccessAction>action;
+            const {profile} = action as LikeProfileSuccessAction | DislikeProfileSuccessAction;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+                orderedProfileIds: state.orderedProfileIds.filter((id: string) => id != profile.id),
             };
         }
         case MATCHING_ACTION_TYPES.BLOCK_PROFILE_SUCCESS: {
-            const {profileId} = <BlockProfileSuccessAction>action;
+            const {profileId} = action as BlockProfileSuccessAction;
             return {
                 ...state,
-                fetchedProfiles: state.fetchedProfiles.filter((p: UserProfile) => p.id != profileId),
+                orderedProfileIds: state.orderedProfileIds.filter((id: string) => id != profileId),
             };
         }
         case MATCHING_ACTION_TYPES.FETCH_HISTORY_BEGIN: {
@@ -126,7 +139,7 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {...state, historyPagination: {...state.historyPagination, fetching: false, canFetchMore: false}};
         }
         case MATCHING_ACTION_TYPES.FETCH_HISTORY_SUCCESS: {
-            const {items, canFetchMore} = <FetchHistorySuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<MatchHistoryItem>;
             const pagination = state.historyPagination;
             return {
                 ...state,
@@ -159,10 +172,11 @@ export const matchingReducer = (state: MatchingState = initialState, action: Mat
             return {
                 ...state,
                 filters: defaultMatchingFilters(),
-                fetchedProfiles: [],
+                profiles: {},
+                orderedProfileIds: [],
                 profilesPagination: initialPaginatedState(),
                 myMatches: [],
-                fetchingMyMatches: false,
+                myMatchesPagination: initialPaginatedState(),
                 historyItems: [],
                 historyPagination: initialPaginatedState(),
             };

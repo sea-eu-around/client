@@ -1,8 +1,9 @@
-import {StyleSheet, Platform, TextStyle} from "react-native";
+import {StyleSheet} from "react-native";
 import {Theme} from "../types";
 import {FormCheckBoxProps} from "../components/forms/FormCheckBox";
 import {preTheme} from "./utils";
 import {TextInputStyleProps} from "../components/ValidatedTextInput";
+import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
 
 export const formStyles = preTheme((theme: Theme) => {
     return StyleSheet.create({
@@ -47,30 +48,19 @@ export function getLoginTextInputsStyleProps(theme: Theme, wrapperVerticalMargin
             fontSize: 16,
             color: theme.accent,
         },
-        inputFocusedStyle: Platform.OS === "web" ? ({outline: "none"} as TextStyle) : {},
+        showPasswordButtonStyle: {
+            padding: 8,
+        },
+        showPasswordIconStyle: {
+            fontSize: 22,
+            color: theme.textLight,
+        },
         placeholderTextColor: theme.inputPlaceholder,
     };
 }
 
-export function getLoginCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxProps> {
-    const commonStyle = StyleSheet.create({
-        checkboxWrapper: {
-            width: "100%",
-            marginVertical: 5,
-        },
-        checkboxLabel: {
-            fontSize: 14,
-        },
-    });
-
-    return {
-        wrapperStyle: commonStyle.checkboxWrapper,
-        labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
-    };
-}
-
 export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleProps {
-    return {
+    /*return {
         wrapperStyle: {
             width: "100%",
             marginVertical: 10,
@@ -102,5 +92,57 @@ export function getOnboardingTextInputsStyleProps(theme: Theme): TextInputStyleP
                       outline: "none",
                   } as TextStyle)
                 : {},
+    };*/
+    return {
+        wrapperStyle: {
+            width: "100%",
+            marginVertical: 10,
+        },
+        style: {
+            width: "100%",
+            height: 55,
+            borderRadius: ONBOARDING_INPUT_BORDER_RADIUS,
+            borderWidth: 0,
+            backgroundColor: theme.onboardingInputBackground,
+        },
+        focusedStyle: {
+            backgroundColor: theme.accentSlight,
+        },
+        errorStyle: {
+            borderBottomWidth: 2,
+            borderBottomColor: theme.error,
+        },
+        validStyle: {},
+        inputStyle: {
+            fontSize: 18,
+            color: theme.text,
+            marginHorizontal: 15,
+        },
+    };
+}
+
+export function getFormCheckBoxStyleProps(theme: Theme): Partial<FormCheckBoxProps> {
+    const commonStyle = StyleSheet.create({
+        checkboxWrapper: {
+            width: "100%",
+            marginVertical: 5,
+        },
+        checkboxContainer: {
+            padding: 0,
+            marginTop: 0,
+            marginBottom: 0,
+            marginLeft: 0,
+            marginRight: 5,
+        },
+        checkboxLabel: {
+            fontSize: 16,
+            marginLeft: 5,
+        },
+    });
+
+    return {
+        wrapperStyle: commonStyle.checkboxWrapper,
+        containerStyle: commonStyle.checkboxContainer,
+        labelStyle: [commonStyle.checkboxLabel, {color: theme.text}],
     };
 }

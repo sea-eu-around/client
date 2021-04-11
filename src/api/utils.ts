@@ -1,10 +1,10 @@
 import {Alert} from "react-native";
-import {BACKEND_URL} from "../constants/config";
+import {BACKEND_URL, DEBUG_MODE} from "../constants/config";
 import {HttpStatusCode} from "../constants/http-status";
 import {RequestResponse, TokenDto} from "./dto";
 
 // Request-related types
-type Primitive = string | number | boolean | Primitive[] | undefined;
+type Primitive = string | number | boolean | Primitive[] | undefined | null;
 type URLParams = {[key: string]: Primitive};
 type URLBodyParams = {[key: string]: Primitive | Primitive[] | URLBodyParams | URLBodyParams[]};
 
@@ -44,6 +44,7 @@ export async function requestBackend(
     body: URLBodyParams = {},
     authToken: TokenDto | null | undefined = undefined,
     verbose = false,
+    completelySilent = false,
 ): Promise<RequestResponse> {
     const headers: {[key: string]: string} = {
         Accept: "application/json",
@@ -52,7 +53,7 @@ export async function requestBackend(
 
     if (authToken !== undefined) {
         if (authToken === null) {
-            console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
+            if (!completelySilent) console.error(`Cannot authentify request to ${endpoint} : no auth token available.`);
             Alert.alert("A request could not be authenticated.");
             return {errorType: "error.no-auth", description: "Endpoint requires authentication", status: 401};
         } else headers.Authorization = `Bearer ${authToken.accessToken}`;
@@ -62,7 +63,7 @@ export async function requestBackend(
     let response: Response | null = null;
 
     try {
-        if (verbose) {
+        if (verbose && !completelySilent && DEBUG_MODE) {
             console.log(`Sending request: ${method} /${endpoint}${formattedParams}`);
             console.log(`  headers: ${JSON.stringify(headers)}`);
             console.log(`  body   : ${JSON.stringify(body)}`);
@@ -75,22 +76,32 @@ export async function requestBackend(
         });
 
         let json = {status: response.status, data: {}};
-        if (response.status !== HttpStatusCode.NO_CONTENT) json = {...json, ...(await response.json())};
+        if (response.status !== HttpStatusCode.NO_CONTENT) {
+            // Attempt to parse response JSON
+            try {
+                json = {...json, ...(await response.json())};
+            } catch (error) {
+                if (json.status === HttpStatusCode.OK) json.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
+                if (!completelySilent) console.error("Unable to parse server response as JSON.");
+            }
+        }
 
-        if (verbose) {
+        if (verbose && !completelySilent && DEBUG_MODE) {
             console.log(`Response from endpoint ${endpoint}:`);
             console.log(json);
         }
 
         return json;
     } catch (error) {
-        console.error(
-            `An unexpected error occured with a request to ${endpoint}. ` +
-                `Method = ${method}, authToken = ${authToken}, params=${JSON.stringify(params)}, ` +
-                `body=${JSON.stringify(body)}`,
-        );
-        console.error(error);
-        console.error("Response received from server:", response);
+        if (!completelySilent) {
+            console.error(
+                `An unexpected error occured with a request to ${endpoint}. ` +
+                    `Method = ${method}, authToken = ${authToken}, params=${JSON.stringify(params)}, ` +
+                    `body=${JSON.stringify(body)}`,
+            );
+            console.error(error);
+            console.error("Response received from server:", response);
+        }
         return {errorType: "error.unknown", description: "A client-side exception was raised.", status: 400};
     }
 }

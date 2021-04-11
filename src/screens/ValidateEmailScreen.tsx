@@ -59,7 +59,7 @@ class ValidateEmailScreen extends React.Component<ValidateEmailScreenProps> {
                                     onPress={() => attemptRedirectToApp("login", "SigninScreen")}
                                     style={{color: theme.accent}}
                                 >
-                                    {i18n.t("emailValidation.success")[1]}
+                                    {i18n.t("emailValidation.success")[1]}.
                                 </Text>
                             </Text>
                         </>
@@ -86,7 +86,8 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         successText: {
             fontSize: 18,
-            lineHeight: 40,
+            lineHeight: 24,
+            maxWidth: 280,
             textAlign: "center",
             color: theme.text,
         },

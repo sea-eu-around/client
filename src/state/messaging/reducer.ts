@@ -3,13 +3,14 @@ import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../../model/chat-room";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {CreateProfileSuccessAction, FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
-import {MessagingState, initialPaginatedState} from "../types";
+import {MessagingState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
     FetchEarlierMessagesBeginAction,
     FetchEarlierMessagesFailureAction,
     FetchEarlierMessagesSuccessAction,
-    FetchMatchRoomsSuccessAction,
-    JoinChatRoomSuccessAction,
+    FetchMatchRoomSuccessAction,
+    FetchNewMessagesSuccessAction,
+    JoinChatRoomBeginAction,
     MessagingAction,
     MESSAGING_ACTION_TYPES,
     ReadChatMessageAction,
@@ -23,8 +24,9 @@ export const initialState: MessagingState = {
     matchRoomsOrdered: [],
     matchRoomsPagination: initialPaginatedState(),
     socketState: {connected: false, connecting: false},
-    activeRoom: null,
+    activeRoomId: null,
     localChatUser: null,
+    fetchingNewMessages: false,
 };
 
 function toLocalChatUser(profile: UserProfile): ChatRoomUser | null {
@@ -37,22 +39,23 @@ function toLocalChatUser(profile: UserProfile): ChatRoomUser | null {
     };
 }
 
-// TODO reset rooms when disconnecting from chat?
-
 export const messagingReducer = (state: MessagingState = initialState, action: MessagingAction): MessagingState => {
     switch (action.type) {
         case AUTH_ACTION_TYPES.LOG_IN_SUCCESS: {
             const {user} = action as LogInSuccessAction;
             return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
         }
+
         case PROFILE_ACTION_TYPES.FETCH_USER_SUCCESS: {
             const {user} = action as FetchUserSuccessAction;
             return user.profile ? {...state, localChatUser: toLocalChatUser(user.profile)} : {...state};
         }
+
         case PROFILE_ACTION_TYPES.PROFILE_CREATE_SUCCESS: {
             const {profile} = action as CreateProfileSuccessAction;
             return {...state, localChatUser: toLocalChatUser(profile)};
         }
+
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_BEGIN: {
             return {...state, matchRoomsPagination: {...state.matchRoomsPagination, fetching: true}};
         }
@@ -63,27 +66,49 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             };
         }
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS: {
-            const {rooms, canFetchMore} = <FetchMatchRoomsSuccessAction>action;
+            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<ChatRoom>;
             const pagination = state.matchRoomsPagination;
             const matchRooms = {...state.matchRooms};
             // Add entries in the rooms dictionary
-            rooms.forEach((r: ChatRoom) => (matchRooms[r.id] = r));
+            items.forEach((r: ChatRoom) => {
+                if (matchRooms[r.id]) {
+                    // matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage, users: r.users};
+                    matchRooms[r.id] = {...matchRooms[r.id], lastMessage: r.lastMessage};
+                } else {
+                    matchRooms[r.id] = r;
+                }
+            });
+            const ids = items.map((r: ChatRoom) => r.id);
 
             return {
                 ...state,
                 matchRooms,
-                matchRoomsOrdered: state.matchRoomsOrdered.concat(rooms.map((r: ChatRoom) => r.id)),
+                matchRoomsOrdered: pagination.page === 1 ? ids : state.matchRoomsOrdered.concat(ids),
                 matchRoomsPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             };
         }
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_REFRESH: {
             return {
                 ...state,
-                matchRooms: {},
-                matchRoomsOrdered: [],
+                // Reset the pagination
                 matchRoomsPagination: initialPaginatedState(),
             };
         }
+
+        case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOM_SUCCESS: {
+            const {room} = action as FetchMatchRoomSuccessAction;
+
+            return {
+                ...state,
+                matchRooms: {
+                    ...state.matchRooms,
+                    [room.id]: state.matchRooms[room.id]
+                        ? {...state.matchRooms[room.id], lastMessage: room.lastMessage}
+                        : room,
+                },
+            };
+        }
+
         case MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_BEGIN: {
             return {...state, socketState: {connected: false, connecting: true}};
         }
@@ -93,22 +118,27 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         case MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_SUCCESS: {
             return {...state, socketState: {connected: true, connecting: false}};
         }
+
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
-            return {...state, socketState: {connected: false, connecting: false}, activeRoom: null};
+            return {...state, socketState: {connected: false, connecting: false}};
         }
-        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_SUCCESS: {
-            const {room} = action as JoinChatRoomSuccessAction;
-            return {...state, activeRoom: room};
+
+        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
+            const {room} = action as JoinChatRoomBeginAction;
+            return {...state, activeRoomId: room.id};
         }
+        case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_FAILURE:
         case MESSAGING_ACTION_TYPES.LEAVE_ROOM: {
-            return {...state, activeRoom: null};
+            return {...state, activeRoomId: null};
         }
+
         case MESSAGING_ACTION_TYPES.SEND_MESSAGE_SUCCESS: {
             const {message} = action as SendMessageSuccessAction;
-            if (state.activeRoom) {
+            if (state.activeRoomId) {
+                const room = state.matchRooms[state.activeRoomId];
                 return updateRoom(state, true, {
-                    ...state.activeRoom,
-                    messages: [message].concat(state.activeRoom.messages),
+                    ...room,
+                    messages: [message].concat(room.messages),
                     lastMessage: message,
                 });
             }
@@ -175,6 +205,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             }
             return state;
         }
+
         case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_BEGIN: {
             const {room} = action as FetchEarlierMessagesBeginAction;
             return updateRoom(state, false, {
@@ -190,18 +221,55 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             });
         }
         case MESSAGING_ACTION_TYPES.FETCH_EARLIER_MESSAGES_SUCCESS: {
-            const {room, messages, canFetchMore} = action as FetchEarlierMessagesSuccessAction;
+            const {room, items, canFetchMore} = action as FetchEarlierMessagesSuccessAction;
             const pagination = room.messagePagination;
             return updateRoom(state, false, {
                 ...room,
-                messages: room.messages.concat(messages),
+                messages: room.messages.concat(items),
                 messagePagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
             });
         }
+
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_BEGIN: {
+            return {
+                ...state,
+                fetchingNewMessages: true,
+            };
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_FAILURE: {
+            return {
+                ...state,
+                fetchingNewMessages: false,
+            };
+        }
+        case MESSAGING_ACTION_TYPES.FETCH_NEW_MESSAGES_SUCCESS: {
+            const {room, items} = action as FetchNewMessagesSuccessAction;
+            const filteredMessages = items.filter((ma) => !room.messages.some((mb) => mb._id === ma._id));
+            const users = room.users.concat(); // copy
+
+            // Update the last message seen for the user who sent it
+            if (filteredMessages.length > 0) {
+                const lastMessage = filteredMessages[0];
+                const i = users.findIndex((u) => u._id === lastMessage.user._id);
+                users[i] = {
+                    ...users[i],
+                    lastMessageSeenId: lastMessage._id,
+                    lastMessageSeenDate: lastMessage.createdAt,
+                };
+            }
+
+            return updateRoom({...state, fetchingNewMessages: false}, false, {
+                ...room,
+                messages: filteredMessages.concat(room.messages),
+                users,
+                ...(filteredMessages.length > 0 ? {lastMessage: filteredMessages[0]} : {}),
+            });
+        }
+
         case AUTH_ACTION_TYPES.LOG_OUT: {
             return {
                 ...state,
-                activeRoom: null,
+                activeRoomId: null,
                 matchRooms: {},
                 matchRoomsOrdered: [],
                 matchRoomsPagination: initialPaginatedState(),
@@ -214,21 +282,17 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
 };
 
 function updateRoom(state: MessagingState, setAsFirst: boolean, room: ChatRoom): MessagingState {
-    const activeRoom = state.activeRoom && state.activeRoom.id == room.id ? room : state.activeRoom;
-
     if (setAsFirst) {
         const otherRooms = state.matchRoomsOrdered.filter((id: string) => id !== room.id);
         return {
             ...state,
             matchRooms: {...state.matchRooms, [room.id]: room},
             matchRoomsOrdered: [room.id].concat(otherRooms),
-            activeRoom,
         };
     } else {
         return {
             ...state,
             matchRooms: {...state.matchRooms, [room.id]: room},
-            activeRoom,
         };
     }
 }

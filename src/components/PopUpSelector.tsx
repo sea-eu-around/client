@@ -4,8 +4,10 @@ import {Theme, ThemeProps} from "../types";
 import {preTheme} from "../styles/utils";
 import {CheckBox, withTheme} from "react-native-elements";
 import CustomModal, {CustomModalClass} from "./modals/CustomModal";
-import {pickerStyles} from "../styles/picker";
+import {getPickerButtonStyleProps, PickerButtonStyleVariant, pickerStyles} from "../styles/picker";
 import i18n from "i18n-js";
+
+export type PopUpSelectorActivator = (show: () => void) => JSX.Element;
 
 // Component props
 export type PopUpSelectorProps = ThemeProps & {
@@ -16,9 +18,13 @@ export type PopUpSelectorProps = ThemeProps & {
     onSelect?: (selected: string[]) => void;
     multiple?: boolean;
     atLeastOne?: boolean;
+    noOkUnderline?: boolean;
     placeholder?: string;
     buttonStyle?: StyleProp<ViewStyle>;
     valueStyle?: StyleProp<TextStyle>;
+    buttonStyleVariant?: PickerButtonStyleVariant;
+    activator?: PopUpSelectorActivator;
+    TouchableComponent?: typeof React.Component;
 };
 
 // Component state
@@ -81,32 +87,48 @@ class PopUpSelector extends React.Component<PopUpSelectorProps, PopUpSelectorSta
             icon,
             multiple,
             atLeastOne,
+            noOkUnderline,
             placeholder,
             buttonStyle,
             valueStyle,
+            buttonStyleVariant,
+            activator,
             theme,
         } = this.props;
         const {valueDict} = this.state;
         const styles = themedStyles(theme);
         const pstyles = pickerStyles(theme);
+        const buttonStyleProps = getPickerButtonStyleProps(buttonStyleVariant, theme);
+
+        const TouchableComponent = this.props.TouchableComponent || TouchableOpacity;
 
         return (
             <>
-                <TouchableOpacity
-                    style={[styles.button, selected.length > 0 ? styles.buttonOk : {}, buttonStyle]}
-                    onPress={() => this.show()}
-                >
-                    {selected.length === 0 && (
-                        <Text style={[styles.value, styles.placeholderText, valueStyle]} numberOfLines={2}>
-                            {placeholder}
-                        </Text>
-                    )}
-                    {selected.length > 0 && (
-                        <Text style={[styles.value, valueStyle]} numberOfLines={2}>
-                            {selected.map(label).join(", ")}
-                        </Text>
-                    )}
-                </TouchableOpacity>
+                {activator !== undefined && activator(() => this.show())}
+                {!activator && (
+                    <TouchableComponent
+                        style={[
+                            buttonStyleProps.button,
+                            selected.length > 0 && !noOkUnderline ? styles.buttonOk : {},
+                            buttonStyle,
+                        ]}
+                        onPress={() => this.show()}
+                    >
+                        {selected.length === 0 && (
+                            <Text
+                                style={[buttonStyleProps.text, buttonStyleProps.textNoneSelected, valueStyle]}
+                                numberOfLines={2}
+                            >
+                                {placeholder}
+                            </Text>
+                        )}
+                        {selected.length > 0 && (
+                            <Text style={[buttonStyleProps.text, valueStyle]} numberOfLines={2}>
+                                {selected.map(label).join(", ")}
+                            </Text>
+                        )}
+                    </TouchableComponent>
+                )}
                 <CustomModal
                     ref={this.modalRef}
                     modalViewStyle={{width: "100%", paddingHorizontal: 0, paddingVertical: 0}}
@@ -167,8 +189,6 @@ const themedStyles = preTheme((theme: Theme) => {
             borderBottomWidth: 2,
             borderBottomColor: theme.okay,
         },
-        value: {},
-        placeholderText: {color: theme.textLight},
         scroll: {
             width: "100%",
         },

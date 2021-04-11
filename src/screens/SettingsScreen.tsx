@@ -1,6 +1,6 @@
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {Alert, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
+import {Alert, Dimensions, Platform, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {connect, ConnectedProps} from "react-redux";
 import {RootNavigatorScreens} from "../navigation/types";
 import {preTheme} from "../styles/utils";
@@ -11,15 +11,17 @@ import ValueCard from "../components/cards/ValueCard";
 import i18n from "i18n-js";
 import {FontAwesome, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {AppState} from "../state/types";
-import {setLocale, toggleTheme} from "../state/settings/actions";
+import {setLocale, setTheme} from "../state/settings/actions";
 import LocalePicker from "../components/LocalePicker";
 import {SupportedLocale} from "../localization";
-import {APP_VERSION} from "../constants/config";
+import {APP_VERSION, BUG_REPORT_EMAIL_ADDRESS, TERMS_AND_CONDITIONS_URL} from "../constants/config";
 import LocalImage from "../components/LocalImage";
 import {logout} from "../state/auth/actions";
 import {rootNavigate} from "../navigation/utils";
 import CustomizeCookiesModal from "../components/modals/CustomizeCookiesModal";
 import Button from "../components/Button";
+import * as Linking from "expo-linking";
+import store from "../state/store";
 
 const reduxConnector = connect((state: AppState) => ({
     settings: state.settings.userSettings,
@@ -47,16 +49,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             display={
                                 <LocalePicker
                                     locale={settings.locale}
-                                    onChange={(l: SupportedLocale) => {
-                                        if (l == "fr") {
-                                            // TEMP FR Translation disclaimer
-                                            Alert.alert(
-                                                "Disclaimer",
-                                                "The application has not been translated to french yet.",
-                                            );
-                                        }
-                                        dispatch(setLocale(l));
-                                    }}
+                                    onChange={(l: SupportedLocale) => dispatch(setLocale(l))}
                                     buttonStyle={styles.localeButton}
                                     valueStyle={styles.localButtonValue}
                                 />
@@ -68,11 +61,13 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             label={i18n.t("settings.darkTheme")}
                             icon={<MaterialCommunityIcons name="theme-light-dark" style={styles.cardIcon} />}
                             oneLine={true}
-                            onPress={() => dispatch(toggleTheme())}
+                            onPress={() => dispatch(setTheme(settings.theme === "dark" ? "light" : "dark"))}
                             display={
                                 <Switch
                                     value={settings.theme === "dark"}
-                                    onValueChange={() => dispatch(toggleTheme())}
+                                    onValueChange={() =>
+                                        dispatch(setTheme(settings.theme === "dark" ? "light" : "dark"))
+                                    }
                                 />
                             }
                             noModal={true}
@@ -126,7 +121,7 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             style={styles.card}
                             label={i18n.t("settings.termsOfService")}
                             oneLine={true}
-                            onPress={() => Alert.alert("Not implemented")} // TODO Implement TOS link
+                            onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
@@ -135,7 +130,20 @@ class SettingsScreen extends React.Component<SettingsScreenProps> {
                             label={i18n.t("settings.reportABug")}
                             icon={<MaterialIcons name="bug-report" style={styles.cardIcon} />}
                             oneLine={true}
-                            onPress={() => Alert.alert("Not implemented")} // TODO Implement bug reports
+                            onPress={() => {
+                                const {width, height} = Dimensions.get("window");
+                                const fromEmail = store.getState().profile.user?.email;
+                                let text = "";
+                                text += `Platform: ${Platform.OS} (${Platform.Version})\n`;
+                                text += `Dimensions: ${Math.round(width)} x ${Math.round(height)}\n`;
+                                text += `App version: ${APP_VERSION}\n`;
+                                text += `User: ${fromEmail}\n`;
+                                text += `_______________________\n\n`;
+                                text += `${i18n.t("bugReport.mailTitle")}\n\n`;
+
+                                const subject = i18n.t("bugReport.mailSubject");
+                                Linking.openURL(`mailto:${BUG_REPORT_EMAIL_ADDRESS}?subject=${subject}&body=${text}`);
+                            }}
                             display={<Text style={styles.infoText}>{""}</Text>}
                             noModal={true}
                         />
@@ -256,7 +264,7 @@ const themedStyles = preTheme((theme: Theme) => {
             marginVertical: 0,
         },
         oneLineCardButton: {
-            width: 120,
+            width: 140,
             height: 40,
             marginVertical: 0,
         },

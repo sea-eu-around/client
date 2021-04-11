@@ -19,6 +19,7 @@ import {RemoteValidationErrors} from "../../api/dto";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
 import Button from "../Button";
+import RecoverAccountModal from "../modals/RecoverAccountModal";
 
 type FormState = {
     email: string;
@@ -34,6 +35,7 @@ const LoginFormSchema = Yup.object().shape({
 // Map props from the store
 const reduxConnector = connect((state: AppState) => ({
     validatedEmail: state.auth.validatedEmail,
+    needsRecovery: state.auth.accountNeedsRecovery,
 }));
 
 // Component props
@@ -63,18 +65,22 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
         this.setState({...this.state, submitting: true});
         (this.props.dispatch as MyThunkDispatch)(requestLogin(values.email, values.password)).then(
             ({success, errors}: ValidatedActionReturn) => {
-                if (success && this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                this.setState({remoteErrors: errors, submitting: false});
+                if (success) {
+                    // Clear password input
+                    if (this.setFieldValue) this.setFieldValue("password", "", false);
+                    if (this.props.onSuccessfulSubmit) this.props.onSuccessfulSubmit(values);
+                }
                 if (errors && errors.fields) {
                     const f = errors.fields;
                     Object.keys(f).forEach((e) => this.setFieldError && this.setFieldError(e, localizeError(f[e])));
                 }
-                this.setState({remoteErrors: errors, submitting: false});
             },
         );
     }
 
     render(): JSX.Element {
-        const {theme, containerStyle} = this.props;
+        const {theme, containerStyle, needsRecovery} = this.props;
         const {remoteErrors, submitting} = this.state;
 
         const styles = themedStyles(theme);
@@ -157,7 +163,10 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                     accessibilityLabel={i18n.t("forgotPassword")}
                                     onPress={() => {
                                         Keyboard.dismiss();
-                                        rootNavigate("ForgotPasswordScreen");
+                                        rootNavigate("LoginRoot", {
+                                            screen: "LoginScreens",
+                                            params: {screen: "ForgotPasswordScreen"},
+                                        });
                                     }}
                                     style={styles.forgotPwdLink}
                                 >
@@ -178,11 +187,22 @@ class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                                         <View style={styles.separatorHbar} />
                                     </View>
                                     <Button
-                                        onPress={() => rootNavigate("SignupScreen")}
+                                        onPress={() => {
+                                            Keyboard.dismiss();
+                                            rootNavigate("LoginRoot", {
+                                                screen: "LoginScreens",
+                                                params: {screen: "SignupScreen"},
+                                            });
+                                        }}
                                         skin="rounded-hollow"
                                         text={i18n.t("loginForm.signUp")}
                                     />
                                 </View>
+                                <RecoverAccountModal
+                                    visible={needsRecovery}
+                                    email={values.email}
+                                    password={values.password}
+                                />
                             </View>
                         );
                     }}

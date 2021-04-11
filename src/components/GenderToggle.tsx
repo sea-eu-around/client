@@ -3,19 +3,19 @@ import i18n from "i18n-js";
 import {Gender, GENDERS} from "../constants/profile-constants";
 import {ButtonGroup, withTheme} from "react-native-elements";
 import {ThemeProps} from "../types";
-import {getToggleStyleProps} from "../styles/toggles";
+import {getToggleStyleProps, ToggleStyleVariant} from "../styles/toggles";
 
 // Component props
 export type GenderToggleProps = {
     gender?: Gender | null;
     onSelect?: (gender: Gender) => void;
     disabled?: boolean;
+    styleVariant?: ToggleStyleVariant;
 };
 
 function GenderToggle(props: GenderToggleProps & ThemeProps): JSX.Element {
     const buttonLabels = GENDERS.map((r: string) => i18n.t(`genders.${r}`));
-    const {gender, disabled, theme} = props;
-    const styleProps = getToggleStyleProps(false, theme);
+    const {gender, disabled, styleVariant, theme} = props;
 
     const onUpdate = (idx: number) => {
         if (props.onSelect) props.onSelect(GENDERS[idx]);
@@ -27,7 +27,7 @@ function GenderToggle(props: GenderToggleProps & ThemeProps): JSX.Element {
             selectedIndex={gender !== undefined && gender !== null ? GENDERS.indexOf(gender) : -1}
             buttons={buttonLabels}
             disabled={disabled}
-            {...styleProps}
+            {...getToggleStyleProps(styleVariant, theme)}
         />
     );
 }
