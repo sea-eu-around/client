@@ -17,6 +17,7 @@ export type RootNavigatorScreens = {
     OnboardingSuccessfulScreen: undefined;
     NotFoundScreen: undefined;
     BackendUnreachableScreen: undefined;
+    ResendVerifyEmailScreen: undefined;
 };
 
 export type MainNavigatorTabs = {

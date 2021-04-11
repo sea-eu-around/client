@@ -84,6 +84,7 @@ const config: LinkingOptions = {
             },
             OnboardingSuccessfulScreen: "onboarding/success",
             BackendUnreachableScreen: "cannot-reach-server",
+            ResendVerifyEmailScreen: "verify",
             NotFoundScreen: "*",
         },
     },

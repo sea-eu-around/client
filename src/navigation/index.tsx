@@ -26,9 +26,10 @@ import SettingsScreen from "../screens/SettingsScreen";
 import DeleteAccountSuccessScreen from "../screens/DeleteAccountSuccessScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 import {handleRouteChangeForChat} from "./MessagingNavigator";
-import {DEBUG_MODE} from "../constants/config";
+import {DEBUG_FORCE_INITIAL_ROUTE, DEBUG_MODE} from "../constants/config";
 import {BackHandler} from "react-native";
 import BackendUnreachableScreen from "../screens/BackendUnreachableScreen";
+import ResendVerifyEmailScreen from "../screens/ResendVerifyEmailScreen";
 
 type RootNavigationProps = React.PropsWithRef<ThemeProps & {initialRoute?: keyof RootNavigatorScreens}> & {
     onReady?: () => void;
@@ -61,8 +62,11 @@ function onStateChange(state: NavigationState | undefined) {
 
 function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.Element {
     // Ensure we do not go back to the initial route when the navigation container updates (e.g. on theme change)
-    const initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
+    let initialRouteName = consumedInitialRoute ? (previousRoute as keyof RootNavigatorScreens) : initialRoute;
     consumedInitialRoute = true;
+
+    if (DEBUG_MODE && DEBUG_FORCE_INITIAL_ROUTE !== undefined)
+        initialRouteName = DEBUG_FORCE_INITIAL_ROUTE as keyof RootNavigatorScreens;
 
     const reactNavigationTheme = {
         dark: theme.id === "dark",
@@ -194,6 +198,11 @@ function Navigation({theme, initialRoute, onReady}: RootNavigationProps): JSX.El
                     name="BackendUnreachableScreen"
                     component={BackendUnreachableScreen}
                     options={{title: screenTitle("BackendUnreachableScreen")}}
+                />
+                <Stack.Screen
+                    name="ResendVerifyEmailScreen"
+                    component={ResendVerifyEmailScreen}
+                    options={{title: screenTitle("ResendVerifyEmailScreen")}}
                 />
                 <Stack.Screen
                     name="NotFoundScreen"
