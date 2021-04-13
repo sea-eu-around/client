@@ -902,6 +902,7 @@ export default {
             explore: {
                 button: "Explore",
                 none: "No groups found.",
+                noMore: "No other groups to show.",
                 statusText: {
                     pending: "Demande envoyée",
                     banned: "Banni",
@@ -2031,6 +2032,7 @@ export default {
             explore: {
                 button: "Explorer",
                 none: "Aucun groupe n'a été trouvé.",
+                noMore: "Aucun autre groupe à afficher.",
                 statusText: {
                     pending: "Request sent",
                     banned: "Banned",
