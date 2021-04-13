@@ -10,6 +10,7 @@ import {GroupPost, GroupVoteStatus} from "../model/groups";
 import store from "../state/store";
 import {MyThunkDispatch} from "../state/types";
 import Button from "./Button";
+import themes from "../constants/themes";
 
 // Component props
 type GroupVoteButtonProps = {
@@ -54,7 +55,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 20,
         },
         iconOverride: {
-            color: theme.textLight,
+            color: themes.light.textLight,
             opacity: 0.5,
         },
         nonNeutralIcon: {

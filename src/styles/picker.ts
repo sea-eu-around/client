@@ -2,6 +2,7 @@ import {Theme} from "../types";
 import {StyleSheet, TextStyle, ViewStyle} from "react-native";
 import {preTheme} from "./utils";
 import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
+import themes from "../constants/themes";
 
 export type PickerButtonStyleVariant = "classic" | "onboarding";
 
@@ -33,7 +34,7 @@ export const pickerStyles = preTheme((theme: Theme) => {
         },
         okButtonText: {
             fontSize: 20,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         chipContainer: {
             marginTop: 10,

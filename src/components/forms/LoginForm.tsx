@@ -20,6 +20,7 @@ import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {rootNavigate} from "../../navigation/utils";
 import Button from "../Button";
 import RecoverAccountModal from "../modals/RecoverAccountModal";
+import themes from "../../constants/themes";
 
 type FormState = {
     email: string;
@@ -219,7 +220,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
         },
         loginButtonIcon: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             fontSize: 20,
             marginLeft: 5,
         },

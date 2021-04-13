@@ -12,6 +12,7 @@ import {ReportEntityType} from "../constants/reports";
 import UnmatchProfileModal from "./modals/UnmatchProfileModal";
 import i18n from "i18n-js";
 import {navigateBack, openChat} from "../navigation/utils";
+import themes from "../constants/themes";
 
 export type ProfileActionBarProps = {
     profile: UserProfile | null;
@@ -141,7 +142,7 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 12,
             textTransform: "uppercase",
             letterSpacing: 0.5,
-            color: theme.textWhite,
+            color: themes.dark.text,
             textAlign: "center",
             ...styleTextLight,
         },
@@ -158,7 +159,7 @@ const themedStyles = preTheme((theme: Theme) => {
         buttonTopBlank: {
             opacity: 0.4,
             backgroundColor: "transparent",
-            borderColor: theme.textWhite,
+            borderColor: themes.dark.text,
             borderWidth: 1,
         },
         buttonTopIcon: {

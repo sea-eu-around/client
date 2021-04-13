@@ -1,6 +1,7 @@
 import * as React from "react";
 import {StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {withTheme} from "react-native-elements";
+import themes from "../constants/themes";
 import {Theme, ThemeProps} from "../types";
 
 export type ButtonSkinStyle = {button: ViewStyle; text: TextStyle};
@@ -20,7 +21,7 @@ export const BUTTON_SKINS = {
         text: {
             fontSize: 18,
             letterSpacing: 1,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
     }),
     "rounded-hollow": (theme: Theme): ButtonSkinStyle => ({
@@ -55,12 +56,25 @@ export type ButtonProps = {
     skin?: ButtonSkin;
     iconLeft?: boolean;
     contentOpacity?: number;
+    disabled?: boolean;
     TouchableComponent?: typeof React.Component;
 } & ThemeProps;
 
 class Button extends React.Component<ButtonProps> {
     render(): JSX.Element {
-        const {onPress, text, icon, skin, style, textStyle, iconLeft, contentOpacity, children, theme} = this.props;
+        const {
+            onPress,
+            text,
+            icon,
+            skin,
+            style,
+            textStyle,
+            iconLeft,
+            contentOpacity,
+            disabled,
+            children,
+            theme,
+        } = this.props;
 
         const skinStyles = skin ? BUTTON_SKINS[skin](theme) : {button: {}, text: {}};
 
@@ -72,6 +86,7 @@ class Button extends React.Component<ButtonProps> {
                 accessibilityLabel={text}
                 onPress={onPress}
                 style={[{alignItems: "center"}, skinStyles.button, style]}
+                disabled={disabled}
             >
                 {children}
                 {/* if content opacity is set, render content AND children anyway */}

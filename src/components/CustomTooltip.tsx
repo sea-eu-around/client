@@ -5,6 +5,7 @@ import {preTheme} from "../styles/utils";
 import {Theme} from "../types";
 import CustomModal, {CustomModalClass} from "./modals/CustomModal";
 import {CustomTooltipProps} from "./CustomTooltip.native";
+import themes from "../constants/themes";
 
 class CustomTooltip extends React.Component<CustomTooltipProps> {
     modalRef = React.createRef<CustomModalClass>();
@@ -35,7 +36,7 @@ export const tooltipStyles = preTheme((theme: Theme) => {
             textAlign: "justify",
             paddingVertical: 10,
             fontSize: 14,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
         container: {
             alignContent: "center",

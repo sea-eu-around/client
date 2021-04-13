@@ -9,6 +9,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {AppState} from "../../state/types";
 import GroupSettingsMenu, {GroupSettingsMenuClass} from "../GroupSettingsMenu";
 import {statusBarRef} from "../ThemedStatusBar";
+import themes from "../../constants/themes";
 
 const reduxConnector = connect(
     (state: AppState) => ({
@@ -72,7 +73,7 @@ export class GroupScreenHeaderClass extends React.Component<GroupScreenHeaderPro
                         },
                         transparent && {backgroundColor: "transparent"},
                     ]}
-                    color={transparent ? theme.textWhite : theme.text}
+                    color={transparent ? themes.dark.text : theme.text}
                     buttonBackgroundColor="transparent"
                     overrideTitle={transparent ? "" : group?.name || ""}
                     navigateBackFallback={(nav) =>

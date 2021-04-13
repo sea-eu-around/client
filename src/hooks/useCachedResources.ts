@@ -31,7 +31,7 @@ export default function useCachedResources(): {isLoadingComplete: boolean; initi
                 const dispatch = store.dispatch as MyThunkDispatch;
 
                 // Load fonts
-                Font.loadAsync({
+                await Font.loadAsync({
                     ...FontAwesome.font,
                     Raleway: require("@assets/fonts/Raleway-Regular.ttf"),
                     RalewayThin: require("@assets/fonts/Raleway-Thin.ttf"),

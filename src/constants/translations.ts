@@ -51,9 +51,10 @@ export default {
         newPassword: "New Password",
         signupWelcome: "We can't wait for you to join our community!",
         createAccount: "Create account",
-        // Email validation screen
+        // Email validation screens
         emailValidation: {
             validating: "Validating",
+            sent: "To validate your account, click the link in the email we just sent to",
             success: ["Your account has been validated! You may now ", "log in"],
         },
         // Legal disclaimers
@@ -322,6 +323,13 @@ export default {
         backendUnreachable: {
             title: "Unable to reach the server",
             subtitle: "This can be caused by your network or by the application server itself.",
+        },
+        // Resend verify email screen
+        resendVerifyScreen: {
+            title: "Account Verification",
+            text:
+                "This account is not verified yet. You should have received an email from us with a validation link. If not, click the button below to send it again.",
+            send: "Send Again",
         },
         // University-related
         universities: {
@@ -1106,6 +1114,7 @@ export default {
             NotFoundScreen: "Not Found",
             BackendUnreachableScreen: "Error",
             ForgotPasswordEmailSentScreen: "Forgot password",
+            ResendVerifyEmailScreen: "Account verification",
         },
         // Settings screen
         settings: {
@@ -1173,9 +1182,10 @@ export default {
         newPassword: "Nouveau mot de passe",
         signupWelcome: "Nous vous attendons avec impatience!",
         createAccount: "Créer le compte",
-        // Email validation screen
+        // Email validation screens
         emailValidation: {
             validating: "Validation",
+            sent: "Pour valider votre compte, cliquez sur le lien dans le mail que nous venons de vous envoyer",
             success: ["Le compte est désormais validé. Vous pouvez maintenant vous ", "connecter"],
         },
         // Legal disclaimers
@@ -1445,6 +1455,13 @@ export default {
         backendUnreachable: {
             title: "Impossible de se connecter au serveur",
             subtitle: "Cela peut provenir de votre connection Internet ou du serveur de l'application.",
+        },
+        // Resend verify email screen
+        resendVerifyScreen: {
+            title: "Vérification du compte",
+            text:
+                "Ce compte n'est pas encore vérifié. Vous devriez avoir reçu un mail de notre part, contenant un lien de vérification. Sinon, cliquez sur le bouton ci-dessous pour le renvoyer.",
+            send: "Envoyer à nouveau",
         },
         // University-related
         universities: {
@@ -2236,6 +2253,7 @@ export default {
             NotFoundScreen: "Page Introuvable",
             BackendUnreachableScreen: "Erreur",
             ForgotPasswordEmailSentScreen: "Mot de Passe Oublié",
+            ResendVerifyEmailScreen: "Vérification du compte",
         },
         // Settings screen
         settings: {

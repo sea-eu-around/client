@@ -10,6 +10,7 @@ import {RootNavigatorScreens} from "../navigation/types";
 import ScreenWrapper from "./ScreenWrapper";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import Button from "../components/Button";
+import themes from "../constants/themes";
 
 type ResetPasswordSuccessScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -59,7 +60,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         buttonIcon: {
             fontSize: 20,
-            color: theme.textWhite,
+            color: themes.dark.text,
             marginLeft: 4,
         },
     });

@@ -2,10 +2,11 @@ import * as React from "react";
 import {StyleSheet, StyleProp, ViewStyle, TextStyle} from "react-native";
 import {ListItem, withTheme} from "react-native-elements";
 import {preTheme} from "../styles/utils";
-import {Theme, ThemeProps} from "../types";
+import {ThemeProps} from "../types";
 import i18n from "i18n-js";
 import BottomSheet, {BottomSheetClass} from "./bottom-sheet/BottomSheet";
 import BottomSheetTouchableOpacity from "./bottom-sheet/BottomSheetTouchableOpacity";
+import themes from "../constants/themes";
 
 export type ActionMenuItemPreset = "close";
 
@@ -103,7 +104,7 @@ export class ActionMenuClass extends React.Component<ActionMenuProps> {
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
+const themedStyles = preTheme(() => {
     return StyleSheet.create({
         listItemWrapper: {
             width: "100%",
@@ -115,7 +116,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         titleItem: {
             fontSize: 26,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
     });
 });

@@ -2,7 +2,7 @@ import {AnyAction, Middleware, Dispatch, MiddlewareAPI} from "redux";
 import {DEBUG_MODE} from "../constants/config";
 import {navigateToGroup, rootNavigate} from "../navigation/utils";
 import {ONBOARDING_ORDER} from "../screens/onboarding";
-import {AUTH_ACTION_TYPES, beginOnboarding, LogInSuccessAction, LogOutAction} from "./auth/actions";
+import {AUTH_ACTION_TYPES, beginOnboarding, LogInFailureAction, LogInSuccessAction, LogOutAction} from "./auth/actions";
 import {CreateGroupSuccessAction, GROUP_ACTION_TYPES} from "./groups/actions";
 import {ActionCancelSuccessAction, MATCHING_ACTION_TYPES} from "./matching/actions";
 import {PROFILE_ACTION_TYPES} from "./profile/actions";
@@ -26,6 +26,11 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             else store.dispatch(beginOnboarding());
             break;
         }
+        case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
+            const {needsVerify} = action as LogInFailureAction;
+            if (needsVerify) rootNavigate("ResendVerifyEmailScreen");
+            break;
+        }
         case AUTH_ACTION_TYPES.LOG_OUT: {
             const {redirect} = action as LogOutAction;
             if (redirect) {
@@ -41,8 +46,13 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             break;
         }
         case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
+            // TODO clean this up
             // Let the user click
             // attemptRedirectToApp("login", "SigninScreen");
+            break;
+        }
+        case AUTH_ACTION_TYPES.SEND_VERIFICATION_EMAIL_SUCCESS: {
+            rootNavigate("ValidationEmailSentScreen");
             break;
         }
         case AUTH_ACTION_TYPES.BEGIN_ONBOARDING: {

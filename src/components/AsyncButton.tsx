@@ -60,6 +60,7 @@ class AsyncButton extends React.Component<AsyncButtonProps, AsyncButtonState> {
                 {...otherProps}
                 {...{onPress: loading ? undefined : () => this.onPress()}}
                 contentOpacity={loading ? 0 : 1}
+                disabled={loading}
             >
                 {loading && (
                     <ActivityIndicator

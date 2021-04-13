@@ -9,6 +9,7 @@ import {preTheme} from "../../styles/utils";
 import {MaterialIcons} from "@expo/vector-icons";
 import i18n from "i18n-js";
 import {SafeAreaInsetsContext} from "react-native-safe-area-context";
+import themes from "../../constants/themes";
 
 export type EditPostModalProps = ThemeProps & Partial<CustomModalProps> & {groupId: string; post?: GroupPost};
 
@@ -88,7 +89,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         title: {
             fontSize: 18,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         topButton: {
             padding: 10,
@@ -96,7 +97,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         topButtonIcon: {
             fontSize: 24,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         form: {
             width: "90%",

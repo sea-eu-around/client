@@ -12,6 +12,7 @@ import {TERMS_AND_CONDITIONS_URL} from "../../constants/config";
 import {Linking} from "expo";
 import {LinearGradient} from "expo-linear-gradient";
 import layout from "../../constants/layout";
+import themes from "../../constants/themes";
 
 // Component props
 type OnboardingLegalSlideProps = ThemeProps &
@@ -24,7 +25,7 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
 
         const wide = layout.isWideDevice;
         const gradient = <LinearGradient style={styles.background} colors={[theme.accent, "#862ADF"]} />;
-        const textColor = specialBackground && !wide ? theme.textWhite : theme.textLight;
+        const textColor = specialBackground && !wide ? themes.dark.text : theme.textLight;
 
         return (
             <OnboardingSlide
@@ -34,7 +35,7 @@ class OnboardingLegalSlide extends React.Component<OnboardingLegalSlideProps> {
                 {...(specialBackground && !wide
                     ? {
                           background: gradient,
-                          textColor: theme.textWhite,
+                          textColor: themes.dark.text,
                       }
                     : {})}
                 illustration={wide ? gradient : <></>}
@@ -110,7 +111,7 @@ export const themedStyles = preTheme((theme: Theme) => {
         actionButtonText: {
             fontSize: 18,
             paddingHorizontal: 2,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         readMoreText: {
             fontSize: 16,

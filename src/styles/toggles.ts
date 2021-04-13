@@ -1,4 +1,5 @@
 import {ButtonGroupProps} from "react-native-elements";
+import themes from "../constants/themes";
 import {Theme} from "../types";
 import {ONBOARDING_INPUT_BORDER_RADIUS} from "./onboarding";
 
@@ -65,7 +66,7 @@ export function getToggleStyleProps(variant: ToggleStyleVariant = "classic", the
                 borderRadius: 50,
             },
             textStyle: {
-                color: theme.textBlack,
+                color: themes.light.text,
                 opacity: 0.5,
                 fontSize: 15,
                 flexShrink: 1,
@@ -74,7 +75,7 @@ export function getToggleStyleProps(variant: ToggleStyleVariant = "classic", the
                 backgroundColor: theme.accent,
             },
             selectedTextStyle: {
-                color: theme.textWhite,
+                color: themes.dark.text,
                 opacity: 1,
             },
         };

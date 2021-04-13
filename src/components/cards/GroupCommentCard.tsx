@@ -21,6 +21,7 @@ import DeleteCommentConfirmModal from "../modals/DeleteCommentConfirmModal";
 import Button from "../Button";
 import {ReadMore} from "../ReadMore";
 import store from "../../state/store";
+import themes from "../../constants/themes";
 
 const reduxConnector = connect((state: AppState) => ({
     localUser: state.profile.user,
@@ -86,7 +87,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
         } = this.props;
         const {expanded} = this.state;
 
-        const styles = themedStyles(theme);
+        const styles = themedStyles(expanded)(theme);
         const fromLocal = comment && localUser && comment.creator.id === localUser.id;
         const name = comment ? `${comment.creator.firstName} ${comment.creator.lastName}` : "";
 
@@ -233,58 +234,59 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
     }
 }
 
-const themedStyles = preTheme((theme: Theme) => {
-    return StyleSheet.create({
-        outerContainer: {
-            width: "100%",
-            backgroundColor: theme.cardBackground,
-        },
-        outerContainerExpanded: {},
-        innerContainer: {
-            borderLeftColor: theme.componentBorder,
-            padding: 10,
-        },
-        innerContainerExpanded: {
-            backgroundColor: theme.accentSlight,
-        },
+const themedStyles = (expanded: boolean) =>
+    preTheme((theme: Theme) => {
+        return StyleSheet.create({
+            outerContainer: {
+                width: "100%",
+                backgroundColor: theme.cardBackground,
+            },
+            outerContainerExpanded: {},
+            innerContainer: {
+                borderLeftColor: theme.componentBorder,
+                padding: 10,
+            },
+            innerContainerExpanded: {
+                backgroundColor: theme.accentSlight,
+            },
 
-        bottom: {
-            flexDirection: "row",
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            overflow: "hidden",
-        },
+            bottom: {
+                flexDirection: "row",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+                overflow: "hidden",
+            },
 
-        avatarContainer: {
-            backgroundColor: theme.accentSlight,
-            marginRight: 8,
-        },
-        topText: {
-            fontSize: 13,
-            color: theme.textLight,
-        },
-        name: {
-            ...(Platform.OS === "ios" ? {fontWeight: "600"} : {}),
-        },
-        content: {
-            flex: 1,
-        },
-        text: {
-            fontSize: 13,
-            color: theme.text,
-        },
-        textFooter: {
-            color: theme.accent,
-        },
+            avatarContainer: {
+                backgroundColor: theme.accentSlight,
+                marginRight: 8,
+            },
+            topText: {
+                fontSize: 13,
+                color: themes.light.textLight,
+            },
+            name: {
+                ...(Platform.OS === "ios" ? {fontWeight: "600"} : {}),
+            },
+            content: {
+                flex: 1,
+            },
+            text: {
+                fontSize: 13,
+                color: expanded ? themes.light.text : theme.text,
+            },
+            textFooter: {
+                color: theme.accent,
+            },
 
-        bottomButton: {
-            marginHorizontal: 10,
-        },
-        bottomButtonIcon: {
-            fontSize: 24,
-            color: theme.textLight,
-        },
+            bottomButton: {
+                marginHorizontal: 10,
+            },
+            bottomButtonIcon: {
+                fontSize: 24,
+                color: themes.light.textLight,
+            },
+        });
     });
-});
 
 export default reduxConnector(withTheme(GroupCommentCard));

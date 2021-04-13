@@ -34,6 +34,7 @@ import {connect, ConnectedProps} from "react-redux";
 import Chips from "../Chips";
 import WavyHeader from "../headers/WavyHeader";
 import BirthDateInput, {BirthDateInputClass} from "../BirthDateInput";
+import themes from "../../constants/themes";
 
 // Map props from the store
 const reduxConnector = connect((state: AppState) => ({
@@ -353,12 +354,12 @@ export const themedStyles = preTheme((theme: Theme) => {
         },
         name: {
             fontSize: 28,
-            color: theme.textWhite,
+            color: themes.dark.text,
             marginTop: 10,
         },
         university: {
             fontSize: 14,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         universityContainer: {
             marginVertical: 5,

@@ -8,6 +8,7 @@ import {navigateToGroup} from "../../navigation/utils";
 import LocalImage from "../LocalImage";
 import {BlurView} from "expo-blur";
 import GroupInviteResponseModal, {GroupInviteResponseModalClass} from "../modals/GroupInviteResponseModal";
+import themes from "../../constants/themes";
 
 // Component props
 type MyGroupCardProps = {
@@ -80,7 +81,7 @@ const themedStyles = preTheme((theme: Theme) => {
             height: "100%",
         },
         groupName: {
-            color: theme.textWhite,
+            color: themes.dark.text,
             textShadowColor: "rgba(0, 0, 0, 0.7)",
             textShadowOffset: {width: 1, height: 1},
             textShadowRadius: 10,

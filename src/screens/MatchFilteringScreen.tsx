@@ -19,6 +19,7 @@ import FormattedOfferCategory from "../components/FormattedOfferCategory";
 import ScreenWrapper from "./ScreenWrapper";
 import EducationFieldPicker from "../components/EducationFieldPicker";
 import StaffRolePicker from "../components/StaffRolePicker";
+import themes from "../constants/themes";
 
 // Map props from state
 const reduxConnector = connect((state: AppState) => ({
@@ -254,11 +255,11 @@ const themedStyles = preTheme((theme: Theme) => {
             fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: 1,
-            color: theme.textBlack,
+            color: themes.light.text,
         },
         resetButtonIcon: {
             fontSize: 16,
-            color: theme.textBlack,
+            color: themes.light.text,
             marginLeft: 4,
         },
     });

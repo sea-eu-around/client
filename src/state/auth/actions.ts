@@ -19,6 +19,7 @@ export enum AUTH_ACTION_TYPES {
     VALIDATE_ACCOUNT = "AUTH/VALIDATE_ACCOUNT",
     VALIDATE_ACCOUNT_SUCCESS = "AUTH/VALIDATE_ACCOUNT_SUCCESS",
     VALIDATE_ACCOUNT_FAILURE = "AUTH/VALIDATE_ACCOUNT_FAILURE",
+    SEND_VERIFICATION_EMAIL_SUCCESS = "AUTH/SEND_VERIFICATION_EMAIL_SUCCESS",
     BEGIN_ONBOARDING = "AUTH/BEGIN_ONBOARDING",
     NEXT_ONBOARDING_SLIDE = "AUTH/NEXT_ONBOARDING_SLIDE",
     PREVIOUS_ONBOARDING_SLIDE = "AUTH/PREVIOUS_ONBOARDING_SLIDE",
@@ -44,7 +45,7 @@ export type LogInSuccessAction = {
     user: User;
     usingCachedCredentials: boolean;
 };
-export type LogInFailureAction = {type: string; needsRecovery: boolean};
+export type LogInFailureAction = {type: string; email?: string; needsRecovery: boolean; needsVerify: boolean};
 export type LogInRecoverCancelAction = {type: string};
 
 export type LogOutAction = {type: string; redirect: boolean};
@@ -54,6 +55,8 @@ export type ValidateAccountSuccessAction = {
     email: string;
 };
 export type ValidateAccountFailureAction = {type: string};
+
+export type SendVerificationEmailSuccess = {type: string};
 
 export type BeginOnboardingAction = {type: string};
 export type NextOnboardingSlideAction = {type: string};
@@ -90,6 +93,7 @@ export type AuthAction =
     | LogOutAction
     | ValidateAccountSuccessAction
     | ValidateAccountFailureAction
+    | SendVerificationEmailSuccess
     | SetOnboardingValuesAction
     | SetOnboardingOfferValueAction
     | ForgotPasswordFailureAction
@@ -143,9 +147,11 @@ const loginSuccess = (token: TokenDto, user: User, usingCachedCredentials: boole
     usingCachedCredentials,
 });
 
-const loginFailure = (needsRecovery = false): LogInFailureAction => ({
+const loginFailure = (email?: string, needsRecovery = false, needsVerify = false): LogInFailureAction => ({
     type: AUTH_ACTION_TYPES.LOG_IN_FAILURE,
+    email,
     needsRecovery,
+    needsVerify,
 });
 
 export const attemptLoginFromCache = (): AppThunk<Promise<User | undefined>> => async (
@@ -180,9 +186,13 @@ export const requestLogin = (email: string, password: string, recover = false): 
         dispatch(loginSuccess(payload.token, convertDtoToUser(payload.user), false));
         return {success: true};
     } else {
-        const needsRecovery =
-            response.status === HttpStatusCode.FORBIDDEN && response.errorType === "error.user_being_deleted";
-        dispatch(loginFailure(needsRecovery));
+        let needsRecovery = false;
+        let needsVerify = false;
+        if (response.status === HttpStatusCode.FORBIDDEN) {
+            needsRecovery = response.errorType === "error.user_being_deleted";
+            needsVerify = response.errorType === "error.user_not_verified";
+        }
+        dispatch(loginFailure(email, needsRecovery, needsVerify));
         return {success: false, errors: gatherValidationErrors(response)};
     }
 };
@@ -217,6 +227,23 @@ const validateAccountSuccess = (email: string): ValidateAccountSuccessAction => 
 
 const validateAccountFailure = (): ValidateAccountFailureAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE,
+});
+
+export const requestSendVerificationEmail = (): AppThunk<Promise<boolean>> => async (dispatch) => {
+    //const response = await requestBackend("auth/verify", "POST");
+
+    // TODO hook-up to backend
+    //if (response.status == HttpStatusCode.OK) {
+    if (true) {
+        dispatch(sendVerificationEmailSuccess());
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const sendVerificationEmailSuccess = (): SendVerificationEmailSuccess => ({
+    type: AUTH_ACTION_TYPES.SEND_VERIFICATION_EMAIL_SUCCESS,
 });
 
 // Forgot password actions

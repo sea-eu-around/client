@@ -21,6 +21,7 @@ import WavyHeader from "../../components/headers/WavyHeader";
 import GroupProvider from "../../components/providers/GroupProvider";
 import store from "../../state/store";
 import GroupScreenHeader, {GroupScreenHeaderClass} from "../../components/headers/GroupScreenHeader";
+import themes from "../../constants/themes";
 
 // Component props
 type GroupScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
@@ -142,7 +143,7 @@ class GroupScreen extends React.Component<GroupScreenProps, GroupScreenState> {
                                                     <FontAwesome
                                                         size={APPROBATION_REQ_INDICATOR_SIZE - 4}
                                                         name="exclamation"
-                                                        color={theme.textWhite}
+                                                        color={themes.dark.text}
                                                     />
                                                 </View>
                                             )}

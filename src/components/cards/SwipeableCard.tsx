@@ -17,6 +17,7 @@ import {Theme, ThemeProps} from "../../types";
 import {preTheme} from "../../styles/utils";
 import {styleTextThin} from "../../styles/general";
 import {MaterialIcons} from "@expo/vector-icons";
+import themes from "../../constants/themes";
 
 // Theses style elements are defined this way because they have to be set in very specific ways
 export type SwipeableLooks = {
@@ -202,7 +203,7 @@ const SwipeActionButton = withTheme(
     (props: SwipeActionProps & ThemeProps): JSX.Element => {
         const {icon, text, backgroundColor, onPress, style, theme} = props;
         const styles = buttonStyles(theme);
-        const color = props.color || theme.textWhite;
+        const color = props.color || themes.dark.text;
 
         return (
             <TouchableOpacity onPress={onPress} style={[styles.swipeActionButton, {backgroundColor}, style]}>

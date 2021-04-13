@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Constants from "expo-constants";
+import {NavigatorRoute} from "../navigation/types";
 
 export enum Environment {
     Staging = "STAGING",
@@ -79,3 +80,8 @@ export const TERMS_AND_CONDITIONS_URL =
  * The email address to which bug reports should be sent.
  */
 export const BUG_REPORT_EMAIL_ADDRESS = "sea-eu.around@univ-brest.fr";
+
+/**
+ * Set this to force the initial route for debug purposes.
+ */
+export const DEBUG_FORCE_INITIAL_ROUTE: NavigatorRoute | undefined = "ResendVerifyEmailScreen";

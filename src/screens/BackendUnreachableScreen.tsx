@@ -12,6 +12,7 @@ import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import AsyncButton from "../components/AsyncButton";
 import {connectToBackend} from "../hooks/useCachedResources";
 import {getInitialRoute, rootNavigate} from "../navigation/utils";
+import themes from "../constants/themes";
 
 export type BackendUnreachableScreenProps = StackScreenProps<RootNavigatorScreens, "BackendUnreachableScreen"> &
     ThemeProps;
@@ -65,7 +66,7 @@ const themedStyles = preTheme((theme: Theme) => {
         },
         icon: {
             fontSize: 48,
-            color: theme.textWhite,
+            color: themes.dark.text,
         },
         title: {
             fontSize: 36,
