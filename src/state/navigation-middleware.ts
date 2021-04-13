@@ -45,12 +45,6 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             rootNavigate("ValidationEmailSentScreen");
             break;
         }
-        case AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_SUCCESS: {
-            // TODO clean this up
-            // Let the user click
-            // attemptRedirectToApp("login", "SigninScreen");
-            break;
-        }
         case AUTH_ACTION_TYPES.SEND_VERIFICATION_EMAIL_SUCCESS: {
             rootNavigate("ValidationEmailSentScreen");
             break;
