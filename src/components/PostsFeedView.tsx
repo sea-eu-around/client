@@ -9,7 +9,7 @@ import InfiniteScroller from "./InfiniteScroller";
 import {NavigationProp} from "@react-navigation/native";
 import {GROUPS_POSTS_FETCH_LIMIT} from "../constants/config";
 import {AppState, MyThunkDispatch} from "../state/types";
-import {fetchPostsFeed, refreshFetchedPostsFeed} from "../state/groups/actions";
+import {fetchPostsFeed, refreshFetchedMyGroups, refreshFetchedPostsFeed} from "../state/groups/actions";
 import {connect, ConnectedProps} from "react-redux";
 import GroupPostCard from "./cards/GroupPostCard";
 import CustomTooltip from "./CustomTooltip";
@@ -23,13 +23,13 @@ const reduxConnector = connect((state: AppState) => ({
 }));
 
 // Component props
-export type GroupPostsViewProps = ThemeProps &
+export type PostsFeedViewProps = ThemeProps &
     ConnectedProps<typeof reduxConnector> & {
         navigation: NavigationProp<never>;
         top?: JSX.Element;
     };
 
-class GroupPostsView extends React.Component<GroupPostsViewProps> {
+class PostsFeedView extends React.Component<PostsFeedViewProps> {
     render() {
         const {pagination, postIds, posts, top, navigation, theme} = this.props;
         const styles = themedStyles(theme);
@@ -60,7 +60,10 @@ class GroupPostsView extends React.Component<GroupPostsViewProps> {
                 hideScrollIndicator
                 endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noMorePosts")}</Text>}
                 noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
-                refresh={() => dispatch(refreshFetchedPostsFeed())}
+                refresh={() => {
+                    dispatch(refreshFetchedMyGroups());
+                    dispatch(refreshFetchedPostsFeed());
+                }}
                 renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} isFeed />}
                 // Compensate for the top
                 progressViewOffset={250}
@@ -94,4 +97,4 @@ export const themedStyles = preTheme((theme: Theme) => {
     });
 });
 
-export default reduxConnector(withTheme(GroupPostsView));
+export default reduxConnector(withTheme(PostsFeedView));
