@@ -58,7 +58,6 @@ class MyGroupsView extends React.Component<MyGroupsViewProps> {
                     id={(group: Group): string => group.id}
                     horizontal
                     hideScrollIndicator
-                    refreshOnFocus
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.myGroups.none")}</Text>}
                     refresh={() => dispatch(refreshFetchedMyGroups())}
                     renderItem={(group: Group) => <MyGroupCard key={group.id} group={group} />}
