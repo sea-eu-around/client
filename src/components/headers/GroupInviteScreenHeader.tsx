@@ -43,7 +43,7 @@ class GroupInviteScreenHeaderClass extends React.Component<GroupInviteScreenHead
                 rightButtons={[
                     () => (
                         <TouchableOpacity style={{padding: 5}} onPress={() => stackProps.navigation?.goBack()}>
-                            <Text style={{fontSize: 16, color: theme.text}}>Done</Text>
+                            <Text style={{fontSize: 16, color: theme.text}}>{i18n.t("apply")}</Text>
                         </TouchableOpacity>
                     ),
                 ]}
