@@ -84,4 +84,4 @@ export const BUG_REPORT_EMAIL_ADDRESS = "sea-eu.around@univ-brest.fr";
 /**
  * Set this to force the initial route for debug purposes.
  */
-export const DEBUG_FORCE_INITIAL_ROUTE: NavigatorRoute | undefined = "ResendVerifyEmailScreen";
+export const DEBUG_FORCE_INITIAL_ROUTE: NavigatorRoute | undefined = undefined;
