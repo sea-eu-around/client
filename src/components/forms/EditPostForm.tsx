@@ -218,7 +218,10 @@ const themedStyles = preTheme((theme: Theme) => {
             flexDirection: "row",
             justifyContent: "center",
         },
-        button: {flex: 1},
+        button: {
+            flex: 1,
+            maxWidth: 300,
+        },
         buttonSubmit: {},
     });
 });
