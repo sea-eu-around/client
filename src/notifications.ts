@@ -29,6 +29,12 @@ export function configureNotifications(): void {
         if (data.roomId && data.text) {
             const message = data as ResponseChatMessageDto;
             store.dispatch(receiveChatMessage(message));
+            /*
+                Since we shouldn't receive notifications when we're connected to the chat,
+                we don't have to take care of informing the server we've read the message here
+                (if we're receiving a notification, we're not on a screen where the message
+                is read on reception)
+            */
         }
     });
 
