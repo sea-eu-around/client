@@ -274,7 +274,6 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                     )}
                     renderFooter={() => <ChatFooter userWriting={userWriting} theme={theme} />}
                     renderActions={(props: ActionsProps) => <ChatActions actionsProps={props} theme={theme} />}
-                    //renderLoadEarlier={() => <></>}
                     onInputTextChanged={(t) => {
                         if (t.length > 0) chatSocket.setWriting(room);
                     }}

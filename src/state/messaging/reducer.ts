@@ -120,7 +120,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
         }
 
         case MESSAGING_ACTION_TYPES.DISCONNECT_FROM_CHAT: {
-            return {...state, socketState: {connected: false, connecting: false}, activeRoomId: null}; // TODO attempt fix
+            return {...state, socketState: {connected: false, connecting: false}, activeRoomId: null};
         }
 
         case MESSAGING_ACTION_TYPES.JOIN_CHAT_ROOM_BEGIN: {
