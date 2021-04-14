@@ -10,6 +10,7 @@ import {
     View,
     FlatList,
     KeyboardAvoidingView,
+    Text,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {withTheme} from "react-native-elements";
@@ -56,6 +57,8 @@ import {getRouteParams} from "../../navigation/utils";
 import {noop} from "lodash";
 import ChatUserAvatar from "../../components/ChatUserAvatar";
 import themes from "../../constants/themes";
+import {getLocalSvg} from "../../assets";
+import i18n from "i18n-js";
 
 // Map props from store
 const reduxConnector = connect((state: AppState) => ({
@@ -208,6 +211,12 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                 });
             }
 
+            const otherUser = room.users.filter((p: ChatRoomUser) => p._id != localChatUser._id)[0];
+
+            const ChatEmptySvg =
+                room.messages.length === 0 ? getLocalSvg("man-holding-phone", () => this.forceUpdate()) : null;
+            const chatEmptySvgHeight = 250;
+
             chatComponent = (
                 <GiftedChat
                     ref={this.ref}
@@ -244,6 +253,24 @@ class ChatScreen extends React.Component<ChatScreenProps> {
                             containerStyle={styles.inputToolbarContainer}
                             primaryStyle={styles.inputToolbarPrimary}
                         />
+                    )}
+                    renderChatEmpty={() => (
+                        <View style={styles.emptyChatContainer}>
+                            <Text style={styles.emptyChatText}>
+                                {i18n.t("messaging.sayHiTo", {name: otherUser.name})}
+                            </Text>
+                            {ChatEmptySvg && (
+                                <ChatEmptySvg
+                                    style={{
+                                        transform: Platform.OS === "web" ? ("scaleY(-1)" as never) : [{scaleY: -1}],
+                                    }}
+                                    width={chatEmptySvgHeight * (150 / 200)}
+                                    height={chatEmptySvgHeight}
+                                    viewBox="0 0 150 200"
+                                    preserveAspectRatio="xMaxYMid"
+                                />
+                            )}
+                        </View>
                     )}
                     renderFooter={() => <ChatFooter userWriting={userWriting} theme={theme} />}
                     renderActions={(props: ActionsProps) => <ChatActions actionsProps={props} theme={theme} />}
@@ -526,6 +553,20 @@ const themedStyles = preTheme((theme: Theme) => {
         messageTick: {
             fontSize: 14,
             color: themes.dark.text,
+        },
+        emptyChatContainer: {
+            width: "100%",
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 50,
+        },
+        emptyChatText: {
+            fontSize: 20,
+            color: theme.textLight,
+            transform: [{scaleY: -1}],
+            marginBottom: 20,
+            textAlign: "center",
         },
     });
 });
