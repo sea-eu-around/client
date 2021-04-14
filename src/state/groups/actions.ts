@@ -43,6 +43,7 @@ import {ImageInfo} from "expo-image-picker/build/ImagePicker.types";
 import {uploadImage} from "../../api/media-upload";
 import {UserProfile} from "../../model/user-profile";
 import {findComment, findPost} from "./helpers";
+import {User} from "../../model/user";
 
 export enum GROUP_ACTION_TYPES {
     CREATE_SUCCESS = "GROUP/CREATE_SUCCESS",
@@ -190,6 +191,9 @@ export type FetchPostCommentsRefreshAction = PaginatedFetchRefreshAction & {grou
 export type JoinGroupSuccessAction = {
     type: string;
     group: Group;
+    memberStatus: GroupMemberStatus;
+    role: GroupRole;
+    localUser: User | null;
 };
 
 export type CreatePostBeginAction = {
@@ -572,7 +576,6 @@ export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
         {page: feedPagination.page, limit: POSTS_FEED_FETCH_LIMIT},
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
@@ -975,7 +978,6 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         },
         {},
         token,
-        true,
     );
 
     if (response.status === HttpStatusCode.OK) {
@@ -986,20 +988,42 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
     } else dispatch(fetchMyGroupsFailure(invites));
 };
 
-const joinGroupSuccess = (group: Group): JoinGroupSuccessAction => ({
+const joinGroupSuccess = (
+    group: Group,
+    memberStatus: GroupMemberStatus,
+    role: GroupRole,
+    localUser: User | null,
+): JoinGroupSuccessAction => ({
     type: GROUP_ACTION_TYPES.JOIN_GROUP_SUCCESS,
     group,
+    memberStatus,
+    role,
+    localUser,
 });
 
 export const joinGroup = (group: Group): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
-    const {token} = getState().auth;
+    const {
+        auth: {token},
+        profile: {user},
+    } = getState();
 
     if (!token) return false;
+
+    // Handle the case where we've been invited already
+    if (user && group.myStatus !== null) {
+        if (!group.requiresApproval || group.myStatus === GroupMemberStatus.InvitedByAdmin)
+            return dispatch(setGroupMemberStatus(group.id, user.id, GroupMemberStatus.Approved));
+        else if (group.myStatus === GroupMemberStatus.Invited)
+            return dispatch(setGroupMemberStatus(group.id, user.id, GroupMemberStatus.Pending));
+    }
 
     const response = await requestBackend(`groups/${group.id}/members`, "POST", {}, {}, token, true);
 
     if (response.status === HttpStatusCode.CREATED) {
-        dispatch(joinGroupSuccess(group));
+        const data = (response as SuccessfulRequestResponse).data as ResponseGroupMemberDto;
+        const role: GroupRole = data.role;
+        const status: GroupMemberStatus = data.status;
+        dispatch(joinGroupSuccess(group, status, role, user));
         return true;
     } else return false;
 };
