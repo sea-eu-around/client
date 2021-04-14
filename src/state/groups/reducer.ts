@@ -1,6 +1,6 @@
 import {GroupMemberStatus, GroupRole} from "../../api/dto";
 import {arrayWithIdMapperToDict, arrayWithIdsToDict} from "../../general-utils";
-import {Group, GroupPost, GROUP_VOTE_VALUES, PostSortingOrder} from "../../model/groups";
+import {Group, GroupMember, GroupPost, GROUP_VOTE_VALUES, PostSortingOrder} from "../../model/groups";
 import {UserProfile} from "../../model/user-profile";
 import {GroupsState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
 import {
@@ -32,6 +32,7 @@ import {
     GroupsAction,
     GROUP_ACTION_TYPES,
     InviteToGroupSuccessAction,
+    JoinGroupSuccessAction,
     LeaveGroupSuccessAction,
     SetCommentVoteBeginAction,
     SetGroupCoverBeginAction,
@@ -371,6 +372,19 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
                 ...(memberStatus === GroupMemberStatus.Approved && !search ? {numApprovedMembers: totalItems} : {}),
             }));
         }
+        case GROUP_ACTION_TYPES.JOIN_GROUP_SUCCESS: {
+            const {group, memberStatus, role, localUser} = action as JoinGroupSuccessAction;
+
+            if (localUser && localUser.profile) {
+                const member: GroupMember = {
+                    profile: localUser.profile,
+                    role,
+                    status: memberStatus,
+                };
+                return updateMemberStatus(state, group.id, localUser.id, true, memberStatus, member);
+            }
+            return state;
+        }
         case GROUP_ACTION_TYPES.FETCH_GROUP_MEMBERS_REFRESH: {
             const {groupId, memberStatus} = action as FetchGroupMembersRefreshAction;
             return updateGroup(state, groupId, ({memberIds, membersPaginations}) => ({
@@ -410,54 +424,7 @@ export const groupsReducer = (state: GroupsState = initialState, action: GroupsA
 
         case GROUP_ACTION_TYPES.SET_GROUP_MEMBER_STATUS_SUCCESS: {
             const {groupId, profileId, memberStatus, isLocalUser} = action as SetGroupMemberStatusSuccessAction;
-
-            // If this user is us, update storage so the group is in the right place
-            // TODO test this (accept an invite from a group with approval, without approval)
-            if (isLocalUser && state.groupsDict[groupId]) {
-                const previousStatus = state.groupsDict[groupId].myStatus;
-                // If I was previously an invite and not anymore, remove group from invites
-                const wasInvite =
-                    previousStatus === GroupMemberStatus.Invited || previousStatus === GroupMemberStatus.InvitedByAdmin;
-                const isNowInvite =
-                    memberStatus === GroupMemberStatus.Invited || memberStatus === GroupMemberStatus.InvitedByAdmin;
-                if (wasInvite && !isNowInvite)
-                    state = {...state, myGroupInvites: state.myGroupInvites.filter((id) => id !== groupId)};
-                // If I was approved and I'm not anymore, remove group from myGroups
-                if (previousStatus === GroupMemberStatus.Approved && memberStatus !== GroupMemberStatus.Approved)
-                    state = {...state, myGroups: state.myGroups.filter((id) => id !== groupId)};
-                // If i am now approved, add group to myGroups
-                if (memberStatus === GroupMemberStatus.Approved)
-                    state = {...state, myGroups: [groupId].concat(state.myGroups)};
-            }
-
-            // Change the member's status in the group
-            return updateGroup(state, groupId, ({members, memberIds, numApprovedMembers}) => {
-                const member = members[profileId];
-
-                if (member) {
-                    const wasApproved = member.status === GroupMemberStatus.Approved;
-                    const isApproved = memberStatus === GroupMemberStatus.Approved;
-                    return {
-                        members: {...members, [profileId]: {...member, status: memberStatus}},
-                        memberIds: {
-                            ...memberIds,
-                            [member.status]: memberIds[member.status].filter((id) => id !== profileId),
-                            [memberStatus]: memberIds[memberStatus].concat([profileId]),
-                        },
-                        numApprovedMembers:
-                            numApprovedMembers === null
-                                ? null
-                                : numApprovedMembers +
-                                  (!wasApproved && isApproved ? 1 : wasApproved && !isApproved ? -1 : 0),
-                        ...(isLocalUser
-                            ? {
-                                  myStatus: memberStatus,
-                                  myRole: memberStatus === GroupMemberStatus.Approved ? GroupRole.Basic : null,
-                              }
-                            : {}),
-                    };
-                } else return {};
-            });
+            return updateMemberStatus(state, groupId, profileId, isLocalUser, memberStatus);
         }
 
         case GROUP_ACTION_TYPES.SET_GROUP_MEMBER_ROLE_SUCCESS: {
@@ -606,4 +573,74 @@ function updatePost(
         };
     }
     return s;
+}
+
+function updateMemberStatus(
+    state: GroupsState,
+    groupId: string,
+    profileId: string,
+    isLocalUser: boolean,
+    status: GroupMemberStatus,
+    fallbackMember?: GroupMember,
+) {
+    if (isLocalUser && state.groupsDict[groupId]) {
+        const previousStatus = state.groupsDict[groupId].myStatus;
+        // If I was previously an invite and not anymore, remove group from invites
+        const wasInvite =
+            previousStatus === GroupMemberStatus.Invited || previousStatus === GroupMemberStatus.InvitedByAdmin;
+        const isNowInvite = status === GroupMemberStatus.Invited || status === GroupMemberStatus.InvitedByAdmin;
+        if (wasInvite && !isNowInvite)
+            state = {...state, myGroupInvites: state.myGroupInvites.filter((id) => id !== groupId)};
+        // If I was approved and I'm not anymore, remove group from myGroups
+        if (previousStatus === GroupMemberStatus.Approved && status !== GroupMemberStatus.Approved)
+            state = {...state, myGroups: state.myGroups.filter((id) => id !== groupId)};
+        // If i am now approved, add group to myGroups
+        if (status === GroupMemberStatus.Approved) state = {...state, myGroups: [groupId].concat(state.myGroups)};
+    }
+
+    // Change the member's status in the group
+    return updateGroup(state, groupId, ({members, memberIds, numApprovedMembers, myStatus: myPreviousStatus}) => {
+        const member = members[profileId];
+        const wasApproved = member
+            ? member.status === GroupMemberStatus.Approved
+            : isLocalUser
+            ? myPreviousStatus === GroupMemberStatus.Approved
+            : false;
+        const isApproved = status === GroupMemberStatus.Approved;
+
+        const updated = {
+            numApprovedMembers:
+                numApprovedMembers === null
+                    ? null
+                    : numApprovedMembers + (!wasApproved && isApproved ? 1 : wasApproved && !isApproved ? -1 : 0),
+            ...(isLocalUser
+                ? {
+                      myStatus: status,
+                      myRole: status === GroupMemberStatus.Approved ? GroupRole.Basic : null,
+                  }
+                : {}),
+            memberIds: {
+                ...memberIds,
+                [status]: (memberIds[status] || []).concat([profileId]),
+            },
+            members: {...members},
+        };
+
+        // Register the new member in the members dict
+        if (member || fallbackMember) {
+            updated.members = {
+                ...updated.members,
+                [profileId]: (member ? {...member, status} : fallbackMember) as GroupMember,
+            };
+        }
+
+        // Remove from ids of previous status
+        if (member) {
+            updated.memberIds = {
+                ...updated.memberIds,
+                [member.status]: updated.memberIds[member.status].filter((id) => id !== profileId),
+            };
+        }
+        return updated;
+    });
 }
