@@ -229,12 +229,10 @@ const validateAccountFailure = (): ValidateAccountFailureAction => ({
     type: AUTH_ACTION_TYPES.VALIDATE_ACCOUNT_FAILURE,
 });
 
-export const requestSendVerificationEmail = (): AppThunk<Promise<boolean>> => async (dispatch) => {
-    //const response = await requestBackend("auth/verify", "POST");
+export const requestSendVerificationEmail = (email: string): AppThunk<Promise<boolean>> => async (dispatch) => {
+    const response = await requestBackend("auth/verify/resend", "POST", {}, {email});
 
-    // TODO hook-up to backend
-    //if (response.status == HttpStatusCode.OK) {
-    if (true) {
+    if (response.status == HttpStatusCode.OK) {
         dispatch(sendVerificationEmailSuccess());
         return true;
     } else {
