@@ -65,10 +65,12 @@ class ChatRoomCard extends React.Component<ChatRoomCardProps> {
 
         if (room.lastMessage) {
             const date = room.lastMessage.createdAt;
+            const isFromLocal = localUser && room.lastMessage.user._id === localUser._id;
             const isRead =
-                localUser &&
-                localUser.lastMessageSeenDate &&
-                (localUser.lastMessageSeenDate >= date || localUser.lastMessageSeenId == room.lastMessage._id);
+                isFromLocal ||
+                (localUser &&
+                    localUser.lastMessageSeenDate &&
+                    (localUser.lastMessageSeenDate >= date || localUser.lastMessageSeenId == room.lastMessage._id));
             const pad = (num: number) => (num + "").padStart(2, "0");
             lastMessageComponent = (
                 <>

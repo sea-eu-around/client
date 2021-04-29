@@ -34,6 +34,7 @@ class MessagingTabIcon extends React.Component<MessagingTabIconProps> {
         const isNotRead =
             lastMessage &&
             localUser &&
+            lastMessage.user._id !== localUser._id &&
             ((localUser.lastMessageSeenDate !== null && localUser.lastMessageSeenDate < lastMessage.createdAt) ||
                 localUser.lastMessageSeenId != lastMessage._id);
 
