@@ -1,5 +1,5 @@
 import {stripSuperfluousOffers} from "../../api/converters";
-import {OfferDto} from "../../api/dto";
+import {OfferCategory, OfferDto} from "../../api/dto";
 import {AuthAction, AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {ProfileState} from "../types";
 import {
@@ -45,7 +45,23 @@ export const profileReducer = (
             return state.user ? {...state, user: {...state.user, profile}} : state;
         }
         case PROFILE_ACTION_TYPES.LOAD_PROFILE_OFFERS_SUCCESS: {
-            const {offers} = action as LoadProfileOffersSuccessAction;
+            let {offers} = action as LoadProfileOffersSuccessAction;
+
+            // Reorder the offers
+
+            // "Collaborate" category
+            const collab = offers
+                .filter((o) => o.category === OfferCategory.Collaborate)
+                .sort((a, b) => (a.id < b.id ? -1 : 1));
+            // "Discover" category
+            const disco = offers
+                .filter((o) => o.category === OfferCategory.Discover)
+                .sort((a, b) => (a.id < b.id ? 1 : -1));
+            // "Meet " category
+            const meet = offers.filter((o) => o.category === OfferCategory.Meet).sort((a, b) => (a.id < b.id ? -1 : 1));
+
+            offers = collab.concat(disco).concat(meet);
+
             const offerIdToCategory = new Map(offers.map((o: OfferDto) => [o.id, o.category]));
             return {...state, offers, offerIdToCategory};
         }
