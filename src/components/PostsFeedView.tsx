@@ -62,6 +62,7 @@ class PostsFeedView extends React.Component<PostsFeedViewProps> {
                 noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.noPosts")}</Text>}
                 refresh={() => {
                     dispatch(refreshFetchedMyGroups());
+                    dispatch(refreshFetchedMyGroups(true));
                     dispatch(refreshFetchedPostsFeed());
                 }}
                 renderItem={(post: GroupPost) => <GroupPostCard key={post.id} post={post} isFeed />}
