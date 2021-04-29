@@ -43,8 +43,8 @@ class ChatRoomsScreen extends React.Component<ChatRoomsScreenProps> {
                     fetching={fetchingRooms}
                     canFetchMore={canFetchMore}
                     currentPage={currentPage}
-                    refreshOnFocus={true}
-                    refresh={() => dispatch(refreshMatchRooms())}
+                    refreshOnFocus
+                    refresh={() => (dispatch as MyThunkDispatch)(refreshMatchRooms())}
                     items={roomIds}
                     id={(roomId: string): string => roomId}
                     noResultsComponent={<Text style={styles.noMatchesText}>{i18n.t("messaging.noMatches")}</Text>}
