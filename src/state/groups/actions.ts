@@ -5,6 +5,7 @@ import {
     PaginatedFetchFailureAction,
     PaginatedFetchRefreshAction,
     PaginatedFetchSuccessAction,
+    PaginatedFetchSuccessActionRefreshable,
     ValidatedThunkAction,
 } from "../types";
 import {HttpStatusCode} from "../../constants/http-status";
@@ -56,11 +57,9 @@ export enum GROUP_ACTION_TYPES {
     FETCH_POSTS_FEED_BEGIN = "GROUP/FETCH_POSTS_FEED_BEGIN",
     FETCH_POSTS_FEED_SUCCESS = "GROUP/FETCH_POSTS_FEED_SUCCESS",
     FETCH_POSTS_FEED_FAILURE = "GROUP/FETCH_POSTS_FEED_FAILURE",
-    FETCH_POSTS_FEED_REFRESH = "GROUP/FETCH_POSTS_FEED_REFRESH",
     FETCH_GROUPS_BEGIN = "GROUP/FETCH_GROUPS_BEGIN",
     FETCH_GROUPS_FAILURE = "GROUP/FETCH_GROUPS_FAILURE",
     FETCH_GROUPS_SUCCESS = "GROUP/FETCH_GROUPS_SUCCESS",
-    FETCH_GROUPS_REFRESH = "GROUP/FETCH_GROUPS_REFRESH",
     FETCH_GROUP_SUCCESS = "GROUP/FETCH_GROUP_SUCCESS",
     FETCH_GROUP_MEMBERS_BEGIN = "GROUP/FETCH_GROUP_MEMBERS_BEGIN",
     FETCH_GROUP_MEMBERS_SUCCESS = "GROUP/FETCH_GROUP_MEMBERS_SUCCESS",
@@ -73,7 +72,6 @@ export enum GROUP_ACTION_TYPES {
     FETCH_GROUP_POSTS_BEGIN = "GROUP/FETCH_GROUP_POSTS_BEGIN",
     FETCH_GROUP_POSTS_SUCCESS = "GROUP/FETCH_GROUP_POSTS_SUCCESS",
     FETCH_GROUP_POSTS_FAILURE = "GROUP/FETCH_GROUP_POSTS_FAILURE",
-    FETCH_GROUP_POSTS_REFRESH = "GROUP/FETCH_GROUP_POSTS_REFRESH",
     FETCH_POST_COMMENTS_BEGIN = "GROUP/FETCH_POST_COMMENTS_BEGIN",
     FETCH_POST_COMMENTS_SUCCESS = "GROUP/FETCH_POST_COMMENTS_SUCCESS",
     FETCH_POST_COMMENTS_FAILURE = "GROUP/FETCH_POST_COMMENTS_FAILURE",
@@ -81,7 +79,6 @@ export enum GROUP_ACTION_TYPES {
     FETCH_MYGROUPS_BEGIN = "GROUP/FETCH_MYGROUPS_BEGIN",
     FETCH_MYGROUPS_FAILURE = "GROUP/FETCH_MYGROUPS_FAILURE",
     FETCH_MYGROUPS_SUCCESS = "GROUP/FETCH_MYGROUPS_SUCCESS",
-    FETCH_MYGROUPS_REFRESH = "GROUP/FETCH_MYGROUPS_REFRESH",
     JOIN_GROUP_SUCCESS = "GROUP/JOIN_GROUP_SUCCESS",
     CREATE_POST_BEGIN = "GROUP/CREATE_POST_BEGIN",
     CREATE_POST_SUCCESS = "GROUP/CREATE_POST_SUCCESS",
@@ -124,7 +121,7 @@ export type FetchGroupSuccessAction = {type: string; group: Group};
 
 export type FetchMyGroupsBeginAction = {invites: boolean} & PaginatedFetchBeginAction;
 export type FetchMyGroupsFailureAction = {invites: boolean} & PaginatedFetchFailureAction;
-export type FetchMyGroupsSuccessAction = {invites: boolean} & PaginatedFetchSuccessAction<Group>;
+export type FetchMyGroupsSuccessAction = {invites: boolean} & PaginatedFetchSuccessActionRefreshable<Group>;
 export type FetchMyGroupsRefreshAction = {invites: boolean} & PaginatedFetchRefreshAction;
 
 export type FetchGroupMembersBeginAction = PaginatedFetchBeginAction & {
@@ -176,7 +173,7 @@ export type InviteToGroupSuccessAction = {
 };
 
 export type FetchGroupPostsBeginAction = PaginatedFetchBeginAction & {groupId: string};
-export type FetchGroupPostsSuccessAction = PaginatedFetchSuccessAction<GroupPost> & {groupId: string};
+export type FetchGroupPostsSuccessAction = PaginatedFetchSuccessActionRefreshable<GroupPost> & {groupId: string};
 export type FetchGroupPostsRefreshAction = PaginatedFetchRefreshAction & {groupId: string};
 export type FetchGroupPostsFailureAction = PaginatedFetchFailureAction & {groupId: string};
 
@@ -314,6 +311,7 @@ export type GroupsAction = CreateGroupSuccessAction &
     PaginatedFetchFailureAction &
     PaginatedFetchSuccessAction<Group> &
     PaginatedFetchRefreshAction &
+    PaginatedFetchSuccessActionRefreshable<Group> &
     FetchGroupMembersBeginAction &
     FetchGroupMembersFailureAction &
     FetchGroupMembersSuccessAction &
@@ -470,21 +468,22 @@ const beginFetchGroups = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_BEGIN,
 });
 
-const fetchGroupsSuccess = (groups: Group[], canFetchMore: boolean): PaginatedFetchSuccessAction<Group> => ({
+const fetchGroupsSuccess = (
+    groups: Group[],
+    canFetchMore: boolean,
+    refresh: boolean,
+): PaginatedFetchSuccessActionRefreshable<Group> => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_SUCCESS,
     items: groups,
     canFetchMore,
+    refresh,
 });
 
 const fetchGroupsFailure = (): PaginatedFetchFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUPS_FAILURE,
 });
 
-export const refreshFetchedGroups = (): PaginatedFetchRefreshAction => ({
-    type: GROUP_ACTION_TYPES.FETCH_GROUPS_REFRESH,
-});
-
-export const fetchGroups = (search?: string): AppThunk => async (dispatch, getState) => {
+export const fetchGroups = (search?: string, refresh = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {pagination},
@@ -495,7 +494,7 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         return;
     }
 
-    if (pagination.fetching || !pagination.canFetchMore) return;
+    if (!refresh && (pagination.fetching || !pagination.canFetchMore)) return;
 
     dispatch(beginFetchGroups());
 
@@ -503,7 +502,7 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         "groups",
         "GET",
         {
-            page: pagination.page,
+            page: refresh ? 1 : pagination.page,
             limit: GROUPS_FETCH_LIMIT,
             search: search && search.length > 0 ? search : undefined,
             explore: true,
@@ -518,7 +517,7 @@ export const fetchGroups = (search?: string): AppThunk => async (dispatch, getSt
         const paginated = response as PaginatedRequestResponse;
         const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchGroupsSuccess(groups, canFetchMore));
+        dispatch(fetchGroupsSuccess(groups, canFetchMore, refresh));
     } else dispatch(fetchGroupsFailure());
 };
 
@@ -546,34 +545,39 @@ const fetchPostsFeedBegin = (): PaginatedFetchBeginAction => ({
     type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_BEGIN,
 });
 
-const fetchPostsFeedSuccess = (items: GroupPost[], canFetchMore: boolean): PaginatedFetchSuccessAction<GroupPost> => ({
+const fetchPostsFeedSuccess = (
+    items: GroupPost[],
+    canFetchMore: boolean,
+    refresh: boolean,
+): PaginatedFetchSuccessActionRefreshable<GroupPost> => ({
     type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_SUCCESS,
     items,
     canFetchMore,
+    refresh,
 });
 
 const fetchPostsFeedFailure = (): PaginatedFetchFailureAction => ({
     type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_FAILURE,
 });
 
-export const refreshFetchedPostsFeed = (): PaginatedFetchRefreshAction => ({
-    type: GROUP_ACTION_TYPES.FETCH_POSTS_FEED_REFRESH,
-});
+export const refreshFetchedPostsFeed = (): AppThunk => async (dispatch) => {
+    dispatch(fetchPostsFeed(true));
+};
 
-export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
+export const fetchPostsFeed = (refresh = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {feedPagination},
     } = getState();
 
-    if (feedPagination.fetching || !feedPagination.canFetchMore) return;
+    if (!refresh && (feedPagination.fetching || !feedPagination.canFetchMore)) return;
 
     dispatch(fetchPostsFeedBegin());
 
     const response = await requestBackend(
         "groups/feed",
         "GET",
-        {page: feedPagination.page, limit: POSTS_FEED_FETCH_LIMIT},
+        {page: refresh ? 1 : feedPagination.page, limit: POSTS_FEED_FETCH_LIMIT},
         {},
         token,
     );
@@ -582,7 +586,7 @@ export const fetchPostsFeed = (): AppThunk => async (dispatch, getState) => {
         const paginated = response as PaginatedRequestResponse;
         const posts = (paginated.data as ResponseGroupPostDto[]).map((p) => convertDtoToGroupPost(p));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchPostsFeedSuccess(posts, canFetchMore));
+        dispatch(fetchPostsFeedSuccess(posts, canFetchMore, refresh));
     } else dispatch(fetchPostsFeedFailure());
 };
 
@@ -595,11 +599,13 @@ const fetchGroupPostsSuccess = (
     groupId: string,
     items: GroupPost[],
     canFetchMore: boolean,
+    refresh: boolean,
 ): FetchGroupPostsSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_SUCCESS,
     groupId,
     items,
     canFetchMore,
+    refresh,
 });
 
 const fetchGroupPostsFailure = (groupId: string): FetchGroupPostsFailureAction => ({
@@ -607,12 +613,11 @@ const fetchGroupPostsFailure = (groupId: string): FetchGroupPostsFailureAction =
     groupId,
 });
 
-export const refreshFetchedGroupPosts = (groupId: string): FetchGroupPostsRefreshAction => ({
-    type: GROUP_ACTION_TYPES.FETCH_GROUP_POSTS_REFRESH,
-    groupId,
-});
+export const refreshFetchedGroupPosts = (groupId: string): AppThunk => async (dispatch) => {
+    dispatch(fetchGroupPosts(groupId, true));
+};
 
-export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, getState) => {
+export const fetchGroupPosts = (groupId: string, refresh = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {groupsDict, postsSortOrder},
@@ -620,14 +625,14 @@ export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, g
 
     const g = groupsDict[groupId];
 
-    if (!g || g.postsPagination.fetching || !g.postsPagination.canFetchMore) return;
+    if (!g || (!refresh && (g.postsPagination.fetching || !g.postsPagination.canFetchMore))) return;
 
     dispatch(fetchGroupPostsBegin(groupId));
 
     const response = await requestBackend(
         `groups/${groupId}/posts`,
         "GET",
-        {page: g.postsPagination.page, limit: GROUPS_POSTS_FETCH_LIMIT, type: postsSortOrder},
+        {page: refresh ? 1 : g.postsPagination.page, limit: GROUPS_POSTS_FETCH_LIMIT, type: postsSortOrder},
         {},
         token,
     );
@@ -636,7 +641,7 @@ export const fetchGroupPosts = (groupId: string): AppThunk => async (dispatch, g
         const paginated = response as PaginatedRequestResponse;
         const posts = (paginated.data as ResponseGroupPostDto[]).map((p) => convertDtoToGroupPost(p));
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchGroupPostsSuccess(groupId, posts, canFetchMore));
+        dispatch(fetchGroupPostsSuccess(groupId, posts, canFetchMore, refresh));
     } else dispatch(fetchGroupPostsFailure(groupId));
 };
 
@@ -933,11 +938,17 @@ const beginFetchMyGroups = (invites: boolean): FetchMyGroupsBeginAction => ({
     invites,
 });
 
-const fetchMyGroupsSuccess = (items: Group[], canFetchMore: boolean, invites: boolean): FetchMyGroupsSuccessAction => ({
+const fetchMyGroupsSuccess = (
+    items: Group[],
+    canFetchMore: boolean,
+    invites: boolean,
+    refresh: boolean,
+): FetchMyGroupsSuccessAction => ({
     type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_SUCCESS,
     items,
     canFetchMore,
     invites,
+    refresh,
 });
 
 const fetchMyGroupsFailure = (invites: boolean): FetchMyGroupsFailureAction => ({
@@ -945,12 +956,11 @@ const fetchMyGroupsFailure = (invites: boolean): FetchMyGroupsFailureAction => (
     invites,
 });
 
-export const refreshFetchedMyGroups = (invites = false): FetchMyGroupsRefreshAction => ({
-    type: GROUP_ACTION_TYPES.FETCH_MYGROUPS_REFRESH,
-    invites,
-});
+export const refreshFetchedMyGroups = (invites = false): AppThunk => async (dispatch) => {
+    dispatch(fetchMyGroups(invites, true));
+};
 
-export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, getState) => {
+export const fetchMyGroups = (invites = false, refresh = false): AppThunk => async (dispatch, getState) => {
     const {
         auth: {token},
         groups: {myGroupsPagination, myGroupInvitesPagination},
@@ -962,7 +972,7 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
     }
 
     const pagination = invites ? myGroupInvitesPagination : myGroupsPagination;
-    if (pagination.fetching || !pagination.canFetchMore) return;
+    if (!refresh && (pagination.fetching || !pagination.canFetchMore)) return;
 
     dispatch(beginFetchMyGroups(invites));
 
@@ -970,7 +980,7 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         "groups",
         "GET",
         {
-            page: pagination.page,
+            page: refresh ? 1 : pagination.page,
             limit: GROUPS_FETCH_LIMIT,
             statuses: invites
                 ? [GroupMemberStatus.Invited, GroupMemberStatus.InvitedByAdmin]
@@ -984,7 +994,7 @@ export const fetchMyGroups = (invites = false): AppThunk => async (dispatch, get
         const paginated = response as PaginatedRequestResponse;
         const groups = (paginated.data as ResponseGroupDto[]).map(convertDtoToGroup);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchMyGroupsSuccess(groups, canFetchMore, invites));
+        dispatch(fetchMyGroupsSuccess(groups, canFetchMore, invites, refresh));
     } else dispatch(fetchMyGroupsFailure(invites));
 };
 

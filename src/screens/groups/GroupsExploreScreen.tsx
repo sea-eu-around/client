@@ -12,7 +12,7 @@ import {GROUPS_FETCH_LIMIT, SEARCH_BUFFER_DELAY} from "../../constants/config";
 import ScreenWrapper from "../ScreenWrapper";
 import InfiniteScroller from "../../components/InfiniteScroller";
 import BufferedSearchBar from "../../components/BufferedSearchBar";
-import {fetchGroups, refreshFetchedGroups} from "../../state/groups/actions";
+import {fetchGroups} from "../../state/groups/actions";
 import {Group} from "../../model/groups";
 import GroupExploreCard from "../../components/cards/GroupExploreCard";
 
@@ -47,7 +47,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
         return (
             <ScreenWrapper>
                 <BufferedSearchBar
-                    onBufferedUpdate={() => dispatch(refreshFetchedGroups())}
+                    onBufferedUpdate={() => dispatch(fetchGroups(search, true))}
                     bufferDelay={SEARCH_BUFFER_DELAY}
                     placeholder={i18n.t("search")}
                     onChangeText={(search: string) => this.setState({...this.state, search})}
@@ -68,7 +68,7 @@ class GroupsExploreScreen extends React.Component<GroupsExploreScreenProps, Grou
                     hideScrollIndicator
                     noResultsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.none")}</Text>}
                     endOfItemsComponent={<Text style={styles.noResultsText}>{i18n.t("groups.explore.noMore")}</Text>}
-                    refresh={() => dispatch(refreshFetchedGroups())}
+                    refresh={() => dispatch(fetchGroups(search, true))}
                     refreshOnFocus
                     renderItem={(group: Group) => <GroupExploreCard key={group.id} group={group} />}
                     itemsContainerStyle={styles.itemsContainer}

@@ -147,4 +147,10 @@ export type PaginatedFetchSuccessAction<T> = {
     items: T[];
     canFetchMore: boolean;
 };
+export type PaginatedFetchSuccessActionRefreshable<T> = {
+    type: string;
+    items: T[];
+    canFetchMore: boolean;
+    refresh: boolean;
+};
 export type PaginatedFetchRefreshAction = {type: string};

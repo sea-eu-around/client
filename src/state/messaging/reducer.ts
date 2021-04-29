@@ -3,7 +3,7 @@ import {ChatRoom, ChatRoomMessage, ChatRoomUser} from "../../model/chat-room";
 import {UserProfile} from "../../model/user-profile";
 import {AUTH_ACTION_TYPES, LogInSuccessAction} from "../auth/actions";
 import {CreateProfileSuccessAction, FetchUserSuccessAction, PROFILE_ACTION_TYPES} from "../profile/actions";
-import {MessagingState, initialPaginatedState, PaginatedFetchSuccessAction} from "../types";
+import {MessagingState, initialPaginatedState, PaginatedFetchSuccessActionRefreshable} from "../types";
 import {
     FetchEarlierMessagesBeginAction,
     FetchEarlierMessagesFailureAction,
@@ -66,7 +66,7 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             };
         }
         case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS: {
-            const {items, canFetchMore} = action as PaginatedFetchSuccessAction<ChatRoom>;
+            const {items, canFetchMore, refresh} = action as PaginatedFetchSuccessActionRefreshable<ChatRoom>;
             const pagination = state.matchRoomsPagination;
             const matchRooms = {...state.matchRooms};
             // Add entries in the rooms dictionary
@@ -83,15 +83,8 @@ export const messagingReducer = (state: MessagingState = initialState, action: M
             return {
                 ...state,
                 matchRooms,
-                matchRoomsOrdered: pagination.page === 1 ? ids : state.matchRoomsOrdered.concat(ids),
-                matchRoomsPagination: {...pagination, fetching: false, page: pagination.page + 1, canFetchMore},
-            };
-        }
-        case MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_REFRESH: {
-            return {
-                ...state,
-                // Reset the pagination
-                matchRoomsPagination: initialPaginatedState(),
+                matchRoomsOrdered: refresh ? ids : state.matchRoomsOrdered.concat(ids),
+                matchRoomsPagination: {fetching: false, page: (refresh ? 1 : pagination.page) + 1, canFetchMore},
             };
         }
 

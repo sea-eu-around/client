@@ -16,15 +16,14 @@ import {
     AppThunk,
     PaginatedFetchBeginAction,
     PaginatedFetchFailureAction,
-    PaginatedFetchRefreshAction,
     PaginatedFetchSuccessAction,
+    PaginatedFetchSuccessActionRefreshable,
 } from "../types";
 
 export enum MESSAGING_ACTION_TYPES {
     FETCH_MATCH_ROOMS_BEGIN = "MESSAGING/FETCH_MATCH_ROOMS_BEGIN",
     FETCH_MATCH_ROOMS_FAILURE = "MESSAGING/FETCH_MATCH_ROOMS_FAILURE",
     FETCH_MATCH_ROOMS_SUCCESS = "MESSAGING/FETCH_MATCH_ROOMS_SUCCESS",
-    FETCH_MATCH_ROOMS_REFRESH = "MESSAGING/FETCH_MATCH_ROOMS_REFRESH",
     FETCH_MATCH_ROOM_SUCCESS = "MESSAGING/FETCH_MATCH_ROOM_SUCCESS",
     CONNECT_TO_CHAT_BEGIN = "MESSAGING/CONNECT_TO_CHAT_BEGIN",
     CONNECT_TO_CHAT_FAILURE = "MESSAGING/CONNECT_TO_CHAT_FAILURE",
@@ -77,8 +76,7 @@ export type FetchNewMessagesSuccessAction = {room: ChatRoom} & PaginatedFetchSuc
 export type MessagingAction =
     | FetchMatchRoomSuccessAction
     | PaginatedFetchBeginAction
-    | PaginatedFetchSuccessAction<ChatRoom>
-    | PaginatedFetchRefreshAction
+    | PaginatedFetchSuccessActionRefreshable<ChatRoom>
     | ConnectToChatBeginAction
     | ConnectToChatFailureAction
     | ConnectToChatSuccessAction
@@ -105,25 +103,30 @@ const fetchMatchRoomsFailure = (): PaginatedFetchFailureAction => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_FAILURE,
 });
 
-const fetchMatchRoomsSuccess = (items: ChatRoom[], canFetchMore: boolean): PaginatedFetchSuccessAction<ChatRoom> => ({
+const fetchMatchRoomsSuccess = (
+    items: ChatRoom[],
+    canFetchMore: boolean,
+    refresh: boolean,
+): PaginatedFetchSuccessActionRefreshable<ChatRoom> => ({
     type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_SUCCESS,
     items,
     canFetchMore,
+    refresh,
 });
 
-export const fetchMatchRooms = (search?: string): AppThunk => async (dispatch, getState) => {
+export const fetchMatchRooms = (search?: string, refresh = false): AppThunk => async (dispatch, getState) => {
     const state = getState();
     const token = state.auth.token;
     const pagination = state.messaging.matchRoomsPagination;
 
-    if (pagination.fetching || !pagination.canFetchMore) return;
+    if (!refresh && (pagination.fetching || !pagination.canFetchMore)) return;
 
     dispatch(beginFetchMatchRooms());
 
     const response = await requestBackend(
         "rooms",
         "GET",
-        {page: pagination.page, limit: ROOMS_FETCH_LIMIT, search},
+        {page: refresh ? 1 : pagination.page, limit: ROOMS_FETCH_LIMIT, search},
         {},
         token,
     );
@@ -132,13 +135,13 @@ export const fetchMatchRooms = (search?: string): AppThunk => async (dispatch, g
         const paginated = response as PaginatedRequestResponse;
         const rooms = (paginated.data as ResponseRoomDto[]).map(convertDtoToRoom);
         const canFetchMore = paginated.meta.currentPage < paginated.meta.totalPages;
-        dispatch(fetchMatchRoomsSuccess(rooms, canFetchMore));
+        dispatch(fetchMatchRoomsSuccess(rooms, canFetchMore, refresh));
     } else dispatch(fetchMatchRoomsFailure());
 };
 
-export const refreshMatchRooms = (): PaginatedFetchRefreshAction => ({
-    type: MESSAGING_ACTION_TYPES.FETCH_MATCH_ROOMS_REFRESH,
-});
+export const refreshMatchRooms = (search?: string): AppThunk => async (dispatch) => {
+    dispatch(fetchMatchRooms(search, true));
+};
 
 const connectToChatBegin = (): ConnectToChatBeginAction => ({
     type: MESSAGING_ACTION_TYPES.CONNECT_TO_CHAT_BEGIN,
