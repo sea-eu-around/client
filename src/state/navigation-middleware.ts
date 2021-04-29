@@ -27,8 +27,8 @@ export const navigationMiddleware: Middleware<unknown, AppState> = (store: Middl
             break;
         }
         case AUTH_ACTION_TYPES.LOG_IN_FAILURE: {
-            const {needsVerify} = action as LogInFailureAction;
-            if (needsVerify) rootNavigate("ResendVerifyEmailScreen");
+            const {needsVerify, email} = action as LogInFailureAction;
+            if (needsVerify && email) rootNavigate("ResendVerifyEmailScreen", {email});
             break;
         }
         case AUTH_ACTION_TYPES.LOG_OUT: {

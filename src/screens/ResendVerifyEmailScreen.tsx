@@ -10,7 +10,7 @@ import ScreenWrapper from "./ScreenWrapper";
 import SemiHighlightedText from "../components/SemiHighlightedText";
 import Button from "../components/Button";
 import {MaterialIcons} from "@expo/vector-icons";
-import {rootNavigate} from "../navigation/utils";
+import {getRouteParams, rootNavigate} from "../navigation/utils";
 import AsyncButton from "../components/AsyncButton";
 import {MyThunkDispatch} from "../state/types";
 import {requestSendVerificationEmail} from "../state/auth/actions";
@@ -20,6 +20,12 @@ import themes from "../constants/themes";
 export type ResendVerifyEmailScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
 class ResendVerifyEmailScreen extends React.Component<ResendVerifyEmailScreenProps> {
+    private getLoginEmail(): string | null {
+        // Get the room ID from the route parameters
+        const {email} = getRouteParams(this.props.route);
+        return (email as string) || null;
+    }
+
     render(): JSX.Element {
         const {theme} = this.props;
         const styles = themedStyles(theme);
@@ -39,7 +45,12 @@ class ResendVerifyEmailScreen extends React.Component<ResendVerifyEmailScreenPro
                 <View style={styles.actionsContainer}>
                     <AsyncButton
                         text={i18n.t("resendVerifyScreen.send")}
-                        onPress={() => dispatch(requestSendVerificationEmail())}
+                        onPress={() => {
+                            // There should always be an email here
+                            const email = this.getLoginEmail();
+                            if (email) return dispatch(requestSendVerificationEmail(email));
+                            else return new Promise<void>((resolve) => resolve());
+                        }}
                         skin="rounded-filled"
                         icon={
                             <MaterialIcons
