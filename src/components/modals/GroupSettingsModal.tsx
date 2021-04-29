@@ -85,8 +85,11 @@ export class GroupSettingsModalClass extends React.Component<GroupSettingsModalP
                                 label={i18n.t("groups.create.visible")}
                                 onPress={() => isAdmin && this.setState({visible: !this.state.visible})}
                                 {...checkboxProps}
+                                {...(isAdmin ? {} : {disabled: true})} // this is not in the docs but there is a disabled prop on RNE's CheckBox
                             />
-                            <Text style={styles.fieldDescription}>{i18n.t("groups.create.visibleDescription")}</Text>
+                            <Text style={styles.fieldDescription}>
+                                {i18n.t(`groups.create.visibleDescription.${this.state.visible}`)}
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -100,9 +103,10 @@ export class GroupSettingsModalClass extends React.Component<GroupSettingsModalP
                                     isAdmin && this.setState({requiresApproval: !this.state.requiresApproval})
                                 }
                                 {...checkboxProps}
+                                {...(isAdmin ? {} : {disabled: true})}
                             />
                             <Text style={styles.fieldDescription}>
-                                {i18n.t("groups.create.requireApprovalDescription")}
+                                {i18n.t(`groups.create.requireApprovalDescription.${this.state.requiresApproval}`)}
                             </Text>
                         </TouchableOpacity>
                     </>
@@ -121,6 +125,7 @@ const themedStyles = preTheme((theme: Theme) => {
             color: theme.textLight,
             fontSize: 14,
             marginBottom: 20,
+            textAlign: "justify",
         },
     });
 });

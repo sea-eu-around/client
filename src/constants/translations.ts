@@ -860,9 +860,14 @@ export default {
                 name: "Name",
                 visible: "Visible",
                 requireApproval: "Requires approval",
-                visibleDescription: "Whether or not everyone will be able to find the group.",
-                requireApprovalDescription:
-                    "If checked, a group moderator will have to manually approve requests to join this group.",
+                visibleDescription: {
+                    true: "Anyone can find this group.",
+                    false: "This group is not visible: in order to join, users have to be invited.",
+                },
+                requireApprovalDescription: {
+                    true: "Requests to join this group have to be manually approved by a group moderator.",
+                    false: "Anyone can join this group without approval.",
+                },
                 submit: "Create",
             },
             newPost: {
@@ -1460,7 +1465,7 @@ export default {
         resendVerifyScreen: {
             title: "Vérification du compte",
             text:
-                "Ce compte n'est pas encore vérifié. Vous devriez avoir reçu un mail de notre part, contenant un lien de vérification. Sinon, cliquez sur le bouton ci-dessous pour le renvoyer.",
+                "Ce compte n'est pas encore vérifié. Vous devriez avoir reçu un mail de notre part contenant un lien de vérification. Sinon, cliquez sur le bouton ci-dessous pour le renvoyer.",
             send: "Envoyer à nouveau",
         },
         // University-related
@@ -1853,8 +1858,8 @@ export default {
                 help: "Je suis ouvert pour boire un verre avec les personnes que je rencontre sur cette plateforme.",
             },
             "provide-a-couch": {
-                name: "Prêter un canapé",
-                help: "Je suis ouvert à laisser quelqu'un dormir sur mon canapé.",
+                name: "Héberger quelque temps",
+                help: "Je suis ouvert à héberger quelqu'un pendant quelques jours.",
             },
             "get-into-campus-life": {
                 name: "Intégrer la vie du campus",
@@ -1999,9 +2004,14 @@ export default {
                 name: "Nom",
                 visible: "Visible",
                 requireApproval: "Approbation requise",
-                visibleDescription: "Si coché, tout le monde pourra voir le groupe.",
-                requireApprovalDescription:
-                    "Si coché, un modérateur du groupe devra approuver manuellement les demandes pour rejoindre le groupe.",
+                visibleDescription: {
+                    true: "Tout le monde peut voir ce groupe.",
+                    false: "Ce groupe est invisible: les utilisateurs doivent être invités pour rejoindre.",
+                },
+                requireApprovalDescription: {
+                    true: "Un modérateur du groupe doit manuellement approuver les demandes pour rejoindre le groupe.",
+                    false: "Les utilisateurs peuvent rejoindre le groupe sans approbation.",
+                },
                 submit: "Créer",
             },
             newPost: {
