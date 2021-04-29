@@ -719,7 +719,7 @@ export default {
                 help: "I am open to having a drink with the people I meet on this platform.",
             },
             "provide-a-couch": {
-                name: "Provide a couch",
+                name: "Host you for some time",
                 help: "I am open to letting someone sleep on my couch.",
             },
             "get-into-campus-life": {
