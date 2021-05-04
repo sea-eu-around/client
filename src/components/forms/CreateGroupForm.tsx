@@ -127,7 +127,7 @@ class CreateGroupForm extends React.Component<CreateGroupFormProps, CreateGroupF
                                     {...checkboxProps}
                                 />
                                 <Text style={styles.fieldDescription}>
-                                    {i18n.t("groups.create.visibleDescription")}
+                                    {i18n.t(`groups.create.visibleDescription.${values.visible}`)}
                                 </Text>
 
                                 <FormCheckBox
@@ -139,7 +139,7 @@ class CreateGroupForm extends React.Component<CreateGroupFormProps, CreateGroupF
                                     {...checkboxProps}
                                 />
                                 <Text style={styles.fieldDescription}>
-                                    {i18n.t("groups.create.requireApprovalDescription")}
+                                    {i18n.t(`groups.create.requireApprovalDescription.${values.requiresApproval}`)}
                                 </Text>
 
                                 <FormError error={generalError(remoteErrors)} />
@@ -192,6 +192,7 @@ const themedStyles = preTheme((theme: Theme) => {
         fieldDescription: {
             color: theme.textLight,
             fontSize: 14,
+            lineHeight: 18,
             marginBottom: 20,
         },
         actionsContainer: {
