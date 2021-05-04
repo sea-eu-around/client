@@ -19,11 +19,12 @@ if (TARGET === "PRODUCTION") {
     };
 } else {
     CLIENT_HOST = "staging.sea-eu-around.lad-dev.team";
-    const SERVER_HOST = "api-staging.sea-eu-around.lad-dev.team";
+    // const SERVER_HOST = "api-staging.sea-eu-around.lad-dev.team";
+    const SERVER_HOST = "192.168.0.32:3000";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
         SERVER_HOST,
-        SERVER_URL: `https://${SERVER_HOST}`,
+        SERVER_URL: `http://${SERVER_HOST}`,
         DEBUG: true,
     };
 }
