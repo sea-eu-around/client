@@ -1,5 +1,5 @@
 import * as React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {withTheme} from "react-native-elements";
 import {openChat, rootNavigate} from "../../navigation/utils";
 import {preTheme} from "../../styles/utils";
@@ -56,12 +56,6 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
     show(profile: UserProfile, roomId: string | null): void {
         this.modalRef.current?.show();
 
-        /*if (Math.random() < 0.5) {
-            profile = JSON.parse(
-                '{"id":"f70bd845-26e9-4aa9-9c13-33c4ff3d5036","type":"student","firstName":"Test","lastName":"Test","gender":"male","nationality":"FR","languages":[{"code":"fr","level":"native"}],"profileOffers":[{"allowStaff":false,"allowStudent":false,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"grab-a-drink"},{"allowStaff":false,"allowStudent":false,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"provide-a-couch"},{"allowStaff":false,"allowStudent":false,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"get-into-campus-life"},{"allowStaff":true,"allowStudent":true,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"cowork-on-a-project"},{"allowStaff":true,"allowStudent":true,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"answer-academic-questions"},{"allowStaff":true,"allowStudent":true,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"language-tandem"},{"allowStaff":true,"allowStudent":true,"allowMale":true,"allowFemale":true,"allowOther":true,"offerId":"share-interests"}],"avatar":null,"score":0,"degree":"m2","avatarUrl":null,"birthdate":"1997-02-13T23:00:00.000Z","educationFields":[],"interests":["climbing","bbq"],"university":{"key":"univ-brest","country":"FR"}}'
-            );
-        }*/
-
         this.setState({...this.state, profile, roomId, maxOffersDisplayed: 999});
     }
 
@@ -87,6 +81,7 @@ export class MatchSuccessModalClass extends React.Component<MatchSuccessModalPro
                 ? getMatchingOffers(profile.profileOffers, localProfile)
                 : [];
 
+        // Kept for quick testing
         /*const profileOffers =
             localProfile && profile && profile.profileOffers
                 ? getMatchingOffers(
@@ -271,6 +266,8 @@ const themedStyles = preTheme((theme: Theme) => {
             justifyContent: "space-between",
             overflow: "hidden",
             flexShrink: 1,
+            // Prevents it from looking a little bit small when there are no offers to show
+            minHeight: Math.min(400, Dimensions.get("window").height * 0.7),
         },
         topContainer: {
             alignItems: "center",
@@ -286,6 +283,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "85%",
             maxWidth: 400,
             marginTop: 10,
+            marginBottom: 10,
         },
         title: {
             width: "100%",
