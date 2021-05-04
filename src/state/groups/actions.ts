@@ -385,7 +385,7 @@ export const createGroup = (group: CreateGroupDto): ValidatedThunkAction => asyn
         name: group.name.trim(),
     };
 
-    const response = await requestBackend("groups", "POST", {}, dto, token, true);
+    const response = await requestBackend("groups", "POST", {}, dto, token);
     if (response.status === HttpStatusCode.CREATED) {
         const payload = (response as SuccessfulRequestResponse).data as ResponseGroupDto;
         const createdGroup: Group = {
@@ -407,7 +407,7 @@ export const updateGroup = (id: string, group: Partial<CreateGroupDto>): Validat
 ) => {
     const token = getState().auth.token;
 
-    const response = await requestBackend(`groups/${id}`, "PATCH", {}, group, token, true);
+    const response = await requestBackend(`groups/${id}`, "PATCH", {}, group, token);
     if (response.status === HttpStatusCode.OK) {
         const responseGroup = (response as SuccessfulRequestResponse).data as {id: string} & Partial<Group>;
         dispatch(updateGroupSuccess(responseGroup));
@@ -421,7 +421,7 @@ export const updateGroup = (id: string, group: Partial<CreateGroupDto>): Validat
 export const deleteGroup = (id: string): ValidatedThunkAction => async (dispatch, getState) => {
     const token = getState().auth.token;
 
-    const response = await requestBackend(`groups/${id}`, "DELETE", {}, {}, token, true);
+    const response = await requestBackend(`groups/${id}`, "DELETE", {}, {}, token);
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(deleteGroupSuccess());
         return {success: true};
@@ -848,7 +848,7 @@ export const setGroupMemberStatus = (
         profile: {user},
     } = getState();
 
-    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {status}, token, true);
+    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {status}, token);
 
     if (response.status === HttpStatusCode.OK) {
         dispatch(setGroupMemberStatusSuccess(groupId, profileId, status, profileId === user?.id));
@@ -886,7 +886,7 @@ export const setGroupMemberRole = (
         profile: {user},
     } = getState();
 
-    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {role}, token, true);
+    const response = await requestBackend(`groups/${groupId}/members/${profileId}`, "PATCH", {}, {role}, token);
 
     if (response.status === HttpStatusCode.OK) {
         dispatch(setGroupMemberRoleSuccess(groupId, profileId, role, profileId === user?.id));
@@ -1027,7 +1027,7 @@ export const joinGroup = (group: Group): AppThunk<Promise<boolean>> => async (di
             return dispatch(setGroupMemberStatus(group.id, user.id, GroupMemberStatus.Pending));
     }
 
-    const response = await requestBackend(`groups/${group.id}/members`, "POST", {}, {}, token, true);
+    const response = await requestBackend(`groups/${group.id}/members`, "POST", {}, {}, token);
 
     if (response.status === HttpStatusCode.CREATED) {
         const data = (response as SuccessfulRequestResponse).data as ResponseGroupMemberDto;

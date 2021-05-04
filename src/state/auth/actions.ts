@@ -284,7 +284,7 @@ const resetPasswordSuccess = (): ResetPasswordSuccessAction => ({
 
 export const deleteAccount = (password: string): ValidatedThunkAction => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("users", "DELETE", {}, {password}, token, true);
+    const response = await requestBackend("users", "DELETE", {}, {password}, token);
 
     if (response.status == HttpStatusCode.NO_CONTENT) {
         dispatch(logout(false));

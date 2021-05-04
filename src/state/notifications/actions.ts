@@ -15,7 +15,7 @@ export type NotificationsAction = RegisterNotificationSuccessAction & DeleteNoti
 
 export const registerNotificationToken = (pushToken: string): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("notifications/token", "POST", {}, {token: pushToken}, token, true);
+    const response = await requestBackend("notifications/token", "POST", {}, {token: pushToken}, token);
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(registerNotificationTokenSuccess());
     }
@@ -27,7 +27,7 @@ const registerNotificationTokenSuccess = (): RegisterNotificationSuccessAction =
 
 export const deleteNotificationToken = (): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("notifications/token", "DELETE", {}, {}, token, true);
+    const response = await requestBackend("notifications/token", "DELETE", {}, {}, token);
     if (response.status === HttpStatusCode.NO_CONTENT) {
         dispatch(deleteNotificationTokenSuccess());
     }

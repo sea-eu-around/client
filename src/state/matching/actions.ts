@@ -215,7 +215,7 @@ export const likeProfile = (profile: UserProfile): AppThunk<Promise<MatchActionR
     getState,
 ) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profile.id}, token, true);
+    const response = await requestBackend("matching/like", "POST", {}, {toProfileId: profile.id}, token);
     if (response.status === HttpStatusCode.OK) {
         const payload = (response as SuccessfulRequestResponse).data;
         const {status, roomId} = payload as MatchActionResponseDto;
@@ -232,7 +232,7 @@ const dislikeProfileSuccess = (profile: UserProfile): DislikeProfileSuccessActio
 
 export const dislikeProfile = (profile: UserProfile): AppThunk => async (dispatch, getState) => {
     const token = getState().auth.token;
-    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profile.id}, token, true);
+    const response = await requestBackend("matching/decline", "POST", {}, {toProfileId: profile.id}, token);
     if (response.status === HttpStatusCode.OK) dispatch(dislikeProfileSuccess(profile));
 };
 
