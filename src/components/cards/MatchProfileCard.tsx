@@ -20,6 +20,8 @@ import SwipeTip from "../SwipeTip";
 export type MatchProfileCardProps = ThemeProps & {
     profile: UserProfile;
     onExpand?: (layout: LayoutRectangle) => void;
+    onSwipedLeft?: () => void;
+    onSwipedRight?: () => void;
     onSwipeLeft?: () => void;
     onSwipeRight?: () => void;
     onHidden?: () => void;
@@ -214,13 +216,15 @@ class MatchProfileCard extends React.Component<MatchProfileCardProps, MatchProfi
                 leftThreshold={100}
                 rightThreshold={100}
                 onSwipeableRightWillOpen={() => {
+                    if (this.props.onSwipeLeft) this.props.onSwipeLeft();
                     this.hide(() => {
-                        if (this.props.onSwipeLeft) this.props.onSwipeLeft();
+                        if (this.props.onSwipedLeft) this.props.onSwipedLeft();
                     }, false);
                 }}
                 onSwipeableLeftWillOpen={() => {
+                    if (this.props.onSwipeRight) this.props.onSwipeRight();
                     this.hide(() => {
-                        if (this.props.onSwipeRight) this.props.onSwipeRight();
+                        if (this.props.onSwipedRight) this.props.onSwipedRight();
                     }, true);
                 }}
                 renderRightActions={() => (

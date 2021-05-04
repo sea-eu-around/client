@@ -33,8 +33,9 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
     successModalRef = React.createRef<MatchSuccessModalClass>();
 
     render(): JSX.Element {
-        const {profileIds, profiles, theme, pagination, navigation, dispatch} = this.props;
+        const {profileIds, profiles, theme, pagination, navigation} = this.props;
         const styles = themedStyles(theme);
+        const dispatch = this.props.dispatch as MyThunkDispatch;
 
         return (
             <ScreenWrapper forceFullWidth>
@@ -42,7 +43,7 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                     ref={this.scrollerRef}
                     navigation={navigation}
                     fetchLimit={PROFILES_FETCH_LIMIT}
-                    fetchMore={() => (dispatch as MyThunkDispatch)(fetchProfiles())}
+                    fetchMore={() => dispatch(fetchProfiles())}
                     fetching={pagination.fetching}
                     canFetchMore={pagination.canFetchMore}
                     currentPage={pagination.page}
@@ -71,12 +72,12 @@ class TabMatchingScreen extends React.Component<TabMatchingScreenProps> {
                                 if (scroll) scroll.scrollTo({y: layout.y - 100, animated: true});
                             }}
                             onSwipeRight={async () => {
-                                const response = await (dispatch as MyThunkDispatch)(likeProfile(profile));
+                                const response = await dispatch(likeProfile(profile));
                                 if (response && response.status === MatchActionStatus.Matched)
                                     this.successModalRef.current?.show(profile, response.roomId);
                             }}
-                            onSwipeLeft={() => (dispatch as MyThunkDispatch)(dislikeProfile(profile))}
-                            onHidden={() => hide()}
+                            onSwipedLeft={() => dispatch(dislikeProfile(profile))}
+                            onHidden={hide}
                             showSwipeTip={profile.id == profileIds[0]}
                         />
                     )}
