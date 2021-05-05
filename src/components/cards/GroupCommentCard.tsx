@@ -13,8 +13,6 @@ import ReAnimated, {Easing} from "react-native-reanimated";
 import {animateValue} from "../../polyfills";
 import {MaterialIcons} from "@expo/vector-icons";
 import GroupVoteButton from "../GroupVoteButton";
-import QuickFormReport from "../forms/QuickFormReport";
-import {ReportEntityType} from "../../constants/reports";
 import ProfileAvatar from "../ProfileAvatar";
 import EditCommentModal from "../modals/EditCommentModal";
 import DeleteCommentConfirmModal from "../modals/DeleteCommentConfirmModal";
@@ -37,6 +35,7 @@ type GroupCommentCardProps = {
     onExpand?: (collapse: () => void) => void;
     onCollapse?: () => void;
     toggleChildren: () => void;
+    openReportForm: () => void;
     adminView: boolean;
 } & ThemeProps &
     ConnectedProps<typeof reduxConnector>;
@@ -83,6 +82,7 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
             theme,
             adminView,
             toggleChildren,
+            openReportForm,
             ...otherProps
         } = this.props;
         const {expanded} = this.state;
@@ -190,16 +190,10 @@ class GroupCommentCard extends React.Component<GroupCommentCardProps, GroupComme
                                     />
                                 )}
                                 {!fromLocal && (
-                                    <QuickFormReport
-                                        entityType={ReportEntityType.COMMENT_ENTITY}
-                                        entity={comment}
-                                        activator={(show) => (
-                                            <Button
-                                                style={styles.bottomButton}
-                                                icon={<MaterialIcons style={styles.bottomButtonIcon} name="report" />}
-                                                onPress={show}
-                                            />
-                                        )}
+                                    <Button
+                                        style={styles.bottomButton}
+                                        icon={<MaterialIcons style={styles.bottomButtonIcon} name="report" />}
+                                        onPress={openReportForm}
                                     />
                                 )}
                             </View>
