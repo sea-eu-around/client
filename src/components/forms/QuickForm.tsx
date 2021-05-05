@@ -1,9 +1,9 @@
 import React from "react";
-import {View, StyleSheet, Text, Platform} from "react-native";
+import {View, StyleSheet, Text, Platform, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
-import CustomModal from "../modals/CustomModal";
+import CustomModal, {CustomModalClass} from "../modals/CustomModal";
 import i18n from "i18n-js";
 import FormSubmitButton from "../forms/FormSubmitButton";
 import {Icon} from "expo";
@@ -23,6 +23,7 @@ export type QuickFormProps = ThemeProps & {
     failureText?: string;
     submitText: string;
     sheetHeight?: number;
+    modalMode?: boolean;
 };
 
 type QuickFormState = {
@@ -32,7 +33,8 @@ type QuickFormState = {
 };
 
 export class QuickFormClass extends React.Component<QuickFormProps, QuickFormState> {
-    sheetRef = React.createRef<BottomSheetClass>();
+    private sheetRef = React.createRef<BottomSheetClass>();
+    private modalRef = React.createRef<CustomModalClass>();
 
     constructor(props: QuickFormProps) {
         super(props);
@@ -41,10 +43,12 @@ export class QuickFormClass extends React.Component<QuickFormProps, QuickFormSta
 
     open(): void {
         this.sheetRef.current?.show();
+        this.modalRef.current?.show();
     }
 
     close(): void {
         this.sheetRef.current?.hide();
+        this.modalRef.current?.hide();
     }
 
     submit(): void {
@@ -85,55 +89,58 @@ export class QuickFormClass extends React.Component<QuickFormProps, QuickFormSta
             failureText,
             theme,
             sheetHeight,
+            modalMode,
             children,
         } = this.props;
         const {confirmationOpen, failureOpen, submitting} = this.state;
         const styles = themedStyles(theme);
 
+        const content = (hide: () => void) => (
+            <View style={styles.wrapperSheet}>
+                <View style={styles.containerSheet}>
+                    {(title || titleIcon) && (
+                        <View style={styles.titleContainer}>
+                            {titleIcon && (
+                                <titleIcon.component name={titleIcon.name} style={[styles.title, styles.titleIcon]} />
+                            )}
+                            {title && <Text style={styles.title}>{title}</Text>}
+                        </View>
+                    )}
+                    {children}
+                    {!hideSubmit && (
+                        <FormSubmitButton
+                            text={submitText}
+                            submitting={submitting}
+                            onPress={() => this.submit()}
+                            skin="rounded-filled"
+                            style={styles.actionButton}
+                            textStyle={styles.actionButtonText}
+                            TouchableComponent={modalMode ? TouchableOpacity : BottomSheetTouchableOpacity}
+                        />
+                    )}
+                    <Button
+                        text={i18n.t("cancel")}
+                        onPress={hide}
+                        skin="rounded-hollow"
+                        style={styles.actionButton}
+                        textStyle={styles.actionButtonText}
+                        TouchableComponent={modalMode ? TouchableOpacity : BottomSheetTouchableOpacity}
+                    />
+                </View>
+            </View>
+        );
+
         return (
             <>
                 {activator && activator(() => this.open())}
-                <BottomSheet
-                    ref={this.sheetRef}
-                    snapPoints={[0, sheetHeight === undefined ? 300 : sheetHeight]}
-                    renderContent={(hide) => (
-                        <View style={styles.wrapperSheet}>
-                            <View style={styles.containerSheet}>
-                                {(title || titleIcon) && (
-                                    <View style={styles.titleContainer}>
-                                        {titleIcon && (
-                                            <titleIcon.component
-                                                name={titleIcon.name}
-                                                style={[styles.title, styles.titleIcon]}
-                                            />
-                                        )}
-                                        {title && <Text style={styles.title}>{title}</Text>}
-                                    </View>
-                                )}
-                                {children}
-                                {!hideSubmit && (
-                                    <FormSubmitButton
-                                        text={submitText}
-                                        submitting={submitting}
-                                        onPress={() => this.submit()}
-                                        skin="rounded-filled"
-                                        style={styles.actionButton}
-                                        textStyle={styles.actionButtonText}
-                                        TouchableComponent={BottomSheetTouchableOpacity}
-                                    />
-                                )}
-                                <Button
-                                    text={i18n.t("cancel")}
-                                    onPress={hide}
-                                    skin="rounded-hollow"
-                                    style={styles.actionButton}
-                                    textStyle={styles.actionButtonText}
-                                    TouchableComponent={BottomSheetTouchableOpacity}
-                                />
-                            </View>
-                        </View>
-                    )}
-                />
+                {modalMode && <CustomModal ref={this.modalRef} renderContent={content} />}
+                {!modalMode && (
+                    <BottomSheet
+                        ref={this.sheetRef}
+                        snapPoints={[0, sheetHeight === undefined ? 300 : sheetHeight]}
+                        renderContent={content}
+                    />
+                )}
                 <CustomModal
                     visible={confirmationOpen}
                     onHide={() => this.setState({...this.state, confirmationOpen: false})}

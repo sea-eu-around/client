@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet, Text} from "react-native";
+import {View, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {withTheme} from "react-native-elements";
 import {preTheme} from "../../styles/utils";
 import {Theme, ThemeProps} from "../../types";
@@ -22,6 +22,7 @@ export type QuickFormReportProps = ThemeProps & {
     entity: unknown;
     activator?: (open: () => void) => JSX.Element;
     onSubmit?: (success: boolean) => void;
+    modalMode?: boolean;
 };
 
 type QuickFormReportState = {
@@ -93,7 +94,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
     }
 
     render(): JSX.Element {
-        const {activator, theme} = this.props;
+        const {activator, modalMode, theme} = this.props;
         const {selectedType} = this.state;
         const styles = themedStyles(theme);
 
@@ -113,6 +114,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                     failureTitle={i18n.t("report.failureTitle")}
                     failureText={i18n.t("report.failure")}
                     hideSubmit={!selectedType}
+                    modalMode={modalMode}
                     sheetHeight={330}
                 >
                     <View style={styles.inputItem}>
@@ -134,7 +136,7 @@ export class QuickFormReportClass extends React.Component<QuickFormReportProps, 
                                     this.setState({...this.state, selectedType: values[0] as ReportType});
                             }}
                             buttonStyleVariant="onboarding"
-                            TouchableComponent={BottomSheetTouchableOpacity}
+                            TouchableComponent={modalMode ? TouchableOpacity : BottomSheetTouchableOpacity}
                         />
                     </View>
                 </QuickForm>
