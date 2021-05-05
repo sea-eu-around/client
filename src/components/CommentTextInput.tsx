@@ -34,14 +34,6 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
         this.inputRef.current?.focus();
     }
 
-    private onFocus(): void {
-        return;
-    }
-
-    private onBlur(): void {
-        return;
-    }
-
     private send(): void {
         const {onSend} = this.props;
         const {value} = this.state;
@@ -78,14 +70,8 @@ export class CommentTextInputClass extends React.Component<CommentTextInputProps
                         this.state.focused && Platform.OS === "web" && ({outline: "none"} as TextStyle),
                         this.state.focused && styles.inputFocusedStyle,
                     ]}
-                    onBlur={() => {
-                        this.onBlur();
-                        this.setState({focused: false});
-                    }}
-                    onFocus={() => {
-                        this.onFocus();
-                        this.setState({focused: true});
-                    }}
+                    onBlur={() => this.setState({focused: false})}
+                    onFocus={() => this.setState({focused: true})}
                     placeholder={i18n.t("groups.comments.placeholder")}
                     multiline
                     numberOfLines={4}
@@ -123,6 +109,7 @@ const themedStyles = preTheme((theme: Theme) => {
             flex: 1,
             height: "100%",
             backgroundColor: "transparent",
+            color: theme.text,
         },
         inputButton: {
             padding: 10,
