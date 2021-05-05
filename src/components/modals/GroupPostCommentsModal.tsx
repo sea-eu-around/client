@@ -151,8 +151,8 @@ export class GroupPostCommentsModalClass extends React.Component<
                             fullHeight
                             statusBarTranslucent
                             modalViewStyle={{
-                                paddingTop: insets?.top,
-                                paddingBottom: insets?.bottom,
+                                paddingTop: insets?.top || 0,
+                                paddingBottom: insets?.bottom || 0,
                                 paddingHorizontal: 0,
                                 width: "100%",
                                 maxWidth: 1000,
@@ -199,7 +199,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                                         </View>
                                     </View>
                                     <ScrollView
-                                        keyboardShouldPersistTaps="handled"
+                                        style={styles.commentsScrollView}
                                         contentContainerStyle={styles.comments}
                                         refreshControl={
                                             <RefreshControl
@@ -317,14 +317,19 @@ const themedStyles = preTheme((theme: Theme) => {
         container: {
             width: "100%",
             height: "100%",
+            minHeight: "100%",
             backgroundColor: theme.cardBackground,
             padding: 0,
             marginBottom: 15,
+            paddingBottom: 30,
         },
         top: {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
+        },
+        commentsScrollView: {
+            flex: 1,
         },
         comments: {
             paddingBottom: 30,
