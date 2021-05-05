@@ -6,7 +6,6 @@ import {BottomSheetProps} from "./types";
 
 export class BottomSheetClass extends React.Component<BottomSheetProps> {
     sheetRef = React.createRef<BottomSheetModal>();
-    skipNextUpdate = false;
 
     show(): void {
         this.sheetRef.current?.present();

@@ -5,7 +5,6 @@ import {BottomSheetProps} from "./types";
 
 export class BottomSheetClass extends React.Component<BottomSheetProps> {
     webModalRef = React.createRef<CustomModalClass>();
-    skipNextUpdate = false;
 
     show(): void {
         this.webModalRef.current?.show();
