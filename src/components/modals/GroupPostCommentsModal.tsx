@@ -152,7 +152,7 @@ export class GroupPostCommentsModalClass extends React.Component<
                             statusBarTranslucent
                             modalViewStyle={{
                                 paddingTop: insets?.top || 0,
-                                paddingBottom: insets?.bottom || 0,
+                                //  paddingBottom: insets?.bottom || 0,
                                 paddingHorizontal: 0,
                                 width: "100%",
                                 maxWidth: 1000,
@@ -163,7 +163,8 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 statusBarRef.current?.setStyle(this.initialStatusBarStyle);
                             }}
                             renderContent={(hide) => (
-                                <View style={styles.container}>
+                                // TODO verify if padding fix works on iOS
+                                <View style={[styles.container, {paddingBottom: (insets?.bottom || 0) + 30}]}>
                                     <View style={styles.top}>
                                         <View style={{flexDirection: "row", alignItems: "center"}}>
                                             <Button
@@ -321,7 +322,6 @@ const themedStyles = preTheme((theme: Theme) => {
             backgroundColor: theme.cardBackground,
             padding: 0,
             marginBottom: 15,
-            paddingBottom: 30,
         },
         top: {
             flexDirection: "row",
