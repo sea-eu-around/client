@@ -105,7 +105,9 @@ const themedStyles = preTheme((theme: Theme) => {
         inputFocusedStyle: {},
         input: {
             paddingLeft: 20,
-            paddingVertical: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
+            alignItems: "center",
             flex: 1,
             height: "100%",
             backgroundColor: "transparent",
