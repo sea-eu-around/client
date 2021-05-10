@@ -163,7 +163,6 @@ export class GroupPostCommentsModalClass extends React.Component<
                                 statusBarRef.current?.setStyle(this.initialStatusBarStyle);
                             }}
                             renderContent={(hide) => (
-                                // TODO verify if padding fix works on iOS
                                 <View style={[styles.container, {paddingBottom: (insets?.bottom || 0) + 30}]}>
                                     <View style={styles.top}>
                                         <View style={{flexDirection: "row", alignItems: "center"}}>
