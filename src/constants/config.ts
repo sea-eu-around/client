@@ -17,6 +17,15 @@ export const CLIENT_URL: string = extra.CLIENT_URL;
 export const SERVER_HOST: string = extra.SERVER_HOST;
 export const BACKEND_URL: string = extra.SERVER_URL;
 
+/*
+// These settings allow connection to the production environment in dev mode (risky)
+export const ENVIRONMENT = Environment.Production;
+export const DEBUG_MODE = true;
+export const CLIENT_URL = `${"https"}://${"sea-eu-around.univ-brest.fr"}`;
+export const SERVER_HOST = "api.sea-eu-around.univ-brest.fr";
+export const BACKEND_URL = `https://${SERVER_HOST}`;
+*/
+
 /**
  * Specify the quality of compression, from 0 to 1.
  * 0 means compress for small size, 1 means compress for maximum quality.
