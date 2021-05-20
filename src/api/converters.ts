@@ -31,6 +31,7 @@ import {Role, StaffRole} from "../constants/profile-constants";
 import {MatchHistoryItem} from "../model/matching";
 import {PARTNER_UNIVERSITIES} from "../constants/universities";
 import {Group, GroupMember, GroupPost, PostComment, GroupVoteStatus} from "../model/groups";
+import {getNextProfileInfo, getNextRoomInfo} from "../demo";
 
 export function stripSuperfluousOffers(offers: OfferValueDto[]): OfferValueDto[] {
     return offers
@@ -48,6 +49,8 @@ export function convertDtoToProfile(dto: ResponseProfileDto): UserProfile {
         interests: (dto.interests || []).map((i) => i.id),
         languages: dto.languages || [],
         university: PARTNER_UNIVERSITIES.find((u) => u.key === dto.university) || PARTNER_UNIVERSITIES[0],
+
+        ...getNextProfileInfo(dto.id),
     };
 
     let complete: UserProfile;
@@ -132,7 +135,7 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         if (sender) lastMessage = convertDtoToChatMessage(sender, msg);
     }
 
-    return {
+    const out = {
         ...dto,
         users,
         messages: [],
@@ -140,6 +143,7 @@ export function convertDtoToRoom(dto: ResponseRoomDto): ChatRoom {
         writing: {},
         messagePagination: initialPaginatedState(),
     };
+    return {...out, ...getNextRoomInfo(out)};
 }
 
 export function convertDtoToChatMessage(user: ChatRoomUser, dto: ResponseChatMessageDto): ChatRoomMessage {

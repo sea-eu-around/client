@@ -104,7 +104,18 @@ class EditProfileForm extends React.Component<EditProfileFormProps> {
                         blank={!user}
                         label={i18n.t("emailAddress")}
                         initialValue={user?.email}
-                        display={(user && <Text style={styles.cardText}>{user.email}</Text>) || undefined}
+                        display={
+                            (user && (
+                                <Text style={styles.cardText}>
+                                    {profile
+                                        ? `${profile.firstName}.${profile.lastName}@${
+                                              /*user.email.split("@")[1]*/ "univ-brest.fr"
+                                          }`.toLowerCase()
+                                        : ""}
+                                </Text>
+                            )) ||
+                            undefined
+                        }
                         locked={true}
                     />
                     <Spacer />

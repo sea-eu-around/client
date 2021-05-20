@@ -12,6 +12,8 @@ import SemiHighlightedText from "../components/SemiHighlightedText";
 import {getLocalSvg} from "../assets";
 import Button from "../components/Button";
 import MobileStoreButton from "../components/MobileStoreButton";
+import {beginOnboarding} from "../state/auth/actions";
+import store from "../state/store";
 
 export type WelcomeScreenProps = ThemeProps & StackScreenProps<RootNavigatorScreens>;
 
@@ -50,6 +52,11 @@ class WelcomeScreen extends React.Component<WelcomeScreenProps> {
                         </View>
                     )}
                     <View style={styles.actionsContainer}>
+                        <Button
+                            text="Onboarding"
+                            onPress={() => store.dispatch(beginOnboarding())}
+                            skin="rounded-hollow"
+                        />
                         <Button
                             text={i18n.t("welcomeScreen.signIn")}
                             onPress={() => {
