@@ -4,7 +4,7 @@ This is the client repository for SEA-EU Around (android, iOS and web versions).
 
 # Deployment
 
-/!\ Warning: before deploying anything, make sure the [config file](./app.config.ts) is setup correctly.
+/!\ Warning: before deploying anything, make sure the [config file](./app.config.js) is setup correctly.
 
 Resources :
 
