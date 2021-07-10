@@ -9,7 +9,7 @@ let CLIENT_HOST;
 let EXTRAS = {};
 
 if (TARGET === "PRODUCTION") {
-    CLIENT_HOST = "sea-eu-around.univ-brest.fr";
+    CLIENT_HOST = "www.lad-dev.team";
     const SERVER_HOST = "api.sea-eu-around.univ-brest.fr";
     EXTRAS = {
         CLIENT_URL: `${CLIENT_HTTP}://${CLIENT_HOST}`,
