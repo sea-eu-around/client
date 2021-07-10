@@ -4,44 +4,43 @@ name: Build and deploy webapp
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    # Triggers the workflow on push or pull request events but only for the master branch
+    push:
+        branches: [deploy-webapp]
+    pull_request:
+        branches: [deploy-webapp]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    name: Build and deploy
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    # This workflow contains a single job called "build"
+    build:
+        name: Build and deploy
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - uses: expo/expo-github-action@v6
-        with:
-          expo-version: 4.x
-      - run: yarn install
-      - run: yarn build-web
-      - uses: hkdobrev/minio-deploy-action@v1
-        with:
-          # Minio endpoint of object storage host
-          endpoint: cdn.sea-eu-around.univ-brest.fr
-          # Minio access key (username)
-          access_key: ${{ secrets.MINIO_ROOT_USER }}
-          # Minio secret key (password)
-          secret_key: ${{ secrets.MINIO_ROOT_PASSWORD }}
-          # Set the target minio bucket for deployment.
-          bucket: www
-          # Set an input directory for deployment.
-          source_dir: web-build
-    
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 14.x
+            - uses: expo/expo-github-action@v6
+              with:
+                  expo-version: 4.x
+            - run: yarn install
+            - run: yarn build-web
+            - uses: hkdobrev/minio-deploy-action@v1
+              with:
+                  # Minio endpoint of object storage host
+                  endpoint: https://cdn.sea-eu-around.univ-brest.fr
+                  # Minio access key (username)
+                  access_key: ${{ secrets.MINIO_ROOT_USER }}
+                  # Minio secret key (password)
+                  secret_key: ${{ secrets.MINIO_ROOT_PASSWORD }}
+                  # Set the target minio bucket for deployment.
+                  bucket: www
+                  # Set an input directory for deployment.
+                  source_dir: web-build
