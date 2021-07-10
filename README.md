@@ -1,5 +1,7 @@
 # SEA-EU Around - Client
 
+[![Build and deploy webapp](https://github.com/sea-eu-around/client/actions/workflows/build-webapp.yml/badge.svg)](https://github.com/sea-eu-around/client/actions/workflows/build-webapp.yml)
+
 This is the client repository for SEA-EU Around (android, iOS and web versions).
 
 # Deployment
