@@ -178,6 +178,7 @@ const themedStyles = preTheme((theme: Theme) => {
             width: "100%",
             maxWidth: 600,
             alignSelf: "center",
+            paddingBottom: 50,
         },
         headerContainer: {
             flexDirection: "row",
